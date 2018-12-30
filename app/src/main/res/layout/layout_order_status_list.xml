@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+<RadioGroup
+    android:id="@+id/radio_group"
+    android:padding="16dp"
+    android:layout_width="wrap_content"
+    android:orientation="vertical"
+    android:layout_height="wrap_content">
+
+    <RadioButton
+        android:tag="client_busy"
+        android:id="@+id/client_busy"
+        android:padding="16dp"
+        android:textColor="@color/black_text_color"
+        android:textSize="24sp"
+        android:text="@string/client_busy"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <RadioButton
+        android:tag="client_delay"
+
+        android:id="@+id/client_delay"
+        android:padding="16dp"
+        android:textColor="@color/black_text_color"
+        android:textSize="24sp"
+        android:text="@string/client_delay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <RadioButton
+        android:tag="client_cancel"
+
+        android:id="@+id/client_cancel"
+        android:padding="16dp"
+        android:textColor="@color/black_text_color"
+        android:textSize="24sp"
+        android:text="@string/client_cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <RadioButton
+        android:tag="client_noanswer"
+
+        android:id="@+id/client_noanswer"
+        android:padding="16dp"
+        android:textColor="@color/black_text_color"
+        android:textSize="24sp"
+        android:text="@string/client_noanswer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <RadioButton
+        android:tag="order_data_confirmed"
+
+        android:id="@+id/order_data_confirmed"
+        android:padding="16dp"
+        android:textColor="@color/black_text_color"
+        android:textSize="24sp"
+        android:text="@string/order_data_confirmed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <RadioButton
+        android:tag="client_phone_error"
+
+        android:id="@+id/client_phone_error"
+        android:padding="16dp"
+        android:textColor="@color/black_text_color"
+        android:textSize="24sp"
+        android:text="@string/client_phone_error"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+</RadioGroup>
+
+    <Button
+        android:id="@+id/ok"
+        android:layout_margin="16dp"
+        android:layout_gravity="center"
+        android:text="@string/ef_ok"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+</LinearLayout>
+

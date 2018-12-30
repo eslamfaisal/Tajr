@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <item
+        android:id="@+id/call_client"
+        android:icon="@drawable/ic_call_white"
+        android:title="Call"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/mic_mode"
+        android:icon="@drawable/ic_mic_off_black_24dp"
+        android:title="Call"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/end_call"
+        android:icon="@drawable/ic_call_end_red"
+        android:title="Call"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/no"
+        android:icon="@drawable/greeen"
+        android:title="Call"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/finish_work"
+        android:title="@string/finish_work" />
+
+    <item
+        android:id="@+id/ask_finish_work"
+        android:title="@string/ask_finish_work" />
+</menu>

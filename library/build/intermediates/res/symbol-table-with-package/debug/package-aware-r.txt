@@ -1,0 +1,19 @@
+com.thefinestartist.movingbutton
+attr mb_event_volume
+attr mb_move_direction
+attr mb_movement
+attr mb_movement_bottom
+attr mb_movement_left
+attr mb_movement_right
+attr mb_movement_top
+attr mb_offset_inner
+attr mb_offset_outer
+attr mb_vibration_duration
+dimen default_offset_inner
+dimen default_offset_outer
+id all
+id horizontal
+id horizontal_vertical
+id still
+id vertical
+styleable MovingButton mb_event_volume mb_move_direction mb_movement mb_movement_bottom mb_movement_left mb_movement_right mb_movement_top mb_offset_inner mb_offset_outer mb_vibration_duration
