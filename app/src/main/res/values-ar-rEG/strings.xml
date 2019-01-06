@@ -34,7 +34,7 @@
     <string name="client_order_phone">رقم المحمول</string>
     <string name="sender_name">اسم المرسل</string>
     <string name="item_cost">تكلفة المنتج</string>
-    <string name="item_no">رقم المنتج</string>
+    <string name="item_no">عدد المنتج</string>
     <string name="order_cost">تكلفةا لطلب</string>
     <string name="order_total_cost">التكلفة الكلية للطلب</string>
     <string name="shipping_retum_cost">تكلفة الرجوع</string>
@@ -45,7 +45,7 @@
     <string name="job">الوظيفة</string>
     <string name="monthly_income">الدخل  الشهري</string>
     <string name="national_id">الرقم القومي</string>
-    <string name="start_work">بدا العمل</string>
+    <string name="start_work">بدء العمل</string>
     <string name="stopWotking">انهاء العمل</string>
     <string name="update">تحديث</string>
     <string name="cancel">الغاء</string>
@@ -57,12 +57,31 @@
     <string name="client_noanswer">العميل لم يرد</string>
     <string name="order_data_confirmed">تم تاكيد بيانات الطلب</string>
     <string name="client_phone_error">رقم الهاتف غير صحيح</string>
-    <string name="submit_order">Submit the order</string>
-    <string name="cancel_order">Cancel order</string>
-    <string name="pause_work">Pause work</string>
-    <string name="finish_work">Finish work</string>
-    <string name="resume_work">Resume work</string>
-    <string name="wrong_number">Wrong number</string>
-    <string name="pause_work_message">Do you want do finish th work</string>
-    <string name="ask_finish_work">Ask to finish work</string>
+    <string name="submit_order">تاكيد الطلب</string>
+    <string name="cancel_order">الغاء الطلب</string>
+    <string name="pause_work">ايقاف العمل</string>
+    <string name="finish_work">انهاء العمل</string>
+    <string name="resume_work">تكملة العمل</string>
+    <string name="wrong_number">خطا فى الهاتف</string>
+    <string name="pause_work_message">هل تريد انهاء العمل</string>
+    <string name="ask_finish_work">اطلب ايقاف العمل</string>
+    <string name="choose_sim_number">اختار رقم الشريحة</string>
+    <string name="sim_1">شريحة رقم 1</string>
+    <string name="sim_2">شريحة رقم 2</string>
+    <string name="default_sim_activ">اشريحة الافتراضية نشطة</string>
+    <string name="new_order">طلب جديد</string>
+    <string name="search">بحث</string>
+    <string name="send_order">ارسال الطلب</string>
+    <string name="money">المال</string>
+    <string name="hours">الساعات</string>
+    <string name="points">النقاط</string>
+    <string name="analytics">التحليلات</string>
+    <string name="no_orders_with_this_number">No orders with this number</string>
+    <string name="end_call">End call</string>
+    <string name="mute_mic">Mute mic</string>
+    <string name="call">Call</string>
+    <string name="cash">Cash</string>
+    <string name="rank">Rank</string>
+    <string name="month">Month</string>
+
 </resources>

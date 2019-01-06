@@ -37,7 +37,7 @@
                 tools:ignore="VectorDrawableCompat" />
 
             <EditText
-                android:text="Pedia4web@gmail.com"
+                android:text="nada@musa3d.com"
                 android:id="@+id/email"
                 android:layout_width="match_parent"
                 android:layout_height="35dp"
@@ -69,7 +69,7 @@
                 tools:ignore="VectorDrawableCompat" />
 
             <EditText
-                android:text="12345678"
+                android:text="1234"
                 android:id="@+id/password"
                 android:layout_width="match_parent"
                 android:layout_height="35dp"

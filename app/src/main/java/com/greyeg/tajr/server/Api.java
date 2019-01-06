@@ -1,6 +1,11 @@
 package com.greyeg.tajr.server;
 
+import com.greyeg.tajr.models.AllProducts;
+import com.greyeg.tajr.models.Cities;
 import com.greyeg.tajr.models.PhonNumberResponse;
+import com.greyeg.tajr.models.ProductError;
+import com.greyeg.tajr.models.Products;
+import com.greyeg.tajr.models.UpdateOrderResponse;
 import com.greyeg.tajr.models.UserOrders;
 import com.greyeg.tajr.models.UserResponse;
 import com.greyeg.tajr.models.UserWorkTimeResponse;
@@ -30,7 +35,7 @@ public interface Api {
     // log in user client
     @FormUrlEncoded
     @POST("send/update_order")
-    Call<UserOrders> updateOrders(
+    Call<UpdateOrderResponse> updateOrders(
             @Field("token") String token,
             @Field("user_id") int user_id,
             @Field("order_id") int order_id,
@@ -38,10 +43,13 @@ public interface Api {
 
     );
 
+
     // log in user client
     @FormUrlEncoded
-    @POST("send/logout")
-    Call<PhonNumberResponse> getPhoneData(@Field("token") String token, @Field("user_id") String user_id, @Field("phone") String phone);
+    @POST("send/get_phone")
+    Call<UserOrders> getPhoneData(@Field("token") String token,
+                                          @Field("user_id") String user_id,
+                                          @Field("phone") String phone);
 
 
     // log in user client
@@ -51,6 +59,44 @@ public interface Api {
                                             @Field("user_id") String user_id,
                                             @Field("activity") String activity);
 
+    // log in user client
+    @FormUrlEncoded
+    @POST("send/logout")
+    Call<PhonNumberResponse> updateOrderData(
+            @Field("token") String token,
+            @Field("user_id") String user_id,
+            @Field("order_id") String order_id,
+            @Field("client_city") String client_city,
+            @Field("client_name") String client_name,
+            @Field("client_address") String client_address,
+            @Field("client_area") String client_area,
+            @Field("items_no") String items_no,
+            @Field("notes") String notes,
+            @Field("discount") String discount
+    );
+
+    // log in user client
+    @FormUrlEncoded
+    @POST("send/send_problem")
+    Call<UpdateOrderResponse> sendProblem(
+            @Field("token") String token,
+            @Field("user_id") int user_id,
+            @Field("order_id") int order_id,
+            @Field("problem") String problem
+
+    );
+
+    // log in user client
+    @FormUrlEncoded
+    @POST("send/get_cities")
+    Call<Cities> getCities(@Field("token") String token, @Field("user_id") String user_id);
+
+
+    // log in user client
+    @FormUrlEncoded
+    @POST("send/get_products")
+    Call<AllProducts> getProducts(@Field("token") String token,
+                                   @Field("user_id") int  user_id);
 
 
 }

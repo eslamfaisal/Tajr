@@ -3,7 +3,6 @@ package com.greyeg.tajr.activities;
 import android.Manifest;
 import android.app.Activity;
 import android.app.ActivityManager;
-import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
@@ -15,62 +14,84 @@ import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.CallLog;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.telephony.TelephonyManager;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.RadioButton;
+import android.widget.LinearLayout;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.internal.telephony.ITelephony;
 import com.greyeg.tajr.R;
 import com.greyeg.tajr.call_receiver.PhoneCallReceiver;
+import com.greyeg.tajr.fragments.NewOrderFragment;
+import com.greyeg.tajr.fragments.SearchOrderPhoneFragment;
 import com.greyeg.tajr.helper.CurrentCallListener;
 import com.greyeg.tajr.helper.SharedHelper;
 import com.greyeg.tajr.helper.TimerTextView;
+import com.greyeg.tajr.models.LastCallDetails;
 import com.greyeg.tajr.models.Order;
+import com.greyeg.tajr.models.UpdateOrderResponse;
 import com.greyeg.tajr.models.UserOrders;
 import com.greyeg.tajr.models.UserWorkTimeResponse;
 import com.greyeg.tajr.server.Api;
 import com.greyeg.tajr.server.BaseClient;
-import com.greyeg.tajr.services.TimerServices;
+import com.ogaclejapan.smarttablayout.SmartTabLayout;
+import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter;
+import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
+import com.thefinestartist.movingbutton.MovingButton;
+import com.thefinestartist.movingbutton.enums.ButtonPosition;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 import static com.greyeg.tajr.activities.LoginActivity.IS_LOGIN;
 
-public class OrderActivity extends AppCompatActivity implements CurrentCallListener {
+public class OrderActivity extends AppCompatActivity implements CurrentCallListener, SearchOrderPhoneFragment.OnFragmentInteractionListener {
+
+    public static final String client_busy = "client_busy";
+    public static final String CLIENT_BUSY_NAME = "العميل مشغول";
+
+    public static final String client_delay = "client_delay";
+
+    public static final String client_cancel = "client_cancel";
+    public static final String CANCEL_ORDER_NAME = "الغاء الطلب";
+    public static final String client_noanswer = "client_noanswer";
+
+    public static final String order_data_confirmed = "order_data_confirmed";
+    public static final String CONFIRM_ORDER_NAME = "تاكيد الطلب";
+    public static final String client_phone_error = "client_phone_error";
+    public static final String WRONG_PHONE_NAME = "رقم هاتف خاطئ";
+
+    public static final String CLIENT_PROBLEM = "مشكلة";
+    public static final String RECHARGE = "اعادة شحن";
+
 
     @BindView(R.id.product)
     EditText product;
-
-    @BindView(R.id.status)
-    EditText status;
 
     @BindView(R.id.client_name)
     EditText client_name;
@@ -84,8 +105,15 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
     @BindView(R.id.client_city)
     EditText client_city;
 
+    @BindView(R.id.item_no)
+    EditText item_no;
+
     @BindView(R.id.client_order_phone1)
     EditText client_order_phone1;
+
+    @BindView(R.id.status)
+    EditText status;
+
 
     @BindView(R.id.client_order_phone2)
     EditText client_order_phone2;
@@ -96,8 +124,6 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
     @BindView(R.id.item_cost)
     EditText item_cost;
 
-    @BindView(R.id.item_no)
-    EditText item_no;
 
     @BindView(R.id.order_cost)
     EditText order_cost;
@@ -117,6 +143,7 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
     @BindView(R.id.order_type)
     EditText order_type;
 
+
 //    @BindView(R.id.update)
 //    DrawMeButton update;
 //
@@ -127,7 +154,7 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
-    private String phone;
+    public static String phone;
     private String order_ud = "idid";
 
     long startWorkTime;
@@ -135,57 +162,329 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
     public static Activity my;
     private Api api;
 
+    @BindView(R.id.updating_button)
+    MovingButton updatingButton;
+
+    RadioGroup radioGroup;
+    Button ok;
+    View view;
+    String newStatus;
+    String newStatusTag;
+
+
+    Timer pauseActivityTimer;
+
+    long pauseActivityTimerCount;
+    ProgressDialog progressDialog;
+
+    boolean micMute = false;
+    public static long timeWork;
+    public static boolean finish = false;
+    public static boolean askToFinishWork = false;
+
+    @BindView(R.id.order_view)
+    View orederView;
+
+    @BindView(R.id.missed_call_view)
+    View missed_call_view;
+
+    public static Activity orderActivity;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_update_order);
         ButterKnife.bind(this);
+        orderActivity = this;
         PhoneCallReceiver.setCurrentCallListener(this);
         my = this;
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
         timerTextView = findViewById(R.id.timer);
-        startService(new Intent(this, TimerServices.class));
-        TimerServices.stoped = false;
-        startTimer(System.currentTimeMillis() - (TimerServices.timeWork * 1000));
-        getFirstOrder();
+        timeWork = 0;
+        startWorkTimerTimer();
+        stoped = false;
+        startTimer(System.currentTimeMillis() - (timeWork * 1000));
+
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+        api = BaseClient.getBaseClient().create(Api.class);
 
-        Log.d("laaaaaaaaaaast", "onCreate: " + getLastCallDetails(this));
-        // Toast.makeText(this, "start", Toast.LENGTH_SHORT).show();
+        micMute = false;
+        AudioManager audioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
+        audioManager.setMode(AudioManager.MODE_IN_CALL);
+        if (audioManager.isMicrophoneMute()) {
+            audioManager.setMicrophoneMute(false);
+        }
+        finish = false;
+        askToFinishWork = false;
+        invalidateOptionsMenu();
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("جار تحديث الطلب");
 
+        FragmentPagerItemAdapter adapter = new FragmentPagerItemAdapter(
+                getSupportFragmentManager(), FragmentPagerItems.with(this)
+                .add(this.getString(R.string.new_order), NewOrderFragment.class)
+                .add(this.getString(R.string.search), SearchOrderPhoneFragment.class)
+                .create());
 
+        ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
+        viewPager.setAdapter(adapter);
+
+        SmartTabLayout viewPagerTab = (SmartTabLayout) findViewById(R.id.viewpagertab);
+        viewPagerTab.setViewPager(viewPager);
+        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        naveMenu = navigation.getMenu();
+
+        micMode = naveMenu.findItem(R.id.mic_mode);
+
+        if (!micMute) {
+            micMode.setIcon(R.drawable.ic_mic_none_black_24dp);
+            micMode.setTitle("ايقاف الميك");
+
+        } else {
+            micMode.setIcon(R.drawable.ic_mic_off_black_24dp);
+            micMode.setTitle("تشغل الميك");
+        }
+
+        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        getFirstOrder();
+        Log.d("dddddddddd", "time started: " + timeWork);
+    }
+
+    Menu naveMenu;
+
+    @BindView(R.id.move_listener)
+    TextView moveListener;
+
+    void initUpdatingButton() {
+        updatingButton.setMovementLeft(300);
+
+        updatingButton.setMovementRight(300);
+
+        updatingButton.setMovementTop(300);
+
+        updatingButton.setMovementBottom(300);
+
+        updatingButton.setOnPositionChangedListener(new MovingButton.OnPositionChangedListener() {
+            @Override
+            public void onPositionChanged(int action, ButtonPosition position) {
+                //your code here
+
+                moveListener.setText(position.name());
+            }
+
+            @Override
+            public void moveUp(String position) {
+                Toast.makeText(OrderActivity.this, position, Toast.LENGTH_SHORT).show();
+            }
+        });
 
     }
 
-    boolean working = false;
+    void initUpdateAsNewOrder() {
+        updatingButton.setMovementLeft(300);
+
+        updatingButton.setMovementRight(300);
+
+        updatingButton.setMovementTop(300);
+
+        updatingButton.setMovementBottom(300);
+
+        updatingButton.setOnPositionChangedListener(new MovingButton.OnPositionChangedListener() {
+            @Override
+            public void onPositionChanged(int action, ButtonPosition position) {
+                //your code here
+
+                moveListener.setText(setNameNewOrder(position.name()));
+            }
+
+            @Override
+            public void moveUp(String d) {
+
+                if (d.equals(MovingButton.UP)) {
+                    updateOrder(client_phone_error);
+                } else if (d.equals(MovingButton.DOWN)) {
+                    updateOrder(client_busy);
+                } else if (d.equals(MovingButton.RIGHT)) {
+                    updateOrder(order_data_confirmed);
+                } else if (d.equals(MovingButton.LEFT)) {
+                    updateOrder(client_cancel);
+                }
+            }
+        });
+
+    }
+
+    void initUpdateAsOldOrder() {
+
+        updatingButton.setMovementLeft(300);
+
+        updatingButton.setMovementRight(300);
+
+        updatingButton.setMovementTop(300);
+
+        updatingButton.setMovementBottom(300);
+
+        updatingButton.setOnPositionChangedListener(new MovingButton.OnPositionChangedListener() {
+            @Override
+            public void onPositionChanged(int action, ButtonPosition position) {
+                //your code here
+
+                moveListener.setText(setNameOldOrder(position.name()));
+            }
+
+            @Override
+            public void moveUp(String d) {
+
+                if (d.equals(MovingButton.UP)) {
+                    updateOrder(client_phone_error);
+                } else if (d.equals(MovingButton.DOWN)) {
+                    updateOrder(client_busy);
+                } else if (d.equals(MovingButton.RIGHT)) {
+                    updateOrder(order_data_confirmed);
+                } else if (d.equals(MovingButton.LEFT)) {
+                    showProblemNoteDialog();
+                }
+            }
+        });
+
+    }
+
+    String setNameNewOrder(String name) {
+        if (name.equals(MovingButton.UP)) {
+            return WRONG_PHONE_NAME;
+        } else if (name.equals(MovingButton.DOWN)) {
+            return CLIENT_BUSY_NAME;
+        } else if (name.equals(MovingButton.LEFT)) {
+            return CANCEL_ORDER_NAME;
+        } else if (name.equals(MovingButton.RIGHT)) {
+            return CONFIRM_ORDER_NAME;
+        } else
+            return "ازاى مفيش";
+
+    }
+
+    String setNameOldOrder(String name) {
+        if (name.equals(MovingButton.UP)) {
+            return RECHARGE;
+        } else if (name.equals(MovingButton.DOWN)) {
+            return CLIENT_BUSY_NAME;
+        } else if (name.equals(MovingButton.LEFT)) {
+            return CLIENT_PROBLEM;
+        } else if (name.equals(MovingButton.RIGHT)) {
+            return CONFIRM_ORDER_NAME;
+        } else
+            return "ازاى مفيش";
+
+    }
+
+
+    void updateOrder(String value) {
+        Api api = BaseClient.getBaseClient().create(Api.class);
+        api.updateOrders(
+                SharedHelper.getKey(this, LoginActivity.TOKEN),
+                Integer.parseInt(SharedHelper.getKey(this, LoginActivity.USER_ID)),
+                Integer.parseInt(order_ud),
+                value
+        ).enqueue(new Callback<UpdateOrderResponse>() {
+            @Override
+            public void onResponse(Call<UpdateOrderResponse> call, Response<UpdateOrderResponse> response) {
+                if (response.body() != null) {
+                    Log.d("eeeeeeeeeeeeee", "onResponse: updateOrder" + response.body().getCode());
+                }
+                if (response.body().getCode().equals("1200") || response.body().getCode().equals("1202")) {
+                    Log.d("eeeeeeeeeeeeee", "onResponse: updateOrder" + response.body().getCode());
+                    progressDialog.dismiss();
+                    if (askToFinishWork) {
+                        finishTheWorkNow();
+                    } else
+                        getFirstOrder();
+                } else {
+                    getFirstOrder();
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<UpdateOrderResponse> call, Throwable t) {
+                progressDialog.dismiss();
+                Log.d("eeeeeeeeeeeeeeee", "onFailure:update order " + t.getMessage());
+                //  finishTheWorkNow();
+            }
+        });
+    }
+
+    void showProblemNoteDialog() {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+        alertDialog.setTitle("مشكلة");
+        //  alertDialog.setMessage("اكتب المشكلة");
+
+        final EditText input = new EditText(this);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT);
+        input.setLayoutParams(lp);
+        input.setHint("اكتب المشكلة");
+        alertDialog.setView(input);
+
+        alertDialog.setPositiveButton("ارسال",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        progressDialog.show();
+                        if (!input.getText().toString().equals("")) {
+                            api.sendProblem(SharedHelper.getKey(getApplicationContext(), LoginActivity.TOKEN),
+                                    Integer.parseInt(SharedHelper.getKey(getApplicationContext(), LoginActivity.USER_ID)),
+                                    Integer.parseInt(order.getId()),
+                                    input.getText().toString()).enqueue(new Callback<UpdateOrderResponse>() {
+                                @Override
+                                public void onResponse(Call<UpdateOrderResponse> call, Response<UpdateOrderResponse> response) {
+                                    if (response.body() != null) {
+                                        if (response.body().getCode().equals("1200")) {
+
+                                            progressDialog.dismiss();
+                                            updateOrder(order_data_confirmed);
+                                        }
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<UpdateOrderResponse> call, Throwable t) {
+
+                                }
+                            });
+                        } else {
+                            Toast.makeText(OrderActivity.this, "برجاء ادخال المشكلة", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+
+        alertDialog.setNegativeButton("الغاء",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+        alertDialog.show();
+    }
 
     public void startTimer(long start) {
-        working = true;
         timerTextView.setStarterTime(start);
         timerTextView.startTimer();
     }
 
-
-    public static void pauseTimer() {
-
-        TimerServices.stoped = true;
-        timerTextView.stopTimer();
-        my.invalidateOptionsMenu();
+    public void pauseServiceTimer() {
+        cancelWorkTimer();
+        stoped = true;
     }
 
-    void resumeTimer() {
-        askToFinishWork = false;
-        TimerServices.stoped = false;
-        startTimer(System.currentTimeMillis() - (TimerServices.timeWork * 1000));
-        my.invalidateOptionsMenu();
-    }
+    Order order;
+    String orderStatus = null;
 
     private void getFirstOrder() {
         final ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("جار جلب الطلب");
         progressDialog.show();
-        api = BaseClient.getBaseClient().create(Api.class);
+
 
         api.getOrders(SharedHelper.getKey(this, LoginActivity.TOKEN),
                 SharedHelper.getKey(this, LoginActivity.USER_ID)).enqueue(new Callback<UserOrders>() {
@@ -194,12 +493,20 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
                 if (response.body() != null) {
                     progressDialog.dismiss();
                     if (response.body().getCode().equals("1202") || response.body().getCode().equals("1200")) {
-                        UserOrders orders = response.body();
-                        Order order = orders.getOrder();
+                        orderStatus = response.body().getOrder_type();
+
+                        if (response.body().getOrder_type().equals("missed_call") || response.body().getOrder_type().equals("order_exsist")) {
+                            missed_call_view.setVisibility(View.VISIBLE);
+                            orederView.setVisibility(View.GONE);
+                            return;
+                        } else {
+                            missed_call_view.setVisibility(View.GONE);
+                            orederView.setVisibility(View.VISIBLE);
+                        }
+
+
+                        order = response.body().getOrder();
                         if (order != null) {
-                            if (!order_ud.equals(order.getId())) {
-                                //  Toast.makeText(OrderActivity.this, "طلب جديد", Toast.LENGTH_SHORT).show();
-                            }
                             order_ud = order.getId();
 
                             product.setText(order.getProduct_name());
@@ -208,7 +515,7 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
                             client_address.setText(order.getClient_address());
                             client_area.setText(order.getClient_area());
                             client_city.setText(order.getClient_city());
-                            PhoneCallReceiver.myCallNumber = phone = order.getPhone_1();
+                            phone = order.getPhone_1();
                             client_order_phone1.setText(order.getPhone_1());
                             client_order_phone2.setText(order.getPhone_2());
                             item_cost.setText(order.getItem_cost());
@@ -220,15 +527,16 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
                             order_type.setText(order.getOrder_type());
                             client_feedback.setText(order.getClient_feedback());
 
-                            if (!TimerServices.stoped) ;
-                            //   MakePhoneCall();
+                            if (!stoped) ;
+                            callClient();
 
                         } else {
                         }
 
                     } else {
-                        SharedHelper.putKey(getApplicationContext(), IS_LOGIN, "no");
+                        SharedHelper.putKey(getApplicationContext(), IS_LOGIN, "اعادة تسجيل الدخول");
                         startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+                        finishTheWorkNow();
 
                     }
                     Log.d("eeeeeeeee", "onResponse: " + response.body().getInfo());
@@ -238,13 +546,18 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
             @Override
             public void onFailure(Call<UserOrders> call, Throwable t) {
                 progressDialog.dismiss();
+                Log.d("eeeeeeeee", "onResponse: " + t.getMessage());
             }
         });
     }
 
-    public void MakePhoneCall() {
+    long currentCallTimerCount;
+    Timer currentCallTimer;
+
+    public void callClient() {
         Intent callIntent = new Intent(Intent.ACTION_CALL);
-        callIntent.setData(Uri.parse("tel:" + "01022369592"));
+        callIntent.setData(Uri.parse("tel:" + "01067457665"));
+        Log.d("xxxxxxxxxx", "callClient: " + phone);
         if (ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -253,65 +566,46 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
         } else {
             startActivity(callIntent);
         }
+        currentCallTimer = new Timer();
+        currentCallTimer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                currentCallTimerCount += 1;
+            }
+        }, 0, 1000);
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 1232) {
-            MakePhoneCall();
+            callClient();
         }
     }
 
-//    @OnClick(R.id.update)
-//    void updateOrder(){
-//        Api api = BaseClient.getBaseClient().create(Api.class);
-//        api.updateOrders(
-//                SharedHelper.getKey(this,LoginActivity.TOKEN),
-//                Integer.parseInt(SharedHelper.getKey(this,LoginActivity.USER_ID)),
-//                Integer.parseInt(order_ud),
-//                newStatusTag
-//        ).enqueue(new Callback<UserOrders>() {
-//            @Override
-//            public void onResponse(Call<UserOrders> call, Response<UserOrders> response) {
-//                getFirstOrder();
-//            }
 //
+//    @OnClick(R.id.status)
+//    void showResponceToUpdate() {
+//        final Dialog dialog = new Dialog(this);
+//        view = LayoutInflater.from(this).inflate(R.layout.layout_order_status_list, null);
+//        dialog.setContentView(view);
+//        radioGroup = view.findViewById(R.id.radio_group);
+//
+//        ok = view.findViewById(R.id.ok);
+//        ok.setOnClickListener(new View.OnClickListener() {
 //            @Override
-//            public void onFailure(Call<UserOrders> call, Throwable t) {
-//                getFirstOrder();
+//            public void onClick(View v) {
+//                RadioButton selectedRadioButton = (RadioButton) view.findViewById(radioGroup.getCheckedRadioButtonId());
+//                newStatus = selectedRadioButton.getText().toString();
+//                newStatusTag = (String) selectedRadioButton.getTag();
+//                status.setText(newStatus);
+//                //  Toast.makeText(OrderActivity.this, newStatusTag, Toast.LENGTH_SHORT).show();
+//                dialog.dismiss();
 //            }
 //        });
+//
+//        dialog.show();
 //    }
-
-    RadioGroup radioGroup;
-    Button ok;
-    View view;
-    String newStatus;
-    String newStatusTag;
-
-    @OnClick(R.id.status)
-    void showResponceToUpdate() {
-        final Dialog dialog = new Dialog(this);
-        view = LayoutInflater.from(this).inflate(R.layout.layout_order_status_list, null);
-        dialog.setContentView(view);
-        radioGroup = view.findViewById(R.id.radio_group);
-
-        ok = view.findViewById(R.id.ok);
-        ok.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                RadioButton selectedRadioButton = (RadioButton) view.findViewById(radioGroup.getCheckedRadioButtonId());
-                newStatus = selectedRadioButton.getText().toString();
-                newStatusTag = (String) selectedRadioButton.getTag();
-                status.setText(newStatus);
-                //  Toast.makeText(OrderActivity.this, newStatusTag, Toast.LENGTH_SHORT).show();
-                dialog.dismiss();
-            }
-        });
-
-        dialog.show();
-    }
 
     private boolean isMyServiceRunning(Class<?> serviceClass) {
         ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
@@ -322,7 +616,6 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
         }
         return false;
     }
-
 
     void home() {
         /* This should come from a preference that let's the user select an activity that can handle the HOME intent */
@@ -337,26 +630,24 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
         startActivity(home_intent);
     }
 
-    Timer pauseActivityTimer;
-
-    long pauseActivityTimerCount;
-
     @Override
     protected void onPause() {
         super.onPause();
-        if (!finish){
+        if (!finish) {
             pauseActivityTimer = new Timer();
             pauseActivityTimer.scheduleAtFixedRate(new TimerTask() {
                 @Override
                 public void run() {
-                    pauseActivityTimerCount+=1;
-                    if (pauseActivityTimerCount==5){
-                        pauseActivityTimerCount=0;
-                        Intent intent = new Intent(getApplicationContext(),EmptyCallActivity.class);
+                    pauseActivityTimerCount += 1;
+                    if (pauseActivityTimerCount == 2) {
+                        pauseActivityTimerCount = 0;
+                        Intent intent = new Intent(getApplicationContext(), EmptyCallActivity.class);
                         startActivity(intent);
                     }
                 }
-            },0,1000);
+            }, 0, 1000);
+        } else {
+            stoped = true;
         }
 
     }
@@ -364,13 +655,19 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
     @Override
     protected void onResume() {
         super.onResume();
-        finish=false;
-        if (pauseActivityTimer!=null)
-        {
+        finish = false;
+        if (pauseActivityTimer != null) {
             pauseActivityTimer.cancel();
-            pauseActivityTimer =null;
+            pauseActivityTimer = null;
         }
 
+        if (orderStatus != null) {
+            if (orderStatus.equals("new_order") || orderStatus.equals("pending_order")) {
+                initUpdateAsNewOrder();
+            } else {
+                initUpdateAsOldOrder();
+            }
+        }
     }
 
     MenuItem askToFinishWortkItem;
@@ -383,7 +680,7 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
 
         askToFinishWortkItem = menu.findItem(R.id.ask_finish_work);
         finishWok = menu.findItem(R.id.finish_work);
-        micMode = menu.findItem(R.id.mic_mode);
+//        micMode = menu.findItem(R.id.mic_mode);
         if (askToFinishWork) {
             finishWok.setVisible(true);
             askToFinishWortkItem.setVisible(false);
@@ -392,112 +689,61 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
             askToFinishWortkItem.setVisible(true);
         }
 
-        if (micOff) {
-            micMode.setIcon(R.drawable.ic_mic_none_black_24dp);
-            micMode.setTitle("تشغل الميك");
-
-        } else {
-            micMode.setIcon(R.drawable.ic_mic_off_black_24dp);
-            micMode.setTitle("ايقاف الميك");
-        }
-
-
         return true;
     }
 
-    boolean micOff = false;
-
-    boolean finish=false;
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.finish_work) {
-            finish=true;
-            finish();
-
+            finishTheWorkNow();
         } else if (id == R.id.end_call) {
             endCAll();
         } else if (id == R.id.call_client) {
-            MakePhoneCall();
+            callClient();
         } else if (id == R.id.ask_finish_work) {
-            askToFinishWork = true;
+            setAskToFinishWork();
             invalidateOptionsMenu();
         } else if (id == R.id.mic_mode) {
             modifyMic();
-            invalidateOptionsMenu();
+
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public static void finishTheWorkNow() {
+        finish = true;
+        orderActivity.finish();
     }
 
     void modifyMic() {
 
         AudioManager audioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
         audioManager.setMode(AudioManager.MODE_IN_CALL);
-        if (!audioManager.isMicrophoneMute()) {
-            micOff = false;
-            audioManager.setMicrophoneMute(true);
-
-        } else {
-            micOff = true;
+        if (audioManager.isMicrophoneMute()) {
             audioManager.setMicrophoneMute(false);
-
+            micMute = false;
+            checkMic();
+        } else {
+            audioManager.setMicrophoneMute(true);
+            micMute = true;
+            checkMic();
         }
     }
 
-    public static String getLastCallDetails(Context context) {
+    void checkMic() {
+        if (!micMute) {
+            micMode.setIcon(R.drawable.ic_mic_none_black_24dp);
+            micMode.setTitle("ايقاف الميك");
 
-        //CallDetails callDetails = new CallDetails();
-
-        String ty = null;
-        Uri contacts = CallLog.Calls.CONTENT_URI;
-        try {
-
-            Cursor managedCursor = context.getContentResolver().query(contacts, null, null, null, android.provider.CallLog.Calls.DATE + " DESC limit 1;");
-
-            int number = managedCursor.getColumnIndex(CallLog.Calls.NUMBER);
-            int duration = managedCursor.getColumnIndex(CallLog.Calls.DURATION);
-            int date = managedCursor.getColumnIndex(CallLog.Calls.DATE);
-            int incomingtype = managedCursor.getColumnIndex(String.valueOf(CallLog.Calls.INCOMING_TYPE));
-
-            if (managedCursor.moveToFirst()) { // added line
-                //  managedCursor.moveToFirst();
-                while (managedCursor.moveToNext()) {
-                    String callType;
-                    String phNumber = managedCursor.getString(number);
-                    // String callerName = getContactName(context, phNumber);
-                    if (incomingtype == -1) {
-                        callType = "incoming";
-                    } else {
-                        callType = "outgoing";
-                    }
-
-                    String callDate = managedCursor.getString(date);
-                    String callDayTime = new Date(Long.valueOf(callDate)).toString();
-                    String callDuration = managedCursor.getString(duration);
-                    ty = phNumber;
-
-//                    callDetails.setCallerName(callerName);
-//                    callDetails.setCallerNumber(phNumber);
-//                    callDetails.setCallDuration(callDuration);
-//                    callDetails.setCallType(callType);
-//                    callDetails.setCallTimeStamp(callDayTime);
-
-                }
-            }
-
-            managedCursor.close();
-
-        } catch (SecurityException e) {
-            Log.e("eeeeeeeeeeeeeeeeeeeee", "User denied call log permission");
-
+        } else {
+            micMode.setIcon(R.drawable.ic_mic_off_black_24dp);
+            micMode.setTitle("تشغل الميك");
         }
-
-        return ty;
-
     }
 
     void endCAll() {
-        boolean success = false;
+        PhoneCallReceiver.enCallFromMe = true;
         TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
         Class clazz = null;
         try {
@@ -524,21 +770,16 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
 
     }
 
-    public static boolean askToFinishWork = false;
-    boolean askToPauseWork;
-
     void setAskToFinishWork() {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(R.string.pause_work);
+        builder.setTitle(R.string.finish_work);
         builder.setMessage(R.string.pause_work_message);
         builder.setPositiveButton(R.string.finish_work, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                if (askToFinishWork && TimerServices.stoped)
-                    finish();
-                else
-                    askToFinishWork = true;
+                askToFinishWork = true;
+                invalidateOptionsMenu();
             }
         });
 
@@ -560,85 +801,169 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.d("dddddddddd", "onDestroy: " + "finised");
-        TimerServices.stoped = false;
-
+        Log.d("dddddddddd", "time before end: " + timeWork);
         api.userWorkTime(SharedHelper.getKey(this, LoginActivity.TOKEN),
-                SharedHelper.getKey(this, LoginActivity.USER_ID), String.valueOf(TimerServices.timeWork))
+                SharedHelper.getKey(this, LoginActivity.USER_ID), String.valueOf(timeWork))
                 .enqueue(new Callback<UserWorkTimeResponse>() {
                     @Override
                     public void onResponse(Call<UserWorkTimeResponse> call, Response<UserWorkTimeResponse> response) {
                         if (response.body() != null) {
-                            //  Toast.makeText(OrderActivity.this, "اشتغلت " + TimerServices.timeWork, Toast.LENGTH_SHORT).show();
-                            Log.d("dddddddddd", "distroy: " + response.body().getCode());
-                            Log.d("dddddddddd", "distroy: " + response.body().getInfo());
-                            TimerServices.timeWork = 0;
-                            stopService(new Intent(getApplicationContext(), TimerServices.class));
+
+                            Log.d("dddddddddd", "onResponse: " + response.body().getData());
+                            Log.d("dddddddddd", "time after end: " + timeWork);
+                            pauseServiceTimer();
                         }
                     }
 
                     @Override
                     public void onFailure(Call<UserWorkTimeResponse> call, Throwable t) {
-
+                        pauseServiceTimer();
+                        Log.d("dddddddddd", "onResponse: " + t.getMessage());
                     }
                 });
-
     }
 
+    String phoneNumber = null;
+    String callDuration2 = null;
+    String calType = null;
+    String activatedNum;
 
-    String lastCall() {
-
-
-        String strOrder = android.provider.CallLog.Calls.DATE + " DESC";
-
-
-        Cursor managedCursor = managedQuery(CallLog.Calls.CONTENT_URI, null,
-                null, null, strOrder);
+    LastCallDetails getLastCallDetails() {
+        StringBuffer sb = new StringBuffer();
+        Uri contacts = CallLog.Calls.CONTENT_URI;
+        Cursor managedCursor = getContentResolver().query(contacts, null,
+                null, null, null);
         int number = managedCursor.getColumnIndex(CallLog.Calls.NUMBER);
         int type = managedCursor.getColumnIndex(CallLog.Calls.TYPE);
-        int date = managedCursor.getColumnIndex(CallLog.Calls.DATE);
         int duration = managedCursor.getColumnIndex(CallLog.Calls.DURATION);
-        String callDuration = null;
+        int activeID = managedCursor.getColumnIndex(CallLog.Calls.PHONE_ACCOUNT_ID);
+
+        sb.append("Call Details :");
         while (managedCursor.moveToNext()) {
-            String phNum = managedCursor.getString(number);
-            String callTypeCode = managedCursor.getString(type);
-
-            long seconds = managedCursor.getLong(date);
-            SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy  hh:mm:ss a");
-            String dateString = formatter.format(new java.sql.Date(seconds));
-
-            String strcallDate = managedCursor.getString(date);
-            java.sql.Date callDate = new java.sql.Date(Long.valueOf(strcallDate));
-
-            callDuration = managedCursor.getString(duration);
-            String callType = null;
-            int callcode = Integer.parseInt(callTypeCode);
-            switch (callcode) {
+            phoneNumber = managedCursor.getString(number);
+            String callType = managedCursor.getString(type);
+            callDuration2 = managedCursor.getString(duration);
+            activatedNum = managedCursor.getString(activeID);
+            String dir = null;
+            int dircode = Integer.parseInt(callType);
+            switch (dircode) {
                 case CallLog.Calls.OUTGOING_TYPE:
-                    callType = "Outgoing";
+                    dir = "OUTGOING";
                     break;
+
                 case CallLog.Calls.INCOMING_TYPE:
-                    callType = "Incoming";
+                    dir = "INCOMING";
                     break;
+
                 case CallLog.Calls.MISSED_TYPE:
-                    callType = "Missed";
+                    dir = "MISSED";
                     break;
                 case CallLog.Calls.REJECTED_TYPE:
-                    callType = "";
+                    dir = "REJECTED";
                     break;
             }
 
+            calType = dir;
 
         }
+
         managedCursor.close();
-        return callDuration;
+        return new LastCallDetails(phoneNumber, callDuration2, activatedNum, calType);
+
     }
-
-
 
     @Override
     public void callEnded() {
-        Toast.makeText(this, "finished", Toast.LENGTH_SHORT).show();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        LastCallDetails callDetails = getLastCallDetails();
+
+                        if (callDetails.getType().equals("MISSED") || callDetails.getType().equals("REJECTED")) {
+                            if (callDetails.getActiveId().equals(SharedHelper.getKey(getApplicationContext(),
+                                    "activated_sub_id"))) {
+                                Toast.makeText(OrderActivity.this, "تم ارسال رقم  " + callDetails.getPhone() + " المكالمة الفائتة الى السيرفر", Toast.LENGTH_SHORT).show();
+
+                            }
+
+                        } else if (callDetails.getType().equals("OUTGOING")) {
+                            if (callDetails.getDuration().equals("0")) {
+                                if (currentCallTimerCount <= 30) {
+                                    currentCallTimerCount = 0;
+                                    currentCallTimer.cancel();
+                                    Toast.makeText(OrderActivity.this, "تم انهاء الطلب العميل مشغول او غير متاح", Toast.LENGTH_SHORT).show();
+                                    updateOrder(client_busy);
+                                } else {
+                                    currentCallTimerCount = 0;
+                                    currentCallTimer.cancel();
+                                    Toast.makeText(OrderActivity.this, "تم انهاء الطلب العميل لم يرد", Toast.LENGTH_SHORT).show();
+                                    updateOrder(client_noanswer);
+                                }
+                            }
+                        }
+
+
+                    }
+                });
+            }
+        }, 1000);
+
     }
+
+    public static boolean stoped = false;
+    Timer workTimer;
+
+    void startWorkTimerTimer() {
+        workTimer = new Timer();
+        workTimer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                if (!stoped) {
+                    timeWork += 1;
+                }
+
+            }
+        }, 0, 1000);
+    }
+
+    void cancelWorkTimer() {
+        if (workTimer != null) {
+            workTimer.cancel();
+            stoped = true;
+            timeWork = 0;
+        }
+    }
+
+    @Override
+    public void onFragmentInteraction() {
+        getFirstOrder();
+    }
+
+    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
+            = new BottomNavigationView.OnNavigationItemSelectedListener() {
+
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            int id = item.getItemId();
+            if (id == R.id.finish_work) {
+                finishTheWorkNow();
+            } else if (id == R.id.end_call) {
+                endCAll();
+            } else if (id == R.id.call_client) {
+                callClient();
+            } else if (id == R.id.ask_finish_work) {
+                setAskToFinishWork();
+                invalidateOptionsMenu();
+            } else if (id == R.id.mic_mode) {
+                modifyMic();
+
+            }
+            return false;
+        }
+    };
+
 }
 

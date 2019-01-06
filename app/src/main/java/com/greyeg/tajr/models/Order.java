@@ -44,6 +44,11 @@ public class Order {
     @SerializedName("client_city")
     @Expose
     private String client_city;
+
+    @SerializedName("client_city_id")
+    @Expose
+    private String client_city_id;
+
     @SerializedName("phone_1")
     @Expose
     private String phone_1;
@@ -109,6 +114,14 @@ public class Order {
 
     public String getOrder_status() {
         return order_status;
+    }
+
+    public String getOrder_shipping_status_type() {
+        return order_shipping_status_type;
+    }
+
+    public String getOrder_shipping_status() {
+        return order_shipping_status;
     }
 
     public String getOrder_status_type() {
@@ -181,5 +194,9 @@ public class Order {
 
     public String getMulti_orders() {
         return multi_orders;
+    }
+
+    public String getClient_city_id() {
+        return client_city_id;
     }
 }

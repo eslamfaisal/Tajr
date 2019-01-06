@@ -55,4 +55,7 @@ dependencies {
     implementation 'com.github.pwittchen:swipe-rx2:0.3.0'
 
 
+    implementation 'com.ogaclejapan.smarttablayout:library:1.6.1@aar'
+    implementation 'com.ogaclejapan.smarttablayout:utils-v4:1.6.1@aar'
+
 }

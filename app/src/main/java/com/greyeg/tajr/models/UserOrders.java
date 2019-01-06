@@ -13,6 +13,10 @@ public class UserOrders {
     @Expose
     private String info;
 
+    @SerializedName("order_type")
+    @Expose
+    private String order_type;
+
     @SerializedName("response")
     @Expose
     private String response;
@@ -23,7 +27,7 @@ public class UserOrders {
 
     @SerializedName("notes")
     @Expose
-    private Order notes;
+    private Notes notes;
 
     public UserOrders() {
     }
@@ -36,6 +40,10 @@ public class UserOrders {
         return info;
     }
 
+    public String getOrder_type() {
+        return order_type;
+    }
+
     public String getResponse() {
         return response;
     }
@@ -44,7 +52,7 @@ public class UserOrders {
         return order;
     }
 
-    public Order getNotes() {
+    public Notes getNotes() {
         return notes;
     }
 }

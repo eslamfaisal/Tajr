@@ -11,7 +11,6 @@ import android.widget.Toast;
 
 import java.util.Date;
 
-
 public class CallReceiver extends PhoneCallReceiver {
     Context context;
 

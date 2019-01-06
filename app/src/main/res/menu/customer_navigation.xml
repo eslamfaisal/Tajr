@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/call_client"
+        android:icon="@drawable/ic_call_white"
+        android:title="@string/call"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/mic_mode"
+        android:icon="@drawable/ic_mic_none_black_24dp"
+        android:title="@string/mute_mic"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/end_call"
+        android:icon="@drawable/ic_call_end_red"
+        android:title="@string/end_call"
+        app:showAsAction="always" />
+
+</menu>

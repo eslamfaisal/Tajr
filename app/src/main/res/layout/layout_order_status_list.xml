@@ -13,65 +13,23 @@
     android:layout_height="wrap_content">
 
     <RadioButton
-        android:tag="client_busy"
-        android:id="@+id/client_busy"
+        android:tag="1"
+        android:id="@+id/sim1"
         android:padding="16dp"
         android:textColor="@color/black_text_color"
         android:textSize="24sp"
-        android:text="@string/client_busy"
+        android:text="@string/sim_1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
     <RadioButton
-        android:tag="client_delay"
+        android:tag="2"
 
-        android:id="@+id/client_delay"
+        android:id="@+id/sim2"
         android:padding="16dp"
         android:textColor="@color/black_text_color"
         android:textSize="24sp"
-        android:text="@string/client_delay"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-    <RadioButton
-        android:tag="client_cancel"
-
-        android:id="@+id/client_cancel"
-        android:padding="16dp"
-        android:textColor="@color/black_text_color"
-        android:textSize="24sp"
-        android:text="@string/client_cancel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
-    <RadioButton
-        android:tag="client_noanswer"
-
-        android:id="@+id/client_noanswer"
-        android:padding="16dp"
-        android:textColor="@color/black_text_color"
-        android:textSize="24sp"
-        android:text="@string/client_noanswer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
-    <RadioButton
-        android:tag="order_data_confirmed"
-
-        android:id="@+id/order_data_confirmed"
-        android:padding="16dp"
-        android:textColor="@color/black_text_color"
-        android:textSize="24sp"
-        android:text="@string/order_data_confirmed"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-    <RadioButton
-        android:tag="client_phone_error"
-
-        android:id="@+id/client_phone_error"
-        android:padding="16dp"
-        android:textColor="@color/black_text_color"
-        android:textSize="24sp"
-        android:text="@string/client_phone_error"
+        android:text="@string/sim_2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 

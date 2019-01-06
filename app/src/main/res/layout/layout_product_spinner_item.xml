@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:padding="8dp"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:orientation="horizontal"
+    android:layout_height="wrap_content">
+
+    <com.facebook.drawee.view.SimpleDraweeView
+        android:id="@+id/product_image"
+
+        android:layout_width="50dp"
+        android:layout_height="50dp" />
+    <TextView
+        android:text="eslam"
+        android:textColor="@color/black_text_color"
+        android:textSize="18sp"
+        android:id="@+id/product_name"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="8dp"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+</LinearLayout>

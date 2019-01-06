@@ -130,6 +130,7 @@ public class UpdateOrderActivity extends AppCompatActivity {
 
     }
 
+    Order order =null;
     private void getFirstOrder() {
         final ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("جار جلب الطلب");
@@ -144,7 +145,7 @@ public class UpdateOrderActivity extends AppCompatActivity {
                     progressDialog.dismiss();
                     if (response.body().getCode().equals("1202") || response.body().getCode().equals("1200")) {
                         UserOrders orders = response.body();
-                        Order order = orders.getOrder();
+                        order = orders.getOrder();
                         if (order != null) {
                             if (first) finish();
                             else first = true;
@@ -169,7 +170,7 @@ public class UpdateOrderActivity extends AppCompatActivity {
                             order_type.setText(order.getOrder_type());
                             client_feedback.setText(order.getClient_feedback());
 
-                            //MakePhoneCall();
+                            //callClient();
 
                         } else {
                         }
@@ -206,30 +207,30 @@ public class UpdateOrderActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 1232) {
-            //MakePhoneCall();
+            //callClient();
         }
     }
 
-    @OnClick(R.id.update)
-    void updateOrder() {
-        Api api = BaseClient.getBaseClient().create(Api.class);
-        api.updateOrders(
-                SharedHelper.getKey(this, LoginActivity.TOKEN),
-                Integer.parseInt(SharedHelper.getKey(this, LoginActivity.USER_ID)),
-                Integer.parseInt(order_ud),
-                newStatusTag
-        ).enqueue(new Callback<UserOrders>() {
-            @Override
-            public void onResponse(Call<UserOrders> call, Response<UserOrders> response) {
-                getFirstOrder();
-            }
-
-            @Override
-            public void onFailure(Call<UserOrders> call, Throwable t) {
-                getFirstOrder();
-            }
-        });
-    }
+//    @OnClick(R.id.update)
+//    void updateOrder() {
+//        Api api = BaseClient.getBaseClient().create(Api.class);
+//        api.updateOrders(
+//                SharedHelper.getKey(this, LoginActivity.TOKEN),
+//                Integer.parseInt(SharedHelper.getKey(this, LoginActivity.USER_ID)),
+//                Integer.parseInt(order_ud),
+//                newStatusTag
+//        ).enqueue(new Callback<UserOrders>() {
+//            @Override
+//            public void onResponse(Call<UserOrders> call, Response<UserOrders> response) {
+//                getFirstOrder();
+//            }
+//
+//            @Override
+//            public void onFailure(Call<UserOrders> call, Throwable t) {
+//                getFirstOrder();
+//            }
+//        });
+//    }
 
     RadioGroup radioGroup;
     Button ok;

@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 
@@ -64,7 +63,9 @@ public class EmptyCallActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_empty_call);
+
         ButterKnife.bind(this);
+        finish();
         setSupportActionBar(toolbar);
 
 //        movingButton.setOnPositionChangedListener(new MovingButton.OnPositionChangedListener() {
@@ -246,7 +247,6 @@ public class EmptyCallActivity extends AppCompatActivity {
 //            }
 //        });
 
-
         movingButton = findViewById(R.id.moving_button2);
         movingButton.setMovementLeft(100);
 
@@ -264,11 +264,11 @@ public class EmptyCallActivity extends AppCompatActivity {
 
 // Vibration
 
-      //  movingButton.setVibrationDuration(20);
+        //  movingButton.setVibrationDuration(20);
 
 // Volume
 
-      //  movingButton.setEventVolume(50);
+        //  movingButton.setEventVolume(50);
 
 // Current Position
         movingButton.setOnPositionChangedListener(new MovingButton.OnPositionChangedListener() {
@@ -281,7 +281,7 @@ public class EmptyCallActivity extends AppCompatActivity {
 
             @Override
             public void moveUp(String position) {
-                Log.d("bbbbbbbbbbb", "moveUp: "+position);
+                Log.d("bbbbbbbbbbb", "moveUp: " + position);
             }
         });
 

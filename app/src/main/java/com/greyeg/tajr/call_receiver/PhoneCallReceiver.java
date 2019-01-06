@@ -7,11 +7,13 @@ package com.greyeg.tajr.call_receiver;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.Handler;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import com.greyeg.tajr.activities.EmptyCallActivity;
+import com.greyeg.tajr.activities.OrderActivity;
 import com.greyeg.tajr.helper.CurrentCallListener;
 
 import java.util.Date;
@@ -24,9 +26,10 @@ public abstract class PhoneCallReceiver extends BroadcastReceiver {
     private static String savedNumber;
     public static String myCallNumber;
 
+    public static boolean enCallFromMe;
     public static CurrentCallListener currentCallListener;
 
-    public static void setCurrentCallListener(CurrentCallListener listener){
+    public static void setCurrentCallListener(CurrentCallListener listener) {
         currentCallListener = listener;
     }
 
@@ -36,7 +39,7 @@ public abstract class PhoneCallReceiver extends BroadcastReceiver {
             if (intent.getAction().equals("android.intent.action.NEW_OUTGOING_CALL")) {
                 savedNumber = intent.getExtras().getString("android.intent.extra.PHONE_NUMBER");
                 final Intent intent2 = new Intent(context, EmptyCallActivity.class);
-
+                intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -61,15 +64,14 @@ public abstract class PhoneCallReceiver extends BroadcastReceiver {
                     // هنا لو الحالة بيرن هنعمل الماكلمة الفيتة
 
                 } else if (stateStr.equals("IDLE")) {
-                    if (number != null && number.equals(myCallNumber)) {
-                        if (currentCallListener!=null){
-                            currentCallListener.callEnded();
-                        }
+
+                    if (currentCallListener != null) {
+                       //currentCallListener.callEnded();
                     }
                 }
-
-
             }
+
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -107,4 +109,6 @@ public abstract class PhoneCallReceiver extends BroadcastReceiver {
         }
         lastState = state;
     }
+
+
 }

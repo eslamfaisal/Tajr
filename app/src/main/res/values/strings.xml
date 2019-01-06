@@ -33,7 +33,7 @@
     <string name="client_order_phone">Client order phone</string>
     <string name="sender_name">Sender name</string>
     <string name="item_cost">Item cost</string>
-    <string name="item_no">Item no</string>
+    <string name="item_no">Item number</string>
     <string name="order_cost">Order cost</string>
     <string name="order_total_cost">Order total cost</string>
     <string name="shipping_retum_cost">Shipping retum cost</string>
@@ -65,7 +65,7 @@
     <string name="pause_work_message">Do you want do finish th work</string>
     <string name="ask_finish_work">Ask to finish work</string>
 
-    <string name="move">Move</string>
+    <string name="move">Move To update</string>
     <string name="settings">SETTINGS</string>
     <string name="mb_move_direction">mb_move_direction</string>
     <string name="mb_movement_right">mb_movement_right</string>
@@ -88,5 +88,28 @@
     <string name="inner_offset">Inner Offset</string>
     <string name="outer_offset">Outer Offset</string>
     <string name="volume">Volume</string>
+    <string name="title_activity_settings">Settings</string>
+
+    <string name="choose_sim_number">Choose Sim Number</string>
+    <string name="sim_1">Sim 1</string>
+    <string name="sim_2">Sim 2</string>
+    <string name="default_sim_activ">Default sim active</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="new_order">New Order</string>
+    <string name="search">Search</string>
+    <string name="send_order">Send Order</string>
+    <string name="money">Money</string>
+    <string name="hours">Hours</string>
+    <string name="points">Points</string>
+    <string name="analytics">Analytics</string>
+    <string name="no_orders_with_this_number">No orders with this number</string>
+    <string name="end_call">End call</string>
+    <string name="mute_mic">Mute mic</string>
+    <string name="call">Call</string>
+    <string name="cash">Cash</string>
+    <string name="rank">Rank</string>
+    <string name="month">Month</string>
 
 </resources>

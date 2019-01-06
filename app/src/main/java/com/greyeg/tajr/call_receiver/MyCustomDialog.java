@@ -31,14 +31,27 @@ public class MyCustomDialog extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        if (!TimerServices.stoped){
-            try {
+      //  if (!TimerServices.stoped){
+
                 requestWindowFeature(Window.FEATURE_NO_TITLE);
                 this.setFinishOnTouchOutside(false);
                 super.onCreate(savedInstanceState);
                 setContentView(R.layout.dialog);
 //                finish();
                 initializeContent();
+            getLstCallDuration();
+
+     //   }
+
+    }
+    private void initializeContent() {
+        tv_client = (TextView) findViewById(R.id.tv_client);
+        dialog_ok = (Button) findViewById(R.id.dialog_ok);
+        relation = (TextView) findViewById(R.id.relation);
+    }
+     public String  getLstCallDuration(){
+        String  durationf  =null;
+        try {
             /*
             LayoutInflater layoutInflater =
                     (LayoutInflater)getBaseContext()
@@ -54,83 +67,80 @@ public class MyCustomDialog extends Activity {
             params.y = -50;
 
             this.getWindow().setAttributes(params);*/
-                StringBuffer sb = new StringBuffer();
-                phone_no = getIntent().getExtras().getString("phone_no");
+            StringBuffer sb = new StringBuffer();
+            phone_no = getIntent().getExtras().getString("phone_no");
 
-                String strOrder = android.provider.CallLog.Calls.DATE + " DESC";
+            String strOrder = android.provider.CallLog.Calls.DATE + " DESC";
 
 
-                Cursor managedCursor = managedQuery(CallLog.Calls.CONTENT_URI, null,
-                        null, null, strOrder);
-                int number = managedCursor.getColumnIndex(CallLog.Calls.NUMBER);
-                int type = managedCursor.getColumnIndex(CallLog.Calls.TYPE);
-                int date = managedCursor.getColumnIndex(CallLog.Calls.DATE);
-                int duration = managedCursor.getColumnIndex(CallLog.Calls.DURATION);
-                sb.append("\nLast Call Log :");
-                while (managedCursor.moveToNext()) {
-                    String phNum = managedCursor.getString(number);
-                    String callTypeCode = managedCursor.getString(type);
+            Cursor managedCursor = managedQuery(CallLog.Calls.CONTENT_URI, null,
+                    null, null, strOrder);
+            int number = managedCursor.getColumnIndex(CallLog.Calls.NUMBER);
+            int type = managedCursor.getColumnIndex(CallLog.Calls.TYPE);
+            int date = managedCursor.getColumnIndex(CallLog.Calls.DATE);
+            int duration = managedCursor.getColumnIndex(CallLog.Calls.DURATION);
+            //sb.append("\nLast Call Log :");
 
-                    long seconds = managedCursor.getLong(date);
-                    SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy  hh:mm:ss a");
-                    String dateString = formatter.format(new Date(seconds));
+            while (managedCursor.moveToNext()) {
+                String phNum = managedCursor.getString(number);
+                String callTypeCode = managedCursor.getString(type);
 
-                    String strcallDate = managedCursor.getString(date);
-                    Date callDate = new Date(Long.valueOf(strcallDate));
+                long seconds = managedCursor.getLong(date);
+                SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy  hh:mm:ss a");
+                String dateString = formatter.format(new Date(seconds));
 
-                    String callDuration = managedCursor.getString(duration);
-                    String callType = null;
-                    int callcode = Integer.parseInt(callTypeCode);
-                    switch (callcode) {
-                        case CallLog.Calls.OUTGOING_TYPE:
-                            callType = "Outgoing";
-                            break;
-                        case CallLog.Calls.INCOMING_TYPE:
-                            callType = "Incoming";
-                            break;
-                        case CallLog.Calls.MISSED_TYPE:
-                            callType = "Missed";
-                            break;
-                        case CallLog.Calls.REJECTED_TYPE:
-                            callType = "";
-                            break;
-                    }
+                String strcallDate = managedCursor.getString(date);
+                Date callDate = new Date(Long.valueOf(strcallDate));
 
-                    if (phone_no.equalsIgnoreCase(phNum)) {
-                        sb.append("\n----------------------------------");
-                        sb.append("\nPhone Number:--- " + phNum + " \nCall Type:--- "
-                                + getSimIdColumn(managedCursor) + " \nCall Date:--- " + dateString
-                                + " \nCall duration in sec :--- " + callDuration);
-                        sb.append("\n----------------------------------");
+                String callDuration = managedCursor.getString(duration);
+                String callType = null;
+                int callcode = Integer.parseInt(callTypeCode);
+                switch (callcode) {
+                    case CallLog.Calls.OUTGOING_TYPE:
+                        callType = "Outgoing";
                         break;
-                    }
-
+                    case CallLog.Calls.INCOMING_TYPE:
+                        callType = "Incoming";
+                        break;
+                    case CallLog.Calls.MISSED_TYPE:
+                        callType = "Missed";
+                        break;
+                    case CallLog.Calls.REJECTED_TYPE:
+                        callType = "";
+                        break;
                 }
-                managedCursor.close();
 
-                tv_client.setText("" + phone_no + " is calling you");
-                relation.setText(sb);
-                dialog_ok.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        MyCustomDialog.this.finish();
-//                    this.setFinishOnTouchOutside(false);
-                        System.exit(0);
-                    }
-                });
-            } catch (Exception e) {
-                Log.d("Exception", e.toString());
-                e.printStackTrace();
+                durationf = callDuration;
+                if (phone_no.equalsIgnoreCase(phNum)) {
+                    sb.append("\n----------------------------------");
+                    sb.append("\nPhone Number:--- " + phNum + " \nCall Type:--- "
+                            + getSimIdColumn(managedCursor) + " \nCall Date:--- " + dateString
+                            + " \nCall duration in sec :--- " + callDuration);
+                    sb.append("\n----------------------------------");
+                    break;
+                }
+
             }
+            managedCursor.close();
+
+            tv_client.setText("" + phone_no + " is calling you");
+            relation.setText(sb);
+            dialog_ok.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    MyCustomDialog.this.finish();
+//                    this.setFinishOnTouchOutside(false);
+                    System.exit(0);
+                }
+            });
+        } catch (Exception e) {
+            Log.d("Exception", e.toString());
+            e.printStackTrace();
         }
-
+        return durationf;
     }
 
-    private void initializeContent() {
-        tv_client = (TextView) findViewById(R.id.tv_client);
-        dialog_ok = (Button) findViewById(R.id.dialog_ok);
-        relation = (TextView) findViewById(R.id.relation);
-    }
+
     public static int getSimIdColumn(final Cursor c) {
 
         for (String s : new String[] { "sim_id", "simid", "sub_id" }) {

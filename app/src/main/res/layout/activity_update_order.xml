@@ -28,18 +28,22 @@
                 android:textColor="@color/white" />
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
+<FrameLayout
+    android:layout_above="@id/navigation"
+    android:id="@+id/fram_ordr"
+    android:layout_below="@id/appbar"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 
-    <LinearLayout
+    <ScrollView
+        android:id="@+id/order_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/appbar"
-        android:orientation="vertical">
+        android:layout_height="wrap_content">
 
-        <ScrollView
-            android:id="@+id/order_view"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone">
+            android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -66,8 +70,10 @@
                     <EditText
                         android:id="@+id/product"
                         android:layout_width="match_parent"
-                        android:layout_height="45dp"
+                        android:layout_height="wrap_content"
                         android:background="@drawable/ic_background_gray"
+                        android:editable="false"
+                        android:padding="8dp"
                         android:paddingStart="8dp"
                         android:paddingEnd="8dp" />
 
@@ -233,9 +239,11 @@
 
                     <EditText
                         android:id="@+id/client_order_phone1"
+
                         android:layout_width="match_parent"
                         android:layout_height="45dp"
                         android:background="@drawable/ic_background_gray"
+                        android:editable="false"
                         android:paddingStart="8dp"
                         android:paddingEnd="8dp" />
 
@@ -248,7 +256,8 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="20dp"
                     android:layout_marginEnd="16dp"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:visibility="gone">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -261,9 +270,11 @@
 
                     <EditText
                         android:id="@+id/client_order_phone2"
+
                         android:layout_width="match_parent"
                         android:layout_height="45dp"
                         android:background="@drawable/ic_background_gray"
+                        android:editable="false"
                         android:paddingStart="8dp"
                         android:paddingEnd="8dp" />
 
@@ -289,9 +300,11 @@
 
                     <EditText
                         android:id="@+id/sender_name"
+
                         android:layout_width="match_parent"
                         android:layout_height="45dp"
                         android:background="@drawable/ic_background_gray"
+                        android:editable="false"
                         android:paddingStart="8dp"
                         android:paddingEnd="8dp" />
 
@@ -316,9 +329,11 @@
 
                     <EditText
                         android:id="@+id/item_cost"
+
                         android:layout_width="match_parent"
                         android:layout_height="45dp"
                         android:background="@drawable/ic_background_gray"
+                        android:editable="false"
                         android:paddingStart="8dp"
                         android:paddingEnd="8dp" />
 
@@ -372,9 +387,11 @@
 
                     <EditText
                         android:id="@+id/order_cost"
+
                         android:layout_width="match_parent"
                         android:layout_height="45dp"
                         android:background="@drawable/ic_background_gray"
+                        android:editable="false"
                         android:paddingStart="8dp"
                         android:paddingEnd="8dp" />
 
@@ -399,9 +416,11 @@
 
                     <EditText
                         android:id="@+id/order_total_cost"
+
                         android:layout_width="match_parent"
                         android:layout_height="45dp"
                         android:background="@drawable/ic_background_gray"
+                        android:editable="false"
                         android:paddingStart="8dp"
                         android:paddingEnd="8dp" />
 
@@ -414,7 +433,8 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="20dp"
                     android:layout_marginEnd="16dp"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:visibility="gone">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -427,9 +447,11 @@
 
                     <EditText
                         android:id="@+id/shipping_retum_cost"
+
                         android:layout_width="match_parent"
                         android:layout_height="45dp"
                         android:background="@drawable/ic_background_gray"
+                        android:editable="false"
                         android:paddingStart="8dp"
                         android:paddingEnd="8dp" />
 
@@ -441,7 +463,8 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="20dp"
                     android:layout_marginEnd="16dp"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:visibility="gone">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -454,9 +477,11 @@
 
                     <EditText
                         android:id="@+id/order_type"
+
                         android:layout_width="match_parent"
                         android:layout_height="45dp"
                         android:background="@drawable/ic_background_gray"
+                        android:editable="false"
                         android:paddingStart="8dp"
                         android:paddingEnd="8dp" />
 
@@ -469,7 +494,8 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="20dp"
                     android:layout_marginEnd="16dp"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:visibility="gone">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -519,104 +545,152 @@
 
                 </LinearLayout>
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="16dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="16dp"
+                        android:text="@string/notes"
+                        android:textColor="@color/colorPrimary"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <EditText
+                        android:id="@+id/ntes"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/ic_background_gray"
+                        android:padding="8dp"
+                        android:paddingStart="8dp"
+                        android:paddingEnd="8dp" />
+
+
+                </LinearLayout>
+
+
+                <com.rafakob.drawme.DrawMeButton xmlns:drawme="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/update"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="40sp"
+                    android:layout_marginEnd="8dp"
+                    android:text="@string/update"
+                    android:textColor="@color/white"
+                    android:visibility="gone"
+                    drawme:dm_backColor="@color/colorPrimary"
+                    drawme:dm_backColorDisabled="@color/grey"
+                    drawme:dm_backColorPressed="@color/green"
+                    drawme:dm_radius="10dp" />
+
 
             </LinearLayout>
 
-        </ScrollView>
 
-        <LinearLayout
-            android:id="@+id/new_order_buttons"
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/move_listener"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true" />
+
+                <com.thefinestartist.movingbutton.MovingButton
+                    android:id="@+id/updating_button"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_centerInParent="true"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="200dp"
+                    android:layout_marginBottom="200dp"
+                    android:background="@drawable/button_background"
+                    android:includeFontPadding="false"
+                    android:text="@string/move"
+                    android:textColor="@android:color/white"
+                    android:textSize="16dp"
+                    app:mb_move_direction="all"
+                    app:mb_vibration_duration="20" />
+                <!--app:mb_event_volume="50"-->
+                <!--app:mb_movement="10dp"-->
+
+
+            </RelativeLayout>
+
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <RelativeLayout
+        android:id="@+id/missed_call_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone">
+
+        <RelativeLayout
+            android:id="@+id/tabs"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="50dp"
-            android:orientation="vertical">
+            android:background="@color/colorPrimary">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+            <com.ogaclejapan.smarttablayout.SmartTabLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/viewpagertab"
+                android:layout_width="wrap_content"
+                android:layout_height="?attr/actionBarSize"
+                android:layout_centerInParent="true"
+                android:background="@color/colorPrimary"
+                android:clipToPadding="false"
+                android:paddingLeft="4dp"
+                android:paddingRight="4dp"
+                app:stl_defaultTabTextColor="@color/white"
+                app:stl_defaultTabTextHorizontalPadding="18dp"
+                app:stl_dividerColor="@color/transparent"
+                app:stl_dividerThickness="0dp"
+                app:stl_indicatorColor="@color/orange"
+                app:stl_indicatorCornerRadius="10dp"
+                app:stl_indicatorGravity="center"
+                app:stl_indicatorInterpolation="smart"
+                app:stl_indicatorThickness="36dp"
+                app:stl_underlineColor="@color/transparent"
+                app:stl_underlineThickness="0dp" />
 
-                <com.rafakob.drawme.DrawMeButton xmlns:drawme="http://schemas.android.com/apk/res-auto"
-                    android:id="@+id/new_order_submit"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="40sp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_weight="1"
-                    android:text="@string/submit_order"
-                    android:textColor="@color/white"
-                    android:visibility="visible"
-                    drawme:dm_backColor="@color/colorPrimary"
-                    drawme:dm_backColorDisabled="@color/grey"
-                    drawme:dm_backColorPressed="@color/green"
-                    drawme:dm_radius="10dp" />
+        </RelativeLayout>
 
-                <com.rafakob.drawme.DrawMeButton xmlns:drawme="http://schemas.android.com/apk/res-auto"
-                    android:id="@+id/new_order_cancel"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="40sp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_weight="1"
-                    android:text="@string/cancel_order"
-                    android:textColor="@color/white"
-                    android:visibility="visible"
-                    drawme:dm_backColor="@color/colorPrimary"
-                    drawme:dm_backColorDisabled="@color/grey"
-                    drawme:dm_backColorPressed="@color/green"
-                    drawme:dm_radius="10dp" />
+        <android.support.v4.view.ViewPager
+            android:id="@+id/viewpager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/tabs" />
 
-            </LinearLayout>
+    </RelativeLayout>
+</FrameLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+    <android.support.design.widget.BottomNavigationView
+        android:id="@+id/navigation"
 
-                <com.rafakob.drawme.DrawMeButton xmlns:drawme="http://schemas.android.com/apk/res-auto"
-                    android:id="@+id/new_order_client_busy"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="40sp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_weight="1"
-                    android:text="@string/client_busy"
-                    android:textColor="@color/white"
-                    android:visibility="visible"
-                    drawme:dm_backColor="@color/colorPrimary"
-                    drawme:dm_backColorDisabled="@color/grey"
-                    drawme:dm_backColorPressed="@color/green"
-                    drawme:dm_radius="10dp" />
-
-                <com.rafakob.drawme.DrawMeButton xmlns:drawme="http://schemas.android.com/apk/res-auto"
-                    android:id="@+id/new_order_wrong_number"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="40sp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_weight="1"
-                    android:text="@string/wrong_number"
-                    android:textColor="@color/white"
-                    android:visibility="visible"
-                    drawme:dm_backColor="@color/colorPrimary"
-                    drawme:dm_backColorDisabled="@color/grey"
-                    drawme:dm_backColorPressed="@color/green"
-                    drawme:dm_radius="10dp" />
-
-            </LinearLayout>
-        </LinearLayout>
-    </LinearLayout>
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/colorPrimary"
+        app:itemIconTint="@color/white"
+        app:itemTextColor="@color/white"
+        app:labelVisibilityMode="labeled"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:menu="@menu/customer_navigation" />
 
 </RelativeLayout>

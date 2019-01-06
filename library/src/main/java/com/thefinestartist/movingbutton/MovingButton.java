@@ -40,7 +40,7 @@ public class MovingButton extends Button {
 
     int eventVolume;
 
-    OnPositionChangedListener onPositionChangedListener;
+    public static OnPositionChangedListener onPositionChangedListener;
 
     public MovingButton(Context context) {
         this(context, null);
