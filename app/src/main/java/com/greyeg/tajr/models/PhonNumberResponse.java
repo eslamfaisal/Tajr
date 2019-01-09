@@ -15,7 +15,7 @@ public class PhonNumberResponse {
 
     @SerializedName("notes")
     @Expose
-    private Order notes;
+    private Notes notes;
 
     public PhonNumberResponse() {
     }
@@ -28,7 +28,7 @@ public class PhonNumberResponse {
         return order;
     }
 
-    public Order getNotes() {
+    public Notes getNotes() {
         return notes;
     }
 }

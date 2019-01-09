@@ -13,16 +13,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <android.support.design.widget.NavigationView
-        app:itemIconTint="@color/white"
-        app:itemTextColor="@color/white"
-        android:background="@drawable/ic_nave_bg_shape"
-        android:id="@+id/nav_view"
-        android:layout_width="wrap_content"
+    <include
+        android:layout_width="@dimen/drawer_width"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:fitsSystemWindows="true"
-        app:headerLayout="@layout/nav_header_main"
-        app:menu="@menu/activity_main_drawer" />
+        layout="@layout/list_view" />
 
 </android.support.v4.widget.DrawerLayout>

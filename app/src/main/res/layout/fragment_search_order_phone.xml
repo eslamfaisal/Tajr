@@ -1,62 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".fragments.SearchOrderPhoneFragment">
 
-    <LinearLayout
+    <FrameLayout
         android:id="@+id/search_view"
-        android:orientation="horizontal"
+
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <android.support.design.widget.FloatingActionButton
-            android:layout_margin="16dp"
-            android:id="@+id/search_btn"
-            android:src="@drawable/ic_search_white"
-            android:layout_gravity="center"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/card_view"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_gravity="center"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
             android:layout_margin="8dp"
-            android:elevation="16dp"
-            card_view:cardCornerRadius="24dp"
-            tools:ignore="UnusedAttribute">
+            android:background="@drawable/search_bar_background_travel"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:src="@drawable/ic_search_black"
+                android:id="@+id/search"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp" />
 
             <EditText
-                android:inputType="phone"
-                android:hint="@string/phone"
+                android:hint="@string/writ_phone_number"
                 android:id="@+id/phone_input"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
-                android:maxLines="4"
-                android:padding="12dp" />
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:imeOptions="actionSearch"
+                android:inputType="phone" />
 
-        </android.support.v7.widget.CardView>
+            <ImageView
+                android:src="@drawable/ic_clear_black"
+                android:id="@+id/clear"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp" />
+        </LinearLayout>
 
-
-    </LinearLayout>
+    </FrameLayout>
 
     <RelativeLayout
-        android:layout_below="@id/search_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_below="@id/search_view">
+
+        <com.greyeg.tajr.view.ProgressWheel
+            android:id="@+id/progress_search"
+            style="@style/ProgressBarStyle.Reverse"
+            android:layout_centerInParent="true"
+            android:layout_marginLeft="18dp"
+            android:layout_marginRight="18dp"
+            android:visibility="gone" />
 
         <ScrollView
-            android:visibility="gone"
             android:id="@+id/order_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:visibility="gone">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -86,12 +96,12 @@
                             android:textStyle="bold" />
 
                         <EditText
-                            android:padding="8dp"
                             android:id="@+id/product"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:background="@drawable/ic_background_gray"
                             android:editable="false"
+                            android:padding="8dp"
                             android:paddingStart="8dp"
                             android:paddingEnd="8dp" />
 
@@ -593,25 +603,23 @@
                     </LinearLayout>
 
 
-                    <com.rafakob.drawme.DrawMeButton
-                        android:visibility="gone"
-                        xmlns:drawme="http://schemas.android.com/apk/res-auto"
+                    <com.rafakob.drawme.DrawMeButton xmlns:drawme="http://schemas.android.com/apk/res-auto"
                         android:id="@+id/update"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-
                         android:layout_alignParentBottom="true"
+
                         android:layout_gravity="center_horizontal"
                         android:layout_marginStart="8dp"
                         android:layout_marginTop="40sp"
                         android:layout_marginEnd="8dp"
                         android:text="@string/update"
                         android:textColor="@color/white"
+                        android:visibility="gone"
                         drawme:dm_backColor="@color/colorPrimary"
                         drawme:dm_backColorDisabled="@color/grey"
                         drawme:dm_backColorPressed="@color/green"
                         drawme:dm_radius="10dp" />
-
 
 
                 </LinearLayout>
@@ -654,13 +662,13 @@
         </ScrollView>
 
         <TextView
-            android:visibility="gone"
+            android:id="@+id/no_order_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
             android:gravity="center"
             android:text="@string/no_orders_with_this_number"
-            android:id="@+id/no_order_tv"
-            android:layout_centerInParent="true"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:visibility="gone" />
     </RelativeLayout>
 
 

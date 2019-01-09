@@ -1,10 +1,12 @@
 package com.greyeg.tajr.server;
 
+import com.greyeg.tajr.models.ActivityHistory;
 import com.greyeg.tajr.models.AllProducts;
 import com.greyeg.tajr.models.Cities;
+import com.greyeg.tajr.models.MoneyHistory;
+import com.greyeg.tajr.models.NewOrderResponse;
 import com.greyeg.tajr.models.PhonNumberResponse;
-import com.greyeg.tajr.models.ProductError;
-import com.greyeg.tajr.models.Products;
+import com.greyeg.tajr.models.PointsHistory;
 import com.greyeg.tajr.models.UpdateOrderResponse;
 import com.greyeg.tajr.models.UserOrders;
 import com.greyeg.tajr.models.UserResponse;
@@ -91,12 +93,42 @@ public interface Api {
     @POST("send/get_cities")
     Call<Cities> getCities(@Field("token") String token, @Field("user_id") String user_id);
 
-
     // log in user client
     @FormUrlEncoded
     @POST("send/get_products")
     Call<AllProducts> getProducts(@Field("token") String token,
-                                   @Field("user_id") int  user_id);
+                              @Field("user_id") String  user_id);
 
+    // log in user client
+    @FormUrlEncoded
+    @POST("send/activity_history")
+    Call<ActivityHistory> getActivityHistory(@Field("token") String token,
+                                             @Field("user_id") String  user_id);
 
+    // log in user client
+    @FormUrlEncoded
+    @POST("send/points_history")
+    Call<PointsHistory> getPointsHistory(@Field("token") String token,
+                                         @Field("user_id") String  user_id);
+
+    // log in user client
+    @FormUrlEncoded
+    @POST("send/cash_history")
+    Call<MoneyHistory> getMoneyHistory(@Field("token") String token,
+                                       @Field("user_id") String  user_id);
+
+    // log in user client
+    @FormUrlEncoded
+    @POST("send/new_order")
+    Call<NewOrderResponse> recordNewOrder(
+            @Field("token") String token,
+            @Field("user_id") int user_id,
+            @Field("product_id") int product_id,
+            @Field("client_name") String client_name,
+            @Field("client_phone") String client_phone,
+            @Field("city_id") int city_id,
+            @Field("client_area") String client_area,
+            @Field("client_address") String client_address,
+            @Field("items") String items
+    );
 }

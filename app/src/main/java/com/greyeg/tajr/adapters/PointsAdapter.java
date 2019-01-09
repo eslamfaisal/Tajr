@@ -10,15 +10,16 @@ import android.widget.TextView;
 
 import com.greyeg.tajr.R;
 import com.greyeg.tajr.models.MonthPoints;
+import com.greyeg.tajr.models.PointsHistory;
 
 import java.util.List;
 
 public class PointsAdapter extends RecyclerView.Adapter<PointsAdapter.ViewHolder> {
 
-    List<MonthPoints> monthPoints;
+    List<PointsHistory.Year.Month > monthPoints;
     Activity context;
 
-    public PointsAdapter(List<MonthPoints> monthPoints, Activity context) {
+    public PointsAdapter(List<PointsHistory.Year.Month > monthPoints, Activity context) {
         this.monthPoints = monthPoints;
         this.context = context;
     }
@@ -31,11 +32,11 @@ public class PointsAdapter extends RecyclerView.Adapter<PointsAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int i) {
-        MonthPoints points = monthPoints.get(i);
+        PointsHistory.Year.Month  points = monthPoints.get(i);
 
-        holder.rank.setText(points.getRank());
-        holder.cash.setText(points.getCash());
-        holder.points.setText(points.getPoints());
+//        holder.rank.setText(points.getRank());
+//        holder.cash.setText(points.getCash());
+//        holder.points.setText(points.getPoints());
 
     }
 

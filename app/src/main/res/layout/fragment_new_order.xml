@@ -32,7 +32,6 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_margin="16dp"
                         android:text="@string/Product"
                         android:textColor="@color/colorPrimary"
                         android:textSize="18sp"
@@ -61,7 +60,6 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_margin="16dp"
                         android:text="@string/client_name"
                         android:textColor="@color/colorPrimary"
                         android:textSize="18sp"
@@ -89,7 +87,6 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_margin="16dp"
                         android:text="@string/client_address"
                         android:textColor="@color/colorPrimary"
                         android:textSize="18sp"
@@ -117,7 +114,6 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_margin="16dp"
                         android:text="@string/client_area"
                         android:textColor="@color/colorPrimary"
                         android:textSize="18sp"
@@ -140,12 +136,12 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="20dp"
                     android:layout_marginEnd="16dp"
+                    android:padding="4dp"
                     android:orientation="vertical">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_margin="16dp"
                         android:text="@string/client_city"
                         android:textColor="@color/colorPrimary"
                         android:textSize="18sp"
@@ -173,7 +169,6 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_margin="16dp"
                         android:text="@string/client_order_phone"
                         android:textColor="@color/colorPrimary"
                         android:textSize="18sp"
@@ -181,7 +176,7 @@
 
                     <EditText
                         android:id="@+id/client_order_phone1"
-
+                        android:inputType="phone"
                         android:layout_width="match_parent"
                         android:layout_height="45dp"
                         android:background="@drawable/ic_background_gray"
@@ -233,13 +228,13 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_margin="16dp"
                         android:text="@string/item_no"
                         android:textColor="@color/colorPrimary"
                         android:textSize="18sp"
                         android:textStyle="bold" />
 
                     <EditText
+                        android:inputType="number"
                         android:id="@+id/item_no"
                         android:layout_width="match_parent"
                         android:layout_height="45dp"
@@ -254,7 +249,7 @@
                     android:layout_marginBottom="50dp"
                     android:visibility="visible"
                     xmlns:drawme="http://schemas.android.com/apk/res-auto"
-                    android:id="@+id/update"
+                    android:id="@+id/send_order"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentBottom="true"

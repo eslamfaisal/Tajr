@@ -1,40 +1,52 @@
 package com.greyeg.tajr.activities;
 
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
-import android.widget.EditText;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.greyeg.tajr.MainActivity;
 import com.greyeg.tajr.R;
 import com.greyeg.tajr.helper.SharedHelper;
+import com.greyeg.tajr.helper.font.RobotoTextView;
 import com.greyeg.tajr.models.UserResponse;
 import com.greyeg.tajr.server.Api;
 import com.greyeg.tajr.server.BaseClient;
-import com.rafakob.drawme.DrawMeButton;
+import com.greyeg.tajr.view.FloatLabeledEditText;
+import com.greyeg.tajr.view.ProgressWheel;
+import com.greyeg.tajr.view.kbv.KenBurnsView;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 /**
  * A login screen that offers login via email/password.
  */
 public class LoginActivity extends AppCompatActivity {
+
+    public static final String SPLASH_SCREEN_OPTION = "com.csform.android.uiapptemplate.SplashScreensActivity";
+    public static final String SPLASH_SCREEN_OPTION_1 = "Fade in + Ken Burns";
+    public static final String SPLASH_SCREEN_OPTION_2 = "Down + Ken Burns";
+    public static final String SPLASH_SCREEN_OPTION_3 = "Down + fade in + Ken Burns";
 
     public static final String USER_NAME = "username";
     public static final String USER_TYPE = "user_type";
@@ -45,17 +57,30 @@ public class LoginActivity extends AppCompatActivity {
     public static final String IS_LOGIN = "is_login";
 
     @BindView(R.id.loginbtn)
-    DrawMeButton loginBtn;
+    RobotoTextView loginBtn;
 
     @BindView(R.id.email)
-    EditText email;
+    FloatLabeledEditText email;
 
     @BindView(R.id.password)
-    EditText pass;
+    FloatLabeledEditText pass;
 
+    @BindView(R.id.ken_burns_images)
+    KenBurnsView mKenBurns;
+
+    @BindView(R.id.logo)
+    ImageView mLogo;
+
+    @BindView(R.id.progress_log_in)
+    ProgressWheel progressLogin;
 
     ProgressDialog progressDialog;
     Api api;
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,10 +90,21 @@ public class LoginActivity extends AppCompatActivity {
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage(getString(R.string.wati_to_log_in));
         api = BaseClient.getBaseClient().create(Api.class);
+        setAnimation(SPLASH_SCREEN_OPTION_3);
+//        loginBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                startActivity(new Intent(getApplicationContext(), MainActivity.class));
+//            }
+//        });
+        email.setText("mariam@musa3d.com");
+        pass.setText("1234");
         loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                progressDialog.show();
+                loginBtn.setVisibility(View.GONE);
+                progressLogin.setVisibility(View.VISIBLE);
+                progressLogin.spin();
                 if (email.getText().equals("") || pass.getText().equals("")) {
                     progressDialog.dismiss();
                     Toast.makeText(LoginActivity.this, "برجاء ادخال البريد وكلمة المرور", Toast.LENGTH_SHORT).show();
@@ -85,12 +121,15 @@ public class LoginActivity extends AppCompatActivity {
                                     SharedHelper.putKey(getApplicationContext(), PARENT_TAJR_ID, response.body().getData().getLogin_data().getParent_tajr_id());
                                     SharedHelper.putKey(getApplicationContext(), IS_TAJR, response.body().getData().getLogin_data().getIs_tajr());
                                     SharedHelper.putKey(getApplicationContext(), TOKEN, response.body().getData().getLogin_data().getToken());
-                                    startActivity(new Intent(getApplicationContext(), MainActivity.class));
-                                    progressDialog.dismiss();
+                                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                    startActivity(intent);
                                     finish();
 
+
                                 } else {
-                                    progressDialog.dismiss();
+                                    loginBtn.setVisibility(View.VISIBLE);
+                                    progressLogin.setVisibility(View.GONE);
                                     Toast.makeText(LoginActivity.this, response.body().getResponse(), Toast.LENGTH_LONG).show();
                                 }
                             }
@@ -98,7 +137,8 @@ public class LoginActivity extends AppCompatActivity {
 
                         @Override
                         public void onFailure(Call<UserResponse> call, Throwable t) {
-                            progressDialog.dismiss();
+                            loginBtn.setVisibility(View.VISIBLE);
+                            progressLogin.setVisibility(View.GONE);
                             Log.d("eeeeeeeeeeeeeeee", "onFailure: " + t.getMessage());
                         }
                     });
@@ -107,47 +147,53 @@ public class LoginActivity extends AppCompatActivity {
         });
 //        getCallLogs();
     }
-//
-//    public void editToFile() {
-//        File file = new File(Environment.getExternalStorageDirectory(), "fileOut.txt");
-//        try {
-//            BufferedWriter writer = new BufferedWriter(new FileWriter(file, true));
-//            writer.write(mEdit.getText().toString());
-//            writer.newLine();
-//            writer.flush();
-//            writer.close();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
-//
-//    public void getCallLogs() {
-//        final String[] projection = null;
-//        final String selection = null;
-//        final String[] selectionArgs = null;
-//        final String sortOrder = "DATE DESC";
-//        Cursor cursor = this.getContentResolver().query(Uri.parse("content://call_log/calls"), projection, selection, selectionArgs, sortOrder);
-//        int j = 0;
-//        //mEdit is EditText
-//        mEdit.setText("");
-//        if (cursor != null) {
-//            int L = cursor.getColumnCount();
-//            for (int i = 0; i < L; i++)
-//                mEdit.append(cursor.getColumnName(i) + "\t");
-//            mEdit.append("\n");
-//            while (cursor.moveToNext()) {
-//                j++;
-//                if (j >= 5)
-//                    break;
-//                for (int i = 0; i < L; i++) {
-//                    String callField = cursor.getString(i);
-//                    mEdit.append(callField + "\t");
-//                }
-//                mEdit.append("\n");
-//            }
-//        }
-//        editToFile();
-//    }
 
+
+
+    private void setAnimation(String category) {
+        if (category.equals(SPLASH_SCREEN_OPTION_1)) {
+            mKenBurns.setImageResource(R.drawable.background_media);
+            animation1();
+        } else if (category.equals(SPLASH_SCREEN_OPTION_2)) {
+            //mLogo.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.main_color_500));
+            mKenBurns.setImageResource(R.drawable.background_shop);
+            animation2();
+        } else if (category.equals(SPLASH_SCREEN_OPTION_3)) {
+            mKenBurns.setImageResource(R.drawable.ic_traffic);
+            animation2();
+            animation3();
+        }
+    }
+
+    private void animation1() {
+        ObjectAnimator scaleXAnimation = ObjectAnimator.ofFloat(mLogo, "scaleX", 5.0F, 1.0F);
+        scaleXAnimation.setInterpolator(new AccelerateDecelerateInterpolator());
+        scaleXAnimation.setDuration(1200);
+        ObjectAnimator scaleYAnimation = ObjectAnimator.ofFloat(mLogo, "scaleY", 5.0F, 1.0F);
+        scaleYAnimation.setInterpolator(new AccelerateDecelerateInterpolator());
+        scaleYAnimation.setDuration(1200);
+        ObjectAnimator alphaAnimation = ObjectAnimator.ofFloat(mLogo, "alpha", 0.0F, 1.0F);
+        alphaAnimation.setInterpolator(new AccelerateDecelerateInterpolator());
+        alphaAnimation.setDuration(1200);
+        AnimatorSet animatorSet = new AnimatorSet();
+        animatorSet.play(scaleXAnimation).with(scaleYAnimation).with(alphaAnimation);
+        animatorSet.setStartDelay(500);
+        animatorSet.start();
+    }
+
+    private void animation2() {
+        mLogo.setAlpha(1.0F);
+        Animation anim = AnimationUtils.loadAnimation(this, R.anim.translate_top_to_center);
+        mLogo.startAnimation(anim);
+    }
+
+    private void animation3() {
+
+        ObjectAnimator alphaAnimation = ObjectAnimator.ofFloat(email, "alpha", 0.0F, 1.0F);
+        alphaAnimation.setStartDelay(1700);
+        alphaAnimation.setDuration(500);
+        alphaAnimation.start();
+
+    }
 }
 

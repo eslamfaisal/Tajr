@@ -1,114 +1,147 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="wrap_content">
+
+    <com.greyeg.tajr.view.kbv.KenBurnsView
+        android:id="@+id/ken_burns_images"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_margin="16dp"
-        android:orientation="vertical">
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="24dp">
 
-        <TextView
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="right"
+            android:orientation="vertical">
+
+            <com.greyeg.tajr.view.MaterialRippleLayout
+                style="@style/RippleStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:rippleColor="@color/main_color_grey_400">
+
+            </com.greyeg.tajr.view.MaterialRippleLayout>
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/logo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
-            android:text="@string/login"
-            android:textColor="@color/colorPrimary"
-            android:textSize="35sp"
-            android:textStyle="bold" />
+            android:layout_marginTop="32dp"
+            android:layout_marginBottom="64dp"
+            android:src="@drawable/ic_logo" />
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginTop="36dp"
-            android:background="@drawable/ic_background_gray">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginStart="12dp"
-                app:srcCompat="@drawable/ic_email"
-                tools:ignore="VectorDrawableCompat" />
-
-            <EditText
-                android:text="nada@musa3d.com"
-                android:id="@+id/email"
-                android:layout_width="match_parent"
-                android:layout_height="35dp"
-                android:layout_gravity="center"
-                android:layout_marginStart="8dp"
-                android:background="@color/gray"
-                android:gravity="center"
-                android:hint="@string/email"
-                android:imeOptions="actionDone"
-                android:inputType="textEmailAddress"
-                android:maxLines="1"
-                android:textAlignment="viewStart"
-                android:textSize="16dp" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginTop="16dp"
-            android:background="@drawable/ic_background_gray">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginStart="12dp"
-                app:srcCompat="@drawable/ic_lock_black_24dp"
-                tools:ignore="VectorDrawableCompat" />
-
-            <EditText
-                android:text="1234"
-                android:id="@+id/password"
-                android:layout_width="match_parent"
-                android:layout_height="35dp"
-                android:layout_gravity="center"
-                android:layout_marginStart="8dp"
-                android:background="@color/gray"
-                android:gravity="center"
-
-                android:hint="@string/prompt_password"
-                android:imeOptions="actionDone"
-                android:inputType="textWebPassword"
-                android:maxLines="1"
-                android:textAlignment="viewStart"
-                android:textSize="16dp" />
-
-        </LinearLayout>
-
-
-        <com.rafakob.drawme.DrawMeButton xmlns:drawme="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/loginbtn"
-            android:layout_width="209dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="40sp"
-            android:layout_marginEnd="8dp"
-            android:text="@string/log_in"
-            android:textColor="@color/white"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.503"
-            app:layout_constraintStart_toStartOf="parent"
-            drawme:dm_backColor="@color/colorPrimary"
-            drawme:dm_backColorDisabled="@color/grey"
-            drawme:dm_backColorPressed="@color/green"
-            drawme:dm_radius="10dp" />
+            android:background="#40000000"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="8dp">
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical">
+
+                <com.greyeg.tajr.helper.font.MaterialDesignIconsTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="@string/fontello_user"
+                    android:textColor="@color/white"
+                    android:textSize="16dp"
+                    tools:ignore="SpUsage" />
+
+                <com.greyeg.tajr.view.FloatLabeledEditText
+                    android:id="@+id/email"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="16dp"
+                    android:layout_weight="1"
+                    app:fletFloatingHint="@string/email"
+                    app:fletHintTextColor="@color/white"
+                    app:fletSingleLine="true"
+                    app:fletTextBackground="@drawable/edit_text_background_accent"
+                    app:fletTextColor="@color/white"
+                    app:fletTextGravity="center" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:gravity="center_vertical">
+
+                <com.greyeg.tajr.helper.font.MaterialDesignIconsTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="@string/fontello_password"
+                    android:textColor="@color/main_color_grey_600"
+                    android:textSize="16dp"
+                    tools:ignore="SpUsage" />
+
+                <com.greyeg.tajr.view.FloatLabeledEditText
+                    android:id="@+id/password"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="16dp"
+                    android:layout_weight="1"
+                    app:fletFloatingHint="@string/prompt_password"
+                    app:fletHintTextColor="@color/white"
+                    app:fletPassword="true"
+                    app:fletSingleLine="true"
+                    app:fletTextBackground="@drawable/edit_text_background_accent"
+                    app:fletTextColor="@color/white"
+                    app:fletTextGravity="center" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="54dp"
+            android:orientation="vertical">
+
+            <com.greyeg.tajr.view.MaterialRippleLayout
+                style="@style/RippleStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="3dp"
+                app:rippleColor="@color/white">
+
+                <com.greyeg.tajr.helper.font.RobotoTextView
+                    android:id="@+id/loginbtn"
+                    style="@style/ButtonStyle.RaisedEmpty"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="0dp"
+                    android:background="@color/main_color_500"
+                    android:minWidth="112dp"
+                    android:text="@string/login"
+                    android:textColor="#fff" />
+            </com.greyeg.tajr.view.MaterialRippleLayout>
+
+            <com.greyeg.tajr.view.ProgressWheel
+                android:id="@+id/progress_log_in"
+                style="@style/ProgressBarStyle.Reverse"
+                android:layout_gravity="center"
+                android:layout_marginLeft="18dp"
+                android:layout_marginRight="18dp"
+                android:visibility="gone" />
+        </LinearLayout>
 
     </LinearLayout>
 
-
-</ScrollView>
+</RelativeLayout>

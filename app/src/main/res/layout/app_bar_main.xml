@@ -13,11 +13,17 @@
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
+            app:title=""
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
             app:popupTheme="@style/AppTheme.PopupOverlay">
 
+            <ImageView
+                android:src="@drawable/ic_menu"
+                android:id="@+id/startDrawer"
+                android:layout_width="45dp"
+                android:layout_height="match_parent" />
         </android.support.v7.widget.Toolbar>
 
     </android.support.design.widget.AppBarLayout>

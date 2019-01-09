@@ -17,6 +17,10 @@ public class Order {
     @Expose
     private String order_status;
 
+    @SerializedName("discount")
+    @Expose
+    private String discount;
+
     @SerializedName("order_shipping_status_type")
     @Expose
     private String order_shipping_status_type;
@@ -93,15 +97,19 @@ public class Order {
     @Expose
     private String order_type;
 
-    @SerializedName("extra_data")
-    @Expose
-    private String extra_data;
+//    @SerializedName("extra_data")
+//    @Expose
+//    private String extra_data;
 
     @SerializedName("multi_orders")
     @Expose
     private String multi_orders ;
 
     public Order() {
+    }
+
+    public String getDiscount() {
+        return discount;
     }
 
     public String getId() {
@@ -187,10 +195,10 @@ public class Order {
     public String getOrder_type() {
         return order_type;
     }
-
-    public String getExtra_data() {
-        return extra_data;
-    }
+//
+//    public String getExtra_data() {
+//        return extra_data;
+//    }
 
     public String getMulti_orders() {
         return multi_orders;

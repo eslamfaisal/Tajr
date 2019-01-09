@@ -1,18 +1,18 @@
 package com.greyeg.tajr;
 
 import android.Manifest;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.provider.CallLog;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
@@ -29,21 +29,32 @@ import android.telephony.SubscriptionManager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
+import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ebanx.swipebtn.OnStateChangeListener;
+import com.ebanx.swipebtn.SwipeButton;
 import com.greyeg.tajr.activities.LoginActivity;
+import com.greyeg.tajr.activities.NewsActivity;
 import com.greyeg.tajr.activities.OrderActivity;
 import com.greyeg.tajr.activities.SettingsActivity;
 import com.greyeg.tajr.activities.WorkHistoryActivity;
+import com.greyeg.tajr.adapters.DrawerAdapter;
 import com.greyeg.tajr.helper.SharedHelper;
 import com.greyeg.tajr.helper.TimerTextView;
-import com.greyeg.tajr.models.UserResponse;
+import com.greyeg.tajr.helper.font.RobotoTextView;
 import com.greyeg.tajr.server.Api;
 import com.greyeg.tajr.server.BaseClient;
+import com.greyeg.tajr.view.kbv.KenBurnsView;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -53,14 +64,27 @@ import java.util.Timer;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
-import static com.greyeg.tajr.activities.LoginActivity.IS_LOGIN;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
+
+    public static final String SPLASH_SCREEN_OPTION = "com.csform.android.uiapptemplate.SplashScreensActivity";
+    public static final String SPLASH_SCREEN_OPTION_1 = "Fade in + Ken Burns";
+    public static final String SPLASH_SCREEN_OPTION_2 = "Down + Ken Burns";
+    public static final String SPLASH_SCREEN_OPTION_3 = "Down + fade in + Ken Burns";
+    @BindView(R.id.ken_burns_images)
+    KenBurnsView mKenBurns;
+
+    @BindView(R.id.logo)
+    ImageView mLogo;
+
+    @BindView(R.id.welcome_text)
+    RobotoTextView welcomeText;
 
     public static int calls_count = 0;
     public static final int PHONE_PERMISSIONS = 123;
@@ -86,6 +110,12 @@ public class MainActivity extends AppCompatActivity
     SwitchCompat callsSwitch;
 
     public static Activity mainActivity;
+    Toolbar toolbar;
+
+    private ListView mDrawerList;
+    private DrawerLayout mDrawerLayout;
+    private ActionBarDrawerToggle mDrawerToggle;
+    SwipeButton enableButton;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -94,22 +124,11 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         mainActivity = this;
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        final SharedPreferences pref1 = PreferenceManager.getDefaultSharedPreferences(this);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
+        initDrawer();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
-        View name = navigationView.getHeaderView(0);
-        TextView userName = name.findViewById(R.id.user_name);
-        userName.setText(SharedHelper.getKey(getApplicationContext(), LoginActivity.USER_NAME));
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (getApplicationContext().checkSelfPermission(Manifest.permission.READ_PHONE_STATE)
@@ -128,7 +147,23 @@ public class MainActivity extends AppCompatActivity
             }
         }
 
+        setAnimation(SPLASH_SCREEN_OPTION_3);
         api = BaseClient.getBaseClient().create(Api.class);
+
+        enableButton = (SwipeButton) findViewById(R.id.swipe_btn);
+        enableButton.setOnStateChangeListener(new OnStateChangeListener() {
+            @Override
+            public void onStateChange(boolean active) {
+                if (active) {
+                    Intent intent = new Intent(getApplicationContext(), OrderActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+
+
+                }
+
+            }
+        });
 
     }
 
@@ -189,6 +224,7 @@ public class MainActivity extends AppCompatActivity
             String iccId = si.getIccId();
         }
     }
+
     void getSimIds() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
             if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
@@ -232,7 +268,8 @@ public class MainActivity extends AppCompatActivity
                                     Manifest.permission.CALL_PHONE
                             },
                             56);
-                }{
+                }
+                {
                     checkDauleSim();
                 }
             } else {
@@ -268,9 +305,6 @@ public class MainActivity extends AppCompatActivity
 
     boolean working = false;
 
-    @BindView(R.id.start_Timer)
-    Button button;
-
     @OnClick({R.id.start_Timer})
     void stomTimer() {
         Intent intent = new Intent(this, OrderActivity.class);
@@ -292,41 +326,21 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main, menu);
+        return super.onCreateOptionsMenu(menu);
     }
 
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        return super.onPrepareOptionsMenu(menu);
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            api.logout(SharedHelper.getKey(getApplicationContext(), LoginActivity.TOKEN),
-                    SharedHelper.getKey(getApplicationContext(), LoginActivity.USER_ID)).enqueue(new Callback<UserResponse>() {
-                @Override
-                public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
-                    if (response.body() != null) {
-                        if (response.body().getResponse().equals("token destoryed")) {
-                            SharedHelper.putKey(getApplicationContext(), IS_LOGIN, "no");
-                            startActivity(new Intent(getApplicationContext(), LoginActivity.class));
-                            finish();
-                        }
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<UserResponse> call, Throwable t) {
-
-                }
-            });
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -338,7 +352,7 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nave_settings) {
             startActivity(new Intent(this, SettingsActivity.class));
-        }else  if (id == R.id.nave_analytics) {
+        } else if (id == R.id.nave_analytics) {
             startActivity(new Intent(this, WorkHistoryActivity.class));
         }
 
@@ -365,10 +379,8 @@ public class MainActivity extends AppCompatActivity
         super.onDestroy();
     }
 
-
     String idid;
     String namename;
-
 
     String callDuration2 = null;
     String phonNumber = null;
@@ -450,5 +462,129 @@ public class MainActivity extends AppCompatActivity
 
     void test() {
     }
+
+    ImageView start;
+
+    void initDrawer() {
+        start = findViewById(R.id.startDrawer);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+
+        mDrawerList = (ListView) findViewById(R.id.list_view);
+
+        mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow,
+                GravityCompat.START);
+
+        View headerView = getLayoutInflater().inflate(
+                R.layout.header_navigation_drawer_travel, mDrawerList, false);
+        TextView userName = headerView.findViewById(R.id.user_name);
+        userName.setText(SharedHelper.getKey(getApplicationContext(), LoginActivity.USER_NAME));
+
+        mDrawerList.addHeaderView(headerView);// Add header before adapter (for
+        // pre-KitKat)
+        mDrawerList.setAdapter(new DrawerAdapter(this));
+        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+        mDrawerList.setBackgroundResource(R.drawable.ic_home_for_list);
+        mDrawerList.getLayoutParams().width = (int) getResources()
+                .getDimension(R.dimen.drawer_width_travel);
+
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar,
+                R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
+            public void onDrawerClosed(View view) {
+
+                invalidateOptionsMenu();
+            }
+
+            public void onDrawerOpened(View drawerView) {
+                invalidateOptionsMenu();
+            }
+        };
+
+        mDrawerLayout.addDrawerListener(mDrawerToggle);
+
+        start.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDrawerLayout.openDrawer(mDrawerList);
+            }
+        });
+//
+    }
+
+    private class DrawerItemClickListener implements
+            ListView.OnItemClickListener {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            Intent intent = null;
+            if (position == 1) {
+                intent = new Intent(getApplicationContext(), SettingsActivity.class);
+            } else if (position == 2) {
+                intent = new Intent(getApplicationContext(), WorkHistoryActivity.class);
+            } else if (position == 3) {
+                intent = new Intent(getApplicationContext(), NewsActivity.class);
+            }
+            if (intent != null) {
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            }
+            mDrawerLayout.closeDrawer(mDrawerList);
+        }
+    }
+
+    /**
+     * Animation depends on category.
+     */
+    private void setAnimation(String category) {
+        if (category.equals(SPLASH_SCREEN_OPTION_1)) {
+            mKenBurns.setImageResource(R.drawable.background_media);
+            animation1();
+        } else if (category.equals(SPLASH_SCREEN_OPTION_2)) {
+            //  mLogo.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.main_color_500));
+            mKenBurns.setImageResource(R.drawable.background_shop);
+            animation2();
+        } else if (category.equals(SPLASH_SCREEN_OPTION_3)) {
+            mKenBurns.setImageResource(R.drawable.ic_cars);
+            animation2();
+            animation3();
+        }
+    }
+
+    private void animation1() {
+        ObjectAnimator scaleXAnimation = ObjectAnimator.ofFloat(mLogo, "scaleX", 5.0F, 1.0F);
+        scaleXAnimation.setInterpolator(new AccelerateDecelerateInterpolator());
+        scaleXAnimation.setDuration(1200);
+        ObjectAnimator scaleYAnimation = ObjectAnimator.ofFloat(mLogo, "scaleY", 5.0F, 1.0F);
+        scaleYAnimation.setInterpolator(new AccelerateDecelerateInterpolator());
+        scaleYAnimation.setDuration(1200);
+        ObjectAnimator alphaAnimation = ObjectAnimator.ofFloat(mLogo, "alpha", 0.0F, 1.0F);
+        alphaAnimation.setInterpolator(new AccelerateDecelerateInterpolator());
+        alphaAnimation.setDuration(1200);
+        AnimatorSet animatorSet = new AnimatorSet();
+        animatorSet.play(scaleXAnimation).with(scaleYAnimation).with(alphaAnimation);
+        animatorSet.setStartDelay(500);
+        animatorSet.start();
+    }
+
+    private void animation2() {
+        mLogo.setAlpha(1.0F);
+        Animation anim = AnimationUtils.loadAnimation(this, R.anim.translate_top_to_center);
+        mLogo.startAnimation(anim);
+    }
+
+    private void animation3() {
+        ObjectAnimator alphaAnimation = ObjectAnimator.ofFloat(welcomeText, "alpha", 0.0F, 1.0F);
+        alphaAnimation.setStartDelay(1500);
+        alphaAnimation.setDuration(100);
+        alphaAnimation.start();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (enableButton.isActive()) {
+            enableButton.toggleState();
+        }
+
+    }
+
 
 }

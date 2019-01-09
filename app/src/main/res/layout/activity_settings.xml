@@ -3,12 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".activities.SettingsActivity">
 
 
     <com.rafakob.drawme.DrawMeRelativeLayout
-        android:layout_width="wrap_content"
         android:id="@+id/sim_view"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="16dp">
@@ -18,7 +19,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:src="@drawable/ic_action_name" />
+            android:src="@drawable/ic_sim_grey" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -39,6 +40,42 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
         </LinearLayout>
+
     </com.rafakob.drawme.DrawMeRelativeLayout>
 
+    <com.rafakob.drawme.DrawMeRelativeLayout
+        android:id="@+id/lang_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <ImageView
+            android:id="@+id/lang_icon"
+            android:layout_width="24dp"
+            android:layout_height="24sp"
+            android:layout_centerVertical="true"
+            android:src="@drawable/language" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16sp"
+            android:layout_toEndOf="@id/lang_icon"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/choose_lang"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/lang_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+    </com.rafakob.drawme.DrawMeRelativeLayout>
 </LinearLayout>

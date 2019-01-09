@@ -2,21 +2,24 @@ package com.greyeg.tajr.activities;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.ActivityManager;
+import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.ComponentName;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.media.AudioManager;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.CallLog;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.ViewPager;
@@ -44,6 +47,7 @@ import com.greyeg.tajr.fragments.SearchOrderPhoneFragment;
 import com.greyeg.tajr.helper.CurrentCallListener;
 import com.greyeg.tajr.helper.SharedHelper;
 import com.greyeg.tajr.helper.TimerTextView;
+import com.greyeg.tajr.helper.font.RobotoTextView;
 import com.greyeg.tajr.models.LastCallDetails;
 import com.greyeg.tajr.models.Order;
 import com.greyeg.tajr.models.UpdateOrderResponse;
@@ -67,10 +71,16 @@ import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 import static com.greyeg.tajr.activities.LoginActivity.IS_LOGIN;
 
-public class OrderActivity extends AppCompatActivity implements CurrentCallListener, SearchOrderPhoneFragment.OnFragmentInteractionListener {
+public class OrderActivity extends AppCompatActivity implements CurrentCallListener,
+        SearchOrderPhoneFragment.OnFragmentInteractionListener, NewOrderFragment.SendOrderListener {
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
 
     public static final String client_busy = "client_busy";
     public static final String CLIENT_BUSY_NAME = "العميل مشغول";
@@ -114,6 +124,8 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
     @BindView(R.id.status)
     EditText status;
 
+    @BindView(R.id.shipping_status)
+    EditText shipping_status;
 
     @BindView(R.id.client_order_phone2)
     EditText client_order_phone2;
@@ -124,6 +136,8 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
     @BindView(R.id.item_cost)
     EditText item_cost;
 
+    @BindView(R.id.discount)
+    EditText discount;
 
     @BindView(R.id.order_cost)
     EditText order_cost;
@@ -155,7 +169,7 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     public static String phone;
-    private String order_ud = "idid";
+    private String order_ud = null;
 
     long startWorkTime;
 
@@ -195,6 +209,7 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_update_order);
         ButterKnife.bind(this);
+        registerBroadCastReceiver();
         orderActivity = this;
         PhoneCallReceiver.setCurrentCallListener(this);
         my = this;
@@ -219,7 +234,7 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
         askToFinishWork = false;
         invalidateOptionsMenu();
         progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("جار تحديث الطلب");
+        progressDialog.setMessage(getString(R.string.updating_order));
 
         FragmentPagerItemAdapter adapter = new FragmentPagerItemAdapter(
                 getSupportFragmentManager(), FragmentPagerItems.with(this)
@@ -239,15 +254,16 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
 
         if (!micMute) {
             micMode.setIcon(R.drawable.ic_mic_none_black_24dp);
-            micMode.setTitle("ايقاف الميك");
+            micMode.setTitle(getString(R.string.mute_mic));
 
         } else {
             micMode.setIcon(R.drawable.ic_mic_off_black_24dp);
-            micMode.setTitle("تشغل الميك");
+            micMode.setTitle(getString(R.string.turn_on_mic));
         }
 
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         getFirstOrder();
+        createWarningDialog();
         Log.d("dddddddddd", "time started: " + timeWork);
     }
 
@@ -380,6 +396,14 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
 
 
     void updateOrder(String value) {
+        if (value==null||order_ud==null){
+            return;
+        }
+        if (updateOrderTimer != null) {
+            updateOrderTimer.cancel();
+            updateOrderTimerCount = 0;
+        }
+
         Api api = BaseClient.getBaseClient().create(Api.class);
         api.updateOrders(
                 SharedHelper.getKey(this, LoginActivity.TOKEN),
@@ -467,6 +491,65 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
         alertDialog.show();
     }
 
+    Timer updateOrderTimer;
+    int updateOrderTimerCount = 0;
+
+    private void updateOrderTimer() {
+        updateOrderTimer = new Timer();
+        updateOrderTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if (updateOrderTimerCount == 0) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            updateOrderTimerCount = updateOrderTimerCount + 1;
+                            warningDialog.show();
+                        }
+                    });
+                } else
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            api.userWorkTime(SharedHelper.getKey(getApplicationContext(), LoginActivity.TOKEN),
+                                    SharedHelper.getKey(getApplicationContext(), LoginActivity.USER_ID), "-300")
+                                    .enqueue(new Callback<UserWorkTimeResponse>() {
+                                        @Override
+                                        public void onResponse(Call<UserWorkTimeResponse> call, Response<UserWorkTimeResponse> response) {
+                                            if (response.body() != null) {
+                                                Toast.makeText(OrderActivity.this, "تم خصم 5 دقائق", Toast.LENGTH_SHORT).show();
+
+                                                Log.d("dddddddddd", "onResponse: " + response.body().getData());
+                                                Log.d("dddddddddd", "time after end: " + timeWork);
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onFailure(Call<UserWorkTimeResponse> call, Throwable t) {
+                                            Log.d("dddddddddd", "onResponse: " + t.getMessage());
+                                        }
+                                    });
+                        }
+                    });
+
+            }
+        }, 30000, 30000);
+    }
+
+    Dialog warningDialog;
+
+    private void createWarningDialog() {
+        warningDialog = new Dialog(this);
+        warningDialog.setContentView(R.layout.dialog_universal_warning);
+        RobotoTextView ok = warningDialog.findViewById(R.id.ok_warning);
+        ok.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                warningDialog.dismiss();
+            }
+        });
+    }
+
     public void startTimer(long start) {
         timerTextView.setStarterTime(start);
         timerTextView.startTimer();
@@ -494,7 +577,12 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
                     progressDialog.dismiss();
                     if (response.body().getCode().equals("1202") || response.body().getCode().equals("1200")) {
                         orderStatus = response.body().getOrder_type();
-
+//
+//                        if (5 == 5) {
+//                            missed_call_view.setVisibility(View.VISIBLE);
+//                            orederView.setVisibility(View.GONE);
+//                            return;
+//                        }
                         if (response.body().getOrder_type().equals("missed_call") || response.body().getOrder_type().equals("order_exsist")) {
                             missed_call_view.setVisibility(View.VISIBLE);
                             orederView.setVisibility(View.GONE);
@@ -504,11 +592,10 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
                             orederView.setVisibility(View.VISIBLE);
                         }
 
-
                         order = response.body().getOrder();
                         if (order != null) {
                             order_ud = order.getId();
-
+                            discount.setText(order.getDiscount());
                             product.setText(order.getProduct_name());
                             status.setText(order.getOrder_status());
                             client_name.setText(order.getClient_name());
@@ -516,6 +603,7 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
                             client_area.setText(order.getClient_area());
                             client_city.setText(order.getClient_city());
                             phone = order.getPhone_1();
+                            shipping_status.setText(order.getOrder_shipping_status());
                             client_order_phone1.setText(order.getPhone_1());
                             client_order_phone2.setText(order.getPhone_2());
                             item_cost.setText(order.getItem_cost());
@@ -556,7 +644,7 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
 
     public void callClient() {
         Intent callIntent = new Intent(Intent.ACTION_CALL);
-        callIntent.setData(Uri.parse("tel:" + "01067457665"));
+        callIntent.setData(Uri.parse("tel:" + phone));
         Log.d("xxxxxxxxxx", "callClient: " + phone);
         if (ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
@@ -583,52 +671,6 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
         }
     }
 
-//
-//    @OnClick(R.id.status)
-//    void showResponceToUpdate() {
-//        final Dialog dialog = new Dialog(this);
-//        view = LayoutInflater.from(this).inflate(R.layout.layout_order_status_list, null);
-//        dialog.setContentView(view);
-//        radioGroup = view.findViewById(R.id.radio_group);
-//
-//        ok = view.findViewById(R.id.ok);
-//        ok.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                RadioButton selectedRadioButton = (RadioButton) view.findViewById(radioGroup.getCheckedRadioButtonId());
-//                newStatus = selectedRadioButton.getText().toString();
-//                newStatusTag = (String) selectedRadioButton.getTag();
-//                status.setText(newStatus);
-//                //  Toast.makeText(OrderActivity.this, newStatusTag, Toast.LENGTH_SHORT).show();
-//                dialog.dismiss();
-//            }
-//        });
-//
-//        dialog.show();
-//    }
-
-    private boolean isMyServiceRunning(Class<?> serviceClass) {
-        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-            if (serviceClass.getName().equals(service.service.getClassName())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    void home() {
-        /* This should come from a preference that let's the user select an activity that can handle the HOME intent */
-        String packageName = "com.android.launcher";
-        String packageClass = "com.android.launcher2.Launcher";
-
-        Intent home_intent = new Intent(Intent.ACTION_MAIN);
-        home_intent.addCategory(Intent.CATEGORY_HOME);
-        home_intent.setComponent(new ComponentName(packageName, packageClass));
-        home_intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
-        /* Here you should catch the exception when the launcher has been uninstalled, and let the user save themselves by opening the Market or an app list or something. Users sometimes use root apps to uninstall the system launcher, so your fake launcher is all that is left. Might as well give the poor user a hand. */
-        startActivity(home_intent);
-    }
 
     @Override
     protected void onPause() {
@@ -734,11 +776,11 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
     void checkMic() {
         if (!micMute) {
             micMode.setIcon(R.drawable.ic_mic_none_black_24dp);
-            micMode.setTitle("ايقاف الميك");
+            micMode.setTitle(getString(R.string.mute_mic));
 
         } else {
             micMode.setIcon(R.drawable.ic_mic_off_black_24dp);
-            micMode.setTitle("تشغل الميك");
+            micMode.setTitle(getString(R.string.turn_on_mic));
         }
     }
 
@@ -772,26 +814,44 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
 
     void setAskToFinishWork() {
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(R.string.finish_work);
-        builder.setMessage(R.string.pause_work_message);
-        builder.setPositiveButton(R.string.finish_work, new DialogInterface.OnClickListener() {
+        final Dialog builder = new Dialog(this);
+
+        builder.setContentView(R.layout.dialog_ask_finigh);
+        RobotoTextView ok = builder.findViewById(R.id.yes);
+        RobotoTextView ca = builder.findViewById(R.id.cancel);
+        ok.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
+            public void onClick(View v) {
                 askToFinishWork = true;
                 invalidateOptionsMenu();
+                builder.dismiss();
+            }
+        });
+        ca.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                builder.dismiss();
             }
         });
 
-        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
+//        builder.setPositiveButton(R.string.finish_work, new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//                askToFinishWork = true;
+//                invalidateOptionsMenu();
+//            }
+//        });
+//
+//        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//                dialog.dismiss();
+//            }
+//        });
 
         builder.show();
     }
+
 
     @Override
     public void onBackPressed() {
@@ -801,6 +861,13 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        unregisterReceiver(networkStateReceiver);
+        if (pauseActivityTimer != null) {
+            pauseActivityTimer.cancel();
+        }
+        if (updateOrderTimer != null) {
+            updateOrderTimer.cancel();
+        }
         Log.d("dddddddddd", "time before end: " + timeWork);
         api.userWorkTime(SharedHelper.getKey(this, LoginActivity.TOKEN),
                 SharedHelper.getKey(this, LoginActivity.USER_ID), String.valueOf(timeWork))
@@ -880,6 +947,7 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+
                         LastCallDetails callDetails = getLastCallDetails();
 
                         if (callDetails.getType().equals("MISSED") || callDetails.getType().equals("REJECTED")) {
@@ -890,18 +958,23 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
                             }
 
                         } else if (callDetails.getType().equals("OUTGOING")) {
+
                             if (callDetails.getDuration().equals("0")) {
                                 if (currentCallTimerCount <= 30) {
                                     currentCallTimerCount = 0;
+                                    if (currentCallTimer!=null)
                                     currentCallTimer.cancel();
                                     Toast.makeText(OrderActivity.this, "تم انهاء الطلب العميل مشغول او غير متاح", Toast.LENGTH_SHORT).show();
                                     updateOrder(client_busy);
                                 } else {
                                     currentCallTimerCount = 0;
-                                    currentCallTimer.cancel();
+                                    if (currentCallTimer!=null)
+                                        currentCallTimer.cancel();
                                     Toast.makeText(OrderActivity.this, "تم انهاء الطلب العميل لم يرد", Toast.LENGTH_SHORT).show();
                                     updateOrder(client_noanswer);
                                 }
+                            } else {
+                                updateOrderTimer();
                             }
                         }
 
@@ -939,6 +1012,7 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
 
     @Override
     public void onFragmentInteraction() {
+        Toast.makeText(this, "تم ارسال الطلب", Toast.LENGTH_SHORT).show();
         getFirstOrder();
     }
 
@@ -965,5 +1039,43 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
         }
     };
 
+    @Override
+    public void orderSentGetNewOrder() {
+        Toast.makeText(this, "تم ارسال الطلب", Toast.LENGTH_SHORT).show();
+        getFirstOrder();
+    }
+
+    BroadcastReceiver networkStateReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            boolean noConnectivity = intent.getBooleanExtra(ConnectivityManager.EXTRA_NO_CONNECTIVITY, false);
+
+            if (!noConnectivity) {
+                onConnectionFound();
+            } else {
+                onConnectionLost();
+            }
+        }
+    };
+
+    public void onConnectionLost() {
+        Intent intent = new Intent(getApplicationContext(), NoInternetActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivityForResult(intent, 8523);
+    }
+
+    public void onConnectionFound() {
+    }
+
+    private void registerBroadCastReceiver() {
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(networkStateReceiver, filter);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        recreate();
+    }
 }
 

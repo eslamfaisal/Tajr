@@ -25,7 +25,6 @@ public abstract class PhoneCallReceiver extends BroadcastReceiver {
     private static boolean isIncoming;
     private static String savedNumber;
     public static String myCallNumber;
-
     public static boolean enCallFromMe;
     public static CurrentCallListener currentCallListener;
 
@@ -66,7 +65,7 @@ public abstract class PhoneCallReceiver extends BroadcastReceiver {
                 } else if (stateStr.equals("IDLE")) {
 
                     if (currentCallListener != null) {
-                       //currentCallListener.callEnded();
+                       currentCallListener.callEnded();
                     }
                 }
             }

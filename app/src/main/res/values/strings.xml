@@ -6,7 +6,13 @@
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
-
+    <string name="fontello_logo" translatable="false">&#xe8ad;</string>
+    <string name="fontello_user" translatable="false">&#xe800;</string>
+    <string name="material_icon_settings" translatable="false">&#xeabe;</string>
+    <string name="fontello_password" translatable="false">&#xe9df;</string>
+    <string name="fontello_searc" translatable="false">&#xea01;</string>
+    <string name="fontello_x_mark" translatable="false">&#xe887;</string>
+    <string name="material_icon_info_box" translatable="false">&#xe896;</string>
     <!-- Strings related to login -->
     <string name="title_activity_login">Sign in</string>
     <string name="prompt_email">Email</string>
@@ -89,14 +95,14 @@
     <string name="outer_offset">Outer Offset</string>
     <string name="volume">Volume</string>
     <string name="title_activity_settings">Settings</string>
-
+    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="choose_sim_number">Choose Sim Number</string>
     <string name="sim_1">Sim 1</string>
     <string name="sim_2">Sim 2</string>
     <string name="default_sim_activ">Default sim active</string>
 
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
     <string name="new_order">New Order</string>
     <string name="search">Search</string>
     <string name="send_order">Send Order</string>
@@ -110,6 +116,33 @@
     <string name="call">Call</string>
     <string name="cash">Cash</string>
     <string name="rank">Rank</string>
+
+    <string name="download">Download</string>
+    <string name="done">Done</string>
+    <string name="error">Error</string>
+    <string name="welcome_in_tajr">Welcome ! \n do you want to start work?</string>
+    <string name="writ_phone_number">Writ phone number</string>
+    <string name="warning">Warning!</string>
+    <string name="update_order_warning_msg">You must update the order within 3 seconds or you will be charged 5 minutes of your work time</string>
+    <string name="no_news_yet">No news yet</string>
+    <string name="news">News</string>
+    <string name="year">Year</string>
     <string name="month">Month</string>
+    <string name="ask_finish_work_msg">Do you want to finish work ;</string>
+    <string name="yes">Yes</string>
+    <string name="send_problem">Send Problem</string>
+    <string name="what_problem">What is the problem</string>
+    <string name="send">Send</string>
+
+    <string name="choose_lang">Choose language</string>
+    <string name="arabic">عربي</string>
+    <string name="english">English</string>
+    <string name="choose_language">Choose language</string>
+    <string name="swip_start">Swipe to start work</string>
+    <string name="turn_on_mic">Turn on mic</string>
+    <string name="updating_order">Updating order</string>
+    <string name="shipping_state">Shipping state</string>
+    <string name="discount">Discount</string>
+    <string name="no_internet">No Internet connection</string>
 
 </resources>

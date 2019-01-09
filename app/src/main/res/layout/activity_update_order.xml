@@ -61,7 +61,32 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_margin="16dp"
+                        android:text="@string/client_name"
+                        android:textColor="@color/colorPrimary"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <EditText
+                        android:id="@+id/client_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="45dp"
+                        android:background="@drawable/ic_background_gray"
+                        android:paddingStart="8dp"
+                        android:paddingEnd="8dp" />
+
+
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="16dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:text="@string/Product"
                         android:textColor="@color/colorPrimary"
                         android:textSize="18sp"
@@ -91,7 +116,6 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_margin="16dp"
                         android:text="@string/stause"
                         android:textColor="@color/colorPrimary"
                         android:textSize="18sp"
@@ -99,6 +123,60 @@
 
                     <EditText
                         android:id="@+id/status"
+                        android:layout_width="match_parent"
+                        android:layout_height="45dp"
+                        android:background="@drawable/ic_background_gray"
+                        android:editable="false"
+                        android:paddingStart="8dp"
+                        android:paddingEnd="8dp" />
+
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="16dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/shipping_state"
+                        android:textColor="@color/colorPrimary"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <EditText
+                        android:id="@+id/shipping_status"
+                        android:layout_width="match_parent"
+                        android:layout_height="45dp"
+                        android:background="@drawable/ic_background_gray"
+                        android:editable="false"
+                        android:paddingStart="8dp"
+                        android:paddingEnd="8dp" />
+
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="16dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/discount"
+                        android:textColor="@color/colorPrimary"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <EditText
+                        android:id="@+id/discount"
                         android:layout_width="match_parent"
                         android:layout_height="45dp"
                         android:background="@drawable/ic_background_gray"
@@ -119,35 +197,6 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_margin="16dp"
-                        android:text="@string/client_name"
-                        android:textColor="@color/colorPrimary"
-                        android:textSize="18sp"
-                        android:textStyle="bold" />
-
-                    <EditText
-                        android:id="@+id/client_name"
-                        android:layout_width="match_parent"
-                        android:layout_height="45dp"
-                        android:background="@drawable/ic_background_gray"
-                        android:paddingStart="8dp"
-                        android:paddingEnd="8dp" />
-
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginEnd="16dp"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="16dp"
                         android:text="@string/client_address"
                         android:textColor="@color/colorPrimary"
                         android:textSize="18sp"
@@ -157,6 +206,7 @@
                         android:id="@+id/client_address"
                         android:layout_width="match_parent"
                         android:layout_height="45dp"
+                        android:gravity="center"
                         android:background="@drawable/ic_background_gray"
                         android:paddingStart="8dp"
                         android:paddingEnd="8dp" />
@@ -175,7 +225,6 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_margin="16dp"
                         android:text="@string/client_area"
                         android:textColor="@color/colorPrimary"
                         android:textSize="18sp"
@@ -203,7 +252,6 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_margin="16dp"
                         android:text="@string/client_city"
                         android:textColor="@color/colorPrimary"
                         android:textSize="18sp"
@@ -231,7 +279,6 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_margin="16dp"
                         android:text="@string/client_order_phone"
                         android:textColor="@color/colorPrimary"
                         android:textSize="18sp"
@@ -262,7 +309,6 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_margin="16dp"
                         android:text="@string/client_order_phone"
                         android:textColor="@color/colorPrimary"
                         android:textSize="18sp"
@@ -292,7 +338,6 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_margin="16dp"
                         android:text="@string/sender_name"
                         android:textColor="@color/colorPrimary"
                         android:textSize="18sp"
@@ -321,7 +366,6 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_margin="16dp"
                         android:text="@string/item_cost"
                         android:textColor="@color/colorPrimary"
                         android:textSize="18sp"
@@ -351,7 +395,6 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_margin="16dp"
                         android:text="@string/item_no"
                         android:textColor="@color/colorPrimary"
                         android:textSize="18sp"
@@ -379,7 +422,6 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_margin="16dp"
                         android:text="@string/order_cost"
                         android:textColor="@color/colorPrimary"
                         android:textSize="18sp"
@@ -387,7 +429,6 @@
 
                     <EditText
                         android:id="@+id/order_cost"
-
                         android:layout_width="match_parent"
                         android:layout_height="45dp"
                         android:background="@drawable/ic_background_gray"
@@ -408,7 +449,6 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_margin="16dp"
                         android:text="@string/order_total_cost"
                         android:textColor="@color/colorPrimary"
                         android:textSize="18sp"
@@ -439,7 +479,6 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_margin="16dp"
                         android:text="@string/shipping_retum_cost"
                         android:textColor="@color/colorPrimary"
                         android:textSize="18sp"
@@ -469,7 +508,6 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_margin="16dp"
                         android:text="@string/order_type"
                         android:textColor="@color/colorPrimary"
                         android:textSize="18sp"
@@ -500,7 +538,6 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_margin="16dp"
                         android:text="@string/real_shipping_return_cost"
                         android:textColor="@color/colorPrimary"
                         android:textSize="18sp"
@@ -528,7 +565,6 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_margin="16dp"
                         android:text="@string/client_feedback"
                         android:textColor="@color/colorPrimary"
                         android:textSize="18sp"
@@ -556,7 +592,6 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_margin="16dp"
                         android:text="@string/notes"
                         android:textColor="@color/colorPrimary"
                         android:textSize="18sp"
@@ -570,17 +605,13 @@
                         android:padding="8dp"
                         android:paddingStart="8dp"
                         android:paddingEnd="8dp" />
-
-
                 </LinearLayout>
-
 
                 <com.rafakob.drawme.DrawMeButton xmlns:drawme="http://schemas.android.com/apk/res-auto"
                     android:id="@+id/update"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentBottom="true"
-
                     android:layout_gravity="center_horizontal"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="40sp"
@@ -592,10 +623,7 @@
                     drawme:dm_backColorDisabled="@color/grey"
                     drawme:dm_backColorPressed="@color/green"
                     drawme:dm_radius="10dp" />
-
-
             </LinearLayout>
-
 
             <RelativeLayout
                 android:layout_width="match_parent"

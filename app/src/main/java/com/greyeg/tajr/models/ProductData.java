@@ -48,11 +48,51 @@ public class ProductData {
     @Expose
     private String product_real_price;
 
-    @SerializedName("extra_data")
-    @Expose
-    private String extra_data;
+//    @SerializedName("extra_data")
+//    @Expose
+//    private String extra_data;
 
     public ProductData() {
+    }
+
+    public void setProduct_id(String product_id) {
+        this.product_id = product_id;
+    }
+
+    public void setProduct_name(String product_name) {
+        this.product_name = product_name;
+    }
+
+    public void setCategory_id(String category_id) {
+        this.category_id = category_id;
+    }
+
+    public void setCategory_name(String category_name) {
+        this.category_name = category_name;
+    }
+
+    public void setSub_category_id(String sub_category_id) {
+        this.sub_category_id = sub_category_id;
+    }
+
+    public void setSub_category_name(String sub_category_name) {
+        this.sub_category_name = sub_category_name;
+    }
+
+    public void setProduct_describtion(String product_describtion) {
+        this.product_describtion = product_describtion;
+    }
+
+    public void setProduct_image(String product_image) {
+        this.product_image = product_image;
+    }
+
+    public void setProduct_info(String product_info) {
+        this.product_info = product_info;
+    }
+
+    public void setProduct_real_price(String product_real_price) {
+        this.product_real_price = product_real_price;
     }
 
     public String getProduct_id() {
@@ -95,7 +135,7 @@ public class ProductData {
         return product_real_price;
     }
 
-    public String getExtra_data() {
-        return extra_data;
-    }
+//    public String getExtra_data() {
+//        return extra_data;
+//    }
 }

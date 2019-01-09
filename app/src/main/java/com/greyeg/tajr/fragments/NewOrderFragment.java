@@ -1,5 +1,7 @@
 package com.greyeg.tajr.fragments;
 
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -12,6 +14,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.greyeg.tajr.R;
 import com.greyeg.tajr.activities.LoginActivity;
@@ -19,6 +22,7 @@ import com.greyeg.tajr.adapters.ProductSpinnerAdapter;
 import com.greyeg.tajr.helper.SharedHelper;
 import com.greyeg.tajr.models.AllProducts;
 import com.greyeg.tajr.models.Cities;
+import com.greyeg.tajr.models.NewOrderResponse;
 import com.greyeg.tajr.models.ProductData;
 import com.greyeg.tajr.models.ProductForSpinner;
 import com.greyeg.tajr.server.Api;
@@ -29,6 +33,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -64,6 +69,18 @@ public class NewOrderFragment extends Fragment {
 
     View mainView;
 
+    String productId;
+
+    List<ProductForSpinner> products;
+
+    List<String> cities = new ArrayList<>();
+    List<String> citiesId = new ArrayList<>();
+
+    public static String CITY_ID;
+
+    private List<Cities.City> citiesBody;
+
+
     public NewOrderFragment() {
         // Required empty public constructor
     }
@@ -91,19 +108,13 @@ public class NewOrderFragment extends Fragment {
 
     }
 
-    List<String> cities = new ArrayList<>();
-    List<String> citiesId = new ArrayList<>();
-
-    public static String CITY_ID;
-
-    private List<Cities.City> citiesBody;
 
     private void getcities(Api api) {
         if (cities != null && cities.size() > 1) {
             cities.clear();
         }
         Call<Cities> getCiriesCall = api.getCities(
-                "F0I+UCx8Bh8nRcIR38/vFD8wDzWyCA3ioaSOdgWdjeIo72ccTTlHFLs2unfLBZwON20wTUM9kzI9LneHiDFM/g==",
+                SharedHelper.getKey(getActivity(), LoginActivity.TOKEN),
                 SharedHelper.getKey(getActivity(), LoginActivity.USER_ID)
         );
 
@@ -147,22 +158,38 @@ public class NewOrderFragment extends Fragment {
 
 
     private void getProducts(Api api) {
-        api.getProducts(SharedHelper.getKey(getActivity(), LoginActivity.TOKEN), Integer.parseInt(SharedHelper.getKey(getActivity(), LoginActivity.USER_ID))
+        api.getProducts(SharedHelper.getKey(getActivity(), LoginActivity.TOKEN),
+                SharedHelper.getKey(getActivity(), LoginActivity.USER_ID)
         ).enqueue(new Callback<AllProducts>() {
             @Override
-            public void onResponse(Call<AllProducts> call, Response<AllProducts> response) {
+            public void onResponse(Call<AllProducts> call, final Response<AllProducts> response) {
+                Log.d("eeeeeeeeeeeeeee", "respons: " + response.body().getProducts_count());
                 if (response.body() != null) {
-                    Log.d("eeeeeeeeeeeeeee", "respons: " + response.body().getCode());
-                    List<ProductForSpinner> products = new ArrayList<>();
+                    if (response.body().getProducts().size() > 0) {
+                        productId = response.body().getProducts().get(0).getProduct_id();
+
+                    }
+                    products = new ArrayList<>();
                     for (ProductData product : response.body().getProducts()) {
                         products.add(new ProductForSpinner(product.getProduct_name(), product.getProduct_image(), product.getProduct_id()));
                     }
-
                     ArrayAdapter<String> myAdapter = new ProductSpinnerAdapter(
                             getActivity(), products);
                     product.setAdapter(myAdapter);
-                }
 
+                    product.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                            productId = response.body().getProducts().get(position).getProduct_id();
+                            // Toast.makeText(getActivity(), ""+productId, Toast.LENGTH_SHORT).show();
+                        }
+
+                        @Override
+                        public void onNothingSelected(AdapterView<?> parent) {
+
+                        }
+                    });
+                }
             }
 
             @Override
@@ -172,4 +199,81 @@ public class NewOrderFragment extends Fragment {
         });
 
     }
+    ProgressDialog progressDialog;
+    @OnClick(R.id.send_order)
+    void sendOrder() {
+        progressDialog = new ProgressDialog(getActivity());
+        progressDialog.setMessage("جار ارسال الطلب");
+        progressDialog.show();
+        if (productId != null && CITY_ID != null &&
+                !client_name.getText().toString().equals("")
+                && !client_address.getText().toString().equals("")
+                && !client_area.getText().toString().equals("")
+                && !client_order_phone1.getText().toString().equals("")
+                && !item_no.getText().toString().equals("")
+                ) {
+            Api api = BaseClient.getBaseClient().create(Api.class);
+            api.recordNewOrder(
+                    SharedHelper.getKey(getActivity(),LoginActivity.TOKEN),
+                    Integer.parseInt(SharedHelper.getKey(getActivity(),LoginActivity.USER_ID)),
+                    Integer.parseInt(productId),
+                    client_name.getText().toString(),
+                    client_order_phone1.getText().toString(),
+                    Integer.parseInt(CITY_ID),
+                    client_area.getText().toString(),
+                    client_address.getText().toString(),
+                    item_no.getText().toString()
+            ).enqueue(new Callback<NewOrderResponse>() {
+                @Override
+                public void onResponse(Call<NewOrderResponse> call, Response<NewOrderResponse> response) {
+                    progressDialog.dismiss();
+                    Log.d("GGGGGGGGGGgggggg", "onResponse: "+response.body().getCode());
+                    if (response.body().getInfo().equals("added")){
+                        onButtonPressed();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<NewOrderResponse> call, Throwable t) {
+                    progressDialog.dismiss();
+                    Log.d("GGGGGGGGGGgggggg", "onFailure: "+t.getMessage());
+                }
+            });
+        }else {
+            progressDialog.dismiss();
+            Toast.makeText(getActivity(), "برجاء ادخال جميع البيانات", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private SendOrderListener mListener;
+
+    public interface SendOrderListener {
+        // TODO: Update argument type and name
+        void orderSentGetNewOrder();
+    }
+
+    // TODO: Rename method, update argument and hook method into UI event
+    public void onButtonPressed() {
+        if (mListener != null) {
+            mListener.orderSentGetNewOrder();
+        }
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof SendOrderListener) {
+            mListener = (SendOrderListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
 }

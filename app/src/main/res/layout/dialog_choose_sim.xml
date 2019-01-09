@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="260dp"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/main_color_600"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="16dp" >
+
+            <ImageView
+                android:layout_width="55dp"
+                android:layout_height="55dp"
+                android:src="@drawable/ic_action_name"/>
+
+            <com.greyeg.tajr.helper.font.RobotoTextView
+                android:id="@+id/dialog_universal_warning_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/choose_sim_number"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                app:typeface="robotoBlack" />
+        </LinearLayout>
+
+        <RadioGroup
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:id="@+id/radio_group"
+            android:padding="16dp"
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:layout_height="wrap_content">
+
+            <RadioButton
+                android:tag="1"
+                android:id="@+id/sim1"
+                android:padding="16dp"
+                android:textColor="@color/black_text_color"
+                android:textSize="14sp"
+                android:text="@string/sim_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <RadioButton
+                android:tag="2"
+
+                android:id="@+id/sim2"
+                android:padding="16dp"
+                android:textColor="@color/black_text_color"
+                android:textSize="14sp"
+                android:text="@string/sim_2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </RadioGroup>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/ef_colorPrimaryDark"/>
+        <LinearLayout
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <com.greyeg.tajr.helper.font.RobotoTextView
+                android:id="@+id/ok"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:background="@drawable/selector_dialog_warning"
+                android:gravity="center"
+                android:minWidth="64dp"
+                android:padding="8dp"
+                android:textStyle="bold"
+                android:text="@string/ok"
+                android:textColor="@color/main_color_600"
+                android:textSize="20sp"
+                app:typeface="robotoMedium" />
+        </LinearLayout>
+    </LinearLayout>
+
+</RelativeLayout>

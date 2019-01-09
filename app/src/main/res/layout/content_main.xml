@@ -9,24 +9,77 @@
     tools:context=".MainActivity"
     tools:showIn="@layout/app_bar_main">
 
+    <com.greyeg.tajr.view.kbv.KenBurnsView
+        android:id="@+id/ken_burns_images"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
     <LinearLayout
         android:gravity="center"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+        <ImageView
+            android:layout_marginBottom="36dp"
+            android:src="@drawable/ic_logo"
+            android:id="@+id/logo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <com.greyeg.tajr.helper.font.RobotoTextView
+            android:id="@+id/welcome_text"
+            style="@style/TextViewAppearance.Headline2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:alpha="0.0"
+            android:gravity="center"
+            android:layout_marginBottom="100dp"
+            android:text="@string/welcome_in_tajr"
+            android:textColor="@color/colorPrimary" />
 
-        <com.rafakob.drawme.DrawMeButton
-            xmlns:drawme="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/start_Timer"
-            android:text="@string/start_work"
-            drawme:dm_textColor="@android:color/white"
-            android:layout_marginTop="20dp"
-            android:layout_width="200dp"
-            android:layout_height="200dp"
-            android:textSize="24sp"
-            drawme:dm_rippleUseControlHighlight="true"
-            drawme:dm_backColor="@color/colorPrimary"
-            drawme:dm_shapeRadiusHalfHeight="true"/>
+        <com.greyeg.tajr.view.MaterialRippleLayout
+            style="@style/RippleStyle"
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="3dp"
+            app:rippleColor="@color/main_color_grey_400" >
+
+            <com.greyeg.tajr.helper.font.RobotoTextView
+                android:id="@+id/start_Timer"
+                style="@style/ButtonStyle.RaisedEmpty"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="0dp"
+                android:background="@color/main_color_500"
+                android:minWidth="112dp"
+                android:text="@string/start_work"
+                android:textColor="#fff" />
+        </com.greyeg.tajr.view.MaterialRippleLayout>
+
+        <com.ebanx.swipebtn.SwipeButton
+            android:id="@+id/swipe_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            app:button_background="@drawable/shape_button"
+            app:button_bottom_padding="20dp"
+            app:button_image_disabled="@drawable/ic_call_black_24dp"
+            app:button_image_enabled="@drawable/ic_call_black_24dp"
+            app:button_image_height="60dp"
+            app:button_image_width="80dp"
+            app:button_left_padding="20dp"
+            app:button_right_padding="20dp"
+            app:button_top_padding="20dp"
+            app:has_activate_state="true"
+            app:initial_state="disabled"
+            app:inner_text="@string/swip_start"
+            app:inner_text_background="@drawable/shape_rounded"
+            app:inner_text_bottom_padding="18dp"
+            app:inner_text_color="@android:color/white"
+            app:inner_text_size="14sp"
+            app:inner_text_top_padding="18dp" />
 
     </LinearLayout>
 

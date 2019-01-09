@@ -76,12 +76,66 @@
     <string name="hours">الساعات</string>
     <string name="points">النقاط</string>
     <string name="analytics">التحليلات</string>
-    <string name="no_orders_with_this_number">No orders with this number</string>
-    <string name="end_call">End call</string>
-    <string name="mute_mic">Mute mic</string>
-    <string name="call">Call</string>
-    <string name="cash">Cash</string>
-    <string name="rank">Rank</string>
-    <string name="month">Month</string>
+    <string name="no_orders_with_this_number">لا يوجد طلبات لهذا الرقم</string>
+    <string name="end_call">انهاء المكالمة</string>
+    <string name="mute_mic">ايقاف الميك</string>
+    <string name="call">اتصال</string>
+    <string name="cash">المال</string>
+    <string name="rank">التقييم</string>
+    <string name="month">الشهر</string>
+    <string name="download">تحميل</string>
+    <string name="done">تم</string>
+    <string name="error">خطأ</string>
+    <string name="welcome_in_tajr">مرحبا! \n هل تريد بدء العمل؟</string>
+    <string name="writ_phone_number">اكتب رقم هاتف</string>
+    <string name="warning">تحذير!</string>
+    <string name="update_order_warning_msg">يجب عليك تحديث الطلب فى خلال ٣٠ ثانية والا سيتم خصم ٥ دقائق من وقت عملك</string>
+
+    <string name="move">حرك للتحديث</string>
+    <string name="settings">الاعدادات</string>
+    <string name="mb_move_direction">mb_move_direction</string>
+    <string name="mb_movement_right">mb_movement_right</string>
+    <string name="mb_movement_top">mb_movement_top</string>
+    <string name="mb_movement_bottom">mb_movement_bottom</string>
+    <string name="mb_offset_inner">mb_offset_inner</string>
+    <string name="mb_offset_outer">mb_offset_outer</string>
+    <string name="mb_event_volume">mb_event_volume</string>
+    <string name="mb_vibration_duration">mb_vibration_duration</string>
+    <string name="mb_movement_left">mb_movement_left</string>
+    <string name="current_position">CURRENT POSITION</string>
+    <string name="choose">اختر</string>
+    <string name="move_direction">Move Direction</string>
+    <string name="vibration_duration">Vibration Duration</string>
+    <string name="ok">تم</string>
+    <string name="movement_left">Movement Left</string>
+    <string name="movement_right">Movement Right</string>
+    <string name="movement_top">Movement Top</string>
+    <string name="movement_bottom">Movement Bottom</string>
+    <string name="inner_offset">Inner Offset</string>
+    <string name="outer_offset">Outer Offset</string>
+    <string name="volume">Volume</string>
+    <string name="title_activity_settings">الاعدادات</string>
+
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="no_news_yet">لا توجد اخبار بعد</string>
+    <string name="news">اخبار</string>
+    <string name="year">السنة </string>
+    <string name="ask_finish_work_msg">هل تريد انهاء العمل</string>
+    <string name="yes">نعم</string>
+    <string name="send_problem">إرسال مشكلة</string>
+    <string name="what_problem">ما هى المشكلة!</string>
+    <string name="send">ارسال</string>
+    <string name="choose_lang">تغيير اللغة</string>
+    <string name="arabic">عربي</string>
+    <string name="english">English</string>
+    <string name="choose_language">تغيير اللغة</string>
+    <string name="swip_start">اسحب لبدء العمل</string>
+    <string name="turn_on_mic">تشغيل الميك</string>
+    <string name="updating_order">جار تحديث الطلب</string>
+    <string name="shipping_state">حالة الشحن</string>
+    <string name="discount">الخصم</string>
+    <string name="no_internet">لايوجد اتصال بالانترنت</string>
+
 
 </resources>

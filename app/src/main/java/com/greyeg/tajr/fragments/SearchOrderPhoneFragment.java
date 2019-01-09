@@ -1,21 +1,21 @@
 package com.greyeg.tajr.fragments;
 
 
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -24,11 +24,13 @@ import android.widget.Toast;
 import com.greyeg.tajr.R;
 import com.greyeg.tajr.activities.LoginActivity;
 import com.greyeg.tajr.helper.SharedHelper;
+import com.greyeg.tajr.helper.font.RobotoTextView;
 import com.greyeg.tajr.models.Order;
 import com.greyeg.tajr.models.UpdateOrderResponse;
 import com.greyeg.tajr.models.UserOrders;
 import com.greyeg.tajr.server.Api;
 import com.greyeg.tajr.server.BaseClient;
+import com.greyeg.tajr.view.ProgressWheel;
 import com.thefinestartist.movingbutton.MovingButton;
 import com.thefinestartist.movingbutton.enums.ButtonPosition;
 
@@ -39,7 +41,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static com.greyeg.tajr.activities.LoginActivity.IS_LOGIN;
 import static com.greyeg.tajr.activities.OrderActivity.CANCEL_ORDER_NAME;
 import static com.greyeg.tajr.activities.OrderActivity.CLIENT_PROBLEM;
 import static com.greyeg.tajr.activities.OrderActivity.CONFIRM_ORDER_NAME;
@@ -55,10 +56,6 @@ public class SearchOrderPhoneFragment extends Fragment {
 
     @BindView(R.id.phone_input)
     EditText phoneInput;
-
-    @BindView(R.id.search_btn)
-    FloatingActionButton searchButton;
-
 
     @BindView(R.id.product)
     EditText product;
@@ -123,6 +120,11 @@ public class SearchOrderPhoneFragment extends Fragment {
 
     @BindView(R.id.no_order_tv)
     TextView noOrder;
+
+    @BindView(R.id.progress_search)
+    ProgressWheel progressSearch;
+
+
     Api api;
     private Order order;
     private String order_ud;
@@ -144,22 +146,44 @@ public class SearchOrderPhoneFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this, view);
-        progressDialog = new ProgressDialog(getActivity());
-        progressDialog.setMessage("جار تحديث الطلب");
+        progressSearch.spin();
 
         api = BaseClient.getBaseClient().create(Api.class);
+
+
+        phoneInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    if (phoneInput.getText().toString().equals("")) {
+                        Toast.makeText(getActivity(), "برجاء ادخال رقم الهاتف", Toast.LENGTH_SHORT).show();
+                    } else {
+                        search();
+                    }
+                    return true;
+                }
+                return false;
+            }
+        });
     }
 
-    @OnClick(R.id.search_btn)
-    void search() {
+
+    @OnClick(R.id.search)
+    void searchNow() {
         if (phoneInput.getText().toString().equals("")) {
             Toast.makeText(getActivity(), "برجاء ادخال رقم الهاتف", Toast.LENGTH_SHORT).show();
-            return;
+        } else {
+            search();
         }
+
+    }
+
+    void search() {
+        progressSearch.setVisibility(View.VISIBLE);
+        noOrder.setVisibility(View.GONE);
         api.getPhoneData(
                 SharedHelper.getKey(getActivity(), LoginActivity.TOKEN),
-                SharedHelper.getKey(getActivity(), LoginActivity.USER_ID),
-                "+201111350338").enqueue(new Callback<UserOrders>() {
+                SharedHelper.getKey(getActivity(), LoginActivity.USER_ID), phoneInput.getText().toString()).enqueue(new Callback<UserOrders>() {
             @Override
             public void onResponse(Call<UserOrders> call, Response<UserOrders> response) {
                 if (response.body() != null) {
@@ -167,6 +191,7 @@ public class SearchOrderPhoneFragment extends Fragment {
                     if (response.body().getCode().equals("1202") || response.body().getCode().equals("1200")) {
                         orderView.setVisibility(View.VISIBLE);
                         noOrder.setVisibility(View.GONE);
+                        progressSearch.setVisibility(View.GONE);
                         order = response.body().getOrder();
                         // if (order != null) {
                         initUpdateAsNewOrder();
@@ -197,6 +222,7 @@ public class SearchOrderPhoneFragment extends Fragment {
                     } else {
                         orderView.setVisibility(View.GONE);
                         noOrder.setVisibility(View.VISIBLE);
+                        progressSearch.setVisibility(View.GONE);
 
                     }
                     Log.d("eeeeeeeeeeee", "onResponse: " + response.body().getInfo());
@@ -205,13 +231,20 @@ public class SearchOrderPhoneFragment extends Fragment {
 
             @Override
             public void onFailure(Call<UserOrders> call, Throwable t) {
+                orderView.setVisibility(View.GONE);
+                noOrder.setVisibility(View.VISIBLE);
+                progressSearch.setVisibility(View.GONE);
+
                 Log.d("eeeeeeeeeeeee", "onFailure: " + t.getMessage());
             }
         });
 
     }
 
-
+    @OnClick(R.id.clear)
+    void clearSearch() {
+        phoneInput.setText("");
+    }
 
     void initUpdateAsNewOrder() {
         updatingButton.setMovementLeft(300);
@@ -290,64 +323,113 @@ public class SearchOrderPhoneFragment extends Fragment {
             }
         });
     }
+//
+//    void showProblemNoteDialog() {
+//        AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
+//        alertDialog.setTitle("مشكلة");
+//        //  alertDialog.setMessage("اكتب المشكلة");
+//
+//        final EditText input = new EditText(getActivity());
+//        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+//                LinearLayout.LayoutParams.MATCH_PARENT,
+//                LinearLayout.LayoutParams.MATCH_PARENT);
+//        input.setLayoutParams(lp);
+//        input.setHint("اكتب المشكلة");
+//        alertDialog.setView(input);
+//
+//        alertDialog.setPositiveButton("ارسال",
+//                new DialogInterface.OnClickListener() {
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        progressDialog.show();
+//                        if (!input.getText().toString().equals("")) {
+//                            api.sendProblem(SharedHelper.getKey(getActivity(), LoginActivity.TOKEN),
+//                                    Integer.parseInt(SharedHelper.getKey(getActivity(), LoginActivity.USER_ID)),
+//                                    Integer.parseInt(order.getId()),
+//                                    input.getText().toString()).enqueue(new Callback<UpdateOrderResponse>() {
+//                                @Override
+//                                public void onResponse(Call<UpdateOrderResponse> call, Response<UpdateOrderResponse> response) {
+//                                    if (response.body() != null) {
+//                                        if (response.body().getCode().equals("1200")) {
+//
+//                                            progressDialog.dismiss();
+//                                            updateOrder(order_data_confirmed);
+//                                        }
+//                                    }
+//                                }
+//
+//                                @Override
+//                                public void onFailure(Call<UpdateOrderResponse> call, Throwable t) {
+//
+//                                }
+//                            });
+//                        } else {
+//                            Toast.makeText(getActivity(), "برجاء ادخال المشكلة", Toast.LENGTH_SHORT).show();
+//                        }
+//                    }
+//                });
+//
+//        alertDialog.setNegativeButton("الغاء",
+//                new DialogInterface.OnClickListener() {
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        dialog.cancel();
+//                    }
+//                });
+//        alertDialog.show();
+//    }
 
+    Dialog problemDialog;
+    RobotoTextView sendProblemBtn;
+    EditText problemEdt;
     void showProblemNoteDialog() {
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
-        alertDialog.setTitle("مشكلة");
-        //  alertDialog.setMessage("اكتب المشكلة");
 
-        final EditText input = new EditText(getActivity());
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.MATCH_PARENT);
-        input.setLayoutParams(lp);
-        input.setHint("اكتب المشكلة");
-        alertDialog.setView(input);
-
-        alertDialog.setPositiveButton("ارسال",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        progressDialog.show();
-                        if (!input.getText().toString().equals("")) {
-                            api.sendProblem(SharedHelper.getKey(getActivity(), LoginActivity.TOKEN),
-                                    Integer.parseInt(SharedHelper.getKey(getActivity(), LoginActivity.USER_ID)),
-                                    Integer.parseInt(order.getId()),
-                                    input.getText().toString()).enqueue(new Callback<UpdateOrderResponse>() {
-                                @Override
-                                public void onResponse(Call<UpdateOrderResponse> call, Response<UpdateOrderResponse> response) {
-                                    if (response.body() != null) {
-                                        if (response.body().getCode().equals("1200")) {
-
-                                            progressDialog.dismiss();
-                                            updateOrder(order_data_confirmed);
-                                        }
-                                    }
+        problemDialog = new Dialog(getActivity());
+        problemDialog.setContentView(R.layout.dialog_send_problem);
+        sendProblemBtn = problemDialog.findViewById(R.id.send);
+        problemEdt = problemDialog.findViewById(R.id.problem_Edt);
+        sendProblemBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                progressDialog = new ProgressDialog(getActivity());
+                progressDialog.setMessage("جار ارسال المشكلة");
+                progressDialog.show();
+                if (!problemEdt.getText().toString().equals("")) {
+                    api.sendProblem(SharedHelper.getKey(getActivity(), LoginActivity.TOKEN),
+                            Integer.parseInt(SharedHelper.getKey(getActivity(), LoginActivity.USER_ID)),
+                            Integer.parseInt(order.getId()),
+                            problemEdt.getText().toString()).enqueue(new Callback<UpdateOrderResponse>() {
+                        @Override
+                        public void onResponse(Call<UpdateOrderResponse> call, Response<UpdateOrderResponse> response) {
+                            if (response.body() != null) {
+                                if (response.body().getCode().equals("1200")) {
+                                    Toast.makeText(getActivity(), "تم ارسال المشكلة", Toast.LENGTH_SHORT).show();
+                                    problemDialog.dismiss();
+                                    progressDialog.dismiss();
+                                    updateOrder(order_data_confirmed);
                                 }
-
-                                @Override
-                                public void onFailure(Call<UpdateOrderResponse> call, Throwable t) {
-
-                                }
-                            });
-                        } else {
-                            Toast.makeText(getActivity(),"برجاء ادخال المشكلة", Toast.LENGTH_SHORT).show();
+                            }
                         }
-                    }
-                });
 
-        alertDialog.setNegativeButton("الغاء",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
-        alertDialog.show();
+                        @Override
+                        public void onFailure(Call<UpdateOrderResponse> call, Throwable t) {
+
+                        }
+                    });
+                } else {
+                    Toast.makeText(getActivity(), "برجاء ادخال المشكلة", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        problemDialog.show();
+
     }
+
     private OnFragmentInteractionListener mListener;
+
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction();
     }
+
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed() {
         if (mListener != null) {
