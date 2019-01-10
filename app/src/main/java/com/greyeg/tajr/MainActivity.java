@@ -483,7 +483,7 @@ public class MainActivity extends AppCompatActivity
         // pre-KitKat)
         mDrawerList.setAdapter(new DrawerAdapter(this));
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
-        mDrawerList.setBackgroundResource(R.drawable.ic_home_for_list);
+       // mDrawerList.setBackgroundResource(R.drawable.ic_home_for_list);
         mDrawerList.getLayoutParams().width = (int) getResources()
                 .getDimension(R.dimen.drawer_width_travel);
 

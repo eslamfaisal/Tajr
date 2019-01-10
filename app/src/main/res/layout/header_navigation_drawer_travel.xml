@@ -4,12 +4,12 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content" >
 
-    <ImageView
+    <View
+        android:background="#30000000"
         android:id="@+id/header_navigation_drawer_travel_image"
         android:layout_width="match_parent"
         android:layout_height="200dp"
         android:layout_gravity="center_horizontal"
-        android:src="@drawable/left_menu_travel_small"
         android:scaleType="centerCrop" />
 
     <LinearLayout

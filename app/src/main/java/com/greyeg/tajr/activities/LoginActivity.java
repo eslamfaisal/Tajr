@@ -148,8 +148,6 @@ public class LoginActivity extends AppCompatActivity {
 //        getCallLogs();
     }
 
-
-
     private void setAnimation(String category) {
         if (category.equals(SPLASH_SCREEN_OPTION_1)) {
             mKenBurns.setImageResource(R.drawable.background_media);

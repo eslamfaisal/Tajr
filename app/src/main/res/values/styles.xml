@@ -46,7 +46,6 @@
     <style name="ListViewStyle">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
-        <item name="android:background">@color/main_color_grey_200</item>
         <item name="android:cacheColorHint">@android:color/transparent</item>
         <item name="android:choiceMode">singleChoice</item>
         <item name="android:divider">@android:color/transparent</item>

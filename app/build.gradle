@@ -49,14 +49,10 @@ dependencies {
     implementation 'com.orhanobut:logger:2.1.1'
     implementation 'org.greenrobot:eventbus:3.0.0'
     implementation project(':library')
-
     implementation 'pl.kitek:timertextview:0.0.2'
-
     implementation 'com.github.pwittchen:swipe-rx2:0.3.0'
-
     implementation 'com.ebanx:swipe-button:0.8.3'
     implementation 'uk.co.chrisjenx:calligraphy:2.3.0'
-
     implementation 'com.ogaclejapan.smarttablayout:library:1.6.1@aar'
     implementation 'com.ogaclejapan.smarttablayout:utils-v4:1.6.1@aar'
 
