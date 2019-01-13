@@ -23,6 +23,7 @@ import com.greyeg.tajr.R;
 import com.greyeg.tajr.activities.LoginActivity;
 import com.greyeg.tajr.helper.SharedHelper;
 import com.greyeg.tajr.models.ActivityHistory;
+import com.greyeg.tajr.models.PointsHistory;
 import com.greyeg.tajr.server.Api;
 import com.greyeg.tajr.server.BaseClient;
 import com.greyeg.tajr.view.AnimatedExpandableListView;
@@ -70,7 +71,35 @@ public class HoursFragment extends Fragment {
         ).enqueue(new Callback<ActivityHistory>() {
             @Override
             public void onResponse(Call<ActivityHistory> call, Response<ActivityHistory> response) {
-                Log.d("uuuuuuuuuu", "onResponse: " + response.body().getHistory().get(0).getMonth().get(0).getName_ar());
+                if (response.body() != null) {
+                if(response.body().getCode().equals("1200")||response.body().getCode().equals("1202")){
+
+
+                        // if (response.body().getHistory().size()>0){
+                        List<ActivityHistory.Year> years = response.body().getHistory();
+                        List<GroupItem> items = new ArrayList<GroupItem>();
+                        GroupItem item = null;
+                        for (ActivityHistory.Year year : years) {
+                            item = new GroupItem();
+                            item.year = year.getYear();
+                            ChildItem child;
+                            for (ActivityHistory.Year.Month month : year.getMonth()) {
+                                child = new ChildItem();
+                                child.month = month.getName_ar();
+                                child.hours = month.getPoints();
+                                item.items.add(child);
+                            }
+                        }
+                        items.add(item);
+                        //items = fillData(items);
+
+                        adapter.setData(items);
+                        listView.setAdapter((ExpandableListAdapter) adapter);
+                        // }
+                    }                }else{
+
+                }
+
             }
 
             @Override
@@ -79,10 +108,8 @@ public class HoursFragment extends Fragment {
             }
         });
 
-
         adapter = new ExampleAdapter(getActivity());
         listView = view.findViewById(R.id.expandable_lv_social_list_view);
-
 
         // In order to show animations, we need to use a custom click handler
         // for our ExpandableListView.

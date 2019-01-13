@@ -96,6 +96,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     @OnClick(R.id.sim_view)
     public void shooseSimNumber() {
+
         if (SharedHelper.getKey(getApplicationContext(), "sub_num").equals("1")) {
             return;
         }
@@ -115,8 +116,15 @@ public class SettingsActivity extends AppCompatActivity {
             return;
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-            if (SubscriptionManager.from(getApplicationContext()).getActiveSubscriptionInfoForSimSlotIndex(1).getCarrierName() != null){
+            if (SubscriptionManager.from(getApplicationContext()).getActiveSubscriptionInfoList().size()==0||SubscriptionManager.from(getApplicationContext()).getActiveSubscriptionInfoList().size()==1){
+                simNum.setText(getString(R.string.default_sim_activ));
+                return;
+            }
+            if (SubscriptionManager.from(getApplicationContext()).getActiveSubscriptionInfoForSimSlotIndex(0).getCarrierName() != null){
                 sim1.setText(getString(R.string.sim_1)+"  "+SubscriptionManager.from(getApplicationContext()).getActiveSubscriptionInfoForSimSlotIndex(0).getCarrierName());
+
+            }
+            if (SubscriptionManager.from(getApplicationContext()).getActiveSubscriptionInfoForSimSlotIndex(1).getCarrierName() != null){
                 sim2.setText(getString(R.string.sim_2)+"  "+SubscriptionManager.from(getApplicationContext()).getActiveSubscriptionInfoForSimSlotIndex(1).getCarrierName());
 
             }

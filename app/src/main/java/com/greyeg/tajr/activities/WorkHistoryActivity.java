@@ -27,6 +27,7 @@ public class WorkHistoryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_work_history);
         getSupportActionBar().setTitle(getString(R.string.analytics));
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         FragmentPagerItemAdapter adapter = new FragmentPagerItemAdapter(
                 getSupportFragmentManager(), FragmentPagerItems.with(this)
                 .add(this.getString(R.string.money), MoneyFragment.class)

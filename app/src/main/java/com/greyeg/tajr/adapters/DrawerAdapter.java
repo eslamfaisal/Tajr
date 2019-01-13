@@ -31,6 +31,8 @@ public class DrawerAdapter extends BaseAdapter {
 		list.add(new DummyModel(0, "", context.getString(R.string.settings), R.string.material_icon_settings));
 		list.add(new DummyModel(1, "", context.getString(R.string.analytics), R.string.material_icon_settings));
 		list.add(new DummyModel(2, "", context.getString(R.string.news), R.string.material_icon_settings));
+		list.add(new DummyModel(3, "", context.getString(R.string.Balance), R.string.material_icon_settings));
+
 		return list;
 	}
 	@Override

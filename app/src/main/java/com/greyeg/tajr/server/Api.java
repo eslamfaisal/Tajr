@@ -2,8 +2,10 @@ package com.greyeg.tajr.server;
 
 import com.greyeg.tajr.models.ActivityHistory;
 import com.greyeg.tajr.models.AllProducts;
+import com.greyeg.tajr.models.CashRequestHistory;
 import com.greyeg.tajr.models.Cities;
 import com.greyeg.tajr.models.MoneyHistory;
+import com.greyeg.tajr.models.MoneyRequestResponse;
 import com.greyeg.tajr.models.NewOrderResponse;
 import com.greyeg.tajr.models.PhonNumberResponse;
 import com.greyeg.tajr.models.PointsHistory;
@@ -131,4 +133,22 @@ public interface Api {
             @Field("client_address") String client_address,
             @Field("items") String items
     );
+
+    // log in user client
+    @FormUrlEncoded
+    @POST("send/cash_out")
+    Call<MoneyRequestResponse> requestCash(
+            @Field("token") String token,
+            @Field("user_id") String user_id,
+            @Field("mobile") String mobile,
+            @Field("cash") String cash,
+            @Field("notes") String notes
+    );
+
+    // log in user client
+    @FormUrlEncoded
+    @POST("send/balance_history")
+    Call<CashRequestHistory> getAvailableBalance(@Field("token") String token,
+                                                 @Field("user_id") String  user_id);
+
 }

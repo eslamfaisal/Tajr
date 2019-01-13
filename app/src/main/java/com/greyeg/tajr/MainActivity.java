@@ -43,6 +43,7 @@ import android.widget.Toast;
 
 import com.ebanx.swipebtn.OnStateChangeListener;
 import com.ebanx.swipebtn.SwipeButton;
+import com.greyeg.tajr.activities.BalanceActivity;
 import com.greyeg.tajr.activities.LoginActivity;
 import com.greyeg.tajr.activities.NewsActivity;
 import com.greyeg.tajr.activities.OrderActivity;
@@ -521,6 +522,8 @@ public class MainActivity extends AppCompatActivity
                 intent = new Intent(getApplicationContext(), WorkHistoryActivity.class);
             } else if (position == 3) {
                 intent = new Intent(getApplicationContext(), NewsActivity.class);
+            }else if (position == 4) {
+                intent = new Intent(getApplicationContext(), BalanceActivity.class);
             }
             if (intent != null) {
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

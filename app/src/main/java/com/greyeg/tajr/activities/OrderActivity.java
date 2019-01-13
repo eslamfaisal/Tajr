@@ -22,6 +22,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -32,6 +33,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -41,6 +44,7 @@ import android.widget.Toast;
 
 import com.android.internal.telephony.ITelephony;
 import com.greyeg.tajr.R;
+import com.greyeg.tajr.calc.CalcDialog;
 import com.greyeg.tajr.call_receiver.PhoneCallReceiver;
 import com.greyeg.tajr.fragments.NewOrderFragment;
 import com.greyeg.tajr.fragments.SearchOrderPhoneFragment;
@@ -74,13 +78,37 @@ import retrofit2.Response;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 import static com.greyeg.tajr.activities.LoginActivity.IS_LOGIN;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.EditText;
+import android.widget.TextView;
 
+import com.greyeg.tajr.R;
+import com.greyeg.tajr.calc.CalcDialog;
+
+import java.math.BigDecimal;
 public class OrderActivity extends AppCompatActivity implements CurrentCallListener,
-        SearchOrderPhoneFragment.OnFragmentInteractionListener, NewOrderFragment.SendOrderListener {
+        SearchOrderPhoneFragment.OnFragmentInteractionListener, NewOrderFragment.SendOrderListener , CalcDialog.CalcDialogCallback  {
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
+
+    private static final String TAG = CalcActivity.class.getSimpleName();
+
+    private static final int DIALOG_REQUEST_CODE = 0;
+
+    private TextView valueTxv;
+    private CheckBox signChk;
+
+    private @Nullable
+    BigDecimal value;
 
     public static final String client_busy = "client_busy";
     public static final String CLIENT_BUSY_NAME = "العميل مشغول";
@@ -101,62 +129,49 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
 
 
     @BindView(R.id.product)
-    EditText product;
+    TextView product;
 
     @BindView(R.id.client_name)
-    EditText client_name;
+    TextView client_name;
 
     @BindView(R.id.client_address)
-    EditText client_address;
+    TextView client_address;
 
     @BindView(R.id.client_area)
-    EditText client_area;
+    TextView client_area;
 
     @BindView(R.id.client_city)
-    EditText client_city;
+    TextView client_city;
 
     @BindView(R.id.item_no)
-    EditText item_no;
+    TextView item_no;
 
     @BindView(R.id.client_order_phone1)
-    EditText client_order_phone1;
+    TextView client_order_phone1;
 
     @BindView(R.id.status)
-    EditText status;
+    TextView status;
 
     @BindView(R.id.shipping_status)
-    EditText shipping_status;
-
-    @BindView(R.id.client_order_phone2)
-    EditText client_order_phone2;
+    TextView shipping_status;
 
     @BindView(R.id.sender_name)
-    EditText sender_name;
+    TextView sender_name;
 
     @BindView(R.id.item_cost)
-    EditText item_cost;
+    TextView item_cost;
 
     @BindView(R.id.discount)
-    EditText discount;
+    TextView discount;
 
     @BindView(R.id.order_cost)
-    EditText order_cost;
+    TextView order_cost;
 
     @BindView(R.id.order_total_cost)
-    EditText order_total_cost;
-
-    @BindView(R.id.shipping_retum_cost)
-    EditText shipping_retum_cost;
-
-    @BindView(R.id.real_shipping_return_cost)
-    EditText real_shipping_return_cost;
+    TextView order_total_cost;
 
     @BindView(R.id.client_feedback)
-    EditText client_feedback;
-
-    @BindView(R.id.order_type)
-    EditText order_type;
-
+    TextView client_feedback;
 
 //    @BindView(R.id.update)
 //    DrawMeButton update;
@@ -209,6 +224,7 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_update_order);
         ButterKnife.bind(this);
+        setCalc(savedInstanceState);
         registerBroadCastReceiver();
         orderActivity = this;
         PhoneCallReceiver.setCurrentCallListener(this);
@@ -396,7 +412,7 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
 
 
     void updateOrder(String value) {
-        if (value==null||order_ud==null){
+        if (value == null || order_ud == null) {
             return;
         }
         if (updateOrderTimer != null) {
@@ -605,14 +621,14 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
                             phone = order.getPhone_1();
                             shipping_status.setText(order.getOrder_shipping_status());
                             client_order_phone1.setText(order.getPhone_1());
-                            client_order_phone2.setText(order.getPhone_2());
+
                             item_cost.setText(order.getItem_cost());
                             item_no.setText(order.getItems_no());
-                            shipping_retum_cost.setText(order.getShipping_cost());
+
                             order_cost.setText(order.getOrder_cost());
                             order_total_cost.setText(order.getTotal_order_cost());
                             sender_name.setText(order.getSender_name());
-                            order_type.setText(order.getOrder_type());
+                            //order_type.setText(order.getOrder_type());
                             client_feedback.setText(order.getClient_feedback());
 
                             if (!stoped) ;
@@ -749,9 +765,12 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
         } else if (id == R.id.mic_mode) {
             modifyMic();
 
+        }else if (id == R.id.calc) {
+            showCalculatoe();
         }
         return super.onOptionsItemSelected(item);
     }
+
 
     public static void finishTheWorkNow() {
         finish = true;
@@ -962,13 +981,13 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
                             if (callDetails.getDuration().equals("0")) {
                                 if (currentCallTimerCount <= 30) {
                                     currentCallTimerCount = 0;
-                                    if (currentCallTimer!=null)
-                                    currentCallTimer.cancel();
+                                    if (currentCallTimer != null)
+                                        currentCallTimer.cancel();
                                     Toast.makeText(OrderActivity.this, "تم انهاء الطلب العميل مشغول او غير متاح", Toast.LENGTH_SHORT).show();
                                     updateOrder(client_busy);
                                 } else {
                                     currentCallTimerCount = 0;
-                                    if (currentCallTimer!=null)
+                                    if (currentCallTimer != null)
                                         currentCallTimer.cancel();
                                     Toast.makeText(OrderActivity.this, "تم انهاء الطلب العميل لم يرد", Toast.LENGTH_SHORT).show();
                                     updateOrder(client_noanswer);
@@ -1077,5 +1096,152 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
         super.onActivityResult(requestCode, resultCode, data);
         recreate();
     }
+
+    public void showLabel(View view) {
+        LinearLayout linearLayout = findViewById(view.getId());
+
+        RunAnimation(linearLayout.getChildAt(0).getId(),linearLayout.getChildAt(1).getId());
+    }
+
+    private void RunAnimation(int id1,int id2) {
+
+        TextView tv = (TextView) findViewById(id1);
+        TextView bg = (TextView) findViewById(id2);
+
+        if (tv.getVisibility() == View.VISIBLE) {
+            Animation a = AnimationUtils.loadAnimation(this, R.anim.bottom_sheet_fad_out);
+            a.reset();
+            tv.clearAnimation();
+            tv.startAnimation(a);
+            tv.setVisibility(View.GONE);
+            bg.setBackgroundResource(R.drawable.ic_background_gray);
+        } else {
+            Animation a = AnimationUtils.loadAnimation(this, R.anim.bottom_sheet_fad_in);
+            a.reset();
+            tv.clearAnimation();
+            tv.startAnimation(a);
+            tv.setVisibility(View.VISIBLE);
+            bg.setBackgroundResource(R.drawable.ic_background_gray_down);
+
+        }
+
+    }
+    private void showCalculatoe() {
+        FragmentManager fm = getSupportFragmentManager();
+        if (fm.findFragmentByTag("calc_dialog") == null) {
+            calcDialog.show(fm, "calc_dialog");
+        }
+    }
+    CalcDialog calcDialog;
+    private void setCalc(Bundle state) {
+        if (state != null) {
+            String valueStr = state.getString("value");
+            if (valueStr != null) {
+                value = new BigDecimal(valueStr);
+            }
+        }
+
+         calcDialog = CalcDialog.newInstance(DIALOG_REQUEST_CODE);
+
+        signChk = findViewById(R.id.chk_change_sign);
+        if (value == null) signChk.setEnabled(false);
+
+        final CheckBox showAnswerChk = findViewById(R.id.chk_answer_btn);
+        final CheckBox showSignChk = findViewById(R.id.chk_show_sign);
+        final CheckBox clearOnOpChk = findViewById(R.id.chk_clear_operation);
+        final CheckBox showZeroChk = findViewById(R.id.chk_show_zero);
+
+        // Max value
+        final CheckBox maxValChk = findViewById(R.id.chk_max_value);
+        final EditText maxValEdt = findViewById(R.id.edt_max_value);
+        maxValChk.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                maxValEdt.setEnabled(isChecked);
+            }
+        });
+        maxValEdt.setEnabled(maxValChk.isChecked());
+        maxValEdt.setText(String.valueOf(10000000000L));
+
+        // Max integer digits
+        final CheckBox maxIntChk = findViewById(R.id.chk_max_int);
+        final EditText maxIntEdt = findViewById(R.id.edt_max_int);
+        maxIntChk.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                maxIntEdt.setEnabled(isChecked);
+            }
+        });
+        maxIntEdt.setEnabled(maxIntChk.isChecked());
+        maxIntEdt.setText(String.valueOf(10));
+
+        // Max fractional digits
+        final CheckBox maxFracChk = findViewById(R.id.chk_max_frac);
+        final EditText maxFracEdt = findViewById(R.id.edt_max_frac);
+        maxIntChk.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                maxFracEdt.setEnabled(isChecked);
+            }
+        });
+        maxFracEdt.setEnabled(maxFracChk.isChecked());
+        maxFracEdt.setText(String.valueOf(8));
+
+        // Value display
+        valueTxv = findViewById(R.id.txv_result);
+        valueTxv.setText(value == null ? getString(R.string.result_value_none) : value.toPlainString());
+
+        // Open dialog button
+        showCalc(maxValEdt, maxValChk, maxIntEdt, maxIntChk, maxFracEdt, maxFracChk, calcDialog, showSignChk, showAnswerChk, clearOnOpChk, showZeroChk);
+
+    }
+
+    private void showCalc(EditText maxValEdt, CheckBox maxValChk, EditText maxIntEdt, CheckBox maxIntChk, EditText maxFracEdt, CheckBox maxFracChk, CalcDialog calcDialog, CheckBox showSignChk, CheckBox showAnswerChk, CheckBox clearOnOpChk, CheckBox showZeroChk) {
+        boolean signCanBeChanged = !signChk.isEnabled() || signChk.isChecked();
+
+        String maxValueStr = maxValEdt.getText().toString();
+        BigDecimal maxValue = maxValChk.isChecked() && !maxValueStr.isEmpty() ?
+                new BigDecimal(maxValueStr) : null;
+
+        String maxIntStr = maxIntEdt.getText().toString();
+        int maxInt = maxIntChk.isChecked() && !maxIntStr.isEmpty() ?
+                Integer.valueOf(maxIntStr) : CalcDialog.MAX_DIGITS_UNLIMITED;
+
+        String maxFracStr = maxFracEdt.getText().toString();
+        int maxFrac = maxFracChk.isChecked() && !maxFracStr.isEmpty() ?
+                Integer.valueOf(maxFracStr) : CalcDialog.MAX_DIGITS_UNLIMITED;
+
+        // Set settings and value
+        calcDialog.setValue(value)
+                .setShowSignButton(showSignChk.isChecked())
+                .setShowAnswerButton(showAnswerChk.isChecked())
+                .setSignCanBeChanged(signCanBeChanged, signCanBeChanged ? 0 : value.signum())
+                .setClearDisplayOnOperation(clearOnOpChk.isChecked())
+                .setShowZeroWhenNoValue(showZeroChk.isChecked())
+                .setMaxValue(maxValue)
+                .setMaxDigits(maxInt, maxFrac);
+
+
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle state) {
+        super.onSaveInstanceState(state);
+
+        if (value != null) {
+            state.putString("value", value.toString());
+        }
+    }
+
+    @Override
+    public void onValueEntered(int requestCode, BigDecimal value) {
+        // if (requestCode == DIALOG_REQUEST_CODE) {}  <-- If there's many dialogs
+
+        this.value = value;
+
+        valueTxv.setText(value.toPlainString());
+        signChk.setEnabled(value.compareTo(BigDecimal.ZERO) != 0);
+    }
+
 }
 

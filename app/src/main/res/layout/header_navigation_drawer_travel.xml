@@ -5,34 +5,21 @@
     android:layout_height="wrap_content" >
 
     <View
-        android:background="#30000000"
+        android:background="#40000000"
         android:id="@+id/header_navigation_drawer_travel_image"
         android:layout_width="match_parent"
         android:layout_height="200dp"
         android:layout_gravity="center_horizontal"
         android:scaleType="centerCrop" />
 
-    <LinearLayout
+    <com.greyeg.tajr.helper.font.RobotoTextView
+        android:layout_centerInParent="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:gravity="center_vertical" >
-
-        <com.greyeg.tajr.helper.font.MaterialDesignIconsTextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/fontello_user"
-            android:textColor="@android:color/white"
-            android:textSize="72dp" />
-
-        <com.greyeg.tajr.helper.font.RobotoTextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:id="@+id/user_name"
-            android:textColor="@android:color/white"
-            android:textSize="32sp"
-            app:typeface="robotoLight" />
-    </LinearLayout>
+        android:layout_marginLeft="20dp"
+        android:id="@+id/user_name"
+        android:textColor="@android:color/white"
+        android:textSize="32sp"
+        app:typeface="robotoLight" />
 
 </RelativeLayout>

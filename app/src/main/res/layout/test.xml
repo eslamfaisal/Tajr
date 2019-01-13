@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/gps_bg"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:paddingTop="5.0dip"
+        android:paddingBottom="5.0dip"
+        android:text="@string/select_language"
+        android:textAllCaps="true"
+        android:textColor="@color/white"
+        android:textSize="15.0sp"
+        android:textStyle="bold" />
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1.0px"
+        android:layout_marginLeft="20.0dip"
+        android:layout_marginTop="10.0dip"
+        android:layout_marginRight="20.0dip"
+        android:layout_marginBottom="10.0dip"
+        android:background="@color/gray1" />
+
+    <Button
+        android:id="@id/btn_ar"
+        android:layout_width="150.0dip"
+        android:layout_height="40.0dip"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="10.0dip"
+        android:background="@drawable/lang_btn"
+        android:text="عربي"
+        android:textColor="@color/colorPrimary"
+        android:textSize="18.0sp"
+        android:textStyle="bold" />
+
+    <Button
+        android:id="@id/btn_en"
+        android:layout_width="150.0dip"
+        android:layout_height="40.0dip"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="10.0dip"
+        android:layout_marginBottom="20.0dip"
+        android:background="@drawable/lang_btn"
+        android:text="English"
+        android:textColor="@color/colorPrimary"
+        android:textSize="18.0sp"
+        android:textStyle="bold" />
+</LinearLayout>

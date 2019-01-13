@@ -76,7 +76,7 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activities.LoginActivity"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".activities.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -122,13 +122,26 @@
         <activity
             android:name=".activities.EmptyCallActivity"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".activities.SettingsActivity"
-            android:parentActivityName=".MainActivity"/>
-        <activity android:name=".activities.WorkHistoryActivity" />
+        <activity
+            android:name=".activities.SettingsActivity"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".activities.WorkHistoryActivity"
+            android:parentActivityName=".MainActivity" />
         <activity
             android:name=".activities.NewsActivity"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".activities.NoInternetActivity"></activity>
+        <activity android:name=".activities.NoInternetActivity" />
+        <activity
+            android:name=".RequestMoneyActivity"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".activities.BalanceActivity"
+            android:label="@string/Balance"
+            android:parentActivityName=".MainActivity" />
+        <activity android:name=".activities.CalcActivity">
+
+        </activity>
     </application>
 
 </manifest>

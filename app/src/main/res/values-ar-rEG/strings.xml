@@ -136,6 +136,13 @@
     <string name="shipping_state">حالة الشحن</string>
     <string name="discount">الخصم</string>
     <string name="no_internet">لايوجد اتصال بالانترنت</string>
+    <string name="request">طلب</string>
+    <string name="request_money">سحب المال</string>
+    <string name="balance_history">الطلبات القديمة</string>
+    <string name="availabl_balance">الرصيد المتاح</string>
+    <string name="time">الوقت</string>
+    <string name="Balance">الرصيد</string>
+    <string name="calculator">Calculator</string>
 
 
 </resources>
