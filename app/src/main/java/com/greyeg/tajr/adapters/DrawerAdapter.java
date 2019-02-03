@@ -32,6 +32,11 @@ public class DrawerAdapter extends BaseAdapter {
 		list.add(new DummyModel(1, "", context.getString(R.string.analytics), R.string.material_icon_settings));
 		list.add(new DummyModel(2, "", context.getString(R.string.news), R.string.material_icon_settings));
 		list.add(new DummyModel(3, "", context.getString(R.string.Balance), R.string.material_icon_settings));
+		list.add(new DummyModel(4, "", context.getString(R.string.chat), R.string.material_icon_settings));
+		list.add(new DummyModel(5, "", context.getString(R.string.recordes), R.string.material_icon_settings));
+		list.add(new DummyModel(6, "", context.getString(R.string.carts), R.string.material_icon_settings));
+
+
 
 		return list;
 	}

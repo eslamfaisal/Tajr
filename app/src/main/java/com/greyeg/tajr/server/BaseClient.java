@@ -19,6 +19,7 @@ public class BaseClient {
     }
 
     public static Retrofit getBaseClient() {
+
         Gson gson = new GsonBuilder()
                 .setLenient()
                 .create();

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.rafakob.drawme.DrawMeRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fresco="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true">
+
+    <TextView
+        android:layout_marginEnd="16dp"
+        android:layout_alignParentEnd="true"
+        android:id="@+id/client_name_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/client_name"
+        android:textColor="@color/colorPrimary"
+        android:textSize="16sp"/>
+    <RelativeLayout
+        android:layout_below="@id/client_name_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <RelativeLayout
+            android:id="@+id/content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <com.rygelouv.audiosensei.player.AudioSenseiPlayerView
+                android:id="@+id/audio_player"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="16dp"
+                android:layout_alignParentEnd="true"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <com.facebook.drawee.view.SimpleDraweeView
+                android:id="@+id/photo_image_view_of_message_from_me"
+                android:layout_width="200dp"
+                android:layout_marginEnd="16dp"
+
+                android:layout_height="300dp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="16dp"
+                android:maxHeight="500dp"
+                android:layout_marginTop="2dp"
+                fresco:backgroundImage="@color/gray"
+                fresco:roundBottomLeft="true"
+                fresco:roundBottomRight="true"
+                fresco:roundedCornerRadius="20dp"
+                fresco:roundingBorderColor="@color/colorPrimary"
+                fresco:roundingBorderWidth="1dp" />
+
+            <TextView
+                android:id="@+id/message_text_view_of_message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="16dp"
+                android:background="@drawable/ic_text_background_from_me"
+                android:clickable="true"
+                android:layout_marginEnd="16dp"
+
+                android:focusable="true"
+                android:gravity="start"
+                android:maxWidth="250dp"
+                android:padding="8dp"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                tools:text="Message ro eslam faisal ali emara " />
+
+        </RelativeLayout>
+
+        <TextView
+
+            android:id="@+id/message_time_from_me"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/content"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="16dp"
+            android:gravity="start"
+            android:visibility="gone"
+            android:textSize="12sp"
+            tools:text="30 menutes" />
+
+    </RelativeLayout>
+
+</com.rafakob.drawme.DrawMeRelativeLayout>

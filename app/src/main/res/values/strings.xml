@@ -16,6 +16,8 @@
         <item>Result must be negative</item>
     </string-array>
 
+    <string name="slide_to_cancel">"Slide to cancel"</string>
+    <string name="app_info">"A WhatsApp style audio recording view to send voice notes in chat.\nHold the Mic to record, then slide left to cancel or swipe up to Lock and record.\n\nCredit:\nVarun John\nhttps://github.com/varunjohn\nvarunjohn1990@gmail.com"</string>
 
 
     <string name="open_dialog">Open dialog</string>
@@ -183,5 +185,17 @@
     <string name="time">Time</string>
     <string name="Balance">Balance</string>
     <string name="calculator">Calculator</string>
+    <string name="wrong_message">Write message</string>
+    <string name="chat">Chat</string>
+    <string name="recordes">Recordes</string>
+    <string name="call_listener_on">Call Recorder ON</string>
+    <string name="call_listener_off">Call Recorder OFF</string>
+    <string name="messages">Messages</string>
+    <string name="work">Work</string>
+    <string name="carts">Carts</string>
+    <string name="copy">Copy</string>
+    <string name="available_balance">Available balance</string>
+    <string name="omla">LE</string>
+    <string name="admin_login">Admin login</string>
 
 </resources>

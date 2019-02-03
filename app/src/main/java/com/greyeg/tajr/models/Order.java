@@ -3,7 +3,9 @@ package com.greyeg.tajr.models;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Order {
+import java.io.Serializable;
+
+public class Order implements Serializable {
 
     @SerializedName("id")
     @Expose
@@ -17,21 +19,17 @@ public class Order {
     @Expose
     private String order_status;
 
-    @SerializedName("discount")
+    @SerializedName("order_status_type")
     @Expose
-    private String discount;
-
-    @SerializedName("order_shipping_status_type")
-    @Expose
-    private String order_shipping_status_type;
+    private String order_status_type;
 
     @SerializedName("order_shipping_status")
     @Expose
     private String order_shipping_status;
 
-    @SerializedName("order_status_type")
+    @SerializedName("order_shipping_status_type")
     @Expose
-    private String order_status_type;
+    private String order_shipping_status_type;
 
     @SerializedName("client_name")
     @Expose
@@ -59,7 +57,7 @@ public class Order {
 
     @SerializedName("phone_2")
     @Expose
-    private String phone_2 ;
+    private String phone_2;
 
     @SerializedName("item_cost")
     @Expose
@@ -76,6 +74,10 @@ public class Order {
     @SerializedName("order_cost")
     @Expose
     private String order_cost;
+
+    @SerializedName("discount")
+    @Expose
+    private String discount;
 
     @SerializedName("total_order_cost")
     @Expose
@@ -97,114 +99,202 @@ public class Order {
     @Expose
     private String order_type;
 
-//    @SerializedName("extra_data")
-//    @Expose
-//    private String extra_data;
-
-    @SerializedName("multi_orders")
+    @SerializedName("notes")
     @Expose
-    private String multi_orders ;
+    private String notes;
 
     public Order() {
-    }
-
-    public String getDiscount() {
-        return discount;
     }
 
     public String getId() {
         return id;
     }
 
+    public void setId(String id) {
+        this.id = id;
+    }
+
     public String getProduct_name() {
         return product_name;
+    }
+
+    public void setProduct_name(String product_name) {
+        this.product_name = product_name;
     }
 
     public String getOrder_status() {
         return order_status;
     }
 
-    public String getOrder_shipping_status_type() {
-        return order_shipping_status_type;
-    }
-
-    public String getOrder_shipping_status() {
-        return order_shipping_status;
+    public void setOrder_status(String order_status) {
+        this.order_status = order_status;
     }
 
     public String getOrder_status_type() {
         return order_status_type;
     }
 
+    public void setOrder_status_type(String order_status_type) {
+        this.order_status_type = order_status_type;
+    }
+
+    public String getOrder_shipping_status() {
+        return order_shipping_status;
+    }
+
+    public void setOrder_shipping_status(String order_shipping_status) {
+        this.order_shipping_status = order_shipping_status;
+    }
+
+    public String getOrder_shipping_status_type() {
+        return order_shipping_status_type;
+    }
+
+    public void setOrder_shipping_status_type(String order_shipping_status_type) {
+        this.order_shipping_status_type = order_shipping_status_type;
+    }
+
     public String getClient_name() {
         return client_name;
+    }
+
+    public void setClient_name(String client_name) {
+        this.client_name = client_name;
     }
 
     public String getClient_address() {
         return client_address;
     }
 
+    public void setClient_address(String client_address) {
+        this.client_address = client_address;
+    }
+
     public String getClient_area() {
         return client_area;
+    }
+
+    public void setClient_area(String client_area) {
+        this.client_area = client_area;
     }
 
     public String getClient_city() {
         return client_city;
     }
 
+    public void setClient_city(String client_city) {
+        this.client_city = client_city;
+    }
+
+    public String getClient_city_id() {
+        return client_city_id;
+    }
+
+    public void setClient_city_id(String client_city_id) {
+        this.client_city_id = client_city_id;
+    }
+
     public String getPhone_1() {
         return phone_1;
+    }
+
+    public void setPhone_1(String phone_1) {
+        this.phone_1 = phone_1;
     }
 
     public String getPhone_2() {
         return phone_2;
     }
 
+    public void setPhone_2(String phone_2) {
+        this.phone_2 = phone_2;
+    }
+
     public String getItem_cost() {
         return item_cost;
+    }
+
+    public void setItem_cost(String item_cost) {
+        this.item_cost = item_cost;
     }
 
     public String getItems_no() {
         return items_no;
     }
 
+    public void setItems_no(String items_no) {
+        this.items_no = items_no;
+    }
+
     public String getShipping_cost() {
         return shipping_cost;
+    }
+
+    public void setShipping_cost(String shipping_cost) {
+        this.shipping_cost = shipping_cost;
     }
 
     public String getOrder_cost() {
         return order_cost;
     }
 
+    public void setOrder_cost(String order_cost) {
+        this.order_cost = order_cost;
+    }
+
+    public String getDiscount() {
+        return discount;
+    }
+
+    public void setDiscount(String discount) {
+        this.discount = discount;
+    }
+
     public String getTotal_order_cost() {
         return total_order_cost;
+    }
+
+    public void setTotal_order_cost(String total_order_cost) {
+        this.total_order_cost = total_order_cost;
     }
 
     public String getFb_sender_id() {
         return fb_sender_id;
     }
 
+    public void setFb_sender_id(String fb_sender_id) {
+        this.fb_sender_id = fb_sender_id;
+    }
+
     public String getSender_name() {
         return sender_name;
+    }
+
+    public void setSender_name(String sender_name) {
+        this.sender_name = sender_name;
     }
 
     public String getClient_feedback() {
         return client_feedback;
     }
 
+    public void setClient_feedback(String client_feedback) {
+        this.client_feedback = client_feedback;
+    }
+
     public String getOrder_type() {
         return order_type;
     }
-//
-//    public String getExtra_data() {
-//        return extra_data;
-//    }
 
-    public String getMulti_orders() {
-        return multi_orders;
+    public void setOrder_type(String order_type) {
+        this.order_type = order_type;
     }
 
-    public String getClient_city_id() {
-        return client_city_id;
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
     }
 }

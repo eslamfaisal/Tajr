@@ -7,6 +7,9 @@
                 android:angle="45"
                 android:endColor="#e7e7e7"
                 android:startColor="#e7e7e7" />
+            <padding
+                android:left="8dp"
+                android:right="8dp" />
         </shape>
     </item>
     <item >

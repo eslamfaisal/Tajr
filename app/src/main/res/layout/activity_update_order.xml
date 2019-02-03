@@ -6,7 +6,8 @@
     android:layout_height="match_parent"
     tools:context=".activities.OrderActivity">
 
-    <android.support.design.widget.AppBarLayout
+    <LinearLayout
+        android:orientation="vertical"
         android:id="@+id/appbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -27,7 +28,15 @@
                 android:gravity="center"
                 android:textColor="@color/white" />
         </android.support.v7.widget.Toolbar>
-    </android.support.design.widget.AppBarLayout>
+        <include
+            android:visibility="gone"
+            android:id="@+id/product_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            layout="@layout/layout_current_product_details"/>
+    </LinearLayout>
+
+
 
     <FrameLayout
         android:id="@+id/fram_ordr"
@@ -63,7 +72,7 @@
 
                         <TextView
                             android:id="@+id/client_name_label"
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/client_name"
                             android:textColor="@color/colorPrimary"
@@ -71,14 +80,23 @@
                             android:textStyle="bold"
                             android:visibility="gone" />
 
-                        <TextView
-                            android:id="@+id/client_name"
+                        <FrameLayout
+                            android:id="@+id/client_name2"
                             android:layout_width="match_parent"
-                            android:layout_height="45dp"
-                            android:background="@drawable/ic_background_gray"
-                            android:paddingStart="8dp"
-                            android:paddingEnd="8dp"
-                            android:tag="client_name_label" />
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/ic_background_gray">
+
+                            <EditText
+                                android:background="@color/gray"
+                                android:id="@+id/client_name"
+                                android:layout_width="match_parent"
+                                android:layout_height="40dp"
+                                android:layout_marginEnd="26dp"
+                                android:inputType="text"
+                                android:paddingStart="16dp"
+                                android:tag="client_name_label" />
+                        </FrameLayout>
+
 
                     </LinearLayout>
 
@@ -104,18 +122,22 @@
                             android:textStyle="bold"
                             android:visibility="gone" />
 
-                        <TextView
-                            android:id="@+id/product"
+                        <FrameLayout
+                            android:id="@+id/product2"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/ic_background_gray"
-                            android:editable="false"
-                            android:padding="8dp"
-                            android:paddingStart="8dp"
-                            android:paddingEnd="8dp"
-                            android:tag="product_label" />
+                            android:background="@drawable/ic_background_gray">
 
-
+                            <EditText
+                                android:background="@color/gray"
+                                android:id="@+id/product"
+                                android:layout_width="match_parent"
+                                android:layout_height="40dp"
+                                android:layout_marginEnd="26dp"
+                                android:inputType="text"
+                                android:paddingStart="16dp"
+                                android:tag="client_name_label" />
+                        </FrameLayout>
                     </LinearLayout>
 
                     <LinearLayout
@@ -140,17 +162,23 @@
                             android:textStyle="bold"
                             android:visibility="gone" />
 
-                        <TextView
-                            android:id="@+id/status"
-
+                        <FrameLayout
+                            android:id="@+id/status2"
                             android:layout_width="match_parent"
-                            android:layout_height="45dp"
-                            android:background="@drawable/ic_background_gray"
-                            android:editable="false"
-                            android:paddingStart="8dp"
-                            android:paddingEnd="8dp"
-                            android:tag="status_label" />
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/ic_background_gray">
 
+                            <EditText
+                                android:editable="false"
+                                android:background="@color/gray"
+                                android:id="@+id/status"
+                                android:layout_width="match_parent"
+                                android:layout_height="45dp"
+                                android:layout_marginEnd="26dp"
+                                android:inputType="text"
+                                android:paddingStart="16dp"
+                                android:tag="client_name_label" />
+                        </FrameLayout>
                     </LinearLayout>
 
 
@@ -176,23 +204,28 @@
                             android:textStyle="bold"
                             android:visibility="gone" />
 
-                        <TextView
-                            android:id="@+id/shipping_status"
-
+                        <FrameLayout
+                            android:id="@+id/shipping_status2"
                             android:layout_width="match_parent"
-                            android:layout_height="45dp"
-                            android:background="@drawable/ic_background_gray"
-                            android:editable="false"
-                            android:paddingStart="8dp"
-                            android:paddingEnd="8dp"
-                            android:tag="shipping_status_label" />
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/ic_background_gray">
 
+                            <EditText
+                                android:editable="false"
+                                android:background="@color/gray"
+                                android:id="@+id/shipping_status"
+                                android:layout_width="match_parent"
+                                android:layout_height="45dp"
+                                android:layout_marginEnd="26dp"
+                                android:inputType="text"
+                                android:paddingStart="16dp"
+                                android:tag="client_name_label" />
+                        </FrameLayout>
                     </LinearLayout>
 
                     <LinearLayout
                         android:id="@+id/ddfltf"
                         android:layout_width="match_parent"
-
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
                         android:layout_marginTop="20dp"
@@ -211,17 +244,22 @@
                             android:textStyle="bold"
                             android:visibility="gone" />
 
-                        <TextView
-                            android:id="@+id/discount"
-
+                        <FrameLayout
+                            android:id="@+id/discount2"
                             android:layout_width="match_parent"
-                            android:layout_height="45dp"
-                            android:background="@drawable/ic_background_gray"
-                            android:editable="false"
-                            android:paddingStart="8dp"
-                            android:paddingEnd="8dp"
-                            android:tag="discount_label" />
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/ic_background_gray">
 
+                            <EditText
+                                android:inputType="number"
+                                android:background="@color/gray"
+                                android:id="@+id/discount"
+                                android:layout_width="match_parent"
+                                android:layout_height="45dp"
+                                android:layout_marginEnd="26dp"
+                                android:paddingStart="16dp"
+                                android:tag="client_name_label" />
+                        </FrameLayout>
                     </LinearLayout>
 
                     <LinearLayout
@@ -245,19 +283,22 @@
                             android:textSize="18sp"
                             android:textStyle="bold"
                             android:visibility="gone" />
-
-                        <TextView
-                            android:id="@+id/client_address"
-
+                        <FrameLayout
+                            android:id="@+id/client_address2"
                             android:layout_width="match_parent"
-                            android:layout_height="45dp"
-                            android:background="@drawable/ic_background_gray"
-                            android:gravity="center"
-                            android:paddingStart="8dp"
-                            android:paddingEnd="8dp"
-                            android:tag="client_address_label" />
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/ic_background_gray">
 
-
+                            <EditText
+                                android:inputType="text"
+                                android:background="@color/gray"
+                                android:id="@+id/client_address"
+                                android:layout_width="match_parent"
+                                android:layout_height="45dp"
+                                android:layout_marginEnd="26dp"
+                                android:paddingStart="16dp"
+                                android:tag="client_name_label" />
+                        </FrameLayout>
                     </LinearLayout>
 
                     <LinearLayout
@@ -282,16 +323,22 @@
                             android:textStyle="bold"
                             android:visibility="gone" />
 
-                        <TextView
-                            android:id="@+id/client_area"
-
+                        <FrameLayout
+                            android:id="@+id/client_area2"
                             android:layout_width="match_parent"
-                            android:layout_height="45dp"
-                            android:background="@drawable/ic_background_gray"
-                            android:paddingStart="8dp"
-                            android:paddingEnd="8dp"
-                            android:tag="client_area_label" />
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/ic_background_gray">
 
+                            <EditText
+                                android:inputType="text"
+                                android:background="@color/gray"
+                                android:id="@+id/client_area"
+                                android:layout_width="match_parent"
+                                android:layout_height="45dp"
+                                android:layout_marginEnd="26dp"
+                                android:paddingStart="16dp"
+                                android:tag="client_name_label" />
+                        </FrameLayout>
 
                     </LinearLayout>
 
@@ -317,16 +364,22 @@
                             android:textStyle="bold"
                             android:visibility="gone" />
 
-                        <TextView
-                            android:id="@+id/client_city"
-
+                        <FrameLayout
+                            android:id="@+id/client_city2"
                             android:layout_width="match_parent"
-                            android:layout_height="45dp"
-                            android:background="@drawable/ic_background_gray"
-                            android:paddingStart="8dp"
-                            android:paddingEnd="8dp"
-                            android:tag="client_city_label" />
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/ic_background_gray">
 
+                            <EditText
+                                android:inputType="text"
+                                android:background="@color/gray"
+                                android:id="@+id/client_city"
+                                android:layout_width="match_parent"
+                                android:layout_height="45dp"
+                                android:layout_marginEnd="26dp"
+                                android:paddingStart="16dp"
+                                android:tag="client_name_label" />
+                        </FrameLayout>
 
                     </LinearLayout>
 
@@ -352,17 +405,24 @@
                             android:textStyle="bold"
                             android:visibility="gone" />
 
-                        <TextView
-                            android:id="@+id/client_order_phone1"
+
+
+                        <FrameLayout
+                            android:id="@+id/client_order_phone12"
                             android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/ic_background_gray">
 
-                            android:layout_height="45dp"
-                            android:background="@drawable/ic_background_gray"
-                            android:editable="false"
-                            android:paddingStart="8dp"
-                            android:paddingEnd="8dp"
-                            android:tag="client_order_phone1_label" />
-
+                            <EditText
+                                android:editable="false"
+                                android:background="@color/gray"
+                                android:id="@+id/client_order_phone1"
+                                android:layout_width="match_parent"
+                                android:layout_height="45dp"
+                                android:layout_marginEnd="26dp"
+                                android:paddingStart="16dp"
+                                android:tag="client_name_label" />
+                        </FrameLayout>
 
                     </LinearLayout>
 
@@ -389,17 +449,22 @@
                             android:textStyle="bold"
                             android:visibility="gone" />
 
-                        <TextView
-                            android:id="@+id/sender_name"
+                        <FrameLayout
+                            android:id="@+id/sender_name2"
                             android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/ic_background_gray">
 
-                            android:layout_height="45dp"
-                            android:background="@drawable/ic_background_gray"
-                            android:editable="false"
-                            android:paddingStart="8dp"
-                            android:paddingEnd="8dp"
-                            android:tag="sender_name_label" />
-
+                            <EditText
+                                android:editable="false"
+                                android:background="@color/gray"
+                                android:id="@+id/sender_name"
+                                android:layout_width="match_parent"
+                                android:layout_height="45dp"
+                                android:layout_marginEnd="26dp"
+                                android:paddingStart="16dp"
+                                android:tag="client_name_label" />
+                        </FrameLayout>
                     </LinearLayout>
 
                     <LinearLayout
@@ -424,16 +489,22 @@
                             android:textStyle="bold"
                             android:visibility="gone" />
 
-                        <TextView
-                            android:id="@+id/item_cost"
+                        <FrameLayout
+                            android:id="@+id/item_cost2"
                             android:layout_width="match_parent"
-                            android:layout_height="45dp"
-                            android:background="@drawable/ic_background_gray"
-                            android:editable="false"
-                            android:paddingStart="8dp"
-                            android:paddingEnd="8dp"
-                            android:tag="item_cost_label" />
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/ic_background_gray">
 
+                            <EditText
+                                android:editable="false"
+                                android:background="@color/gray"
+                                android:id="@+id/item_cost"
+                                android:layout_width="match_parent"
+                                android:layout_height="45dp"
+                                android:layout_marginEnd="26dp"
+                                android:paddingStart="16dp"
+                                android:tag="client_name_label" />
+                        </FrameLayout>
 
                     </LinearLayout>
 
@@ -459,16 +530,22 @@
                             android:textStyle="bold"
                             android:visibility="gone" />
 
-                        <TextView
-                            android:id="@+id/item_no"
-
+                        <FrameLayout
+                            android:id="@+id/item_no2"
                             android:layout_width="match_parent"
-                            android:layout_height="45dp"
-                            android:background="@drawable/ic_background_gray"
-                            android:paddingStart="8dp"
-                            android:paddingEnd="8dp"
-                            android:tag="item_no_label" />
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/ic_background_gray">
 
+                            <EditText
+                                android:inputType="number"
+                                android:background="@color/gray"
+                                android:id="@+id/item_no"
+                                android:layout_width="match_parent"
+                                android:layout_height="45dp"
+                                android:layout_marginEnd="26dp"
+                                android:paddingStart="16dp"
+                                android:tag="client_name_label" />
+                        </FrameLayout>
 
                     </LinearLayout>
 
@@ -494,17 +571,22 @@
                             android:textStyle="bold"
                             android:visibility="gone" />
 
-                        <TextView
-                            android:id="@+id/order_cost"
+                        <FrameLayout
+                            android:id="@+id/order_cost2"
                             android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/ic_background_gray">
 
-                            android:layout_height="45dp"
-                            android:background="@drawable/ic_background_gray"
-                            android:editable="false"
-                            android:paddingStart="8dp"
-                            android:paddingEnd="8dp"
-                            android:tag="order_cost_label" />
-
+                            <EditText
+                                android:editable="false"
+                                android:background="@color/gray"
+                                android:id="@+id/order_cost"
+                                android:layout_width="match_parent"
+                                android:layout_height="45dp"
+                                android:layout_marginEnd="26dp"
+                                android:paddingStart="16dp"
+                                android:tag="client_name_label" />
+                        </FrameLayout>
                     </LinearLayout>
 
                     <LinearLayout
@@ -529,17 +611,22 @@
                             android:textStyle="bold"
                             android:visibility="gone" />
 
-                        <TextView
-                            android:id="@+id/order_total_cost"
+                        <FrameLayout
+                            android:id="@+id/order_total_cost2"
                             android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/ic_background_gray">
 
-                            android:layout_height="45dp"
-                            android:background="@drawable/ic_background_gray"
-                            android:editable="false"
-                            android:paddingStart="8dp"
-                            android:paddingEnd="8dp"
-                            android:tag="order_total_cost_label" />
-
+                            <EditText
+                                android:editable="false"
+                                android:background="@color/gray"
+                                android:id="@+id/order_total_cost"
+                                android:layout_width="match_parent"
+                                android:layout_height="45dp"
+                                android:layout_marginEnd="26dp"
+                                android:paddingStart="16dp"
+                                android:tag="client_name_label" />
+                        </FrameLayout>
 
                     </LinearLayout>
 
@@ -560,19 +647,22 @@
                             android:textSize="18sp"
                             android:textStyle="bold" />
 
-                        <TextView
-                            android:id="@+id/order_type"
+                        <FrameLayout
+                            android:id="@+id/order_type2"
                             android:layout_width="match_parent"
-                            android:layout_height="45dp"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/ic_background_gray">
 
-                            android:background="@drawable/ic_background_gray"
-                            android:editable="false"
-                            android:onClick="showLabel"
-                            android:paddingStart="8dp"
-                            android:paddingEnd="8dp"
-                            android:tag="order_total_cost_label" />
-
-
+                            <EditText
+                                android:editable="false"
+                                android:background="@color/gray"
+                                android:id="@+id/order_type"
+                                android:layout_width="match_parent"
+                                android:layout_height="45dp"
+                                android:layout_marginEnd="26dp"
+                                android:paddingStart="16dp"
+                                android:tag="client_name_label" />
+                        </FrameLayout>
                     </LinearLayout>
 
                     <LinearLayout
@@ -595,15 +685,22 @@
                             android:textSize="18sp"
                             android:textStyle="bold" />
 
-                        <TextView
-
-                            android:id="@+id/real_shipping_return_cost"
+                        <FrameLayout
+                            android:id="@+id/real_shipping_return_cost2"
                             android:layout_width="match_parent"
-                            android:layout_height="45dp"
-                            android:background="@drawable/ic_background_gray"
-                            android:paddingStart="8dp"
-                            android:paddingEnd="8dp" />
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/ic_background_gray">
 
+                            <EditText
+                                android:editable="false"
+                                android:background="@color/gray"
+                                android:id="@+id/real_shipping_return_cost"
+                                android:layout_width="match_parent"
+                                android:layout_height="40dp"
+                                android:layout_marginEnd="26dp"
+                                android:paddingStart="16dp"
+                                android:tag="client_name_label" />
+                        </FrameLayout>
 
                     </LinearLayout>
 
@@ -629,16 +726,22 @@
                             android:textStyle="bold"
                             android:visibility="gone" />
 
-                        <TextView
-                            android:id="@+id/client_feedback"
-
+                        <FrameLayout
+                            android:id="@+id/client_feedback2"
                             android:layout_width="match_parent"
-                            android:layout_height="45dp"
-                            android:background="@drawable/ic_background_gray"
-                            android:paddingStart="8dp"
-                            android:paddingEnd="8dp"
-                            android:tag="client_feedback_label" />
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/ic_background_gray">
 
+                            <EditText
+                                android:editable="false"
+                                android:background="@color/gray"
+                                android:id="@+id/client_feedback"
+                                android:layout_width="match_parent"
+                                android:layout_height="40dp"
+                                android:layout_marginEnd="26dp"
+                                android:paddingStart="16dp"
+                                android:tag="client_name_label" />
+                        </FrameLayout>
 
                     </LinearLayout>
 
@@ -664,15 +767,23 @@
                             android:textStyle="bold"
                             android:visibility="gone" />
 
-                        <TextView
-                            android:id="@+id/ntes"
+
+                        <FrameLayout
+                            android:id="@+id/ntes2"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/ic_background_gray"
-                            android:padding="8dp"
-                            android:paddingStart="8dp"
-                            android:paddingEnd="8dp"
-                            android:tag="ntes_label" />
+                            android:background="@drawable/ic_background_gray">
+
+                            <EditText
+                                android:inputType="text"
+                                android:background="@color/gray"
+                                android:id="@+id/ntes"
+                                android:layout_width="match_parent"
+                                android:layout_height="40dp"
+                                android:layout_marginEnd="26dp"
+                                android:paddingStart="16dp"
+                                android:tag="client_name_label" />
+                        </FrameLayout>
                     </LinearLayout>
 
                     <com.rafakob.drawme.DrawMeButton xmlns:drawme="http://schemas.android.com/apk/res-auto"
@@ -709,8 +820,8 @@
                         android:layout_height="100dp"
                         android:layout_centerInParent="true"
                         android:layout_gravity="center_horizontal"
-                        android:layout_marginTop="200dp"
-                        android:layout_marginBottom="200dp"
+                        android:layout_marginTop="100dp"
+                        android:layout_marginBottom="100dp"
                         android:background="@drawable/button_background"
                         android:includeFontPadding="false"
                         android:text="@string/move"
@@ -788,234 +899,226 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:menu="@menu/customer_navigation" />
-    <android.support.constraint.ConstraintLayout
-        android:visibility="gone"
-        xmlns:android="http://schemas.android.com/apk/res/android"
+
+    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:visibility="gone">
 
         <Button
             android:id="@+id/btn_open"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
-            android:layout_marginLeft="16dp"
             android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
             android:layout_marginTop="16dp"
             android:text="@string/open_dialog"
             app:layout_constraintBottom_toBottomOf="@+id/txv_result"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/txv_result_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
             android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
             android:layout_marginTop="16dp"
             android:text="@string/result_value"
             app:layout_constraintStart_toEndOf="@+id/btn_open"
-            app:layout_constraintTop_toTopOf="parent"
-            />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/txv_result"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="8dp"
             android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
             android:ellipsize="end"
             android:maxLines="1"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/btn_open"
             app:layout_constraintTop_toBottomOf="@+id/txv_result_label"
-            tools:text="1000"
-            />
+            tools:text="1000" />
 
         <TextView
             android:id="@+id/txv_calc_settings"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
             android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
             android:layout_marginTop="16dp"
             android:text="@string/calc_settings"
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btn_open"
-            />
+            app:layout_constraintTop_toBottomOf="@+id/btn_open" />
 
         <CheckBox
             android:id="@+id/chk_answer_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
             android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
             android:layout_marginTop="8dp"
             android:checked="false"
             android:text="@string/option_answer_btn"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/txv_calc_settings"
-            />
+            app:layout_constraintTop_toBottomOf="@+id/txv_calc_settings" />
 
         <CheckBox
             android:id="@+id/chk_change_sign"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
             android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
             android:checked="true"
             android:text="@string/option_sign"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/chk_answer_btn"
-            />
+            app:layout_constraintTop_toBottomOf="@+id/chk_answer_btn" />
 
         <CheckBox
             android:id="@+id/chk_show_sign"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
             android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
             android:checked="true"
             android:text="@string/option_sign_show_btn"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/chk_change_sign"
-            />
+            app:layout_constraintTop_toBottomOf="@+id/chk_change_sign" />
 
         <CheckBox
             android:id="@+id/chk_clear_operation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
             android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
             android:checked="false"
             android:text="@string/option_clear_operation"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/chk_show_sign"
-            />
+            app:layout_constraintTop_toBottomOf="@+id/chk_show_sign" />
 
         <CheckBox
             android:id="@+id/chk_show_zero"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
             android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
             android:checked="true"
             android:text="@string/option_show_zero"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/chk_clear_operation"
-            />
+            app:layout_constraintTop_toBottomOf="@+id/chk_clear_operation" />
 
         <CheckBox
             android:id="@+id/chk_max_value"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginLeft="16dp"
             android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
             android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
             android:checked="true"
-            android:text="@string/option_max_value"
             android:labelFor="@+id/edt_max_value"
+            android:text="@string/option_max_value"
             app:layout_constraintBottom_toBottomOf="@+id/edt_max_value"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/edt_max_value"
-            />
+            app:layout_constraintTop_toTopOf="@+id/edt_max_value" />
 
         <EditText
             android:id="@+id/edt_max_value"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="24dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="24dp"
             android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginRight="24dp"
             android:ems="10"
             android:inputType="numberDecimal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/chk_max_value"
             app:layout_constraintTop_toBottomOf="@+id/chk_show_zero"
-            tools:text="10000000000"
             tools:ignore="LabelFor"
-            />
+            tools:text="10000000000" />
 
         <CheckBox
             android:id="@+id/chk_max_int"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginLeft="16dp"
             android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
             android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
             android:checked="true"
-            android:text="@string/option_max_int"
             android:labelFor="@+id/edt_max_int"
+            android:text="@string/option_max_int"
             app:layout_constraintBottom_toBottomOf="@+id/edt_max_int"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/edt_max_int"
-            />
+            app:layout_constraintTop_toTopOf="@+id/edt_max_int" />
 
         <EditText
             android:id="@+id/edt_max_int"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="24dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="24dp"
             android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
             android:layout_marginTop="8dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginRight="24dp"
             android:ems="10"
             android:inputType="number"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.875"
             app:layout_constraintStart_toEndOf="@+id/chk_max_int"
             app:layout_constraintTop_toBottomOf="@+id/edt_max_value"
-            tools:text="10"
             tools:ignore="LabelFor"
-            />
+            tools:text="10" />
 
         <CheckBox
             android:id="@+id/chk_max_frac"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginLeft="16dp"
             android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
             android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
             android:checked="true"
-            android:text="@string/option_max_frac"
             android:labelFor="@id/edt_max_frac"
+            android:text="@string/option_max_frac"
             app:layout_constraintBottom_toBottomOf="@+id/edt_max_frac"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/edt_max_frac"
-            />
+            app:layout_constraintTop_toTopOf="@+id/edt_max_frac" />
 
         <EditText
             android:id="@+id/edt_max_frac"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="24dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="24dp"
             android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
             android:layout_marginTop="8dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginRight="24dp"
             android:ems="10"
             android:inputType="number"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@+id/chk_max_frac"
             app:layout_constraintTop_toBottomOf="@+id/edt_max_int"
-            tools:text="8"
             tools:ignore="LabelFor"
-            />
+            tools:text="8" />
 
     </android.support.constraint.ConstraintLayout>
+    <ProgressBar
+        android:visibility="gone"
+        android:padding="150dp"
+        android:id="@+id/progress_bar"
+        android:background="#40000000"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </RelativeLayout>

@@ -20,11 +20,24 @@ public class CashRequestHistory {
     @Expose
     private String  response;
 
+    @SerializedName("total_available")
+    @Expose
+    private String  total_available;
+
+
     @SerializedName("data")
     @Expose
     private List<RequestData> data;
 
     public CashRequestHistory() {
+    }
+
+    public String getTotal_available() {
+        return total_available;
+    }
+
+    public void setTotal_available(String total_available) {
+        this.total_available = total_available;
     }
 
     public String getCode() {

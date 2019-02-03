@@ -16,6 +16,7 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.greyeg.tajr.R;
@@ -23,7 +24,9 @@ import com.greyeg.tajr.activities.BalanceActivity;
 import com.greyeg.tajr.activities.LoginActivity;
 import com.greyeg.tajr.helper.SharedHelper;
 import com.greyeg.tajr.helper.font.RobotoTextView;
+import com.greyeg.tajr.models.CashRequestHistory;
 import com.greyeg.tajr.models.MoneyRequestResponse;
+import com.greyeg.tajr.models.ToalAvailableBalance;
 import com.greyeg.tajr.server.Api;
 import com.greyeg.tajr.server.BaseClient;
 import com.greyeg.tajr.view.FloatLabeledEditText;
@@ -70,8 +73,6 @@ public class RequestBalanceFragment extends Fragment {
 //    @BindView(R.id.ken_burns_images)
 //    KenBurnsView mKenBurns;
 
-    @BindView(R.id.logo)
-    ImageView mLogo;
 
     @BindView(R.id.progress_log_in)
     ProgressWheel progressLogin;
@@ -79,11 +80,11 @@ public class RequestBalanceFragment extends Fragment {
     ProgressDialog progressDialog;
     Api api;
 
+  public static TextView availableBalance;
 
     public RequestBalanceFragment() {
         // Required empty public constructor
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -99,15 +100,21 @@ public class RequestBalanceFragment extends Fragment {
         progressDialog = new ProgressDialog(getActivity());
         progressDialog.setMessage(getString(R.string.wati_to_log_in));
         api = BaseClient.getBaseClient().create(Api.class);
+        availableBalance = view.findViewById(R.id.available_balance);
 
-       // setAnimation(SPLASH_SCREEN_OPTION_3);
-//        loginBtn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                startActivity(new Intent(getApplicationContext(), MainActivity.class));
-//            }
-//        });
+        api.getTotalAvailableBalance(
+                SharedHelper.getKey(getActivity(), LoginActivity.TOKEN)
+                ).enqueue(new Callback<ToalAvailableBalance>() {
+            @Override
+            public void onResponse(Call<ToalAvailableBalance> call, Response<ToalAvailableBalance> response) {
+                availableBalance.setText(response.body().getTotal_available());
+            }
 
+            @Override
+            public void onFailure(Call<ToalAvailableBalance> call, Throwable t) {
+
+            }
+        });
         loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

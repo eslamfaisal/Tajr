@@ -110,7 +110,7 @@ public class AvailableBalanceFragment extends Fragment {
             public void onResponse(Call<MoneyHistory> call, Response<MoneyHistory> response) {
 
                 if (response.body() != null) {
-                    // if (response.body().getHistory().size()>0){
+
                     List<MoneyHistory.Year> years = response.body().getHistory();
                     List<GroupItem> items = new ArrayList<GroupItem>();
                     GroupItem item = null;

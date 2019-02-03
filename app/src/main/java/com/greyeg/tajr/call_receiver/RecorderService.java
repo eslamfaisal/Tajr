@@ -38,8 +38,8 @@ public class RecorderService extends Service {
 
         //String rec=path+"/"+phoneNumber+"_"+time+".mp4";
 
-        recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+        recorder.setAudioSource(MediaRecorder.AudioSource.VOICE_CALL);
+        recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
         recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
 
       //  recorder.setOutputFile(rec);

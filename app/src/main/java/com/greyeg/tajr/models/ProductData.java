@@ -17,7 +17,6 @@ public class ProductData {
     @Expose
     private String category_id;
 
-
     @SerializedName("category_name")
     @Expose
     private String category_name;
@@ -42,7 +41,6 @@ public class ProductData {
     @SerializedName("product_info")
     @Expose
     private String product_info;
-
 
     @SerializedName("product_real_price")
     @Expose

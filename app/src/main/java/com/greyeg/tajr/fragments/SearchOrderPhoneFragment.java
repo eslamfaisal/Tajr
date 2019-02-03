@@ -111,7 +111,6 @@ public class SearchOrderPhoneFragment extends Fragment {
     @BindView(R.id.order_view)
     View orderView;
 
-
     @BindView(R.id.updating_button)
     MovingButton updatingButton;
 
@@ -214,10 +213,6 @@ public class SearchOrderPhoneFragment extends Fragment {
                         sender_name.setText(order.getSender_name());
                         order_type.setText(order.getOrder_type());
                         client_feedback.setText(order.getClient_feedback());
-
-
-                        // } else {
-                        //  }
 
                     } else {
                         orderView.setVisibility(View.GONE);

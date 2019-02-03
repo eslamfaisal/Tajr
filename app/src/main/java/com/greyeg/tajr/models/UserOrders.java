@@ -25,34 +25,47 @@ public class UserOrders {
     @Expose
     private Order order;
 
-    @SerializedName("notes")
-    @Expose
-    private Notes notes;
-
     public UserOrders() {
     }
 
+
     public String getCode() {
         return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 
     public String getInfo() {
         return info;
     }
 
+    public void setInfo(String info) {
+        this.info = info;
+    }
+
     public String getOrder_type() {
         return order_type;
+    }
+
+    public void setOrder_type(String order_type) {
+        this.order_type = order_type;
     }
 
     public String getResponse() {
         return response;
     }
 
+    public void setResponse(String response) {
+        this.response = response;
+    }
+
     public Order getOrder() {
         return order;
     }
 
-    public Notes getNotes() {
-        return notes;
+    public void setOrder(Order order) {
+        this.order = order;
     }
 }

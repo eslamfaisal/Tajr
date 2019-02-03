@@ -20,12 +20,24 @@ public class MoneyHistory {
     @Expose
     private String response;
 
+    @SerializedName("total_available")
+    @Expose
+    private String total_available;
+
 
     @SerializedName("history")
     @Expose
     private List<Year> history;
 
     public MoneyHistory() {
+    }
+
+    public String getTotal_available() {
+        return total_available;
+    }
+
+    public void setTotal_available(String total_available) {
+        this.total_available = total_available;
     }
 
     public String getCode() {

@@ -3,6 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.greyeg.tajr">
 
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.WRITE_CONTACTS" />
@@ -14,7 +19,6 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS_PRIVILEGED" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS" />
     <uses-permission android:name="android.permission.NFC" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
@@ -49,7 +53,6 @@
     <uses-permission android:name="android.permission.MANAGE_OWN_CALLS" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.READ_CALL_LOG" />
-    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS" />
@@ -67,45 +70,43 @@
         android:icon="@drawable/ic_logo"
         android:label="@string/app_name"
         android:roundIcon="@drawable/ic_logo"
+        android:screenOrientation="portrait"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".activities.AdminLoginActivity"
+            android:parentActivityName=".activities.LoginActivity"/>
+        <activity android:name=".activities.BalanceCalculationActivity" />
+        <activity
+            android:name=".activities.CartsActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <meta-data
+            android:name="com.onesignal.NotificationOpened.DEFAULT"
+            android:value="DISABLE" />
+
         <activity
             android:name=".MainActivity"
             android:label=""
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activities.LoginActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".activities.SplashActivity">
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".activities.SplashActivity" />
         <activity
             android:name=".call_receiver.MyCustomDialog"
             android:noHistory="true"
-            android:theme="@android:style/Theme.Dialog" />
-
-        <receiver
-            android:name=".call_receiver.CallReceiver"
-            android:enabled="true">
-            <intent-filter>
-                <action android:name="android.intent.action.PHONE_STATE" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.NEW_OUTGOING_CALL" />
-            </intent-filter>
-        </receiver>
-
-        <!-- <receiver android:name=".receiver.AssistantReceiver" > -->
+            android:theme="@android:style/Theme.Dialog" /> <!-- <receiver android:name=".receiver.AssistantReceiver" > -->
         <!-- <intent-filter> -->
         <!-- <action android:name="android.net.conn.CONNECTIVITY_CHANGE" /> -->
         <!-- </intent-filter> -->
         <!-- </receiver> -->
-
         <activity
             android:name=".activities.OrderActivity"
             android:theme="@style/AppTheme.NoActionBar" />
@@ -139,9 +140,69 @@
             android:name=".activities.BalanceActivity"
             android:label="@string/Balance"
             android:parentActivityName=".MainActivity" />
-        <activity android:name=".activities.CalcActivity">
+        <activity android:name=".activities.CalcActivity" />
+        <activity android:name=".activities.TestActivity" />
+        <activity
+            android:name=".activities.ChatActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name="com.yalantis.ucrop.UCropActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/UCrop" />
 
-        </activity>
+        <service android:name=".records.RecorderService" />
+
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="com.greyeg.tajr"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+        </provider>
+
+        <receiver android:name=".records.CallsReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.PHONE_STATE" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.NEW_OUTGOING_CALL" />
+            </intent-filter>
+        </receiver>
+
+        <activity
+            android:name=".records.RecordsActivity"
+            android:parentActivityName=".MainActivity" /> <!-- <receiver -->
+        <!-- android:name=".notification.NotificationService" -->
+        <!-- android:label="NotificationService" -->
+        <!-- android:enabled="true"> -->
+        <!-- <intent-filter> -->
+        <!-- <action android:name="android.net.conn.CONNECTIVITY_CHANGE" /> -->
+        <!-- <action android:name="android.net.wifi.WIFI_STATE_CHANGED" /> -->
+        <!-- </intent-filter> -->
+        <!-- </receiver> -->
+        <!-- <receiver -->
+        <!-- android:name="NetworkChangeReceiver" -->
+        <!-- android:label="NetworkChangeReceiver" > -->
+        <!-- <intent-filter> -->
+        <!-- <action android:name="android.net.conn.CONNECTIVITY_CHANGE" /> -->
+        <!-- <action android:name="android.net.wifi.WIFI_STATE_CHANGED" /> -->
+        <!-- </intent-filter> -->
+        <!-- </receiver> -->
+        <!-- <service -->
+        <!-- android:name="com.evernote.android.job.gcm.PlatformGcmService" -->
+        <!-- android:enabled="true" -->
+        <!-- tools:replace="android:enabled"/> -->
+        <service
+            android:name=".job.JobServicio"
+            android:enabled="false"
+            android:exported="false"
+            android:permission="android.permission.BIND_JOB_SERVICE">
+            <intent-filter>
+                <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

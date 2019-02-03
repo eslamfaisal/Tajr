@@ -8,13 +8,18 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.StrictMode;
+import android.preference.PreferenceManager;
 import android.provider.CallLog;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
@@ -29,13 +34,13 @@ import android.telephony.SubscriptionManager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -43,7 +48,20 @@ import android.widget.Toast;
 
 import com.ebanx.swipebtn.OnStateChangeListener;
 import com.ebanx.swipebtn.SwipeButton;
+import com.firebase.jobdispatcher.Constraint;
+import com.firebase.jobdispatcher.FirebaseJobDispatcher;
+import com.firebase.jobdispatcher.GooglePlayDriver;
+import com.firebase.jobdispatcher.Job;
+import com.firebase.jobdispatcher.Lifetime;
+import com.firebase.jobdispatcher.RetryStrategy;
+import com.firebase.jobdispatcher.Trigger;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
 import com.greyeg.tajr.activities.BalanceActivity;
+import com.greyeg.tajr.activities.CartsActivity;
+import com.greyeg.tajr.activities.ChatActivity;
 import com.greyeg.tajr.activities.LoginActivity;
 import com.greyeg.tajr.activities.NewsActivity;
 import com.greyeg.tajr.activities.OrderActivity;
@@ -53,19 +71,29 @@ import com.greyeg.tajr.adapters.DrawerAdapter;
 import com.greyeg.tajr.helper.SharedHelper;
 import com.greyeg.tajr.helper.TimerTextView;
 import com.greyeg.tajr.helper.font.RobotoTextView;
+import com.greyeg.tajr.job.DemoJobService;
+import com.greyeg.tajr.records.RecordsActivity;
 import com.greyeg.tajr.server.Api;
 import com.greyeg.tajr.server.BaseClient;
 import com.greyeg.tajr.view.kbv.KenBurnsView;
+import com.onesignal.OSPermissionSubscriptionState;
+import com.onesignal.OneSignal;
 
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Scanner;
 import java.util.Timer;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
+
+import static com.greyeg.tajr.activities.LoginActivity.idListString;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -124,12 +152,12 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        OneSignal.setSubscription(true);
         mainActivity = this;
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         initDrawer();
-
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (getApplicationContext().checkSelfPermission(Manifest.permission.READ_PHONE_STATE)
@@ -140,7 +168,8 @@ public class MainActivity extends AppCompatActivity
                                 Manifest.permission.READ_PHONE_STATE,
                                 Manifest.permission.READ_CALL_LOG,
                                 Manifest.permission.MODIFY_AUDIO_SETTINGS,
-                                Manifest.permission.CALL_PHONE
+                                Manifest.permission.CALL_PHONE,
+                                Manifest.permission.RECORD_AUDIO
                         },
                         56);
             } else {
@@ -166,6 +195,205 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+//        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("notification").child("seen");
+//        databaseReference.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//              //  Notification message = dataSnapshot.getValue(Notification.class);
+//                //Toast.makeText(MainActivity.this, message.getUserName(), Toast.LENGTH_SHORT).show();
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
+        // LoginActivity.sendNotification();
+        // newjob();
+        OSPermissionSubscriptionState status = OneSignal.getPermissionSubscriptionState();
+        final String userId = status.getSubscriptionStatus().getUserId();
+        idListString = new StringBuilder("\"" + "f20050de-b06b-4444-80a5-a894e4fef6d0" + "\"");
+        FirebaseDatabase.getInstance().getReference().child("users").addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                if (!dataSnapshot.getKey().equals(OneSignal.getPermissionSubscriptionState().getSubscriptionStatus().getUserId())) {
+                    idListString.append(",");
+                    idListString.append("\"" + dataSnapshot.getKey() + "\"");
+
+                }
+
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
+    public static void sendNotification(final String message) {
+
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                int SDK_INT = android.os.Build.VERSION.SDK_INT;
+                if (SDK_INT > 8) {
+                    StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                            .permitAll().build();
+                    StrictMode.setThreadPolicy(policy);
+                    String send_email;
+
+                    send_email = "user2@gmail.com";
+
+                    try {
+                        String jsonResponse;
+
+                        URL url = new URL("https://onesignal.com/api/v1/notifications");
+                        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                        con.setUseCaches(false);
+                        con.setDoOutput(true);
+                        con.setDoInput(true);
+
+                        con.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+                        con.setRequestProperty("Authorization", "Basic NTQ1YzI4YzYtZTE4Zi00OWQ3LWE1ZWQtZGRkNWNiMmVkMjI5");
+                        con.setRequestMethod("POST");
+                        OSPermissionSubscriptionState status = OneSignal.getPermissionSubscriptionState();
+                        String userId = status.getSubscriptionStatus().getUserId();
+
+
+                        String  strJsonBody = "{"
+                                + "\"app_id\": \"c1c60918-4009-4213-b070-36296afc47b7\"," +
+
+                                //  "'include_player_ids': ['" + userId + "'], "
+
+                                // "'include_player_ids': ["+idListString.toString()+"], "
+
+                                "\"include_player_ids\": [" + idListString.toString() + "],"
+                                // + "\"excluded_segments\": [\"" + userId + "\"],"
+                                + "\"data\": {\"foo\": \"bar\"},"
+                                + "\"contents\": {\"en\": \"" + message + "\"}," +
+                                "\"headings\": {\"en\": \"" + SharedHelper.getKey(mainActivity,LoginActivity.USER_NAME) + "\"}"
+                                + "}";
+
+                        System.out.println("strJsonBody:\n" + strJsonBody);
+
+                        byte[] sendBytes = strJsonBody.getBytes("UTF-8");
+                        con.setFixedLengthStreamingMode(sendBytes.length);
+
+                        OutputStream outputStream = con.getOutputStream();
+                        outputStream.write(sendBytes);
+
+                        int httpResponse = con.getResponseCode();
+                        System.out.println("httpResponse: " + httpResponse);
+
+                        if (httpResponse >= HttpURLConnection.HTTP_OK
+                                && httpResponse < HttpURLConnection.HTTP_BAD_REQUEST) {
+                            Scanner scanner = new Scanner(con.getInputStream(), "UTF-8");
+                            jsonResponse = scanner.useDelimiter("\\A").hasNext() ? scanner.next() : "";
+                            scanner.close();
+                        } else {
+                            Scanner scanner = new Scanner(con.getErrorStream(), "UTF-8");
+                            jsonResponse = scanner.useDelimiter("\\A").hasNext() ? scanner.next() : "";
+                            scanner.close();
+                        }
+                        System.out.println("jsonResponse:\n" + jsonResponse);
+
+                    } catch (Throwable t) {
+                        t.printStackTrace();
+                    }
+                }
+            }
+        });
+    }
+
+    public static void sendNotificationImage() {
+
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                int SDK_INT = android.os.Build.VERSION.SDK_INT;
+                if (SDK_INT > 8) {
+                    StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                            .permitAll().build();
+                    StrictMode.setThreadPolicy(policy);
+                    String send_email;
+
+                    send_email = "user2@gmail.com";
+
+                    try {
+                        String jsonResponse;
+
+                        URL url = new URL("https://onesignal.com/api/v1/notifications");
+                        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                        con.setUseCaches(false);
+                        con.setDoOutput(true);
+                        con.setDoInput(true);
+
+                        con.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+                        con.setRequestProperty("Authorization", "Basic NTQ1YzI4YzYtZTE4Zi00OWQ3LWE1ZWQtZGRkNWNiMmVkMjI5");
+                        con.setRequestMethod("POST");
+                        OSPermissionSubscriptionState status = OneSignal.getPermissionSubscriptionState();
+                        String userId = status.getSubscriptionStatus().getUserId();
+                        String  strJsonBody = "{"
+                                + "\"app_id\": \"c1c60918-4009-4213-b070-36296afc47b7\"," +
+
+                                //  "'include_player_ids': ['" + userId + "'], "
+
+                                // "'include_player_ids': ["+idListString.toString()+"], "
+
+                                "\"include_player_ids\": [" + idListString.toString() + "],"
+                                // + "\"excluded_segments\": [\"" + userId + "\"],"
+                                + "\"data\": {\"foo\": \"bar\"},"
+                                + "\"contents\": {\"en\": \"" + "صورة" + "\"}," +
+                                "\"headings\": {\"en\": \"" + SharedHelper.getKey(mainActivity,LoginActivity.USER_NAME) + "\"}"
+                                + "}";
+
+
+                        System.out.println("strJsonBody:\n" + strJsonBody);
+
+                        byte[] sendBytes = strJsonBody.getBytes("UTF-8");
+                        con.setFixedLengthStreamingMode(sendBytes.length);
+
+                        OutputStream outputStream = con.getOutputStream();
+                        outputStream.write(sendBytes);
+
+                        int httpResponse = con.getResponseCode();
+                        System.out.println("httpResponse: " + httpResponse);
+
+                        if (httpResponse >= HttpURLConnection.HTTP_OK
+                                && httpResponse < HttpURLConnection.HTTP_BAD_REQUEST) {
+                            Scanner scanner = new Scanner(con.getInputStream(), "UTF-8");
+                            jsonResponse = scanner.useDelimiter("\\A").hasNext() ? scanner.next() : "";
+                            scanner.close();
+                        } else {
+                            Scanner scanner = new Scanner(con.getErrorStream(), "UTF-8");
+                            jsonResponse = scanner.useDelimiter("\\A").hasNext() ? scanner.next() : "";
+                            scanner.close();
+                        }
+                        System.out.println("jsonResponse:\n" + jsonResponse);
+
+                    } catch (Throwable t) {
+                        t.printStackTrace();
+                    }
+                }
+            }
+        });
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP_MR1)
@@ -325,12 +553,12 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        MenuInflater inflater = getMenuInflater();
+//        inflater.inflate(R.menu.main, menu);
+//        return super.onCreateOptionsMenu(menu);
+//    }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
@@ -484,7 +712,7 @@ public class MainActivity extends AppCompatActivity
         // pre-KitKat)
         mDrawerList.setAdapter(new DrawerAdapter(this));
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
-       // mDrawerList.setBackgroundResource(R.drawable.ic_home_for_list);
+        // mDrawerList.setBackgroundResource(R.drawable.ic_home_for_list);
         mDrawerList.getLayoutParams().width = (int) getResources()
                 .getDimension(R.dimen.drawer_width_travel);
 
@@ -522,8 +750,14 @@ public class MainActivity extends AppCompatActivity
                 intent = new Intent(getApplicationContext(), WorkHistoryActivity.class);
             } else if (position == 3) {
                 intent = new Intent(getApplicationContext(), NewsActivity.class);
-            }else if (position == 4) {
+            } else if (position == 4) {
                 intent = new Intent(getApplicationContext(), BalanceActivity.class);
+            } else if (position == 5) {
+                intent = new Intent(getApplicationContext(), ChatActivity.class);
+            } else if (position == 6) {
+                intent = new Intent(getApplicationContext(), RecordsActivity.class);
+            }else if (position == 7) {
+                intent = new Intent(getApplicationContext(), CartsActivity.class);
             }
             if (intent != null) {
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -585,6 +819,133 @@ public class MainActivity extends AppCompatActivity
         super.onResume();
         if (enableButton.isActive()) {
             enableButton.toggleState();
+        }
+
+    }
+
+
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.records_menu, menu);
+        MenuItem item = menu.findItem(R.id.mySwitch);
+
+        View view = getLayoutInflater().inflate(R.layout.switch_layout, null, false);
+
+        final SharedPreferences pref1 = PreferenceManager.getDefaultSharedPreferences(this);
+
+        SwitchCompat switchCompat = (SwitchCompat) view.findViewById(R.id.switchCheck);
+        switchCompat.setChecked(pref1.getBoolean("switchOn", true));
+        switchCompat.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    Log.d("Switch", "onCheckedChanged: " + isChecked);
+                    Toast.makeText(getApplicationContext(), getString(R.string.call_listener_on), Toast.LENGTH_LONG).show();
+                    pref1.edit().putBoolean("switchOn", isChecked).apply();
+                } else {
+                    Log.d("Switch", "onCheckedChanged: " + isChecked);
+                    Toast.makeText(getApplicationContext(), getString(R.string.call_listener_off), Toast.LENGTH_LONG).show();
+                    pref1.edit().putBoolean("switchOn", isChecked).apply();
+                }
+            }
+        });
+        item.setActionView(view);
+        return true;
+    }
+
+
+//    private void scheduleAdvancedJob() {
+//        PersistableBundleCompat extras = new PersistableBundleCompat();
+//        extras.putString("key", "Hello world");
+//
+//        int jobId = new JobRequest.Builder(DemoSyncJob.TAG)
+//                .setExecutionWindow(1_000L, 4_000L)
+//                .setRequiredNetworkType(JobRequest.NetworkType.CONNECTED)
+//                .build()
+//                .schedule();
+//        SharedHelper.putKey(this,"job_key", String.valueOf(jobId));
+//    }
+
+    void newjob() {
+        FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(this));
+        Bundle myExtrasBundle = new Bundle();
+        myExtrasBundle.putString("some_key", "some_value");
+
+        Job myJob = dispatcher.newJobBuilder()
+                // the JobService that will be called
+                .setService(DemoJobService.class)
+                // uniquely identifies the job
+                .setTag("my-unique-tag")
+                // one-off job
+                .setRecurring(true)
+                // don't persist past a device reboot
+                .setLifetime(Lifetime.FOREVER)
+                // start between 0 and 60 seconds from now
+                .setTrigger(Trigger.executionWindow(0, 2))
+                // don't overwrite an existing job with the same tag
+                .setReplaceCurrent(false)
+                // retry with exponential backoff
+                .setRetryStrategy(RetryStrategy.DEFAULT_EXPONENTIAL)
+                // constraints that need to be satisfied for the job to run
+                .setConstraints(
+                        // only run on an unmetered network
+                        Constraint.ON_ANY_NETWORK
+//                        ,
+//                        // only run when the device is charging
+//                        Constraint.DEVICE_CHARGING
+                )
+                .setExtras(myExtrasBundle)
+                .build();
+
+        dispatcher.mustSchedule(myJob);
+    }
+
+    private void sendNotification() {
+        try {
+            String jsonResponse;
+
+            URL url = new URL("https://onesignal.com/api/v1/notifications");
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setUseCaches(false);
+            con.setDoOutput(true);
+            con.setDoInput(true);
+
+            con.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+            con.setRequestProperty("Authorization", "Basic NGEwMGZmMjItY2NkNy0xMWUzLTk5ZDUtMDAwYzI5NDBlNjJj");
+            con.setRequestMethod("POST");
+
+            String strJsonBody = "{"
+                    + "\"app_id\": \"5eb5a37e-b458-11e3-ac11-000c2940e62c\","
+                    + "\"included_segments\": [\"All\"],"
+                    + "\"data\": {\"foo\": \"bar\"},"
+                    + "\"contents\": {\"en\": \"English Message\"}"
+                    + "}";
+
+
+            System.out.println("strJsonBody:\n" + strJsonBody);
+
+            byte[] sendBytes = strJsonBody.getBytes("UTF-8");
+            con.setFixedLengthStreamingMode(sendBytes.length);
+
+            OutputStream outputStream = con.getOutputStream();
+            outputStream.write(sendBytes);
+
+            int httpResponse = con.getResponseCode();
+            System.out.println("httpResponse: " + httpResponse);
+
+            if (httpResponse >= HttpURLConnection.HTTP_OK
+                    && httpResponse < HttpURLConnection.HTTP_BAD_REQUEST) {
+                Scanner scanner = new Scanner(con.getInputStream(), "UTF-8");
+                jsonResponse = scanner.useDelimiter("\\A").hasNext() ? scanner.next() : "";
+                scanner.close();
+            } else {
+                Scanner scanner = new Scanner(con.getErrorStream(), "UTF-8");
+                jsonResponse = scanner.useDelimiter("\\A").hasNext() ? scanner.next() : "";
+                scanner.close();
+            }
+            System.out.println("jsonResponse:\n" + jsonResponse);
+
+        } catch (Throwable t) {
+            t.printStackTrace();
         }
 
     }

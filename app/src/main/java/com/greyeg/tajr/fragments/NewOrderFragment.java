@@ -47,10 +47,8 @@ public class NewOrderFragment extends Fragment {
     @BindView(R.id.product)
     Spinner product;
 
-
     @BindView(R.id.client_name)
     EditText client_name;
-
 
     @BindView(R.id.client_address)
     EditText client_address;
@@ -105,9 +103,7 @@ public class NewOrderFragment extends Fragment {
         getProducts(api);
         getcities(api);
 
-
     }
-
 
     private void getcities(Api api) {
         if (cities != null && cities.size() > 1) {
@@ -156,6 +152,7 @@ public class NewOrderFragment extends Fragment {
         });
     }
 
+  public static AllProducts allProducts;
 
     private void getProducts(Api api) {
         api.getProducts(SharedHelper.getKey(getActivity(), LoginActivity.TOKEN),
@@ -165,6 +162,7 @@ public class NewOrderFragment extends Fragment {
             public void onResponse(Call<AllProducts> call, final Response<AllProducts> response) {
                 Log.d("eeeeeeeeeeeeeee", "respons: " + response.body().getProducts_count());
                 if (response.body() != null) {
+                    allProducts = response.body();
                     if (response.body().getProducts().size() > 0) {
                         productId = response.body().getProducts().get(0).getProduct_id();
 
@@ -199,6 +197,7 @@ public class NewOrderFragment extends Fragment {
         });
 
     }
+
     ProgressDialog progressDialog;
     @OnClick(R.id.send_order)
     void sendOrder() {
@@ -268,7 +267,7 @@ public class NewOrderFragment extends Fragment {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
         }
-    }
+    };
 
     @Override
     public void onDetach() {

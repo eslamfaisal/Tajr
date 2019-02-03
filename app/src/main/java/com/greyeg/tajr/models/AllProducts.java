@@ -11,6 +11,10 @@ public class AllProducts {
     @Expose
     private String code;
 
+    @SerializedName("response")
+    @Expose
+    private String response;
+
     @SerializedName("info")
     @Expose
     private String info;
@@ -24,6 +28,14 @@ public class AllProducts {
     private List<ProductData> products;
 
     public AllProducts() {
+    }
+
+    public String getResponse() {
+        return response;
+    }
+
+    public void setResponse(String response) {
+        this.response = response;
     }
 
     public List<ProductData> getProducts() {

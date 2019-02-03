@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="24dp">
+
+            <ImageView
+                android:id="@+id/logo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:layout_marginBottom="64dp"
+                android:src="@drawable/ic_logo" />
+
+            <LinearLayout
+                android:id="@+id/request_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#50000000"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="8dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical">
+
+                        <com.greyeg.tajr.helper.font.MaterialDesignIconsTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:text="@string/fontello_user"
+                            android:textColor="@color/white"
+                            android:textSize="16dp"
+                            tools:ignore="SpUsage" />
+
+                        <Spinner
+                            android:id="@+id/type"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="16dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/edit_text_background_accent" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical">
+
+                        <com.greyeg.tajr.helper.font.MaterialDesignIconsTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:text="@string/fontello_user"
+                            android:textColor="@color/white"
+                            android:textSize="16dp"
+                            tools:ignore="SpUsage" />
+
+                        <Spinner
+                            android:id="@+id/amount"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="16dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/edit_text_background_accent" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="54dp"
+                    android:orientation="vertical">
+
+                    <com.greyeg.tajr.view.MaterialRippleLayout
+                        style="@style/RippleStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="3dp"
+                        app:rippleColor="@color/white">
+
+                        <com.greyeg.tajr.helper.font.RobotoTextView
+                            android:id="@+id/request_cart"
+                            style="@style/ButtonStyle.RaisedEmpty"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="0dp"
+                            android:background="@color/main_color_500"
+                            android:minWidth="112dp"
+                            android:text="@string/request"
+                            android:textColor="#fff" />
+                    </com.greyeg.tajr.view.MaterialRippleLayout>
+
+                    <com.greyeg.tajr.view.ProgressWheel
+                        android:id="@+id/progress_bar"
+                        style="@style/ProgressBarStyle.Reverse"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="18dp"
+                        android:layout_marginRight="18dp"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/copy_view"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:gravity="center"
+                    android:id="@+id/cart_num"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#50000000"
+                    android:padding="16dp"
+                    android:textColor="@color/white"
+                    android:textSize="24sp" />
+
+
+                <LinearLayout
+                    android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="54dp"
+                    android:orientation="vertical">
+
+                    <com.greyeg.tajr.view.MaterialRippleLayout
+                        style="@style/RippleStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="3dp"
+                        app:rippleColor="@color/white">
+
+                        <com.greyeg.tajr.helper.font.RobotoTextView
+                            android:id="@+id/copy"
+                            style="@style/ButtonStyle.RaisedEmpty"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="0dp"
+                            android:background="@color/main_color_500"
+                            android:minWidth="112dp"
+                            android:text="@string/copy"
+                            android:textColor="#fff" />
+                    </com.greyeg.tajr.view.MaterialRippleLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+</RelativeLayout>

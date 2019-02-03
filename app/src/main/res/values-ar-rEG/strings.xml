@@ -142,7 +142,18 @@
     <string name="availabl_balance">الرصيد المتاح</string>
     <string name="time">الوقت</string>
     <string name="Balance">الرصيد</string>
-    <string name="calculator">Calculator</string>
-
+    <string name="calculator">الة حاسبة</string>
+    <string name="wrong_message">اكتب رسالة</string>
+    <string name="chat">الرسائل</string>
+    <string name="recordes">التسجيلات</string>
+    <string name="call_listener_on">تسجيل المكالمات قيد التفعيل</string>
+    <string name="call_listener_off">تم ايقاف تسجيل المكالمات</string>
+    <string name="messages">الرسائل</string>
+    <string name="work">العمل</string>
+    <string name="carts">كروت الشحن</string>
+    <string name="copy">نسخ</string>
+    <string name="available_balance">الرصيد المتاح</string>
+    <string name="omla">جنية</string>
+    <string name="admin_login">Admin login</string>
 
 </resources>

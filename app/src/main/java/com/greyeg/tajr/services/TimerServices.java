@@ -34,4 +34,9 @@ public class TimerServices extends IntentService {
 //        }, 0, 1000);
     }
 
+    @Override
+    public void onTaskRemoved(Intent rootIntent) {
+        super.onTaskRemoved(rootIntent);
+
+    }
 }

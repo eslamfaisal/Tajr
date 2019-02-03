@@ -137,8 +137,7 @@ public class UpdateOrderActivity extends AppCompatActivity {
         progressDialog.show();
         Api api = BaseClient.getBaseClient().create(Api.class);
 
-        api.getOrders(SharedHelper.getKey(this, LoginActivity.TOKEN),
-                SharedHelper.getKey(this, LoginActivity.USER_ID)).enqueue(new Callback<UserOrders>() {
+        api.getOrders("Z7CQVAoJXzu2iv5dgMIBUk36").enqueue(new Callback<UserOrders>() {
             @Override
             public void onResponse(retrofit2.Call<UserOrders> call, Response<UserOrders> response) {
                 if (response.body() != null) {
@@ -186,6 +185,7 @@ public class UpdateOrderActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<UserOrders> call, Throwable t) {
+                Log.d("eeeeeeeee", "onResponse: " + t.getMessage());
                 progressDialog.dismiss();
             }
         });

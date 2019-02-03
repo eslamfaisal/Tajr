@@ -68,6 +68,7 @@ public class BalanceRequestHistoryFragment extends Fragment {
             public void onResponse(Call<CashRequestHistory> call, Response<CashRequestHistory> response) {
 
                 if (response.body().getCode().equals("1200")||response.body().getCode().equals("1202")){
+
                     adapter = new CashHistoryAdapter(response.body().getData(),getActivity());
                     cashRecyclerView.setAdapter(adapter);
 
