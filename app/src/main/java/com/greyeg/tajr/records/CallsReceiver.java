@@ -39,7 +39,7 @@ public class CallsReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(final Context context, Intent intent) {
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
-        Toast.makeText(context, "تم بدء مكالمة", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(context, "تم بدء مكالمة", Toast.LENGTH_SHORT).show();
         Boolean switchCheckOn = pref.getBoolean("switchOn", true);
         if (switchCheckOn) {
 

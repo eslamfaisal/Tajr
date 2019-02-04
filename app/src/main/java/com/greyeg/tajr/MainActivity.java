@@ -59,6 +59,8 @@ import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
+import com.greyeg.tajr.activities.AdminLoginActivity;
+import com.greyeg.tajr.activities.AdminRecordsActivity;
 import com.greyeg.tajr.activities.BalanceActivity;
 import com.greyeg.tajr.activities.CartsActivity;
 import com.greyeg.tajr.activities.ChatActivity;
@@ -169,7 +171,11 @@ public class MainActivity extends AppCompatActivity
                                 Manifest.permission.READ_CALL_LOG,
                                 Manifest.permission.MODIFY_AUDIO_SETTINGS,
                                 Manifest.permission.CALL_PHONE,
-                                Manifest.permission.RECORD_AUDIO
+                                Manifest.permission.RECORD_AUDIO,
+                                Manifest.permission.READ_PHONE_STATE,
+                                Manifest.permission.READ_EXTERNAL_STORAGE,
+                                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                Manifest.permission.READ_CONTACTS
                         },
                         56);
             } else {
@@ -494,7 +500,12 @@ public class MainActivity extends AppCompatActivity
                                     Manifest.permission.READ_PHONE_STATE,
                                     Manifest.permission.READ_CALL_LOG,
                                     Manifest.permission.MODIFY_AUDIO_SETTINGS,
-                                    Manifest.permission.CALL_PHONE
+                                    Manifest.permission.CALL_PHONE,
+                                    Manifest.permission.READ_PHONE_STATE,
+                                    Manifest.permission.RECORD_AUDIO,
+                                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                    Manifest.permission.READ_CONTACTS
                             },
                             56);
                 }
@@ -758,6 +769,8 @@ public class MainActivity extends AppCompatActivity
                 intent = new Intent(getApplicationContext(), RecordsActivity.class);
             }else if (position == 7) {
                 intent = new Intent(getApplicationContext(), CartsActivity.class);
+            }else if (position == 8) {
+                intent = new Intent(getApplicationContext(), AdminRecordsActivity.class);
             }
             if (intent != null) {
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

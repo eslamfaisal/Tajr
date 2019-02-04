@@ -21,8 +21,20 @@ public class UserResponse {
     @Expose
     private String info;
 
+    @SerializedName("token")
+    @Expose
+    private String token;
+
 
     public UserResponse() {
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 
     public void setCode(String code) {

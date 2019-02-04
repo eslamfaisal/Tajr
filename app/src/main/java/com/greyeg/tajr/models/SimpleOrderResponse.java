@@ -153,6 +153,7 @@ public class SimpleOrderResponse {
         @SerializedName("client_feedback")
         @Expose
         private String client_feedback;
+
         @SerializedName("order_type")
         @Expose
         private String order_type;

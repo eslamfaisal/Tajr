@@ -49,6 +49,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
+import static com.greyeg.tajr.activities.LoginActivity.LOG_IN_FROM;
+
 /**
  * A login screen that offers login via email/password.
  */
@@ -135,26 +137,24 @@ public class AdminLoginActivity extends AppCompatActivity {
                     api.adminLogin(email.getText().toString(), pass.getText().toString()).enqueue(new Callback<UserResponse>() {
                         @Override
                         public void onResponse(Call<UserResponse> call, final Response<UserResponse> response) {
+
+                            Log.d("rrrrrrrrrrrr", "onResponse: response"+response.body().getCode());
                             if (response.body() != null) {
                                 if (response.body().getCode().equals("1202") || response.body().getCode().equals("1212")) {
-
+                                    Log.d("rrrrrrrrrrrr", "onResponse: response + 1202");
                                     FirebaseDatabase.getInstance().getReference().child("users")
                                             .child(OneSignal.getPermissionSubscriptionState().getSubscriptionStatus().getUserId())
-                                            .setValue(new User(response.body().getData().getLogin_data().getUsername(), OneSignal.getPermissionSubscriptionState().getSubscriptionStatus().getUserId()))
+                                            .setValue(new User("eslam faisal", OneSignal.getPermissionSubscriptionState().getSubscriptionStatus().getUserId()))
                                             .addOnCompleteListener(new OnCompleteListener<Void>() {
                                                 @Override
                                                 public void onComplete(@NonNull Task<Void> task) {
                                                     if (task.isSuccessful()) {
-
+                                                        Log.d("rrrrrrrrrrrr", "onResponse: response+1202+fire");
                                                         loginBtn.setVisibility(View.VISIBLE);
                                                         progressLogin.setVisibility(View.GONE);
+                                                        SharedHelper.putKey(getApplicationContext(), LOG_IN_FROM, "admin");
                                                         SharedHelper.putKey(getApplicationContext(), IS_LOGIN, "yes");
-                                                        SharedHelper.putKey(getApplicationContext(), USER_NAME, response.body().getData().getLogin_data().getUsername());
-                                                        SharedHelper.putKey(getApplicationContext(), USER_ID, response.body().getData().getLogin_data().getUser_id());
-                                                        SharedHelper.putKey(getApplicationContext(), USER_TYPE, response.body().getData().getLogin_data().getUser_type());
-                                                        SharedHelper.putKey(getApplicationContext(), PARENT_TAJR_ID, response.body().getData().getLogin_data().getParent_tajr_id());
-                                                        SharedHelper.putKey(getApplicationContext(), IS_TAJR, response.body().getData().getLogin_data().getIs_tajr());
-                                                        SharedHelper.putKey(getApplicationContext(), TOKEN, response.body().getData().getLogin_data().getToken());
+                                                        SharedHelper.putKey(getApplicationContext(), TOKEN, response.body().getToken());
                                                         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                                                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                                         startActivity(intent);
@@ -166,7 +166,17 @@ public class AdminLoginActivity extends AppCompatActivity {
 
 
                                     // raniaabdel001@gmail.com
+                                }else {
+                                    Log.d("rrrrrrrrrrrr", "onResponse: response+ 1202 null");
+                                    loginBtn.setVisibility(View.VISIBLE);
+                                    progressLogin.setVisibility(View.GONE);
+
                                 }
+                            }else {
+                                Log.d("rrrrrrrrrrrr", "onResponse: response+body = null");
+                                loginBtn.setVisibility(View.VISIBLE);
+                                progressLogin.setVisibility(View.GONE);
+
                             }
                         }
 

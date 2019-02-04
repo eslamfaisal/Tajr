@@ -1,6 +1,7 @@
 package com.greyeg.tajr.server;
 
 import com.greyeg.tajr.models.ActivityHistory;
+import com.greyeg.tajr.models.AdminRecordsResponse;
 import com.greyeg.tajr.models.AllProducts;
 import com.greyeg.tajr.models.CardsResponse;
 import com.greyeg.tajr.models.CartResponse;
@@ -15,6 +16,7 @@ import com.greyeg.tajr.models.PointsHistory;
 import com.greyeg.tajr.models.SimpleOrderResponse;
 import com.greyeg.tajr.models.ToalAvailableBalance;
 import com.greyeg.tajr.models.UpdateOrderResponse;
+import com.greyeg.tajr.models.UploadPhoneResponse;
 import com.greyeg.tajr.models.UploadVoiceResponse;
 import com.greyeg.tajr.models.UserOrders;
 import com.greyeg.tajr.models.UserResponse;
@@ -43,8 +45,7 @@ public interface Api {
     // log in user client
     @FormUrlEncoded
     @POST("send/cpanel_login")
-    Call<UserResponse> adminLogin(@Field("username") String email, @Field("password") String password);
-
+    Call<UserResponse> adminLogin(@Field("apiKey") String email, @Field("apiSecret") String password);
 
     // log in user client
     @FormUrlEncoded
@@ -70,8 +71,7 @@ public interface Api {
     @POST("send/update_order")
     Call<UpdateOrderResponse> updateOrders(
             @Field("token") String token,
-            @Field("user_id") int user_id,
-            @Field("order_id") int order_id,
+            @Field("order_id") String order_id,
             @Field("status") String status
 
     );
@@ -82,6 +82,12 @@ public interface Api {
     Call<UserOrders> getPhoneData(@Field("token") String token,
                                           @Field("user_id") String user_id,
                                           @Field("phone") String phone);
+
+    @FormUrlEncoded
+    @POST("send/phone")
+    Call<UploadPhoneResponse> uploadPhone(@Field("token") String token,
+                                          @Field("phone") String phone);
+
 
     // log in user client
     @FormUrlEncoded
@@ -175,8 +181,7 @@ public interface Api {
     // log in user client
     @FormUrlEncoded
     @POST("send/balance_history")
-    Call<CashRequestHistory> getAvailableBalance(@Field("token") String token,
-                                                 @Field("user_id") String  user_id);
+    Call<CashRequestHistory> getAvailableBalance(@Field("token") String token);
 
     // log in user client
     @FormUrlEncoded
@@ -195,6 +200,11 @@ public interface Api {
     @Multipart
     @POST("send/upload_voice_notes")
     Call<UploadVoiceResponse> uploadVoice(@Part("token") RequestBody token, @Part("order_id") RequestBody order_id,@Part MultipartBody.Part audio);
+
+    // log in user client
+    @FormUrlEncoded
+    @POST("send/all_records")
+    Call<AdminRecordsResponse> getRecords(@Field("token") String token);
 
 
 }

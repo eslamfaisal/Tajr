@@ -82,8 +82,8 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.MyViewHold
 
                     pref.edit().putBoolean("pauseStateVLC",true).apply();
 
-
-                    databaseManager.updateCallDetails(cd1);
+//
+//                    databaseManager.updateCallDetails(cd1);
 
 
 

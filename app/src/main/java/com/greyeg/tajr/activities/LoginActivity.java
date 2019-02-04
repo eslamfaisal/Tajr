@@ -5,7 +5,9 @@ import android.animation.ObjectAnimator;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -65,7 +67,7 @@ public class LoginActivity extends AppCompatActivity {
     public static final String SPLASH_SCREEN_OPTION_1 = "Fade in + Ken Burns";
     public static final String SPLASH_SCREEN_OPTION_2 = "Down + Ken Burns";
     public static final String SPLASH_SCREEN_OPTION_3 = "Down + fade in + Ken Burns";
-
+    public static final String LOG_IN_FROM = "log_in_from";
     public static final String USER_NAME = "username";
     public static final String USER_TYPE = "user_type";
     public static final String USER_ID = "user_id";
@@ -157,6 +159,7 @@ public class LoginActivity extends AppCompatActivity {
 
                                                         loginBtn.setVisibility(View.VISIBLE);
                                                         progressLogin.setVisibility(View.GONE);
+                                                        SharedHelper.putKey(getApplicationContext(), LOG_IN_FROM, "employee");
                                                         SharedHelper.putKey(getApplicationContext(), IS_LOGIN, "yes");
                                                         SharedHelper.putKey(getApplicationContext(), USER_NAME, response.body().getData().getLogin_data().getUsername());
                                                         SharedHelper.putKey(getApplicationContext(), USER_ID, response.body().getData().getLogin_data().getUser_id());
@@ -189,15 +192,24 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         });
-//        getCallLogs();\\n
-        //newjob();
 
-        String strJsonBody = "{"
-                + "\"app_id\": \"5eb5a37e-b458-11e3-ac11-000c2940e62c\","
-                + "\"include_player_ids\": [\"6392d91a-b206-4b7b-a620-cd68e32c3a76\",\"76ece62b-bcfe-468c-8a78-839aeaa8c5fa\",\"8e0f21fa-9a5a-4ae7-a9a6-ca1f24294b86\"],"
-                + "\"data\": {\"foo\": \"bar\"},"
-                + "\"contents\": {\"en\": \"English Message\"}"
-                + "}";
+    }
+
+    private void minutesUsage(  ){
+
+        int totalSeconds = Integer.parseInt("60");
+        int minutes = totalSeconds/59;
+        int remaining = 0;
+        if ((totalSeconds%59)>0){
+            remaining = 1;
+        }
+
+        SharedPreferences pref1 = PreferenceManager.getDefaultSharedPreferences(this);
+        float oldUsage = pref1.getFloat("cards_usage",0f);
+        float currentUsage = (float) (minutes+remaining);
+        float newUsage = oldUsage+currentUsage;
+        pref1.edit().putFloat("cards_usage",newUsage).apply();
+        Log.d("minutesUsage", "minutesUsage: "+pref1.getFloat("cards_usage",0f));
 
     }
 

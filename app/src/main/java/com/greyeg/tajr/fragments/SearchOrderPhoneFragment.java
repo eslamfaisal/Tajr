@@ -288,8 +288,7 @@ public class SearchOrderPhoneFragment extends Fragment {
         Api api = BaseClient.getBaseClient().create(Api.class);
         api.updateOrders(
                 SharedHelper.getKey(getActivity(), LoginActivity.TOKEN),
-                Integer.parseInt(SharedHelper.getKey(getActivity(), LoginActivity.USER_ID)),
-                Integer.parseInt(order_ud),
+                order_ud,
                 value
         ).enqueue(new Callback<UpdateOrderResponse>() {
             @Override

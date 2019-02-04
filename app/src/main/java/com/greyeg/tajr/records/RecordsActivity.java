@@ -164,7 +164,8 @@ public class RecordsActivity extends AppCompatActivity {
 
     private boolean checkPermission() {
         int i = 0;
-        String[] perm = {Manifest.permission.READ_PHONE_STATE,
+        String[] perm = {
+                Manifest.permission.READ_PHONE_STATE,
                 Manifest.permission.RECORD_AUDIO,
                 Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE,

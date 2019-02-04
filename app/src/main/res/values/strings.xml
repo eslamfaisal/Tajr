@@ -197,5 +197,16 @@
     <string name="available_balance">Available balance</string>
     <string name="omla">LE</string>
     <string name="admin_login">Admin login</string>
+    <string name="amin_records">Admin records</string>
+    <string name="all_ecords">All records</string>
+    <string name="new_card">New Card</string>
+    <string name="consumption">Consumption</string>
+    <string name="card_expiration_time">Card expiration time</string>
+    <string name="the_remaining_amount_of_card">The remaining amount of card</string>
+    <string name="remaining">Remaining</string>
+    <string name="minute">minute</string>
+    <string name="expired">Expired</string>
+    <string name="used">Used</string>
+    <string name="cards">Cards</string>
 
 </resources>

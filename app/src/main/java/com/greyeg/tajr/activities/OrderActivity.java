@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Rect;
@@ -21,6 +22,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.provider.CallLog;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -39,8 +41,6 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -56,7 +56,6 @@ import com.android.internal.telephony.ITelephony;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork;
 import com.greyeg.tajr.R;
-import com.greyeg.tajr.adapters.ProductSpinnerAdapter;
 import com.greyeg.tajr.calc.CalcDialog;
 import com.greyeg.tajr.call_receiver.PhoneCallReceiver;
 import com.greyeg.tajr.fragments.NewOrderFragment;
@@ -68,9 +67,9 @@ import com.greyeg.tajr.helper.font.RobotoTextView;
 import com.greyeg.tajr.models.AllProducts;
 import com.greyeg.tajr.models.LastCallDetails;
 import com.greyeg.tajr.models.ProductData;
-import com.greyeg.tajr.models.ProductForSpinner;
 import com.greyeg.tajr.models.SimpleOrderResponse;
 import com.greyeg.tajr.models.UpdateOrderResponse;
+import com.greyeg.tajr.models.UploadPhoneResponse;
 import com.greyeg.tajr.models.UploadVoiceResponse;
 import com.greyeg.tajr.models.UserWorkTimeResponse;
 import com.greyeg.tajr.records.CallDetails;
@@ -89,7 +88,6 @@ import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -242,17 +240,16 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
     private Disposable networkDisposable;
     private Disposable internetDisposable;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_update_order);
         ButterKnife.bind(this);
+        openRecords();
         setConnectionListener();
         setUpProgressBar();
         setCalc(savedInstanceState);
         databaseManager = new DatabaseManager(this);
-       // registerBroadCastReceiver();
         orderActivity = this;
         CallsReceiver.setCurrentCallListener(this);
         my = this;
@@ -263,10 +260,8 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
         startWorkTimerTimer();
         stoped = false;
         startTimer(System.currentTimeMillis() - (timeWork * 1000));
-
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         api = BaseClient.getBaseClient().create(Api.class);
-
         micMute = false;
         AudioManager audioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
         audioManager.setMode(AudioManager.MODE_IN_CALL);
@@ -313,7 +308,8 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
 
     String connectionType;
     boolean hasInternet;
-    private void  setConnectionListener(){
+
+    private void setConnectionListener() {
         networkDisposable = ReactiveNetwork.observeNetworkConnectivity(getApplicationContext())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -323,7 +319,7 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
                     connectionType = connectivity.typeName();   // WIFI OR MOBILE
 
                     //  tvConnectivityStatus.setText(String.format("state: %s, typeName: %s", state, name));
-                    Log.d("ssssssssssssss", "onCreate: "+String.format("state: %s, typeName: %s", state, connectionType));
+                    Log.d("ssssssssssssss", "onCreate: " + String.format("state: %s, typeName: %s", state, connectionType));
                 });
 
         internetDisposable = ReactiveNetwork.observeInternetConnectivity()
@@ -332,7 +328,7 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
                 .subscribe(isConnected -> {
                     hasInternet = isConnected;
                     //    tvInternetStatus.setText(isConnected.toString());
-                    if (!isConnected){
+                    if (!isConnected) {
                         onConnectionLost();
                     }
                     Log.d("ssssssssssssss", "onCreate: " + isConnected.toString());
@@ -370,13 +366,13 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
     }
 
     void initUpdateAsNewOrder() {
-        updatingButton.setMovementLeft(300);
+        updatingButton.setMovementLeft(200);
 
-        updatingButton.setMovementRight(300);
+        updatingButton.setMovementRight(200);
 
-        updatingButton.setMovementTop(300);
+        updatingButton.setMovementTop(200);
 
-        updatingButton.setMovementBottom(300);
+        updatingButton.setMovementBottom(200);
 
         updatingButton.setOnPositionChangedListener(new MovingButton.OnPositionChangedListener() {
             @Override
@@ -405,13 +401,13 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
 
     void initUpdateAsOldOrder() {
 
-        updatingButton.setMovementLeft(300);
+        updatingButton.setMovementLeft(200);
 
-        updatingButton.setMovementRight(300);
+        updatingButton.setMovementRight(200);
 
-        updatingButton.setMovementTop(300);
+        updatingButton.setMovementTop(200);
 
-        updatingButton.setMovementBottom(300);
+        updatingButton.setMovementBottom(200);
 
         updatingButton.setOnPositionChangedListener(new MovingButton.OnPositionChangedListener() {
             @Override
@@ -479,17 +475,16 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
         Api api = BaseClient.getBaseClient().create(Api.class);
         api.updateOrders(
                 SharedHelper.getKey(this, LoginActivity.TOKEN),
-                Integer.parseInt(SharedHelper.getKey(this, LoginActivity.USER_ID)),
-                Integer.parseInt(order_ud),
+                order_ud,
                 value
         ).enqueue(new Callback<UpdateOrderResponse>() {
             @Override
             public void onResponse(Call<UpdateOrderResponse> call, Response<UpdateOrderResponse> response) {
                 if (response.body() != null) {
-                    Log.d("eeeeeeeeeeeeee", "onResponse: updateOrder" + response.body().getCode());
+                    Log.d("eeeeeeeeeeeeee", "onResponse: "+value + response.body().getCode());
                 }
                 if (response.body().getCode().equals("1200") || response.body().getCode().equals("1202")) {
-                    Log.d("eeeeeeeeeeeeee", "onResponse: updateOrder" + response.body().getCode());
+                    Log.d("eeeeeeeeeeeeee", "onResponse: "+value + response.body().getCode());
                     progressBar.setVisibility(View.GONE);
                     if (askToFinishWork) {
                         finishTheWorkNow();
@@ -504,7 +499,7 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
             @Override
             public void onFailure(Call<UpdateOrderResponse> call, Throwable t) {
                 progressBar.setVisibility(View.GONE);
-                Log.d("eeeeeeeeeeeeeeee", "onFailure:update order " + t.getMessage());
+                Log.d("dddddddddd", "onFailure:update "+value + t.getMessage());
                 //  finishTheWorkNow();
             }
         });
@@ -701,8 +696,9 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
 
             @Override
             public void onFailure(Call<SimpleOrderResponse> call, Throwable t) {
+                Toast.makeText(OrderActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
                 progressBar.setVisibility(View.GONE);
-                Log.d("eeeeeeeee", "failure: " + t.getMessage());
+                finish();
             }
         });
     }
@@ -712,7 +708,7 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
 
     public void callClient() {
         Intent callIntent = new Intent(Intent.ACTION_CALL);
-        callIntent.setData(Uri.parse("tel:" + "01022861654"));
+        callIntent.setData(Uri.parse("tel:" + phone));
         Log.d("xxxxxxxxxx", "callClient: " + phone);
         if (ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
@@ -837,14 +833,16 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
             animationHide();
         }
     }
+
     ProductData currentProduct;
     @BindView(R.id.product_view)
-    View productView ;
+    View productView;
+
     private void animationShow() {
 
-        if (allProducts!=null){
-            for (ProductData data  :allProducts.getProducts()){
-                if (data.getProduct_name().equals(order.getProduct_name())){
+        if (allProducts != null) {
+            for (ProductData data : allProducts.getProducts()) {
+                if (data.getProduct_name().equals(order.getProduct_name())) {
                     currentProduct = data;
                 }
             }
@@ -855,11 +853,11 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
         TextView price = productView.findViewById(R.id.price);
         TextView description = productView.findViewById(R.id.description);
 
-        SimpleDraweeView image  = productView.findViewById(R.id.product_image);
+        SimpleDraweeView image = productView.findViewById(R.id.product_image);
         image.setImageURI(currentProduct.getProduct_image());
         textView.setText(currentProduct.getProduct_name());
         description.setText(currentProduct.getProduct_describtion());
-        price.setText(currentProduct.getProduct_real_price()+" "+getString(R.string.omla));
+        price.setText(currentProduct.getProduct_real_price() + " " + getString(R.string.omla));
         Animation anim = AnimationUtils.loadAnimation(this, R.anim.alerter_slide_in_from_top);
         productView.startAnimation(anim);
         productView.setVisibility(View.VISIBLE);
@@ -875,7 +873,8 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
     }
 
     public AllProducts allProducts;
-    private void getProducts() {
+
+    protected synchronized void getProducts() {
         Api api = BaseClient.getBaseClient().create(Api.class);
         api.getProducts(SharedHelper.getKey(this, LoginActivity.TOKEN),
                 SharedHelper.getKey(this, LoginActivity.USER_ID)
@@ -997,13 +996,16 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
 
     }
 
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
-      //  unregisterReceiver(networkStateReceiver);
+        closeRecords();
+        //  unregisterReceiver(networkStateReceiver);
         if (pauseActivityTimer != null) {
             pauseActivityTimer.cancel();
         }
+
         if (updateOrderTimer != null) {
             updateOrderTimer.cancel();
         }
@@ -1089,8 +1091,8 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
 
     @Override
     public void callEnded() {
-        if (hasInternet&&connectionType.equals("WIFI"))
-        uploadVoices();
+        if (hasInternet && connectionType.equals("WIFI"))
+            uploadVoices();
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -1103,7 +1105,20 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
                         if (callDetails.getType().equals("MISSED") || callDetails.getType().equals("REJECTED")) {
                             if (callDetails.getActiveId().equals(SharedHelper.getKey(getApplicationContext(),
                                     "activated_sub_id"))) {
-                                Toast.makeText(OrderActivity.this, "تم ارسال رقم  " + callDetails.getPhone() + " المكالمة الفائتة الى السيرفر", Toast.LENGTH_SHORT).show();
+                                BaseClient.getBaseClient().create(Api.class).uploadPhone(SharedHelper.getKey(getApplicationContext(),LoginActivity.TOKEN),callDetails.getPhone())
+                                        .enqueue(new Callback<UploadPhoneResponse>() {
+                                            @Override
+                                            public void onResponse(Call<UploadPhoneResponse> call, Response<UploadPhoneResponse> response) {
+                                                if (response.body().getResponse().equals("Success")){
+                                                    Toast.makeText(OrderActivity.this, "تم ارسال رقم  " + callDetails.getPhone() + " المكالمة الفائتة الى السيرفر", Toast.LENGTH_SHORT).show();
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onFailure(Call<UploadPhoneResponse> call, Throwable t) {
+
+                                            }
+                                        });
 
                             }
 
@@ -1124,6 +1139,7 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
                                     updateOrder(client_noanswer);
                                 }
                             } else {
+                                minutesUsage(callDetails.getDuration());
                                 updateOrderTimer();
                             }
                         }
@@ -1137,32 +1153,50 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
 
     }
 
+    private void minutesUsage(String  seconds){
+
+        int totalSeconds = Integer.parseInt(seconds);
+        int minutes = totalSeconds/59;
+        int remaining = 0;
+        if ((totalSeconds%59)>0){
+            remaining = 1;
+        }
+
+        SharedPreferences pref1 = PreferenceManager.getDefaultSharedPreferences(this);
+        float oldUsage = pref1.getFloat("cards_usage",0f);
+        float currentUsage = (float) (minutes+remaining);
+        float newUsage = oldUsage+currentUsage;
+        pref1.edit().putFloat("cards_usage",newUsage).apply();
+        Log.d("minutesUsage", "minutesUsage: "+pref1.getFloat("cards_usage",0f));
+
+    }
+
     List<CallDetails> callDetailsList;
 
-    private void uploadVoices(){
+    private void uploadVoices() {
         callDetailsList = databaseManager.getAllDetails();
-        for (CallDetails call :callDetailsList){
-            if (call.getUploaded().equals("not_yet")){
+        for (CallDetails call : callDetailsList) {
+            if (call.getUploaded().equals("not_yet")) {
 
-                String path = Environment.getExternalStorageDirectory() + "/MyRecords/" + call.getDate() + "/" + call.getNum() + "_" + call.getTime1() + ".mp4"  ;
+                String path = Environment.getExternalStorageDirectory() + "/MyRecords/" + call.getDate() + "/" + call.getNum() + "_" + call.getTime1() + ".mp4";
                 File file = new File(path);
-                    RequestBody surveyBody = RequestBody.create(MediaType.parse("audio/*"), file);
-                    MultipartBody.Part image = MultipartBody.Part.createFormData("voice_note",file.getName(), surveyBody);
-                    RequestBody title1 = RequestBody.create(MediaType.parse("text/plain"), order_ud);
-                    RequestBody token = RequestBody.create(MediaType.parse("text/plain"), SharedHelper.getKey(this, LoginActivity.TOKEN));
-                    BaseClient.getBaseClient().create(Api.class).uploadVoice(token,title1,image).enqueue(new Callback<UploadVoiceResponse>() {
-                        @Override
-                        public void onResponse(Call<UploadVoiceResponse> call2, Response<UploadVoiceResponse> response) {
-                            databaseManager.updateCallDetails(call);
-                            Log.d("caaaaaaaaaaaaaal", "onResponse: "+response.body().getInfo());
-                        }
+                RequestBody surveyBody = RequestBody.create(MediaType.parse("audio/*"), file);
+                MultipartBody.Part image = MultipartBody.Part.createFormData("voice_note", file.getName(), surveyBody);
+                RequestBody title1 = RequestBody.create(MediaType.parse("text/plain"), order_ud);
+                RequestBody token = RequestBody.create(MediaType.parse("text/plain"), SharedHelper.getKey(this, LoginActivity.TOKEN));
+                BaseClient.getBaseClient().create(Api.class).uploadVoice(token, title1, image).enqueue(new Callback<UploadVoiceResponse>() {
+                    @Override
+                    public void onResponse(Call<UploadVoiceResponse> call2, Response<UploadVoiceResponse> response) {
+                        databaseManager.updateCallDetails(call);
+                        Log.d("caaaaaaaaaaaaaal", "onResponse: " + response.body().getInfo());
+                    }
 
-                        @Override
-                        public void onFailure(Call<UploadVoiceResponse> call, Throwable t) {
-                            Log.d("caaaaaaaaaaaaaal", "onFailure: "+t.getMessage());
+                    @Override
+                    public void onFailure(Call<UploadVoiceResponse> call, Throwable t) {
+                        Log.d("caaaaaaaaaaaaaal", "onFailure: " + t.getMessage());
 
-                        }
-                    });
+                    }
+                });
             }
         }
     }
@@ -1405,7 +1439,7 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
 
         this.value = value;
 
-        if (value!=null){
+        if (value != null) {
             valueTxv.setText(value.toPlainString());
             signChk.setEnabled(value.compareTo(BigDecimal.ZERO) != 0);
         }
@@ -1425,6 +1459,15 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
         progressBar.setIndeterminateDrawable(progressDrawable);
         progressBar.getIndeterminateDrawable().setBounds(bounds);
 
+    }
+
+    private void openRecords(){
+        SharedPreferences pref1 = PreferenceManager.getDefaultSharedPreferences(this);
+        pref1.edit().putBoolean("switchOn", true).apply();
+    }
+    private void closeRecords(){
+        SharedPreferences pref1 = PreferenceManager.getDefaultSharedPreferences(this);
+        pref1.edit().putBoolean("switchOn", false).apply();
     }
 
 }

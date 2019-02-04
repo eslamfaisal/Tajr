@@ -89,6 +89,10 @@ dependencies {
     implementation 'com.google.android.gms:play-services-location:15.0.1'
     implementation 'com.github.rygelouv:android-audio-sensei:0.1.2'
     implementation 'com.github.pwittchen:reactivenetwork-rx2:3.0.2'
+    implementation 'com.intuit.ssp:ssp-android:1.0.6'
+    implementation 'com.intuit.sdp:sdp-android:1.0.6'
+    implementation 'com.github.bmarrdev:android-DecoView-charting:v1.2'
+
 
 }
 apply plugin: 'com.google.gms.google-services'

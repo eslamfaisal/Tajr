@@ -16,7 +16,7 @@ import java.io.IOException;
 public class RecorderService extends Service {
 
     MediaRecorder recorder;
-    static final String TAGS=" Inside Service";
+    static final String TAGS = " Inside Service";
 
     public static String rec;
 
@@ -26,19 +26,18 @@ public class RecorderService extends Service {
         return null;
     }
 
-    public int onStartCommand(Intent intent, int flags, int startId)
-    {
+    public int onStartCommand(Intent intent, int flags, int startId) {
         recorder = new MediaRecorder();
         recorder.reset();
 
-        String phoneNumber=intent.getStringExtra("number");
-        Log.d(TAGS, "Phone number in service: "+phoneNumber);
+        String phoneNumber = intent.getStringExtra("number");
+        Log.d(TAGS, "Phone number in service: " + phoneNumber);
 
-        String time=new CommonMethods().getTIme();
+        String time = new CommonMethods().getTIme();
 
-        String path=new CommonMethods().getPath();
+        String path = new CommonMethods().getPath();
 
-         rec=path+"/"+phoneNumber+"_"+time+".mp4";
+        rec = path + "/" + phoneNumber + "_" + time + ".mp4";
 
         recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
@@ -53,21 +52,20 @@ public class RecorderService extends Service {
         }
         recorder.start();
 
-        Log.d(TAGS, "onStartCommand: "+"Recording started");
+        Log.d(TAGS, "onStartCommand: " + "Recording started");
 
         return START_NOT_STICKY;
     }
 
-    public void onDestroy()
-    {
+    public void onDestroy() {
         super.onDestroy();
 
         recorder.stop();
         recorder.reset();
         recorder.release();
-        recorder=null;
+        recorder = null;
 
-        Log.d(TAGS, "onDestroy: "+"Recording stopped");
+        Log.d(TAGS, "onDestroy: " + "Recording stopped");
 
     }
 }

@@ -74,12 +74,15 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".activities.AdminLoginActivity"
-            android:parentActivityName=".activities.LoginActivity"/>
+        <activity android:name=".activities.AdminRecordsActivity"
+            android:parentActivityName=".MainActivity"></activity>
+        <activity
+            android:name=".activities.AdminLoginActivity"
+            android:parentActivityName=".activities.LoginActivity" />
         <activity android:name=".activities.BalanceCalculationActivity" />
         <activity
             android:name=".activities.CartsActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:parentActivityName=".MainActivity" />
 
         <meta-data
             android:name="com.onesignal.NotificationOpened.DEFAULT"

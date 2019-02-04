@@ -61,9 +61,7 @@ public class BalanceRequestHistoryFragment extends Fragment {
         cashRecyclerView.setLayoutManager(linearLayoutManager);
         Api api = BaseClient.getBaseClient().create(Api.class);
         api.getAvailableBalance(
-                SharedHelper.getKey(getActivity(), LoginActivity.TOKEN),
-                SharedHelper.getKey(getActivity(), LoginActivity.USER_ID)
-        ).enqueue(new Callback<CashRequestHistory>() {
+                SharedHelper.getKey(getActivity(), LoginActivity.TOKEN)).enqueue(new Callback<CashRequestHistory>() {
             @Override
             public void onResponse(Call<CashRequestHistory> call, Response<CashRequestHistory> response) {
 

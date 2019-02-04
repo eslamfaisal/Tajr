@@ -9,6 +9,8 @@ import android.widget.TextView;
 
 
 import com.greyeg.tajr.R;
+import com.greyeg.tajr.activities.LoginActivity;
+import com.greyeg.tajr.helper.SharedHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +37,10 @@ public class DrawerAdapter extends BaseAdapter {
 		list.add(new DummyModel(4, "", context.getString(R.string.chat), R.string.material_icon_settings));
 		list.add(new DummyModel(5, "", context.getString(R.string.recordes), R.string.material_icon_settings));
 		list.add(new DummyModel(6, "", context.getString(R.string.carts), R.string.material_icon_settings));
+		if (SharedHelper.getKey(context, LoginActivity.LOG_IN_FROM).equals("admin")){
+			list.add(new DummyModel(7, "", context.getString(R.string.amin_records), R.string.material_icon_settings));
+		}
+
 
 
 

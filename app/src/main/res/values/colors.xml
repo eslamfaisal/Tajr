@@ -19,6 +19,9 @@
     <color name="grey_user_panel_text">#ABB4BE</color>
     <color name="grey_divider">#45ABB4BE</color>
 
+    <color name="card_color_green">#40C400</color>
+
+    <color name="card_color_blue">#4000C4</color>
 
     <!-- App customization -->
     <color name="pink">#C82586</color>

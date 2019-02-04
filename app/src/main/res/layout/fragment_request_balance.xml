@@ -50,20 +50,10 @@
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical">
 
-                    <com.greyeg.tajr.helper.font.MaterialDesignIconsTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="@string/fontello_user"
-                        android:textColor="@color/white"
-                        android:textSize="16dp"
-                        tools:ignore="SpUsage" />
-
                     <com.greyeg.tajr.view.FloatLabeledEditText
                         android:id="@+id/money"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="16dp"
                         android:layout_weight="1"
                         app:fletFloatingHint="@string/cash"
                         app:fletHintTextColor="@color/white"
@@ -78,20 +68,11 @@
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical">
 
-                    <com.greyeg.tajr.helper.font.MaterialDesignIconsTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="@string/fontello_user"
-                        android:textColor="@color/white"
-                        android:textSize="16dp"
-                        tools:ignore="SpUsage" />
 
                     <com.greyeg.tajr.view.FloatLabeledEditText
                         android:id="@+id/phone"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="16dp"
                         android:layout_weight="1"
                         app:fletFloatingHint="@string/phone"
                         app:fletHintTextColor="@color/white"
@@ -106,20 +87,11 @@
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical">
 
-                    <com.greyeg.tajr.helper.font.MaterialDesignIconsTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="@string/fontello_user"
-                        android:textColor="@color/white"
-                        android:textSize="16dp"
-                        tools:ignore="SpUsage" />
 
                     <com.greyeg.tajr.view.FloatLabeledEditText
                         android:id="@+id/notes"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="16dp"
                         android:layout_weight="1"
                         app:fletFloatingHint="@string/notes"
                         app:fletHintTextColor="@color/white"
