@@ -1,6 +1,7 @@
 package com.greyeg.tajr.activities;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -1094,6 +1095,7 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
 
     @Override
     public void callEnded() {
+        Log.d("callEndedcallEnded", "callEnded: ");
         if (hasInternet && connectionType.equals("WIFI"))
             uploadVoices();
         new Handler().postDelayed(new Runnable() {
@@ -1104,7 +1106,7 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
                     public void run() {
 
                         LastCallDetails callDetails = getLastCallDetails();
-
+                        Log.d("callDetails", "callDetails: "+callDetails.getType());
                         if (callDetails.getType().equals("MISSED") || callDetails.getType().equals("REJECTED")) {
                             if (callDetails.getActiveId().equals(SharedHelper.getKey(getApplicationContext(),
                                     "activated_sub_id"))) {
@@ -1156,20 +1158,23 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
 
     }
 
+    @SuppressLint("ApplySharedPref")
     private void minutesUsage(String  seconds){
-
-        int totalSeconds = Integer.parseInt(seconds);
+        Log.d("minutesUsage", "minutesUsage: call time seconds"+seconds);
+        int totalSeconds = 149*59;
         int minutes = totalSeconds/59;
         int remaining = 0;
         if ((totalSeconds%59)>0){
             remaining = 1;
         }
-
+        Log.d("minutesUsage", "minutesUsage: call time minutes"+minutes);
+        Log.d("minutesUsage", "minutesUsage: call time remaining"+remaining);
         SharedPreferences pref1 = PreferenceManager.getDefaultSharedPreferences(this);
         float oldUsage = pref1.getFloat("cards_usage",0f);
         float currentUsage = (float) (minutes+remaining);
         float newUsage = oldUsage+currentUsage;
-        pref1.edit().putFloat("cards_usage",newUsage).apply();
+        Log.d("minutesUsage", "minutesUsage: call time all m"+newUsage);
+        pref1.edit().putFloat("cards_usage",newUsage).commit();
         Log.d("minutesUsage", "minutesUsage: "+pref1.getFloat("cards_usage",0f));
 
     }
