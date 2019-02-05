@@ -72,6 +72,6 @@ public class NoInternetActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-//        super.onBackPressed();
+       super.onBackPressed();
     }
 }

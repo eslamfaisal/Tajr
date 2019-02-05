@@ -73,7 +73,6 @@ public class CardConsumptionFragment extends Fragment {
         SharedPreferences pref1 = PreferenceManager.getDefaultSharedPreferences(getActivity());
         max = pref1.getFloat("cards_amount",100f);
         float usage = pref1.getFloat("cards_usage",0f);
-        Toast.makeText(getActivity(), ""+max, Toast.LENGTH_SHORT).show();
         SeriesItem seriesItem2 = new SeriesItem.Builder(Color.argb(255, 64, 0, 196))
                 .setRange(0, max, 0)
                 .setInitialVisibility(false)

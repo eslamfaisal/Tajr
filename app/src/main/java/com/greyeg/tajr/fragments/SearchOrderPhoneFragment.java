@@ -27,6 +27,7 @@ import com.greyeg.tajr.helper.SharedHelper;
 import com.greyeg.tajr.helper.font.RobotoTextView;
 import com.greyeg.tajr.models.Order;
 import com.greyeg.tajr.models.UpdateOrderResponse;
+import com.greyeg.tajr.models.UpdateOrederNewResponse;
 import com.greyeg.tajr.models.UserOrders;
 import com.greyeg.tajr.server.Api;
 import com.greyeg.tajr.server.BaseClient;
@@ -290,9 +291,9 @@ public class SearchOrderPhoneFragment extends Fragment {
                 SharedHelper.getKey(getActivity(), LoginActivity.TOKEN),
                 order_ud,
                 value
-        ).enqueue(new Callback<UpdateOrderResponse>() {
+        ).enqueue(new Callback<UpdateOrederNewResponse>() {
             @Override
-            public void onResponse(Call<UpdateOrderResponse> call, Response<UpdateOrderResponse> response) {
+            public void onResponse(Call<UpdateOrederNewResponse> call, Response<UpdateOrederNewResponse> response) {
                 if (response.body() != null) {
                     Log.d("eeeeeeeeeeeeee", "onResponse: updateOrder" + response.body().getCode());
                 }
@@ -310,7 +311,7 @@ public class SearchOrderPhoneFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(Call<UpdateOrderResponse> call, Throwable t) {
+            public void onFailure(Call<UpdateOrederNewResponse> call, Throwable t) {
                 progressDialog.dismiss();
                 Log.d("eeeeeeeeeeeeeeee", "onFailure:update order " + t.getMessage());
                 finishTheWorkNow();

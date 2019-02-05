@@ -69,6 +69,7 @@ import com.greyeg.tajr.models.LastCallDetails;
 import com.greyeg.tajr.models.ProductData;
 import com.greyeg.tajr.models.SimpleOrderResponse;
 import com.greyeg.tajr.models.UpdateOrderResponse;
+import com.greyeg.tajr.models.UpdateOrederNewResponse;
 import com.greyeg.tajr.models.UploadPhoneResponse;
 import com.greyeg.tajr.models.UploadVoiceResponse;
 import com.greyeg.tajr.models.UserWorkTimeResponse;
@@ -477,12 +478,11 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
                 SharedHelper.getKey(this, LoginActivity.TOKEN),
                 order_ud,
                 value
-        ).enqueue(new Callback<UpdateOrderResponse>() {
+        ).enqueue(new Callback<UpdateOrederNewResponse>() {
             @Override
-            public void onResponse(Call<UpdateOrderResponse> call, Response<UpdateOrderResponse> response) {
-                if (response.body() != null) {
-                    Log.d("eeeeeeeeeeeeee", "onResponse: "+value + response.body().getCode());
-                }
+            public void onResponse(Call<UpdateOrederNewResponse> call, Response<UpdateOrederNewResponse> response) {
+                Log.d("eeeeeeeeeeeeee", "onResponse: "+value + response.body().getCode());
+
                 if (response.body().getCode().equals("1200") || response.body().getCode().equals("1202")) {
                     Log.d("eeeeeeeeeeeeee", "onResponse: "+value + response.body().getCode());
                     progressBar.setVisibility(View.GONE);
@@ -497,7 +497,7 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
             }
 
             @Override
-            public void onFailure(Call<UpdateOrderResponse> call, Throwable t) {
+            public void onFailure(Call<UpdateOrederNewResponse> call, Throwable t) {
                 progressBar.setVisibility(View.GONE);
                 Log.d("dddddddddd", "onFailure:update "+value + t.getMessage());
                 //  finishTheWorkNow();
@@ -679,7 +679,7 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
                             client_feedback.setText(order.getClient_feedback());
 
                             if (!stoped) ;
-                            callClient();
+                            callClient(order.getPhone_1());
 
                         } else {
                         }
@@ -706,7 +706,7 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
     long currentCallTimerCount;
     Timer currentCallTimer;
 
-    public void callClient() {
+    public void callClient(String phone) {
         Intent callIntent = new Intent(Intent.ACTION_CALL);
         callIntent.setData(Uri.parse("tel:" + phone));
         Log.d("xxxxxxxxxx", "callClient: " + phone);
@@ -731,7 +731,7 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 1232) {
-            callClient();
+            callClient(phone);
         }
     }
 
@@ -806,7 +806,7 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
         } else if (id == R.id.end_call) {
             endCAll();
         } else if (id == R.id.call_client) {
-            callClient();
+            callClient(phone);
         } else if (id == R.id.ask_finish_work) {
             setAskToFinishWork();
             invalidateOptionsMenu();
@@ -1010,21 +1010,24 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
             updateOrderTimer.cancel();
         }
         Log.d("dddddddddd", "time before end: " + timeWork);
+        long currentWorkTime = getNotSavedWrokTime()+timeWork;
         api.userWorkTime(SharedHelper.getKey(this, LoginActivity.TOKEN),
-                SharedHelper.getKey(this, LoginActivity.USER_ID), String.valueOf(timeWork))
+                SharedHelper.getKey(this, LoginActivity.USER_ID), String.valueOf(currentWorkTime))
                 .enqueue(new Callback<UserWorkTimeResponse>() {
                     @Override
                     public void onResponse(Call<UserWorkTimeResponse> call, Response<UserWorkTimeResponse> response) {
                         if (response.body() != null) {
 
                             Log.d("dddddddddd", "onResponse: " + response.body().getData());
-                            Log.d("dddddddddd", "time after end: " + timeWork);
+                            Log.d("dddddddddd", "time after end: " + currentWorkTime);
+                            setPldTimeWorkZero();
                             pauseServiceTimer();
                         }
                     }
 
                     @Override
                     public void onFailure(Call<UserWorkTimeResponse> call, Throwable t) {
+                        saveWorkedTime();
                         pauseServiceTimer();
                         Log.d("dddddddddd", "onResponse: " + t.getMessage());
                     }
@@ -1242,7 +1245,7 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
             } else if (id == R.id.end_call) {
                 endCAll();
             } else if (id == R.id.call_client) {
-                callClient();
+                callClient(phone);
             } else if (id == R.id.ask_finish_work) {
                 setAskToFinishWork();
                 invalidateOptionsMenu();
@@ -1277,6 +1280,7 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
         Intent intent = new Intent(getApplicationContext(), NoInternetActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivityForResult(intent, 8523);
+        finishTheWorkNow();
     }
 
     public void onConnectionFound() {
@@ -1465,10 +1469,28 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
         SharedPreferences pref1 = PreferenceManager.getDefaultSharedPreferences(this);
         pref1.edit().putBoolean("switchOn", true).apply();
     }
+
     private void closeRecords(){
         SharedPreferences pref1 = PreferenceManager.getDefaultSharedPreferences(this);
         pref1.edit().putBoolean("switchOn", false).apply();
     }
 
+    private void saveWorkedTime(){
+        SharedPreferences pref1 = PreferenceManager.getDefaultSharedPreferences(this);
+        long oldWork= pref1.getLong("timeWork",0);
+        long newWorkedTime = oldWork + timeWork;
+        Log.d("saveWorkedTime", "saveWorkedTime: "+newWorkedTime);
+        pref1.edit().putLong("timeWork", newWorkedTime).apply();
+    }
+    private long getNotSavedWrokTime(){
+        SharedPreferences pref1 = PreferenceManager.getDefaultSharedPreferences(this);
+        return pref1.getLong("timeWork",0);
+    }
+
+    private void setPldTimeWorkZero(){
+        SharedPreferences pref1 = PreferenceManager.getDefaultSharedPreferences(this);
+        pref1.edit().putLong("timeWork", 0).apply();
+        Log.d("saveWorkedTime", "setPldTimeWorkZero: ");
+    }
 }
 

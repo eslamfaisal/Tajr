@@ -16,6 +16,7 @@ import com.greyeg.tajr.models.PointsHistory;
 import com.greyeg.tajr.models.SimpleOrderResponse;
 import com.greyeg.tajr.models.ToalAvailableBalance;
 import com.greyeg.tajr.models.UpdateOrderResponse;
+import com.greyeg.tajr.models.UpdateOrederNewResponse;
 import com.greyeg.tajr.models.UploadPhoneResponse;
 import com.greyeg.tajr.models.UploadVoiceResponse;
 import com.greyeg.tajr.models.UserOrders;
@@ -69,7 +70,7 @@ public interface Api {
     // log in user client
     @FormUrlEncoded
     @POST("send/update_order")
-    Call<UpdateOrderResponse> updateOrders(
+    Call<UpdateOrederNewResponse> updateOrders(
             @Field("token") String token,
             @Field("order_id") String order_id,
             @Field("status") String status

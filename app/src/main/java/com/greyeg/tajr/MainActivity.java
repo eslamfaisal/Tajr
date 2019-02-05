@@ -162,8 +162,20 @@ public class MainActivity extends AppCompatActivity
         initDrawer();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (getApplicationContext().checkSelfPermission(Manifest.permission.READ_PHONE_STATE)
-                    != PackageManager.PERMISSION_GRANTED) {
+            if (
+                    checkSelfPermission(Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED ||
+                            checkSelfPermission(Manifest.permission.READ_CALL_LOG) != PackageManager.PERMISSION_GRANTED ||
+                            checkSelfPermission(Manifest.permission.MODIFY_AUDIO_SETTINGS) != PackageManager.PERMISSION_GRANTED ||
+                            checkSelfPermission(Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED ||
+                            checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED ||
+                            checkSelfPermission(Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED ||
+                            checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
+                            checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
+                            checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED ||
+                            checkSelfPermission(Manifest.permission.CAPTURE_AUDIO_OUTPUT) != PackageManager.PERMISSION_GRANTED
+
+
+            ) {
                 // Permission has not been granted, therefore prompt the user to grant permission
                 ActivityCompat.requestPermissions(this,
                         new String[]{
@@ -175,7 +187,9 @@ public class MainActivity extends AppCompatActivity
                                 Manifest.permission.READ_PHONE_STATE,
                                 Manifest.permission.READ_EXTERNAL_STORAGE,
                                 Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                                Manifest.permission.READ_CONTACTS
+                                Manifest.permission.READ_CONTACTS,
+                                Manifest.permission.CAPTURE_AUDIO_OUTPUT
+
                         },
                         56);
             } else {
@@ -787,10 +801,6 @@ public class MainActivity extends AppCompatActivity
         if (category.equals(SPLASH_SCREEN_OPTION_1)) {
             mKenBurns.setImageResource(R.drawable.background_media);
             animation1();
-        } else if (category.equals(SPLASH_SCREEN_OPTION_2)) {
-            //  mLogo.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.main_color_500));
-            mKenBurns.setImageResource(R.drawable.background_shop);
-            animation2();
         } else if (category.equals(SPLASH_SCREEN_OPTION_3)) {
             mKenBurns.setImageResource(R.drawable.ic_cars);
             animation2();

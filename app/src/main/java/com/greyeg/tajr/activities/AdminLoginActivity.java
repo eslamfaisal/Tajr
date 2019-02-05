@@ -206,10 +206,6 @@ public class AdminLoginActivity extends AppCompatActivity {
         if (category.equals(SPLASH_SCREEN_OPTION_1)) {
             mKenBurns.setImageResource(R.drawable.background_media);
             animation1();
-        } else if (category.equals(SPLASH_SCREEN_OPTION_2)) {
-            //mLogo.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.main_color_500));
-            mKenBurns.setImageResource(R.drawable.background_shop);
-            animation2();
         } else if (category.equals(SPLASH_SCREEN_OPTION_3)) {
             mKenBurns.setImageResource(R.drawable.ic_traffic);
             animation2();
