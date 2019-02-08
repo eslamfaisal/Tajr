@@ -70,5 +70,16 @@
         <item name="cardUseCompatPadding">true</item>
         <item name="contentPadding">0dp</item>
     </style>
+    <style name="CheckBoxStyle.Dark" parent="@style/CheckBoxStyleDark">
+        <item name="android:button">@drawable/checkbox_selector_dark</item>
+        <item name="android:textColor">@color/main_color_grey_200</item>
+    </style>
+
+    <!-- CheckBox related styles -->
+    <style name="CheckBoxStyleDark" parent="Widget.AppCompat.CompoundButton.CheckBox">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/main_color_grey_800</item>
+    </style>
 
 </resources>

@@ -783,12 +783,17 @@ public class MainActivity extends AppCompatActivity
                 intent = new Intent(getApplicationContext(), RecordsActivity.class);
             }else if (position == 7) {
                 intent = new Intent(getApplicationContext(), CartsActivity.class);
-            }else if (position == 8) {
-                intent = new Intent(getApplicationContext(), AdminRecordsActivity.class);
             }
             if (intent != null) {
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
+            }
+            if (position == 8) {
+                SharedHelper.putKey(getApplicationContext(),LoginActivity.IS_LOGIN,"no");
+                intent = new Intent(getApplicationContext(), LoginActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                finish();
             }
             mDrawerLayout.closeDrawer(mDrawerList);
         }

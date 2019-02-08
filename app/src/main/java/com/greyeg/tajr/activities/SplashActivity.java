@@ -14,38 +14,41 @@ import com.greyeg.tajr.R;
 import com.greyeg.tajr.helper.SharedHelper;
 
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
+import static com.greyeg.tajr.activities.OrderActivity.finish;
+
 public class SplashActivity extends AppCompatActivity {
-    @Override
-    protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
-    }
+
+    Timer timer;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        new Handler().postDelayed(new Runnable() {
+        if (SharedHelper.getKey(this,LoginActivity.IS_LOGIN).equals("yes")){
+           goTo(MainActivity.class);
+        }else {
+            goTo(LoginActivity.class);
+        }
+    }
+
+    private void goTo(Class<?> tClass){
+
+        timer = new Timer();
+        timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                if (SharedHelper.getKey(getApplicationContext(), "lang").equals("en")) {
-
-                    setLocale("en");
-
-                }else if (SharedHelper.getKey(getApplicationContext(), "lang").equals("ar")) {
-
-                    setLocale("ar");
-
-                }else {
-                    Intent refresh = new Intent(getApplicationContext(), LoginActivity.class);
-                    startActivity(refresh);
-                    finish();
-                }
-
+                Intent intent = new Intent(getApplicationContext(),tClass);
+                startActivity(intent);
+                overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+                finish();
             }
-        },10);
+        },4000);
+
     }
 
     public void setLocale(String lang) {

@@ -10,12 +10,14 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -75,6 +77,10 @@ public class LoginActivity extends AppCompatActivity {
     public static final String PARENT_TAJR_ID = "parent_tajr_id";
     public static final String TOKEN = "token";
     public static final String IS_LOGIN = "is_login";
+    public static final String REMEMBER_PASS = "REMEMBER_PASS";
+    public static final String REMEMBERED_PASS = "REMEMBERED_PASS";
+    public static final String REMEMBERED_EMAIL = "REMEMBERED_EMAIL";
+
 
     @BindView(R.id.loginbtn)
     RobotoTextView loginBtn;
@@ -94,6 +100,9 @@ public class LoginActivity extends AppCompatActivity {
     @BindView(R.id.progress_log_in)
     ProgressWheel progressLogin;
 
+    @BindView(R.id.remember_pass)
+    CheckBox rememberPass;
+
     ProgressDialog progressDialog;
     Api api;
 
@@ -102,6 +111,7 @@ public class LoginActivity extends AppCompatActivity {
     public static StringBuilder idListString;
     private String TAG = "LoginActivity";
 
+    SharedPreferences sharedPreferences;
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
@@ -116,27 +126,29 @@ public class LoginActivity extends AppCompatActivity {
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage(getString(R.string.wati_to_log_in));
         api = BaseClient.getBaseClient().create(Api.class);
-
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean rem = sharedPreferences.getBoolean(REMEMBER_PASS,false);
+        if (rem){
+            email.setText(SharedHelper.getKey(this,REMEMBERED_EMAIL));
+            pass.setText(SharedHelper.getKey(this,REMEMBERED_PASS));
+            rememberPass.setChecked(true);
+        }
         setAnimation(SPLASH_SCREEN_OPTION_3);
-//        loginBtn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                startActivity(new Intent(getApplicationContext(), MainActivity.class));
-//            }
-//        });
 
-        final String k1 = "nour@musa3d.com";
-        String s1 = "1234";
-        final String k2 = "p5a2rktEVCZhJwAgxbYIWPsOn0uG1XFj";
-        String s2 = "jCegey5u2CaPIVRhPoFwp7MbAluNIHwNkzqdgSMp7AcvZYo5QLDUstt9K1z836hZ";
-
-        email.setText(k1);
-        pass.setText(s1);
         loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 OneSignal.sendTag("User_ID", email.getText().toString());
                 loginBtn.setVisibility(View.GONE);
+                sharedPreferences.edit().putBoolean(REMEMBER_PASS,rememberPass.isChecked()).apply();
+                if (rememberPass.isChecked()){
+                    SharedHelper.putKey(getApplicationContext(),REMEMBERED_PASS,pass.getText().toString());
+                    SharedHelper.putKey(getApplicationContext(),REMEMBERED_EMAIL,email.getText().toString());
+                }else {
+                    SharedHelper.putKey(getApplicationContext(),REMEMBERED_PASS,"");
+                    SharedHelper.putKey(getApplicationContext(),REMEMBERED_EMAIL,"");
+                }
+
                 progressLogin.setVisibility(View.VISIBLE);
                 progressLogin.spin();
                 if (email.getText().equals("") || pass.getText().equals("")) {
@@ -170,20 +182,22 @@ public class LoginActivity extends AppCompatActivity {
                                                         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                                                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                                         startActivity(intent);
+                                                        overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
                                                         finish();
 
                                                     }
                                                 }
                                             });
 
-
-                                    // raniaabdel001@gmail.com
+                                }else {
+                                     Snackbar.make(v, R.string.wrong_email_pass,Snackbar.LENGTH_SHORT).show();
                                 }
                             }
                         }
 
                         @Override
                         public void onFailure(Call<UserResponse> call, Throwable t) {
+                            Snackbar.make(v, R.string.wrong_email_pass,Snackbar.LENGTH_LONG).show();
                             loginBtn.setVisibility(View.VISIBLE);
                             progressLogin.setVisibility(View.GONE);
                             Log.d("eeeeeeeeeeeeeeee", "onFailure: " + t.getMessage());
@@ -271,7 +285,6 @@ public class LoginActivity extends AppCompatActivity {
         super.onDestroy();
 
     }
-
 
     public void adminLogIn(View view) {
         startActivity(new Intent(this,AdminLoginActivity.class));

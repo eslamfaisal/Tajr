@@ -13,7 +13,6 @@ public class SimpleOrderResponse {
     @Expose
     private String data;
 
-
     @SerializedName("info")
     @Expose
     private String info;

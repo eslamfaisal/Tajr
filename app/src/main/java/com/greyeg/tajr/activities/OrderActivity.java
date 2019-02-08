@@ -96,6 +96,7 @@ import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
@@ -464,6 +465,25 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
 
     }
 
+    @OnClick(R.id.cancel_order)
+    void cancelOrder(){
+        updateOrder(client_cancel);
+    }
+
+    @OnClick(R.id.problem)
+    void problem(){
+        showProblemNoteDialog();
+    }
+
+    @OnClick(R.id.client_phone_error)
+    void client_phone_error(){
+        updateOrder(client_phone_error);
+    }
+
+    @OnClick(R.id.order_data_confirmed)
+    void order_data_confirmed(){
+        updateOrder(order_data_confirmed);
+    }
 
     void updateOrder(String value) {
         if (value == null || order_ud == null) {
@@ -482,10 +502,10 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
         ).enqueue(new Callback<UpdateOrederNewResponse>() {
             @Override
             public void onResponse(Call<UpdateOrederNewResponse> call, Response<UpdateOrederNewResponse> response) {
-                Log.d("eeeeeeeeeeeeee", "onResponse: "+value + response.body().getCode());
+                Log.d("eeeeeeeeeeeeee", "onResponse: " + value + response.body().getCode());
 
                 if (response.body().getCode().equals("1200") || response.body().getCode().equals("1202")) {
-                    Log.d("eeeeeeeeeeeeee", "onResponse: "+value + response.body().getCode());
+                    Log.d("eeeeeeeeeeeeee", "onResponse: " + value + response.body().getCode());
                     progressBar.setVisibility(View.GONE);
                     if (askToFinishWork) {
                         finishTheWorkNow();
@@ -500,7 +520,7 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
             @Override
             public void onFailure(Call<UpdateOrederNewResponse> call, Throwable t) {
                 progressBar.setVisibility(View.GONE);
-                Log.d("dddddddddd", "onFailure:update "+value + t.getMessage());
+                Log.d("dddddddddd", "onFailure:update " + value + t.getMessage());
                 //  finishTheWorkNow();
             }
         });
@@ -680,8 +700,15 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
                             client_feedback.setText(order.getClient_feedback());
 
                             if (!stoped) ;
-                            callClient(order.getPhone_1());
+                         //   callClient(order.getPhone_1());
 
+                            if (orderStatus != null) {
+                                if (orderStatus.equals("new_order") || orderStatus.equals("pending_order")) {
+                                    initUpdateAsNewOrder();
+                                } else {
+                                    initUpdateAsOldOrder();
+                                }
+                            }
                         } else {
                         }
 
@@ -732,7 +759,7 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 1232) {
-            callClient(phone);
+            //callClient(phone);
         }
     }
 
@@ -768,13 +795,13 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
             pauseActivityTimer = null;
         }
 
-        if (orderStatus != null) {
-            if (orderStatus.equals("new_order") || orderStatus.equals("pending_order")) {
-                initUpdateAsNewOrder();
-            } else {
-                initUpdateAsOldOrder();
-            }
-        }
+//        if (orderStatus != null) {
+//            if (orderStatus.equals("new_order") || orderStatus.equals("pending_order")) {
+//                initUpdateAsNewOrder();
+//            } else {
+//                initUpdateAsOldOrder();
+//            }
+//        }
     }
 
     MenuItem askToFinishWortkItem;
@@ -1011,7 +1038,7 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
             updateOrderTimer.cancel();
         }
         Log.d("dddddddddd", "time before end: " + timeWork);
-        long currentWorkTime = getNotSavedWrokTime()+timeWork;
+        long currentWorkTime = getNotSavedWrokTime() + timeWork;
         api.userWorkTime(SharedHelper.getKey(this, LoginActivity.TOKEN),
                 SharedHelper.getKey(this, LoginActivity.USER_ID), String.valueOf(currentWorkTime))
                 .enqueue(new Callback<UserWorkTimeResponse>() {
@@ -1052,6 +1079,15 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
     LastCallDetails getLastCallDetails() {
         StringBuffer sb = new StringBuffer();
         Uri contacts = CallLog.Calls.CONTENT_URI;
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CALL_LOG) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+        }
         Cursor managedCursor = getContentResolver().query(contacts, null,
                 null, null, null);
         int number = managedCursor.getColumnIndex(CallLog.Calls.NUMBER);
@@ -1459,7 +1495,7 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
         int[] colors = new int[4];
         colors[0] = getResources().getColor(R.color.red);
         colors[1] = getResources().getColor(R.color.blue);
-        colors[2] = getResources().getColor(R.color.yellow);
+        colors[2] = getResources().getColor(R.color.material_light_yellow_A100);
         colors[3] = getResources().getColor(R.color.green);
         Drawable progressDrawable = new ChromeFloatingCirclesDrawable.Builder(this)
                 .colors(colors)

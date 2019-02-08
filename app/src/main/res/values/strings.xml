@@ -94,7 +94,7 @@
     <string name="client_delay">Client delay</string>
     <string name="client_cancel">Client cancel</string>
     <string name="client_noanswer">Client no answer</string>
-    <string name="order_data_confirmed">Order data confirmed</string>
+    <string name="order_data_confirmed">Confirm order data</string>
     <string name="client_phone_error">Client phone error</string>
     <string name="submit_order">Submit the order</string>
     <string name="cancel_order">Cancel order</string>
@@ -208,5 +208,9 @@
     <string name="expired">Expired</string>
     <string name="used">Used</string>
     <string name="cards">Cards</string>
+    <string name="remember_password">Remember password</string>
+    <string name="wrong_email_pass">Wrong Password or email</string>
+    <string name="problem_in_order">Order has problem</string>
+    <string name="recharge">Recharge</string>
 
 </resources>

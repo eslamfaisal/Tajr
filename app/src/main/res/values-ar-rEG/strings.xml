@@ -55,7 +55,7 @@
     <string name="client_delay">العميل تاخر</string>
     <string name="client_cancel">تم الالغاء من العميل</string>
     <string name="client_noanswer">العميل لم يرد</string>
-    <string name="order_data_confirmed">تم تاكيد بيانات الطلب</string>
+    <string name="order_data_confirmed"> تاكيد بيانات الطلب</string>
     <string name="client_phone_error">رقم الهاتف غير صحيح</string>
     <string name="submit_order">تاكيد الطلب</string>
     <string name="cancel_order">الغاء الطلب</string>
@@ -166,5 +166,9 @@
     <string name="expired">تم انتهاء</string>
     <string name="used">استخدمت</string>
     <string name="cards">كروت الشحن</string>
+    <string name="remember_password">تذكر كلمة المرور</string>
+    <string name="wrong_email_pass">خطأ فى كلمة المرور او الايميل</string>
+    <string name="problem_in_order">مشكلة فى الطلب</string>
+    <string name="recharge">Recharge</string>
 
 </resources>

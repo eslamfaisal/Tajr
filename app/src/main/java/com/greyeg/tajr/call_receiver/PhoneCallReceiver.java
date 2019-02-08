@@ -48,8 +48,8 @@ public abstract class PhoneCallReceiver extends BroadcastReceiver {
 
             } else {
                 String stateStr = intent.getExtras().getString(TelephonyManager.EXTRA_STATE);
-                String number = intent.getExtras().getString(TelephonyManager.EXTRA_INCOMING_NUMBER);
-                String sub = intent.getExtras().getString(TelephonyManager.EXTRA_SUBSCRIPTION_ID);
+              //  String number = intent.getExtras().getString(TelephonyManager.EXTRA_INCOMING_NUMBER);
+              //  String sub = intent.getExtras().getString(TelephonyManager.EXTRA_SUBSCRIPTION_ID);
                 int state = 0;
                 if (stateStr.equals(TelephonyManager.EXTRA_STATE_IDLE)) {
                     state = TelephonyManager.CALL_STATE_IDLE;
