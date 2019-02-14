@@ -297,7 +297,7 @@ public class MainActivity extends AppCompatActivity
                         String userId = status.getSubscriptionStatus().getUserId();
 
 
-                        String  strJsonBody = "{"
+                        String strJsonBody = "{"
                                 + "\"app_id\": \"c1c60918-4009-4213-b070-36296afc47b7\"," +
 
                                 //  "'include_player_ids': ['" + userId + "'], "
@@ -308,7 +308,7 @@ public class MainActivity extends AppCompatActivity
                                 // + "\"excluded_segments\": [\"" + userId + "\"],"
                                 + "\"data\": {\"foo\": \"bar\"},"
                                 + "\"contents\": {\"en\": \"" + message + "\"}," +
-                                "\"headings\": {\"en\": \"" + SharedHelper.getKey(mainActivity,LoginActivity.USER_NAME) + "\"}"
+                                "\"headings\": {\"en\": \"" + SharedHelper.getKey(mainActivity, LoginActivity.USER_NAME) + "\"}"
                                 + "}";
 
                         System.out.println("strJsonBody:\n" + strJsonBody);
@@ -370,7 +370,7 @@ public class MainActivity extends AppCompatActivity
                         con.setRequestMethod("POST");
                         OSPermissionSubscriptionState status = OneSignal.getPermissionSubscriptionState();
                         String userId = status.getSubscriptionStatus().getUserId();
-                        String  strJsonBody = "{"
+                        String strJsonBody = "{"
                                 + "\"app_id\": \"c1c60918-4009-4213-b070-36296afc47b7\"," +
 
                                 //  "'include_player_ids': ['" + userId + "'], "
@@ -381,7 +381,7 @@ public class MainActivity extends AppCompatActivity
                                 // + "\"excluded_segments\": [\"" + userId + "\"],"
                                 + "\"data\": {\"foo\": \"bar\"},"
                                 + "\"contents\": {\"en\": \"" + "صورة" + "\"}," +
-                                "\"headings\": {\"en\": \"" + SharedHelper.getKey(mainActivity,LoginActivity.USER_NAME) + "\"}"
+                                "\"headings\": {\"en\": \"" + SharedHelper.getKey(mainActivity, LoginActivity.USER_NAME) + "\"}"
                                 + "}";
 
 
@@ -646,6 +646,16 @@ public class MainActivity extends AppCompatActivity
 //        String simId = null;
         StringBuffer sb = new StringBuffer();
         Uri contacts = CallLog.Calls.CONTENT_URI;
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CALL_LOG) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+
+        }
         Cursor managedCursor = getContentResolver().query(contacts, null, null, null, null);
         int number = managedCursor.getColumnIndex(CallLog.Calls.NUMBER);
         int type = managedCursor.getColumnIndex(CallLog.Calls.TYPE);

@@ -13,6 +13,10 @@ public class SimpleOrderResponse {
     @Expose
     private String data;
 
+    @SerializedName("remainig_orders")
+    @Expose
+    private int remainig_orders;
+
     @SerializedName("info")
     @Expose
     private String info;
@@ -30,6 +34,14 @@ public class SimpleOrderResponse {
     private Order order;
 
     public SimpleOrderResponse() {
+    }
+
+    public int getRemainig_orders() {
+        return remainig_orders;
+    }
+
+    public void setRemainig_orders(int remainig_orders) {
+        this.remainig_orders = remainig_orders;
     }
 
     public String getData() {

@@ -110,106 +110,76 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 import static com.greyeg.tajr.activities.LoginActivity.IS_LOGIN;
 
-public class OrderActivity extends AppCompatActivity implements CurrentCallListener,
-        SearchOrderPhoneFragment.OnFragmentInteractionListener, NewOrderFragment.SendOrderListener, CalcDialog.CalcDialogCallback {
-    @Override
-    protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
-    }
-
-    private static final String TAG = CalcActivity.class.getSimpleName();
-
-    private static final int DIALOG_REQUEST_CODE = 0;
-
-    private TextView valueTxv;
-    private CheckBox signChk;
-
-    private @Nullable
-    BigDecimal value;
-
+public class OrderActivity extends AppCompatActivity
+        implements CurrentCallListener,
+        SearchOrderPhoneFragment.OnFragmentInteractionListener,
+        NewOrderFragment.SendOrderListener,
+        CalcDialog.CalcDialogCallback {
     public static final String client_busy = "client_busy";
     public static final String CLIENT_BUSY_NAME = "العميل مشغول";
-
     public static final String client_delay = "client_delay";
-
     public static final String client_cancel = "client_cancel";
     public static final String CANCEL_ORDER_NAME = "الغاء الطلب";
     public static final String client_noanswer = "client_noanswer";
-
     public static final String order_data_confirmed = "order_data_confirmed";
     public static final String CONFIRM_ORDER_NAME = "تاكيد الطلب";
     public static final String client_phone_error = "client_phone_error";
     public static final String WRONG_PHONE_NAME = "رقم هاتف خاطئ";
-
     public static final String CLIENT_PROBLEM = "مشكلة";
     public static final String RECHARGE = "اعادة شحن";
-
-
+    private static final String TAG = CalcActivity.class.getSimpleName();
+    private static final int DIALOG_REQUEST_CODE = 0;
+    public static TimerTextView timerTextView;
+    public static String phone;
+    public static Activity my;
+    public static long timeWork;
+    public static boolean finish = false;
+    public static boolean askToFinishWork = false;
+    public static Activity orderActivity;
+    public static boolean stoped = false;
+    public AllProducts allProducts;
     @BindView(R.id.product)
     EditText product;
-
     @BindView(R.id.client_name)
     EditText client_name;
-
     @BindView(R.id.client_address)
     EditText client_address;
-
     @BindView(R.id.client_area)
     EditText client_area;
-
     @BindView(R.id.client_city)
     EditText client_city;
-
     @BindView(R.id.item_no)
     EditText item_no;
-
     @BindView(R.id.client_order_phone1)
     EditText client_order_phone1;
-
     @BindView(R.id.status)
     EditText status;
-
     @BindView(R.id.shipping_status)
     EditText shipping_status;
-
     @BindView(R.id.sender_name)
     EditText sender_name;
-
     @BindView(R.id.item_cost)
     EditText item_cost;
 
-    @BindView(R.id.discount)
-    EditText discount;
-
-    @BindView(R.id.order_cost)
-    EditText order_cost;
-
-    @BindView(R.id.order_total_cost)
-    EditText order_total_cost;
-
-    @BindView(R.id.client_feedback)
-    EditText client_feedback;
-
-//    @BindView(R.id.update)
+    //    @BindView(R.id.update)
 //    DrawMeButton update;
 //
 //    @BindView(R.id.cancel)
 //    DrawMeButton cancel;
-
+    @BindView(R.id.discount)
+    EditText discount;
+    @BindView(R.id.order_cost)
+    EditText order_cost;
+    @BindView(R.id.order_total_cost)
+    EditText order_total_cost;
+    @BindView(R.id.client_feedback)
+    EditText client_feedback;
+    @BindView(R.id.order_id)
+    EditText order_id;
     DatabaseManager databaseManager;
-
-    public static TimerTextView timerTextView;
-
     @BindView(R.id.toolbar)
     Toolbar toolbar;
-    public static String phone;
-    private String order_ud = null;
-
     long startWorkTime;
-
-    public static Activity my;
-    private Api api;
-
     @BindView(R.id.updating_button)
     MovingButton updatingButton;
 
@@ -228,20 +198,95 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
     ProgressBar progressBar;
 
     boolean micMute = false;
-    public static long timeWork;
-    public static boolean finish = false;
-    public static boolean askToFinishWork = false;
-
     @BindView(R.id.order_view)
     View orederView;
-
     @BindView(R.id.missed_call_view)
     View missed_call_view;
+    @BindView(R.id.ProgressBar)
+    ProgressBar mProgressBar4;
+    @BindView(R.id.present)
+    TextView present;
+    String connectionType;
+    boolean hasInternet;
+    Menu naveMenu;
+    @BindView(R.id.move_listener)
+    TextView moveListener;
+    Timer updateOrderTimer;
+    int updateOrderTimerCount = 0;
+    Dialog warningDialog;
+    SimpleOrderResponse.Order order;
+    String orderStatus = null;
+    boolean firstOrder;
+    int firstRemaining;
+    int finishedOrders;
+    long currentCallTimerCount;
+    Timer currentCallTimer;
+    MenuItem askToFinishWortkItem;
+    MenuItem finishWok;
+    MenuItem micMode;
+    boolean productShowen;
+    ProductData currentProduct;
+    @BindView(R.id.product_view)
+    View productView;
+    String phoneNumber = null;
+    String callDuration2 = null;
+    String calType = null;
+    String activatedNum;
+    List<CallDetails> callDetailsList;
+    Timer workTimer;
+    BroadcastReceiver networkStateReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            boolean noConnectivity = intent.getBooleanExtra(ConnectivityManager.EXTRA_NO_CONNECTIVITY, false);
 
-    public static Activity orderActivity;
-
+            if (!noConnectivity) {
+                onConnectionFound();
+            } else {
+                onConnectionLost();
+            }
+        }
+    };
+    CalcDialog calcDialog;
+    private TextView valueTxv;
+    private CheckBox signChk;
+    private @Nullable
+    BigDecimal value;
+    private String order_ud = null;
+    private Api api;
     private Disposable networkDisposable;
     private Disposable internetDisposable;
+    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
+            = new BottomNavigationView.OnNavigationItemSelectedListener() {
+
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            int id = item.getItemId();
+            if (id == R.id.finish_work) {
+                finishTheWorkNow();
+            } else if (id == R.id.end_call) {
+                endCAll();
+            } else if (id == R.id.call_client) {
+                callClient(phone);
+            } else if (id == R.id.ask_finish_work) {
+                setAskToFinishWork();
+                invalidateOptionsMenu();
+            } else if (id == R.id.mic_mode) {
+                modifyMic();
+
+            }
+            return false;
+        }
+    };
+
+    public static void finishTheWorkNow() {
+        finish = true;
+        orderActivity.finish();
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -249,6 +294,7 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
         setContentView(R.layout.activity_update_order);
         ButterKnife.bind(this);
         openRecords();
+
         setConnectionListener();
         setUpProgressBar();
         setCalc(savedInstanceState);
@@ -307,10 +353,8 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
         getFirstOrder();
         createWarningDialog();
         Log.d("dddddddddd", "time started: " + timeWork);
-    }
 
-    String connectionType;
-    boolean hasInternet;
+    }
 
     private void setConnectionListener() {
         networkDisposable = ReactiveNetwork.observeNetworkConnectivity(getApplicationContext())
@@ -337,11 +381,6 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
                     Log.d("ssssssssssssss", "onCreate: " + isConnected.toString());
                 });
     }
-
-    Menu naveMenu;
-
-    @BindView(R.id.move_listener)
-    TextView moveListener;
 
     void initUpdatingButton() {
         updatingButton.setMovementLeft(300);
@@ -466,22 +505,22 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
     }
 
     @OnClick(R.id.cancel_order)
-    void cancelOrder(){
+    void cancelOrder() {
         updateOrder(client_cancel);
     }
 
     @OnClick(R.id.problem)
-    void problem(){
+    void problem() {
         showProblemNoteDialog();
     }
 
     @OnClick(R.id.client_phone_error)
-    void client_phone_error(){
+    void client_phone_error() {
         updateOrder(client_phone_error);
     }
 
     @OnClick(R.id.order_data_confirmed)
-    void order_data_confirmed(){
+    void order_data_confirmed() {
         updateOrder(order_data_confirmed);
     }
 
@@ -579,9 +618,6 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
         alertDialog.show();
     }
 
-    Timer updateOrderTimer;
-    int updateOrderTimerCount = 0;
-
     private void updateOrderTimer() {
         updateOrderTimer = new Timer();
         updateOrderTimer.schedule(new TimerTask() {
@@ -624,8 +660,6 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
         }, 30000, 30000);
     }
 
-    Dialog warningDialog;
-
     private void createWarningDialog() {
         warningDialog = new Dialog(this);
         warningDialog.setContentView(R.layout.dialog_universal_warning);
@@ -648,9 +682,6 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
         stoped = true;
     }
 
-    SimpleOrderResponse.Order order;
-    String orderStatus = null;
-
     private void getFirstOrder() {
         progressBar.setVisibility(View.VISIBLE);
 
@@ -661,7 +692,18 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
                     progressBar.setVisibility(View.GONE);
                     if (response.body().getCode().equals("1202") || response.body().getCode().equals("1200")) {
                         orderStatus = response.body().getOrder_type();
+                        if (!firstOrder) {
+                            firstOrder = true;
+                            firstRemaining = response.body().getRemainig_orders();
+                            mProgressBar4.setMax(firstRemaining);
 
+                        }
+                        mProgressBar4.setProgress(firstRemaining - response.body().getRemainig_orders());
+                        int a = (int) (100 * Float.parseFloat(String.valueOf(finishedOrders)) / Float.parseFloat(String.valueOf(firstRemaining)));
+                        String test =String.valueOf(response.body().getRemainig_orders())+"  ("+ String.valueOf(a) + "%)";
+                        present.setText(test);
+
+                        finishedOrders++;
 //                        if (5 == 5) {
 //                            missed_call_view.setVisibility(View.VISIBLE);
 //                            orederView.setVisibility(View.GONE);
@@ -689,7 +731,7 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
                             phone = order.getPhone_1();
                             shipping_status.setText(order.getOrder_shipping_status());
                             client_order_phone1.setText(order.getPhone_1());
-
+                            order_id.setText(order.getId());
                             item_cost.setText(order.getItem_cost());
                             item_no.setText(order.getItems_no());
 
@@ -700,7 +742,7 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
                             client_feedback.setText(order.getClient_feedback());
 
                             if (!stoped) ;
-                         //   callClient(order.getPhone_1());
+                            //   callClient(order.getPhone_1());
 
                             if (orderStatus != null) {
                                 if (orderStatus.equals("new_order") || orderStatus.equals("pending_order")) {
@@ -731,9 +773,6 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
         });
     }
 
-    long currentCallTimerCount;
-    Timer currentCallTimer;
-
     public void callClient(String phone) {
         Intent callIntent = new Intent(Intent.ACTION_CALL);
         callIntent.setData(Uri.parse("tel:" + phone));
@@ -762,7 +801,6 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
             //callClient(phone);
         }
     }
-
 
     @Override
     protected void onPause() {
@@ -803,10 +841,6 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
 //            }
 //        }
     }
-
-    MenuItem askToFinishWortkItem;
-    MenuItem finishWok;
-    MenuItem micMode;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -849,8 +883,6 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
         return super.onOptionsItemSelected(item);
     }
 
-    boolean productShowen;
-
     void showProductDetails() {
 
         if (!productShowen) {
@@ -861,10 +893,6 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
             animationHide();
         }
     }
-
-    ProductData currentProduct;
-    @BindView(R.id.product_view)
-    View productView;
 
     private void animationShow() {
 
@@ -895,13 +923,6 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
         productView.setVisibility(View.GONE);
     }
 
-    public static void finishTheWorkNow() {
-        finish = true;
-        orderActivity.finish();
-    }
-
-    public AllProducts allProducts;
-
     protected synchronized void getProducts() {
         Api api = BaseClient.getBaseClient().create(Api.class);
         api.getProducts(SharedHelper.getKey(this, LoginActivity.TOKEN),
@@ -922,7 +943,6 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
         });
 
     }
-
 
     void modifyMic() {
 
@@ -1018,12 +1038,10 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
         builder.show();
     }
 
-
     @Override
     public void onBackPressed() {
 
     }
-
 
     @Override
     protected void onDestroy() {
@@ -1070,11 +1088,6 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
             }
         }
     }
-
-    String phoneNumber = null;
-    String callDuration2 = null;
-    String calType = null;
-    String activatedNum;
 
     LastCallDetails getLastCallDetails() {
         StringBuffer sb = new StringBuffer();
@@ -1142,15 +1155,15 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
                     public void run() {
 
                         LastCallDetails callDetails = getLastCallDetails();
-                        Log.d("callDetails", "callDetails: "+callDetails.getType());
+                        Log.d("callDetails", "callDetails: " + callDetails.getType());
                         if (callDetails.getType().equals("MISSED") || callDetails.getType().equals("REJECTED")) {
                             if (callDetails.getActiveId().equals(SharedHelper.getKey(getApplicationContext(),
                                     "activated_sub_id"))) {
-                                BaseClient.getBaseClient().create(Api.class).uploadPhone(SharedHelper.getKey(getApplicationContext(),LoginActivity.TOKEN),callDetails.getPhone())
+                                BaseClient.getBaseClient().create(Api.class).uploadPhone(SharedHelper.getKey(getApplicationContext(), LoginActivity.TOKEN), callDetails.getPhone())
                                         .enqueue(new Callback<UploadPhoneResponse>() {
                                             @Override
                                             public void onResponse(Call<UploadPhoneResponse> call, Response<UploadPhoneResponse> response) {
-                                                if (response.body().getResponse().equals("Success")){
+                                                if (response.body().getResponse().equals("Success")) {
                                                     Toast.makeText(OrderActivity.this, "تم ارسال رقم  " + callDetails.getPhone() + " المكالمة الفائتة الى السيرفر", Toast.LENGTH_SHORT).show();
                                                 }
                                             }
@@ -1195,27 +1208,25 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
     }
 
     @SuppressLint("ApplySharedPref")
-    private void minutesUsage(String  seconds){
-        Log.d("minutesUsage", "minutesUsage: call time seconds"+seconds);
-        int totalSeconds = 149*59;
-        int minutes = totalSeconds/59;
+    private void minutesUsage(String seconds) {
+        Log.d("minutesUsage", "minutesUsage: call time seconds" + seconds);
+        int totalSeconds = 149 * 59;
+        int minutes = totalSeconds / 59;
         int remaining = 0;
-        if ((totalSeconds%59)>0){
+        if ((totalSeconds % 59) > 0) {
             remaining = 1;
         }
-        Log.d("minutesUsage", "minutesUsage: call time minutes"+minutes);
-        Log.d("minutesUsage", "minutesUsage: call time remaining"+remaining);
+        Log.d("minutesUsage", "minutesUsage: call time minutes" + minutes);
+        Log.d("minutesUsage", "minutesUsage: call time remaining" + remaining);
         SharedPreferences pref1 = PreferenceManager.getDefaultSharedPreferences(this);
-        float oldUsage = pref1.getFloat("cards_usage",0f);
-        float currentUsage = (float) (minutes+remaining);
-        float newUsage = oldUsage+currentUsage;
-        Log.d("minutesUsage", "minutesUsage: call time all m"+newUsage);
-        pref1.edit().putFloat("cards_usage",newUsage).commit();
-        Log.d("minutesUsage", "minutesUsage: "+pref1.getFloat("cards_usage",0f));
+        float oldUsage = pref1.getFloat("cards_usage", 0f);
+        float currentUsage = (float) (minutes + remaining);
+        float newUsage = oldUsage + currentUsage;
+        Log.d("minutesUsage", "minutesUsage: call time all m" + newUsage);
+        pref1.edit().putFloat("cards_usage", newUsage).commit();
+        Log.d("minutesUsage", "minutesUsage: " + pref1.getFloat("cards_usage", 0f));
 
     }
-
-    List<CallDetails> callDetailsList;
 
     private void uploadVoices() {
         callDetailsList = databaseManager.getAllDetails();
@@ -1245,9 +1256,6 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
         }
     }
 
-    public static boolean stoped = false;
-    Timer workTimer;
-
     void startWorkTimerTimer() {
         workTimer = new Timer();
         workTimer.scheduleAtFixedRate(new TimerTask() {
@@ -1275,47 +1283,11 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
         getFirstOrder();
     }
 
-    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
-            = new BottomNavigationView.OnNavigationItemSelectedListener() {
-
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            int id = item.getItemId();
-            if (id == R.id.finish_work) {
-                finishTheWorkNow();
-            } else if (id == R.id.end_call) {
-                endCAll();
-            } else if (id == R.id.call_client) {
-                callClient(phone);
-            } else if (id == R.id.ask_finish_work) {
-                setAskToFinishWork();
-                invalidateOptionsMenu();
-            } else if (id == R.id.mic_mode) {
-                modifyMic();
-
-            }
-            return false;
-        }
-    };
-
     @Override
     public void orderSentGetNewOrder() {
         Toast.makeText(this, "تم ارسال الطلب", Toast.LENGTH_SHORT).show();
         getFirstOrder();
     }
-
-    BroadcastReceiver networkStateReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            boolean noConnectivity = intent.getBooleanExtra(ConnectivityManager.EXTRA_NO_CONNECTIVITY, false);
-
-            if (!noConnectivity) {
-                onConnectionFound();
-            } else {
-                onConnectionLost();
-            }
-        }
-    };
 
     public void onConnectionLost() {
         Intent intent = new Intent(getApplicationContext(), NoInternetActivity.class);
@@ -1375,8 +1347,6 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
             calcDialog.show(fm, "calc_dialog");
         }
     }
-
-    CalcDialog calcDialog;
 
     private void setCalc(Bundle state) {
         if (state != null) {
@@ -1506,29 +1476,30 @@ public class OrderActivity extends AppCompatActivity implements CurrentCallListe
 
     }
 
-    private void openRecords(){
+    private void openRecords() {
         SharedPreferences pref1 = PreferenceManager.getDefaultSharedPreferences(this);
         pref1.edit().putBoolean("switchOn", true).apply();
     }
 
-    private void closeRecords(){
+    private void closeRecords() {
         SharedPreferences pref1 = PreferenceManager.getDefaultSharedPreferences(this);
         pref1.edit().putBoolean("switchOn", false).apply();
     }
 
-    private void saveWorkedTime(){
+    private void saveWorkedTime() {
         SharedPreferences pref1 = PreferenceManager.getDefaultSharedPreferences(this);
-        long oldWork= pref1.getLong("timeWork",0);
+        long oldWork = pref1.getLong("timeWork", 0);
         long newWorkedTime = oldWork + timeWork;
-        Log.d("saveWorkedTime", "saveWorkedTime: "+newWorkedTime);
+        Log.d("saveWorkedTime", "saveWorkedTime: " + newWorkedTime);
         pref1.edit().putLong("timeWork", newWorkedTime).apply();
     }
-    private long getNotSavedWrokTime(){
+
+    private long getNotSavedWrokTime() {
         SharedPreferences pref1 = PreferenceManager.getDefaultSharedPreferences(this);
-        return pref1.getLong("timeWork",0);
+        return pref1.getLong("timeWork", 0);
     }
 
-    private void setPldTimeWorkZero(){
+    private void setPldTimeWorkZero() {
         SharedPreferences pref1 = PreferenceManager.getDefaultSharedPreferences(this);
         pref1.edit().putLong("timeWork", 0).apply();
         Log.d("saveWorkedTime", "setPldTimeWorkZero: ");

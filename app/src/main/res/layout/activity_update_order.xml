@@ -6,7 +6,9 @@
     android:layout_height="match_parent"
     tools:context=".activities.OrderActivity">
 
+
     <LinearLayout
+
         android:id="@+id/appbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -28,6 +30,28 @@
                 android:gravity="center"
                 android:textColor="@color/white" />
         </android.support.v7.widget.Toolbar>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ProgressBar
+                android:id="@+id/ProgressBar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="@dimen/_26sdp"
+                android:indeterminate="false"
+                android:maxHeight="10dip"
+                android:minHeight="10dip"
+                android:progress="0"
+                android:progressDrawable="@drawable/ic_greenprogress" />
+            <TextView
+                android:text="0.0%"
+                android:id="@+id/present"
+                android:textColor="@color/white"
+                android:layout_centerInParent="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </RelativeLayout>
 
         <include
             android:id="@+id/product_view"
@@ -59,6 +83,48 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
+
+                    <LinearLayout
+                        android:id="@+id/ddww"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginEnd="16dp"
+                        android:onClick="showLabel"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/order_idl"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/client_name"
+                            android:textColor="@color/colorPrimary"
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            android:visibility="gone" />
+
+                        <FrameLayout
+                            android:id="@+id/order_id2"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/ic_background_gray">
+
+                            <EditText
+                                android:id="@+id/order_id"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:layout_marginEnd="26dp"
+                                android:background="@color/gray"
+                                android:editable="false"
+                                android:inputType="text"
+                                android:paddingStart="16dp"
+                                android:tag="client_name_label" />
+                        </FrameLayout>
+
+
+                    </LinearLayout>
 
                     <LinearLayout
                         android:id="@+id/ddf"
@@ -311,7 +377,7 @@
 
                     </LinearLayout>
 
-                   <LinearLayout
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
@@ -391,13 +457,13 @@
                     <LinearLayout
                         android:id="@+id/tgjklkmjnhbddf"
                         android:layout_width="match_parent"
-android:visibility="gone"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
                         android:layout_marginTop="20dp"
                         android:layout_marginEnd="16dp"
                         android:onClick="showLabel"
-                        android:orientation="vertical">
+                        android:orientation="vertical"
+                        android:visibility="gone">
 
                         <TextView
 
@@ -473,98 +539,99 @@ android:visibility="gone"
                     </LinearLayout>
 
                     <LinearLayout
-                        android:layout_marginTop="20dp"
-                        android:gravity="center"
-                        android:layout_gravity="center"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="20dp"
+                        android:gravity="center"
                         android:orientation="horizontal">
-                    <!--area-->
-                    <LinearLayout
-                        android:layout_gravity="center"
-                        android:id="@+id/ddfbdf"
-                        android:layout_weight="1"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:onClick="showLabel"
-                        android:orientation="vertical">
-
-                        <TextView
-
-                            android:id="@+id/client_area_label"
-                            android:layout_width="wrap_content"
+                        <!--area-->
+                        <LinearLayout
+                            android:id="@+id/ddfbdf"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:text="@string/client_area"
-                            android:textColor="@color/colorPrimary"
-                            android:textSize="18sp"
-                            android:textStyle="bold"
-                            android:visibility="gone" />
+                            android:layout_gravity="center"
+                            android:layout_marginStart="16dp"
+                            android:layout_weight="1"
+                            android:onClick="showLabel"
+                            android:orientation="vertical">
 
-                        <FrameLayout
-                            android:id="@+id/client_area2"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:background="@drawable/ic_background_gray">
+                            <TextView
 
-                            <EditText
-                                android:id="@+id/client_area"
+                                android:id="@+id/client_area_label"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/client_area"
+                                android:textColor="@color/colorPrimary"
+                                android:textSize="18sp"
+                                android:textStyle="bold"
+                                android:visibility="gone" />
 
+                            <FrameLayout
+                                android:id="@+id/client_area2"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_gravity="center_vertical"
-                                android:layout_marginEnd="26dp"
-                                android:inputType="text"
-                                android:paddingStart="16dp"
-                                android:tag="client_name_label" />
-                        </FrameLayout>
+                                android:background="@drawable/ic_background_gray">
 
-                    </LinearLayout>
+                                <EditText
+                                    android:id="@+id/client_area"
 
-                    <!--city-->
-                    <LinearLayout
-                        android:layout_gravity="center"
-                        android:id="@+id/derwxddf"
-                        android:layout_weight="1"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginEnd="16dp"
-                        android:onClick="showLabel"
-                        android:orientation="vertical">
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_marginEnd="26dp"
+                                    android:inputType="text"
+                                    android:paddingStart="16dp"
+                                    android:tag="client_name_label" />
+                            </FrameLayout>
 
-                        <TextView
+                        </LinearLayout>
 
-                            android:id="@+id/client_city_label"
-                            android:layout_width="wrap_content"
+                        <!--city-->
+                        <LinearLayout
+                            android:id="@+id/derwxddf"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:text="@string/client_city"
-                            android:textColor="@color/colorPrimary"
-                            android:textSize="18sp"
-                            android:textStyle="bold"
-                            android:visibility="gone" />
+                            android:layout_gravity="center"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginEnd="16dp"
+                            android:layout_weight="1"
+                            android:onClick="showLabel"
+                            android:orientation="vertical">
 
-                        <FrameLayout
-                            android:id="@+id/client_city2"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:background="@drawable/ic_background_gray">
+                            <TextView
 
-                            <EditText
-                                android:id="@+id/client_city"
+                                android:id="@+id/client_city_label"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/client_city"
+                                android:textColor="@color/colorPrimary"
+                                android:textSize="18sp"
+                                android:textStyle="bold"
+                                android:visibility="gone" />
 
+                            <FrameLayout
+                                android:id="@+id/client_city2"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_gravity="center_vertical"
-                                android:layout_marginEnd="26dp"
-                                android:inputType="text"
-                                android:paddingStart="16dp"
-                                android:tag="client_name_label" />
-                        </FrameLayout>
+                                android:background="@drawable/ic_background_gray">
+
+                                <EditText
+                                    android:id="@+id/client_city"
+
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_marginEnd="26dp"
+                                    android:inputType="text"
+                                    android:paddingStart="16dp"
+                                    android:tag="client_name_label" />
+                            </FrameLayout>
+
+                        </LinearLayout>
 
                     </LinearLayout>
 
-                    </LinearLayout>
                     <LinearLayout
                         android:id="@+id/ddrftgfdf"
                         android:layout_width="match_parent"
@@ -610,19 +677,19 @@ android:visibility="gone"
 
                     <!--cost-->
                     <LinearLayout
-                        android:layout_marginTop="20dp"
-                        android:gravity="center"
-                        android:layout_gravity="center"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="20dp"
+                        android:gravity="center"
                         android:orientation="horizontal">
 
                         <!--item cost-->
                         <LinearLayout
-                            android:layout_gravity="center"
                             android:id="@+id/dplkjdf"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
+                            android:layout_gravity="center"
                             android:layout_marginStart="16dp"
                             android:layout_weight="1"
                             android:onClick="showLabel"
@@ -662,13 +729,13 @@ android:visibility="gone"
 
                         <!--item no-->
                         <LinearLayout
-                            android:layout_gravity="center"
                             android:id="@+id/ddmnbvf"
                             android:layout_width="0dp"
-                            android:layout_weight="1"
                             android:layout_height="wrap_content"
+                            android:layout_gravity="center"
                             android:layout_marginStart="8dp"
                             android:layout_marginEnd="16dp"
+                            android:layout_weight="1"
                             android:onClick="showLabel"
                             android:orientation="vertical">
 
@@ -793,7 +860,6 @@ android:visibility="gone"
                     <LinearLayout
                         android:id="@+id/ddfmn"
                         android:layout_width="match_parent"
-
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
                         android:layout_marginTop="20dp"
@@ -812,7 +878,6 @@ android:visibility="gone"
                             android:textStyle="bold"
                             android:visibility="gone" />
 
-
                         <FrameLayout
                             android:id="@+id/ntes2"
                             android:layout_width="match_parent"
@@ -822,10 +887,12 @@ android:visibility="gone"
                             <EditText
                                 android:id="@+id/ntes"
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
+                                android:layout_height="100dp"
                                 android:layout_gravity="center_vertical"
                                 android:layout_marginEnd="26dp"
+                                android:hint="@string/notes"
                                 android:inputType="text"
+                                android:lines="4"
                                 android:paddingStart="16dp"
                                 android:tag="client_name_label" />
                         </FrameLayout>

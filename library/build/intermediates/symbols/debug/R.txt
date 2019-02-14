@@ -8,13 +8,13 @@ int attr mb_movement_top 0x7f040007
 int attr mb_offset_inner 0x7f040008
 int attr mb_offset_outer 0x7f040009
 int attr mb_vibration_duration 0x7f04000a
-int dimen default_offset_inner 0x7f080001
-int dimen default_offset_outer 0x7f080002
-int id all 0x7f0c0001
-int id horizontal 0x7f0c0002
-int id horizontal_vertical 0x7f0c0003
-int id still 0x7f0c0004
-int id vertical 0x7f0c0005
+int dimen default_offset_inner 0x7f070001
+int dimen default_offset_outer 0x7f070002
+int id all 0x7f0b0001
+int id horizontal 0x7f0b0002
+int id horizontal_vertical 0x7f0b0003
+int id still 0x7f0b0004
+int id vertical 0x7f0b0005
 int[] styleable MovingButton { 0x7f040001, 0x7f040002, 0x7f040003, 0x7f040004, 0x7f040005, 0x7f040006, 0x7f040007, 0x7f040008, 0x7f040009, 0x7f04000a }
 int styleable MovingButton_mb_event_volume 0
 int styleable MovingButton_mb_move_direction 1

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <dimen name="default_offset_inner">16dp</dimen>
+    <dimen name="default_offset_outer">23dp</dimen>
     <declare-styleable name="MovingButton">
         <attr name="mb_move_direction">
             <enum name="all" value="0"/>
@@ -18,6 +20,4 @@
         <attr format="integer" name="mb_vibration_duration"/>
         <attr format="integer" name="mb_event_volume"/>
     </declare-styleable>
-    <dimen name="default_offset_inner">16dp</dimen>
-    <dimen name="default_offset_outer">23dp</dimen>
 </resources>

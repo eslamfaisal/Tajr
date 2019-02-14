@@ -25,28 +25,30 @@ public class TestActivity extends AppCompatActivity {
     ProgressBar mProgressBar2;
     @BindView(R.id.progress_bar3)
     ProgressBar mProgressBar3;
-    @BindView(R.id.progress_bar5)
+    @BindView(R.id.ProgressBar)
     ProgressBar mProgressBar4;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test);
         ButterKnife.bind(this);
-        Rect bounds = mProgressBar.getIndeterminateDrawable().getBounds();
-        mProgressBar.setIndeterminateDrawable(getProgressDrawable());
-        mProgressBar.getIndeterminateDrawable().setBounds(bounds);
+//        Rect bounds = mProgressBar.getIndeterminateDrawable().getBounds();
+//        mProgressBar.setIndeterminateDrawable(getProgressDrawable());
+//        mProgressBar.getIndeterminateDrawable().setBounds(bounds);
+//
+//        mProgressBar2.setIndeterminateDrawable(getProgressDrawable2());
+//        mProgressBar2.getIndeterminateDrawable().setBounds(bounds);
+//
+//        mProgressBar3.setIndeterminateDrawable(getProgressDrawable3());
+//        mProgressBar3.getIndeterminateDrawable().setBounds(bounds);
+//
+//
+//
+//        mProgressBar4.setIndeterminateDrawable(getProgressDrawable4());
+//        mProgressBar4.getIndeterminateDrawable().setBounds(bounds);
 
-        mProgressBar2.setIndeterminateDrawable(getProgressDrawable2());
-        mProgressBar2.getIndeterminateDrawable().setBounds(bounds);
-
-        mProgressBar3.setIndeterminateDrawable(getProgressDrawable3());
-        mProgressBar3.getIndeterminateDrawable().setBounds(bounds);
-
-
-
-        mProgressBar4.setIndeterminateDrawable(getProgressDrawable4());
-        mProgressBar4.getIndeterminateDrawable().setBounds(bounds);
-
+        mProgressBar4.setProgress(110);
+        mProgressBar4.setMax(5);
 
     }
     private Drawable getProgressDrawable() {
