@@ -18,5 +18,7 @@
         android:title="@string/calculator" />
 
     <item android:id="@+id/show_missed_call"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_call_end"
         android:title="@string/show_missed_call_view"/>
 </menu>

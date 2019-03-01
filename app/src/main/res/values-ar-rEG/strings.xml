@@ -181,5 +181,7 @@
     <string name="confirm_shipper_status">تاكيد حالة الشحن</string>
     <string name="no_order_is_found_do_you_want_to_goto_order_activity">لم يوجد اوردر لهذا الرقم هل تريد الذهاب الى صفحة الاوردرات ؟</string>
     <string name="show_missed_call_view">اظهر صفحة المكالمة الفائتة</string>
+    <string name="shipping_cost">تكلفة الشحن</string>
+    <string name="order">طلب</string>
 
 </resources>

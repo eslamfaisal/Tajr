@@ -36,10 +36,9 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:padding="8dp"
-                        android:background="@drawable/ic_background_gray"
+                        android:background="@drawable/ic_background_gray_new_order"
                         android:paddingStart="8dp"
                         android:paddingEnd="8dp" />
-
 
                 </LinearLayout>
 
@@ -63,7 +62,7 @@
                         android:id="@+id/client_name"
                         android:layout_width="match_parent"
                         android:layout_height="45dp"
-                        android:background="@drawable/ic_background_gray"
+                        android:background="@drawable/ic_background_gray_new_order"
                         android:paddingStart="8dp"
                         android:paddingEnd="8dp" />
 
@@ -89,8 +88,8 @@
                     <EditText
                         android:id="@+id/client_address"
                         android:layout_width="match_parent"
-                        android:layout_height="45dp"
-                        android:background="@drawable/ic_background_gray"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/ic_background_gray_new_order"
                         android:paddingStart="8dp"
                         android:paddingEnd="8dp" />
 
@@ -116,7 +115,7 @@
                         android:id="@+id/client_area"
                         android:layout_width="match_parent"
                         android:layout_height="45dp"
-                        android:background="@drawable/ic_background_gray"
+                        android:background="@drawable/ic_background_gray_new_order"
                         android:paddingStart="8dp"
                         android:paddingEnd="8dp" />
 
@@ -143,7 +142,7 @@
                         android:id="@+id/client_city"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/ic_background_gray"
+                        android:background="@drawable/ic_background_gray_new_order"
                         android:padding="8dp" />
 
 
@@ -170,7 +169,7 @@
                         android:inputType="phone"
                         android:layout_width="match_parent"
                         android:layout_height="45dp"
-                        android:background="@drawable/ic_background_gray"
+                        android:background="@drawable/ic_background_gray_new_order"
                         android:paddingStart="8dp"
                         android:paddingEnd="8dp" />
 
@@ -200,7 +199,7 @@
 
                         android:layout_width="match_parent"
                         android:layout_height="45dp"
-                        android:background="@drawable/ic_background_gray"
+                        android:background="@drawable/ic_background_gray_new_order"
                         android:editable="false"
                         android:paddingStart="8dp"
                         android:paddingEnd="8dp" />
@@ -229,7 +228,7 @@
                         android:id="@+id/item_no"
                         android:layout_width="match_parent"
                         android:layout_height="45dp"
-                        android:background="@drawable/ic_background_gray"
+                        android:background="@drawable/ic_background_gray_new_order"
                         android:paddingStart="8dp"
                         android:paddingEnd="8dp" />
 

@@ -4,19 +4,20 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
-import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
@@ -30,6 +31,8 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -167,6 +170,8 @@ public class OrderActivity extends AppCompatActivity
     EditText status;
     @BindView(R.id.shipping_status)
     EditText shipping_status;
+    @BindView(R.id.shipping_cost)
+    EditText shipping_cost;
     @BindView(R.id.sender_name)
     EditText sender_name;
     @BindView(R.id.item_cost)
@@ -272,18 +277,7 @@ public class OrderActivity extends AppCompatActivity
     String activatedNum;
     List<CallDetails> callDetailsList;
     Timer workTimer;
-    BroadcastReceiver networkStateReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            boolean noConnectivity = intent.getBooleanExtra(ConnectivityManager.EXTRA_NO_CONNECTIVITY, false);
 
-            if (!noConnectivity) {
-                onConnectionFound();
-            } else {
-                onConnectionLost();
-            }
-        }
-    };
     CalcDialog calcDialog;
     private TextView valueTxv;
     private CheckBox signChk;
@@ -578,7 +572,7 @@ public class OrderActivity extends AppCompatActivity
             public void onFailure(Call<UpdateOrederNewResponse> call, Throwable t) {
                 progressBar.setVisibility(View.GONE);
                 Log.d("dddddddddd", "onFailure:update " + value + t.getMessage());
-                Toast.makeText(OrderActivity.this, ""+t.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(OrderActivity.this, "" + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -621,7 +615,7 @@ public class OrderActivity extends AppCompatActivity
             @Override
             public void onFailure(Call<UpdateOrederNewResponse> call, Throwable t) {
                 progressBar.setVisibility(View.GONE);
-                Toast.makeText(OrderActivity.this, ""+t.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(OrderActivity.this, "" + t.getMessage(), Toast.LENGTH_SHORT).show();
                 Log.d("dddddddddd", "onFailure:update " + value + t.getMessage());
                 //  finishTheWorkNow();
             }
@@ -758,12 +752,16 @@ public class OrderActivity extends AppCompatActivity
                     if (response.body().getCode().equals("1202") || response.body().getCode().equals("1200")) {
                         orderStatus = response.body().getOrder_type();
                         if (!firstOrder) {
+
                             firstOrder = true;
                             firstRemaining = response.body().getRemainig_orders();
                             mProgressBar4.setMax(firstRemaining);
 
                         }
-                        mProgressBar4.setProgress(firstRemaining - response.body().getRemainig_orders());
+
+                        int b = firstRemaining - response.body().getRemainig_orders();
+                        mProgressBar4.setProgress(b);
+                        createNotification(String.valueOf(firstRemaining - b));
                         int a = (int) (100 * Float.parseFloat(String.valueOf(finishedOrders)) / Float.parseFloat(String.valueOf(firstRemaining)));
                         String test = String.valueOf(response.body().getRemainig_orders()) + "  (" + String.valueOf(a) + "%)";
                         present.setText(test);
@@ -781,15 +779,14 @@ public class OrderActivity extends AppCompatActivity
                             order_shipper_confirmed2.setVisibility(View.GONE);
                             order_data_confirmed2.setVisibility(View.VISIBLE);
                             client_phone_error2.setVisibility(View.VISIBLE);
+                            shipping_status.setVisibility(View.GONE);
                         } else {
-
+                            shipping_status.setVisibility(View.VISIBLE);
                             problem2.setVisibility(View.VISIBLE);
                             order_shipper_confirmed2.setVisibility(View.VISIBLE);
                             order_data_confirmed2.setVisibility(View.GONE);
                             client_phone_error2.setVisibility(View.GONE);
-
                         }
-
 
                         order = response.body().getOrder();
                         if (order != null) {
@@ -800,11 +797,14 @@ public class OrderActivity extends AppCompatActivity
                             client_name.setText(order.getClient_name());
                             client_address.setText(order.getClient_address());
                             client_area.setText(order.getClient_area());
-                            client_city.setSelection(citiesId.indexOf(order.getClient_city_id()));
+                            int cityIndex = citiesId.indexOf(order.getClient_city_id());
+                            client_city.setSelection(cityIndex);
+                            SHIPPING_COST = shippingCosts.get(cityIndex);
                             client_city.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                                 @Override
                                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                                     CITY_ID = String.valueOf(citiesId.get(position));
+                                    SHIPPING_COST = shippingCosts.get(position);
 
                                 }
 
@@ -814,7 +814,7 @@ public class OrderActivity extends AppCompatActivity
                                 }
                             });
 
-                            client_city.setSelection(citiesId.indexOf(order_ud));
+                            shipping_cost.setText(SHIPPING_COST);
                             phone = order.getPhone_1();
                             shipping_status.setText(order.getOrder_shipping_status());
                             client_order_phone1.setText(order.getPhone_1());
@@ -836,10 +836,10 @@ public class OrderActivity extends AppCompatActivity
                                 Log.d("ProductsAdapter", "onResponse: " + order.getMulti_orders().get(0).getProduct_name());
                                 productsView.setVisibility(View.VISIBLE);
                                 productsRecyclerView.setAdapter(productsAdapter);
-                                product_label_view.setVisibility(View.GONE);
+//                                product_label_view.setVisibility(View.GONE);
 
                             } else {
-                                product_label_view.setVisibility(View.VISIBLE);
+//                                product_label_view.setVisibility(View.VISIBLE);
                                 productsView.setVisibility(View.GONE);
                             }
 
@@ -868,8 +868,10 @@ public class OrderActivity extends AppCompatActivity
 
     List<String> cities = new ArrayList<>();
     List<String> citiesId = new ArrayList<>();
+    List<String> shippingCosts = new ArrayList<>();
 
     public static String CITY_ID;
+    String SHIPPING_COST;
 
     private List<Cities.City> citiesBody;
 
@@ -887,13 +889,14 @@ public class OrderActivity extends AppCompatActivity
             @Override
             public void onResponse(Call<Cities> call, Response<Cities> response) {
                 progressBar.setVisibility(View.GONE);
-                if (response.body() != null&&response.body().getCities()!=null) {
+                if (response.body() != null && response.body().getCities() != null) {
                     if (response.body().getCities().size() > 0) {
 
                         citiesBody = response.body().getCities();
                         for (Cities.City city : citiesBody) {
                             cities.add(city.getCity_name());
                             citiesId.add(city.getCity_id());
+                            shippingCosts.add(city.getShipping_cost());
                         }
                         ArrayAdapter adapter = new ArrayAdapter(getApplicationContext(), R.layout.layout_cities_spinner_item, cities);
 
@@ -901,7 +904,7 @@ public class OrderActivity extends AppCompatActivity
                         client_city.setAdapter(adapter);
                         getFirstOrder();
                     }
-                }else {
+                } else {
                     SharedHelper.putKey(getApplicationContext(), IS_LOGIN, "اعادة تسجيل الدخول");
                     startActivity(new Intent(getApplicationContext(), LoginActivity.class));
                     finishTheWorkNow();
@@ -913,7 +916,7 @@ public class OrderActivity extends AppCompatActivity
             @Override
             public void onFailure(Call<Cities> call, Throwable t) {
                 progressBar.setVisibility(View.GONE);
-                Toast.makeText(OrderActivity.this, ""+t.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(OrderActivity.this, "" + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -1055,13 +1058,11 @@ public class OrderActivity extends AppCompatActivity
 
         } else if (id == R.id.calc) {
             showCalculatoe();
-        }else if (id == R.id.show_missed_call) {
-            if (!inMissed)
-            {
+        } else if (id == R.id.show_missed_call) {
+            if (!inMissed) {
                 inMissed = true;
                 showMissedCall();
-            }
-            else {
+            } else {
                 inMissed = false;
                 showOrderView();
             }
@@ -1070,6 +1071,7 @@ public class OrderActivity extends AppCompatActivity
     }
 
     boolean inMissed = false;
+
     void showProductDetails() {
 
         if (!productShowen) {
@@ -1097,18 +1099,112 @@ public class OrderActivity extends AppCompatActivity
         TextView textView = findViewById(R.id.name);
         TextView price = findViewById(R.id.price);
         TextView description = findViewById(R.id.description);
+        TextView category_name = findViewById(R.id.category_name);
+        TextView product_info = findViewById(R.id.product_info);
 
         SimpleDraweeView image = findViewById(R.id.product_image);
         image.setImageURI(currentProduct.getProduct_image());
         textView.setText(currentProduct.getProduct_name());
         description.setText(currentProduct.getProduct_describtion());
         price.setText(currentProduct.getProduct_real_price() + " " + getString(R.string.omla));
+        category_name.setText(currentProduct.getCategory_name());
+        product_info.setText(currentProduct.getProduct_info());
 
     }
 
 //    private void animationHide() {
 //        productView.setVisibility(View.GONE);
 //    }
+
+    @SuppressLint("NewApi")
+    public void createNotification(String first) {
+
+        Intent intent2 = new Intent(getApplicationContext(), OrderActivity.class);
+        intent2.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        PendingIntent pendingIntent2 = PendingIntent.getActivity(this, 0, intent2, 0);
+
+//        Drawable drawable = ContextCompat.getDrawable(this,R.drawable.ic_launcher);
+//
+//        Bitmap bitmap = ((BitmapDrawable)drawable).getBitmap();
+
+        NotificationCompat.Action action = new NotificationCompat.Action(R.drawable.notification_icon, getResources().getString(R.string.cancel), pendingIntent2);
+        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        NotificationChannel channel = new NotificationChannel("5", "eslam", NotificationManager.IMPORTANCE_HIGH);
+        channel.setDescription("5");
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "5")
+                .setSmallIcon(getApplicationInfo().icon)
+                .setContentTitle("orders")
+                .setOngoing(true)
+                .setColor(Color.RED)
+                // .addAction(action)
+                .setContentText(getString(R.string.remaining) + " " + first + " " + getString(R.string.order))
+                .setSmallIcon(R.drawable.ic_launcher);
+
+        Intent intent = new Intent(this, OrderActivity.class);
+        intent.setAction(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_LAUNCHER);
+
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        stackBuilder.addParentStack(this);
+        stackBuilder.addNextIntent(intent);
+
+        PendingIntent pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        //builder.setContentIntent(pendingIntent);
+        notificationManager.createNotificationChannel(channel);
+        notificationManager.notify(5, builder.build());
+        Toast.makeText(this, "created", Toast.LENGTH_SHORT).show();
+
+
+    }
+
+//    private void createNotificationChannel() {
+//        // Create the NotificationChannel, but only on API 26+ because
+//        // the NotificationChannel class is new and not in the support library
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//
+//            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+//            NotificationChannel channel = new NotificationChannel("5", "eslam", importance);
+//            channel.setDescription(description);
+//            // Register the channel with the system; you can't change the importance
+//            // or other notification behaviors after this
+//            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+//            notificationManager.createNotificationChannel(channel);
+//        }
+//    }
+
+
+    public void updateNotificationText(String inString) {
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
+                .setContentText(inString)
+                .setOngoing(true)
+                .setContentTitle("orders")
+                .setSmallIcon(R.drawable.ic_launcher)
+                .setOngoing(true)
+                .setAutoCancel(false);
+
+        Intent intent = new Intent(this, ChatActivity.class);
+        intent.setAction(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_LAUNCHER);
+
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+
+        stackBuilder.addNextIntent(intent);
+        stackBuilder.addParentStack(ChatActivity.class);
+        PendingIntent pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        builder.setContentIntent(pendingIntent);
+
+        notificationManager.notify(5, builder.build());
+    }
+
+    public void cancelNotification() {
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        notificationManager.cancel(5);
+    }
 
     protected synchronized void getProducts() {
         Api api = BaseClient.getBaseClient().create(Api.class);
@@ -1236,6 +1332,7 @@ public class OrderActivity extends AppCompatActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        cancelNotification();
         closeRecords();
         stopService(new Intent(this, FloatLayout.class));
         //  unregisterReceiver(networkStateReceiver);
@@ -1491,20 +1588,15 @@ public class OrderActivity extends AppCompatActivity
 
     public void onConnectionLost() {
         Intent intent = new Intent(getApplicationContext(), NoInternetActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivityForResult(intent, 8523);
         Toast.makeText(this, "لا يوجد اتصال بالانترنت", Toast.LENGTH_SHORT).show();
-        finishTheWorkNow();
+       // finishTheWorkNow();
     }
 
     public void onConnectionFound() {
 
     }
 
-    private void registerBroadCastReceiver() {
-        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-        registerReceiver(networkStateReceiver, filter);
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -1713,7 +1805,7 @@ public class OrderActivity extends AppCompatActivity
     @BindView(R.id.product)
     Spinner singleProductSpinner;
 
-    private  void setSingleProducts(String selection){
+    private void setSingleProducts(String selection) {
         singleProducts = new ArrayList<>();
         singleProductIds = new ArrayList<>();
         for (ProductData product : allProducts.getProducts()) {
@@ -1744,7 +1836,6 @@ public class OrderActivity extends AppCompatActivity
     String productId;
     EditText productNo;
     RobotoTextView addProductBtn;
-
 
 
     public void showNewProductDialog(View view) {
@@ -1815,8 +1906,6 @@ public class OrderActivity extends AppCompatActivity
 
         dialog.show();
     }
-
-
 
 
 }

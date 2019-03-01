@@ -105,7 +105,7 @@ public class CallsReceiver extends BroadcastReceiver {
                                     Intent startHoverIntent = new Intent(context, MissedCallNoOrderService.class);
                                     context.startService(startHoverIntent);
                                 }else if (response.body().getCode().equals("1200")){
-                                    OrderActivity.order =response.body().getOrder();
+                                    OrderActivity.order  = response.body().getOrder();
                                     MissedCallOrderService.showFloatingMenu(context);
                                 }
                             }

@@ -223,5 +223,7 @@
     <string name="confirm_shipper_status">Confirm shipper status</string>
     <string name="no_order_is_found_do_you_want_to_goto_order_activity">No order is found do you want to goto order activity</string>
     <string name="show_missed_call_view">Show missed call view</string>
+    <string name="shipping_cost">Shipping cost</string>
+    <string name="order">Order</string>
 
 </resources>

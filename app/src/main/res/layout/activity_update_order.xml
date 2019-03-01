@@ -248,11 +248,57 @@
                                     android:tag="client_name_label" />
                             </FrameLayout>
                         </LinearLayout>
+                        <LinearLayout
+                            android:id="@+id/products_view"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginTop="20dp"
+                            android:layout_marginEnd="16dp"
+                            android:visibility="gone"
+                            android:onClick="showLabel"
+                            android:orientation="vertical">
 
+                            <TextView
+                                android:id="@+id/products"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="@string/Products"
+                                android:textColor="@color/colorPrimary"
+                                android:textSize="18sp"
+                                android:textStyle="bold"
+                                android:visibility="gone" />
+
+                            <FrameLayout
+                                android:id="@+id/ffgxrgr"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/ic_background_gray">
+
+                                <android.support.v7.widget.RecyclerView
+                                    android:id="@+id/products_recycler_view"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginEnd="@dimen/_18ssp"
+                                    android:padding="@dimen/_4sdp">
+
+                                </android.support.v7.widget.RecyclerView>
+                            </FrameLayout>
+
+
+                        </LinearLayout>
+
+
+                        <Button
+                            android:onClick="showNewProductDialog"
+                            android:layout_gravity="center"
+                            android:textColor="@color/green"
+                            android:text="@string/add_product"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
                         <LinearLayout
                             android:id="@+id/ddafdff"
                             android:layout_width="match_parent"
-
                             android:layout_height="wrap_content"
                             android:layout_marginStart="16dp"
                             android:layout_marginTop="20dp"
@@ -526,15 +572,13 @@
                                 android:background="@drawable/ic_background_gray">
 
                                 <EditText
+                                    android:layout_marginEnd="26dp"
+                                    android:tag="client_name_label"
                                     android:id="@+id/client_address"
-
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_marginEnd="26dp"
-                                    android:inputType="text"
-                                    android:paddingStart="16dp"
-                                    android:tag="client_name_label" />
+                                    android:paddingStart="8dp"
+                                    android:paddingEnd="8dp" />
                             </FrameLayout>
                         </LinearLayout>
 
@@ -631,6 +675,48 @@
 
                         </LinearLayout>
 
+                        <!--shipping cost-->
+                        <LinearLayout
+                            android:id="@+id/fdlj"
+                            android:layout_width="match_parent"
+
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginTop="20dp"
+                            android:layout_marginEnd="16dp"
+                            android:onClick="showLabel"
+                            android:orientation="vertical">
+
+                            <TextView
+
+                                android:id="@+id/shipping_cost_label"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/shipping_cost"
+                                android:textColor="@color/colorPrimary"
+                                android:textSize="18sp"
+                                android:textStyle="bold"
+                                android:visibility="gone" />
+
+                            <FrameLayout
+                                android:id="@+id/shipping_cost2"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/ic_background_gray">
+
+                                <EditText
+                                    android:id="@+id/shipping_cost"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_marginEnd="26dp"
+                                    android:background="@color/gray"
+                                    android:editable="false"
+                                    android:inputType="text"
+                                    android:paddingStart="16dp"
+                                    android:tag="client_name_label" />
+                            </FrameLayout>
+                        </LinearLayout>
                         <LinearLayout
                             android:id="@+id/ddrftgfdf"
                             android:layout_width="match_parent"
@@ -883,16 +969,14 @@
                                 android:background="@drawable/ic_background_gray">
 
                                 <EditText
-                                    android:id="@+id/ntes"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="100dp"
-                                    android:layout_gravity="center_vertical"
                                     android:layout_marginEnd="26dp"
-                                    android:hint="@string/notes"
-                                    android:inputType="text"
-                                    android:lines="4"
-                                    android:paddingStart="16dp"
-                                    android:tag="client_name_label" />
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:paddingStart="8dp"
+                                    android:paddingEnd="8dp"
+                                    android:id="@+id/ntes"
+                                    android:hint="@string/notes" />
+
                             </FrameLayout>
                         </LinearLayout>
 
@@ -914,55 +998,6 @@
                             drawme:dm_backColorPressed="@color/green"
                             drawme:dm_radius="10dp" />
                     </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/products_view"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginTop="20dp"
-                        android:layout_marginEnd="16dp"
-                        android:visibility="gone"
-                        android:onClick="showLabel"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/products"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/Products"
-                            android:textColor="@color/colorPrimary"
-                            android:textSize="18sp"
-                            android:textStyle="bold"
-                            android:visibility="gone" />
-
-                        <FrameLayout
-                            android:id="@+id/ffgxrgr"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:background="@drawable/ic_background_gray">
-
-                            <android.support.v7.widget.RecyclerView
-                                android:id="@+id/products_recycler_view"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginEnd="@dimen/_18ssp"
-                                android:padding="@dimen/_4sdp">
-
-                            </android.support.v7.widget.RecyclerView>
-                        </FrameLayout>
-
-
-                    </LinearLayout>
-
-                    <Button
-                        android:onClick="showNewProductDialog"
-                        android:layout_gravity="center"
-                        android:textColor="@color/green"
-                        android:text="@string/add_product"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-
 
                     <LinearLayout
                         android:visibility="invisible"
@@ -1032,6 +1067,7 @@
             android:layout_marginBottom="0dp"
             android:padding="@dimen/_16sdp"
             android:visibility="visible"
+            fab:menu_labels_showShadow="true"
             fab:menu_backgroundColor="#ccffffff"
             fab:menu_colorNormal="@color/colorPrimaryDark"
             fab:menu_colorPressed="#2E7D32"
@@ -1380,7 +1416,7 @@
                 <com.facebook.drawee.view.SimpleDraweeView
                     android:id="@+id/product_image"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="@dimen/_200sdp"
                     android:adjustViewBounds="true"
                     android:background="@color/material_grey_300"
                     android:minHeight="72dp"
@@ -1423,6 +1459,22 @@
 
                 <TextView
                     android:id="@+id/description"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:text="description"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="16sp" />
+                <TextView
+                    android:id="@+id/category_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:text="description"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="16sp" />
+                <TextView
+                    android:id="@+id/product_info"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="8dp"

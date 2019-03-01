@@ -48,19 +48,10 @@ import android.widget.Toast;
 
 import com.ebanx.swipebtn.OnStateChangeListener;
 import com.ebanx.swipebtn.SwipeButton;
-import com.firebase.jobdispatcher.Constraint;
-import com.firebase.jobdispatcher.FirebaseJobDispatcher;
-import com.firebase.jobdispatcher.GooglePlayDriver;
-import com.firebase.jobdispatcher.Job;
-import com.firebase.jobdispatcher.Lifetime;
-import com.firebase.jobdispatcher.RetryStrategy;
-import com.firebase.jobdispatcher.Trigger;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
-import com.greyeg.tajr.activities.AdminLoginActivity;
-import com.greyeg.tajr.activities.AdminRecordsActivity;
 import com.greyeg.tajr.activities.BalanceActivity;
 import com.greyeg.tajr.activities.CartsActivity;
 import com.greyeg.tajr.activities.ChatActivity;
@@ -73,7 +64,6 @@ import com.greyeg.tajr.adapters.DrawerAdapter;
 import com.greyeg.tajr.helper.SharedHelper;
 import com.greyeg.tajr.helper.TimerTextView;
 import com.greyeg.tajr.helper.font.RobotoTextView;
-import com.greyeg.tajr.job.DemoJobService;
 import com.greyeg.tajr.records.RecordsActivity;
 import com.greyeg.tajr.server.Api;
 import com.greyeg.tajr.server.BaseClient;
@@ -902,40 +892,6 @@ public class MainActivity extends AppCompatActivity
 //                .schedule();
 //        SharedHelper.putKey(this,"job_key", String.valueOf(jobId));
 //    }
-
-    void newjob() {
-        FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(this));
-        Bundle myExtrasBundle = new Bundle();
-        myExtrasBundle.putString("some_key", "some_value");
-
-        Job myJob = dispatcher.newJobBuilder()
-                // the JobService that will be called
-                .setService(DemoJobService.class)
-                // uniquely identifies the job
-                .setTag("my-unique-tag")
-                // one-off job
-                .setRecurring(true)
-                // don't persist past a device reboot
-                .setLifetime(Lifetime.FOREVER)
-                // start between 0 and 60 seconds from now
-                .setTrigger(Trigger.executionWindow(0, 2))
-                // don't overwrite an existing job with the same tag
-                .setReplaceCurrent(false)
-                // retry with exponential backoff
-                .setRetryStrategy(RetryStrategy.DEFAULT_EXPONENTIAL)
-                // constraints that need to be satisfied for the job to run
-                .setConstraints(
-                        // only run on an unmetered network
-                        Constraint.ON_ANY_NETWORK
-//                        ,
-//                        // only run when the device is charging
-//                        Constraint.DEVICE_CHARGING
-                )
-                .setExtras(myExtrasBundle)
-                .build();
-
-        dispatcher.mustSchedule(myJob);
-    }
 
     private void sendNotification() {
         try {

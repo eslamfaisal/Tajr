@@ -59,7 +59,9 @@ public class RecorderService extends Service {
 
     public void onDestroy() {
         super.onDestroy();
-
+if (recorder!=null){
+    return;
+}
         recorder.stop();
         recorder.reset();
         recorder.release();

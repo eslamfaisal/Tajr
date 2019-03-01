@@ -211,9 +211,7 @@
         <!-- android:enabled="true" -->
         <!-- tools:replace="android:enabled"/> -->
         <service
-            android:name=".job.JobServicio"
-            android:enabled="false"
-            android:exported="false"
+            android:name=".jobs.OrderReminderJobService"
             android:permission="android.permission.BIND_JOB_SERVICE">
             <intent-filter>
                 <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE" />

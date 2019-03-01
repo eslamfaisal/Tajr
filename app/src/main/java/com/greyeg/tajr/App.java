@@ -10,11 +10,10 @@ import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
-import com.evernote.android.job.JobManager;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.greyeg.tajr.activities.ChatActivity;
 import com.greyeg.tajr.helper.SharedHelper;
-import com.greyeg.tajr.job.DemoJobCreator;
+import com.greyeg.tajr.jobs.ReminderUtilities;
 import com.greyeg.tajr.over.theming.Bus;
 import com.greyeg.tajr.over.theming.HoverTheme;
 import com.greyeg.tajr.over.theming.HoverThemeManager;
@@ -51,6 +50,7 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        ReminderUtilities.scheduleOrderReminder(getApplicationContext());
         // OneSignal Initialization
         OneSignal.startInit(this)
                 .setNotificationReceivedHandler(new ExampleNotificationReceivedHandler())
@@ -65,7 +65,8 @@ public class App extends Application {
                 .build()
         );
         Fresco.initialize(this);
-        JobManager.create(this).addJobCreator(new DemoJobCreator());
+
+
 
         if (SharedHelper.getKey(getApplicationContext(), "lang").equals("en")) {
 

@@ -16,12 +16,6 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.firebase.jobdispatcher.FirebaseJobDispatcher;
-import com.firebase.jobdispatcher.GooglePlayDriver;
-import com.firebase.jobdispatcher.Job;
-import com.firebase.jobdispatcher.Lifetime;
-import com.firebase.jobdispatcher.RetryStrategy;
-import com.firebase.jobdispatcher.Trigger;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.FirebaseDatabase;
@@ -29,7 +23,6 @@ import com.greyeg.tajr.MainActivity;
 import com.greyeg.tajr.R;
 import com.greyeg.tajr.helper.SharedHelper;
 import com.greyeg.tajr.helper.font.RobotoTextView;
-import com.greyeg.tajr.job.JobServicio;
 import com.greyeg.tajr.models.User;
 import com.greyeg.tajr.models.UserResponse;
 import com.greyeg.tajr.server.Api;
@@ -244,16 +237,6 @@ public class AdminLoginActivity extends AppCompatActivity {
 
     }
 
-    void newjob() {
-        FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(this));
-        Bundle myExtrasBundle = new Bundle();
-        myExtrasBundle.putString("some_key", "some_value");
-
-        Job job = dispatcher.newJobBuilder().setService(JobServicio.class)
-                .setTag("connectivity-job").setLifetime(Lifetime.FOREVER).setRetryStrategy(RetryStrategy.DEFAULT_LINEAR)
-                .setRecurring(true).setReplaceCurrent(true).setTrigger(Trigger.executionWindow(0, 0)).build();
-        dispatcher.mustSchedule(job);
-    }
 
     @Override
     protected void onDestroy() {
