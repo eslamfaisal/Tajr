@@ -4,11 +4,13 @@ import android.Manifest;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.telephony.SubscriptionManager;
@@ -61,15 +63,15 @@ public class SettingsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_settings);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         ButterKnife.bind(this);
-
+        setAutoUpdate();
         if (SharedHelper.getKey(getApplicationContext(), "sub_num").equals("1")) {
             simNum.setText(getString(R.string.default_sim_activ));
             simNum.setClickable(false);
         } else {
             if (SharedHelper.getKey(getApplicationContext(), "activated_sub_num").equals("1")) {
-                simNum.setText(getString(R.string.sim_1)+"  "+SharedHelper.getKey(getApplicationContext(), "activated_sub_net_name"));
+                simNum.setText(getString(R.string.sim_1) + "  " + SharedHelper.getKey(getApplicationContext(), "activated_sub_net_name"));
             } else if (SharedHelper.getKey(getApplicationContext(), "activated_sub_num").equals("2")) {
-                simNum.setText(getString(R.string.sim_2)+"  "+SharedHelper.getKey(getApplicationContext(), "activated_sub_net_name"));
+                simNum.setText(getString(R.string.sim_2) + "  " + SharedHelper.getKey(getApplicationContext(), "activated_sub_net_name"));
             }
         }
         if (SharedHelper.getKey(getApplicationContext(), "lang").equals("en")) {
@@ -116,16 +118,16 @@ public class SettingsActivity extends AppCompatActivity {
             return;
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-            if (SubscriptionManager.from(getApplicationContext()).getActiveSubscriptionInfoList().size()==0||SubscriptionManager.from(getApplicationContext()).getActiveSubscriptionInfoList().size()==1){
+            if (SubscriptionManager.from(getApplicationContext()).getActiveSubscriptionInfoList().size() == 0 || SubscriptionManager.from(getApplicationContext()).getActiveSubscriptionInfoList().size() == 1) {
                 simNum.setText(getString(R.string.default_sim_activ));
                 return;
             }
-            if (SubscriptionManager.from(getApplicationContext()).getActiveSubscriptionInfoForSimSlotIndex(0).getCarrierName() != null){
-                sim1.setText(getString(R.string.sim_1)+"  "+SubscriptionManager.from(getApplicationContext()).getActiveSubscriptionInfoForSimSlotIndex(0).getCarrierName());
+            if (SubscriptionManager.from(getApplicationContext()).getActiveSubscriptionInfoForSimSlotIndex(0).getCarrierName() != null) {
+                sim1.setText(getString(R.string.sim_1) + "  " + SubscriptionManager.from(getApplicationContext()).getActiveSubscriptionInfoForSimSlotIndex(0).getCarrierName());
 
             }
-            if (SubscriptionManager.from(getApplicationContext()).getActiveSubscriptionInfoForSimSlotIndex(1).getCarrierName() != null){
-                sim2.setText(getString(R.string.sim_2)+"  "+SubscriptionManager.from(getApplicationContext()).getActiveSubscriptionInfoForSimSlotIndex(1).getCarrierName());
+            if (SubscriptionManager.from(getApplicationContext()).getActiveSubscriptionInfoForSimSlotIndex(1).getCarrierName() != null) {
+                sim2.setText(getString(R.string.sim_2) + "  " + SubscriptionManager.from(getApplicationContext()).getActiveSubscriptionInfoForSimSlotIndex(1).getCarrierName());
 
             }
 
@@ -140,7 +142,7 @@ public class SettingsActivity extends AppCompatActivity {
                 newStatusTag = (String) selectedRadioButton.getTag();
 
                 if (newStatusTag.equals("1")) {
-                    simNum.setText(getString(R.string.sim_1)+"  "+SharedHelper.getKey(getApplicationContext(), "activated_sub_net_name"));
+                    simNum.setText(getString(R.string.sim_1) + "  " + SharedHelper.getKey(getApplicationContext(), "activated_sub_net_name"));
                     if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
                         return;
                     }
@@ -154,7 +156,7 @@ public class SettingsActivity extends AppCompatActivity {
                     }
 
                 } else {
-                    simNum.setText(getString(R.string.sim_2)+"  "+SharedHelper.getKey(getApplicationContext(), "activated_sub_net_name"));
+                    simNum.setText(getString(R.string.sim_2) + "  " + SharedHelper.getKey(getApplicationContext(), "activated_sub_net_name"));
                     String subIdForSim2 = null;
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
                         subIdForSim2 = String.valueOf(SubscriptionManager.from(getApplicationContext()).getActiveSubscriptionInfoForSimSlotIndex(1).getIccId());
@@ -236,4 +238,43 @@ public class SettingsActivity extends AppCompatActivity {
 
     }
 
+    private void autoUpdateTrue() {
+        SharedPreferences pref1 = PreferenceManager.getDefaultSharedPreferences(this);
+        pref1.edit().putBoolean("autoUpdate", true).apply();
+        autoUpdateTv.setText(getString(R.string.True));
+    }
+
+    private void autoUpdateFalse() {
+        SharedPreferences pref1 = PreferenceManager.getDefaultSharedPreferences(this);
+        pref1.edit().putBoolean("autoUpdate", false).apply();
+        autoUpdateTv.setText(getString(R.string.False));
+    }
+
+    private boolean getAutoValue() {
+        SharedPreferences auto = PreferenceManager.getDefaultSharedPreferences(this);
+        return auto.getBoolean("autoUpdate", false);
+    }
+
+    TextView autoUpdateTv;
+
+    void setAutoUpdate() {
+        autoUpdateTv = findViewById(R.id.calls_option);
+        SharedPreferences auto = PreferenceManager.getDefaultSharedPreferences(this);
+
+        if (auto.getBoolean("autoUpdate", false)) {
+            autoUpdateTv.setText(getString(R.string.True));
+        } else {
+            autoUpdateTv.setText(getString(R.string.False));
+        }
+
+    }
+
+    @OnClick(R.id.calls_view)
+    void setAutoUpdateTv() {
+        if (!getAutoValue()) {
+            autoUpdateTrue();
+        } else {
+            autoUpdateFalse();
+        }
+    }
 }

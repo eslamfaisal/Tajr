@@ -635,25 +635,6 @@
                         android:layout_height="wrap_content"
                         android:layout_centerInParent="true" />
 
-                    <com.thefinestartist.movingbutton.MovingButton
-                        android:id="@+id/updating_button"
-                        android:layout_width="100dp"
-                        android:layout_height="100dp"
-                        android:layout_centerInParent="true"
-                        android:layout_gravity="center_horizontal"
-                        android:layout_marginTop="200dp"
-                        android:layout_marginBottom="200dp"
-                        android:background="@drawable/button_background"
-                        android:includeFontPadding="false"
-                        android:text="@string/move"
-                        android:textColor="@android:color/white"
-                        android:textSize="16dp"
-                        app:mb_move_direction="all"
-                        app:mb_vibration_duration="20" />
-                    <!--app:mb_event_volume="50"-->
-                    <!--app:mb_movement="10dp"-->
-
-
                 </RelativeLayout>
 
 
@@ -670,6 +651,69 @@
             android:text="@string/no_orders_with_this_number"
             android:visibility="gone" />
     </RelativeLayout>
+
+
+    <com.github.clans.fab.FloatingActionMenu
+        xmlns:fab="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/right_menu"
+        android:padding="@dimen/_16sdp"
+        android:visibility="visible"
+        android:layout_above="@id/navigation"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        fab:menu_backgroundColor="#ccffffff"
+        fab:menu_colorNormal="@color/colorPrimaryDark"
+        fab:menu_colorPressed="#2E7D32"
+        fab:menu_colorRipple="#1B5E20"
+        fab:menu_labels_ellipsize="start"
+        fab:menu_labels_position="right"
+        fab:menu_labels_singleLine="true">
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/order_data_confirmed2"
+            android:background="#00000000"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_confirm"
+            fab:fab_label="@string/order_data_confirmed"
+            fab:fab_size="mini" />
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/cancel_order2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_cancel"
+            fab:fab_label="@string/cancel_order"
+            fab:fab_size="mini" />
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/no_answer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_phone_call_end"
+            fab:fab_label="@string/client_noanswer"
+            fab:fab_size="mini" />
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/busy"
+            app:fab_progress_backgroundColor="@color/red"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_not_available"
+            fab:fab_label="@string/client_busy"
+            fab:fab_size="mini" />
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/delay"
+            app:fab_progress_backgroundColor="@color/red"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_warning"
+            fab:fab_label="@string/delay_order"
+            fab:fab_size="mini" />
+
+
+    </com.github.clans.fab.FloatingActionMenu>
 
 
 </RelativeLayout>

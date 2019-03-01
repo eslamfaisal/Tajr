@@ -78,11 +78,9 @@ public class NewOrderFragment extends Fragment {
 
     private List<Cities.City> citiesBody;
 
-
     public NewOrderFragment() {
         // Required empty public constructor
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -104,7 +102,6 @@ public class NewOrderFragment extends Fragment {
         getcities(api);
 
     }
-
     private void getcities(Api api) {
         if (cities != null && cities.size() > 1) {
             cities.clear();

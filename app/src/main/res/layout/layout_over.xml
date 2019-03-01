@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:drawme="http://schemas.android.com/apk/res-auto"
+    xmlns:fresco="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/root_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <com.rafakob.drawme.DrawMeLinearLayout
+        android:id="@+id/extra_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:visibility="visible"
+        drawme:dm_backColor="@color/white"
+        drawme:dm_radius="16dp">
+
+
+        <LinearLayout
+            android:id="@+id/name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="showLabel"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/client_name_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/client_name"
+                android:textColor="@color/colorPrimary"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:visibility="gone" />
+
+            <FrameLayout
+                android:id="@+id/client_name2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ic_background_gray">
+
+                <EditText
+                    android:id="@+id/client_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginEnd="26dp"
+                    android:background="@color/gray"
+                    android:editable="false"
+                    android:inputType="text"
+                    android:paddingStart="16dp"
+                    android:tag="client_name_label" />
+            </FrameLayout>
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/state"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_8sdp"
+            android:onClick="showLabel"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/order_idl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/stause"
+                android:textColor="@color/colorPrimary"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:visibility="gone" />
+
+            <FrameLayout
+                android:id="@+id/order_id2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ic_background_gray">
+
+                <EditText
+                    android:id="@+id/order_status"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginEnd="26dp"
+                    android:background="@color/gray"
+                    android:editable="false"
+                    android:inputType="text"
+                    android:paddingStart="16dp"
+                    android:tag="client_name_label" />
+            </FrameLayout>
+
+
+        </LinearLayout>
+
+
+        <TextView
+            android:id="@+id/goOrderActivity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/_8sdp"
+            android:gravity="center"
+            android:padding="@dimen/_8sdp"
+            android:text="@string/go_to_order"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="@dimen/_16ssp"
+            android:textStyle="bold" />
+    </com.rafakob.drawme.DrawMeLinearLayout>
+
+</LinearLayout>

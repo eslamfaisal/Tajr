@@ -54,7 +54,6 @@
             android:id="@+id/lang_icon"
             android:layout_width="24dp"
             android:layout_height="24sp"
-            android:layout_centerVertical="true"
             android:src="@drawable/language" />
 
         <LinearLayout
@@ -73,6 +72,42 @@
 
             <TextView
                 android:id="@+id/lang_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+    </com.rafakob.drawme.DrawMeRelativeLayout>
+
+    <com.rafakob.drawme.DrawMeRelativeLayout
+        android:id="@+id/calls_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <ImageView
+            android:id="@+id/call"
+            android:layout_width="33dp"
+            android:layout_height="30sp"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_call_settings" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16sp"
+            android:layout_toEndOf="@id/call"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/automatic_update_orders"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/calls_option"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
         </LinearLayout>

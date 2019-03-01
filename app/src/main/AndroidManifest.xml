@@ -74,6 +74,7 @@
 
     <application
         android:name=".App"
+        tools:replace="android:allowBackup"
         android:allowBackup="true"
         android:icon="@drawable/ic_logo"
         android:label="@string/app_name"
@@ -123,6 +124,7 @@
         <!-- </receiver> -->
         <activity
             android:name=".activities.OrderActivity"
+            android:launchMode="singleTask"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activities.UpdateOrderActivity"
@@ -217,6 +219,26 @@
                 <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE" />
             </intent-filter>
         </service>
+
+        <service
+            android:name=".over.FloatLayout"
+            android:enabled="true"
+            android:exported="false" />
+
+        <service android:name=".over.MissedCallNoOrderService" />
+        <service android:name=".over.MissedCallOrderService" />
+
     </application>
 
 </manifest>
+
+
+
+
+
+
+
+
+
+
+

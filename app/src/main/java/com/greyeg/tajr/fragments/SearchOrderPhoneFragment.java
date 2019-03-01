@@ -4,12 +4,10 @@ package com.greyeg.tajr.fragments;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -17,7 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,15 +22,12 @@ import com.greyeg.tajr.R;
 import com.greyeg.tajr.activities.LoginActivity;
 import com.greyeg.tajr.helper.SharedHelper;
 import com.greyeg.tajr.helper.font.RobotoTextView;
-import com.greyeg.tajr.models.Order;
+import com.greyeg.tajr.models.SimpleOrderResponse;
 import com.greyeg.tajr.models.UpdateOrderResponse;
 import com.greyeg.tajr.models.UpdateOrederNewResponse;
-import com.greyeg.tajr.models.UserOrders;
 import com.greyeg.tajr.server.Api;
 import com.greyeg.tajr.server.BaseClient;
 import com.greyeg.tajr.view.ProgressWheel;
-import com.thefinestartist.movingbutton.MovingButton;
-import com.thefinestartist.movingbutton.enums.ButtonPosition;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -42,11 +36,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static com.greyeg.tajr.activities.OrderActivity.CANCEL_ORDER_NAME;
-import static com.greyeg.tajr.activities.OrderActivity.CLIENT_PROBLEM;
-import static com.greyeg.tajr.activities.OrderActivity.CONFIRM_ORDER_NAME;
 import static com.greyeg.tajr.activities.OrderActivity.askToFinishWork;
-import static com.greyeg.tajr.activities.OrderActivity.client_cancel;
 import static com.greyeg.tajr.activities.OrderActivity.finishTheWorkNow;
 import static com.greyeg.tajr.activities.OrderActivity.order_data_confirmed;
 
@@ -112,8 +102,6 @@ public class SearchOrderPhoneFragment extends Fragment {
     @BindView(R.id.order_view)
     View orderView;
 
-    @BindView(R.id.updating_button)
-    MovingButton updatingButton;
 
     @BindView(R.id.move_listener)
     TextView moveListener;
@@ -126,7 +114,7 @@ public class SearchOrderPhoneFragment extends Fragment {
 
 
     Api api;
-    private Order order;
+    private SimpleOrderResponse.Order order;
     private String order_ud;
     private String phone;
     ProgressDialog progressDialog;
@@ -183,9 +171,12 @@ public class SearchOrderPhoneFragment extends Fragment {
         noOrder.setVisibility(View.GONE);
         api.getPhoneData(
                 SharedHelper.getKey(getActivity(), LoginActivity.TOKEN),
-                SharedHelper.getKey(getActivity(), LoginActivity.USER_ID), phoneInput.getText().toString()).enqueue(new Callback<UserOrders>() {
+                SharedHelper.getKey(getActivity(), LoginActivity.USER_ID),
+                phoneInput.getText().toString()
+
+        ).enqueue(new Callback<SimpleOrderResponse>() {
             @Override
-            public void onResponse(Call<UserOrders> call, Response<UserOrders> response) {
+            public void onResponse(Call<SimpleOrderResponse> call, Response<SimpleOrderResponse> response) {
                 if (response.body() != null) {
                     //   progressDialog.dismiss();
                     if (response.body().getCode().equals("1202") || response.body().getCode().equals("1200")) {
@@ -194,7 +185,7 @@ public class SearchOrderPhoneFragment extends Fragment {
                         progressSearch.setVisibility(View.GONE);
                         order = response.body().getOrder();
                         // if (order != null) {
-                        initUpdateAsNewOrder();
+
                         order_ud = order.getId();
 
                         product.setText(order.getProduct_name());
@@ -226,7 +217,7 @@ public class SearchOrderPhoneFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(Call<UserOrders> call, Throwable t) {
+            public void onFailure(Call<SimpleOrderResponse> call, Throwable t) {
                 orderView.setVisibility(View.GONE);
                 noOrder.setVisibility(View.VISIBLE);
                 progressSearch.setVisibility(View.GONE);
@@ -242,48 +233,6 @@ public class SearchOrderPhoneFragment extends Fragment {
         phoneInput.setText("");
     }
 
-    void initUpdateAsNewOrder() {
-        updatingButton.setMovementLeft(300);
-
-        updatingButton.setMovementRight(300);
-
-        updatingButton.setMovementTop(300);
-
-        updatingButton.setMovementBottom(300);
-
-        updatingButton.setOnPositionChangedListener(new MovingButton.OnPositionChangedListener() {
-            @Override
-            public void onPositionChanged(int action, ButtonPosition position) {
-                //your code here
-
-                moveListener.setText(setNameNewOrder(position.name()));
-            }
-
-            @Override
-            public void moveUp(String d) {
-                if (d.equals(MovingButton.DOWN)) {
-                    updateOrder(client_cancel);
-                } else if (d.equals(MovingButton.RIGHT)) {
-                    updateOrder(order_data_confirmed);
-                } else if (d.equals(MovingButton.LEFT)) {
-                    showProblemNoteDialog();
-                }
-            }
-        });
-
-    }
-
-    String setNameNewOrder(String name) {
-        if (name.equals(MovingButton.DOWN)) {
-            return CANCEL_ORDER_NAME;
-        } else if (name.equals(MovingButton.LEFT)) {
-            return CLIENT_PROBLEM;
-        } else if (name.equals(MovingButton.RIGHT)) {
-            return CONFIRM_ORDER_NAME;
-        } else
-            return "ازاى مفيش";
-
-    }
 
     void updateOrder(String value) {
         Api api = BaseClient.getBaseClient().create(Api.class);
@@ -313,8 +262,9 @@ public class SearchOrderPhoneFragment extends Fragment {
             @Override
             public void onFailure(Call<UpdateOrederNewResponse> call, Throwable t) {
                 progressDialog.dismiss();
+                Toast.makeText(getActivity(), ""+t.getMessage(), Toast.LENGTH_SHORT).show();
                 Log.d("eeeeeeeeeeeeeeee", "onFailure:update order " + t.getMessage());
-                finishTheWorkNow();
+                //finishTheWorkNow();
             }
         });
     }

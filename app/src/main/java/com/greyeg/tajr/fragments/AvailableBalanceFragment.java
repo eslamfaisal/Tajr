@@ -103,14 +103,15 @@ public class AvailableBalanceFragment extends Fragment {
         }
 
         api.getMoneyHistory(
-                SharedHelper.getKey(getActivity(), LoginActivity.TOKEN),
-                SharedHelper.getKey(getActivity(), LoginActivity.USER_ID)
+                SharedHelper.getKey(getActivity(), LoginActivity.TOKEN)
         ).enqueue(new Callback<MoneyHistory>() {
             @Override
             public void onResponse(Call<MoneyHistory> call, Response<MoneyHistory> response) {
 
-                if (response.body() != null) {
-
+                if (response.body() != null&&response.body().getHistory()!=null) {
+                    if (response.body().getHistory().size()<1){
+                        return;
+                    }
                     List<MoneyHistory.Year> years = response.body().getHistory();
                     List<GroupItem> items = new ArrayList<GroupItem>();
                     GroupItem item = null;

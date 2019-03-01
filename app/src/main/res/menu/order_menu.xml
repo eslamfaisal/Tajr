@@ -7,15 +7,9 @@
         android:title="@string/finish_work" />
 
     <item
+        android:visible="false"
         android:id="@+id/ask_finish_work"
         android:title="@string/ask_finish_work" />
-
-    <item
-        android:orderInCategory="100"
-        app:showAsAction="always"
-        android:icon="@drawable/ic_bags2"
-        android:id="@+id/product"
-        android:title="@string/calculator" />
 
     <item
         app:showAsAction="always"
@@ -23,4 +17,6 @@
         android:id="@+id/calc"
         android:title="@string/calculator" />
 
+    <item android:id="@+id/show_missed_call"
+        android:title="@string/show_missed_call_view"/>
 </menu>

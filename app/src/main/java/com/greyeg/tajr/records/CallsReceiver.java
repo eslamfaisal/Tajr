@@ -12,9 +12,21 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.greyeg.tajr.activities.EmptyCallActivity;
+import com.greyeg.tajr.activities.LoginActivity;
+import com.greyeg.tajr.activities.OrderActivity;
 import com.greyeg.tajr.helper.CurrentCallListener;
+import com.greyeg.tajr.helper.SharedHelper;
+import com.greyeg.tajr.models.SimpleOrderResponse;
+import com.greyeg.tajr.over.MissedCallNoOrderService;
+import com.greyeg.tajr.over.MissedCallOrderService;
+import com.greyeg.tajr.server.Api;
+import com.greyeg.tajr.server.BaseClient;
 
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by VS00481543 on 25-10-2017.
@@ -22,8 +34,8 @@ import java.util.List;
 
 public class CallsReceiver extends BroadcastReceiver {
 
-    static final String TAG="State";
-    static final String TAG1=" Inside State";
+    static final String TAG = "State";
+    static final String TAG1 = " Inside State";
     static Boolean recordStarted;
     public static String phoneNumber;
     public static String name;
@@ -31,6 +43,8 @@ public class CallsReceiver extends BroadcastReceiver {
     private static String savedNumber;
 
     public static CurrentCallListener currentCallListener;
+    public static boolean inOrderActivity = false;
+    public static boolean inCall = false;
 
     public static void setCurrentCallListener(CurrentCallListener listener) {
         currentCallListener = listener;
@@ -53,9 +67,10 @@ public class CallsReceiver extends BroadcastReceiver {
                         public void run() {
                             context.startActivity(intent2);
                         }
-                    }, 1000);
+                    }, 100);
 
-                }
+                } else {
+  }
 
                 System.out.println("Receiver Start");
 
@@ -63,10 +78,47 @@ public class CallsReceiver extends BroadcastReceiver {
                 Bundle extras = intent.getExtras();
                 String state = extras.getString(TelephonyManager.EXTRA_STATE);
                 Log.d(TAG, " onReceive: " + state);
-             //   Toast.makeText(context, "Call detected(Incoming/Outgoing) " + state, Toast.LENGTH_SHORT).show();
+                //   Toast.makeText(context, "Call detected(Incoming/Outgoing) " + state, Toast.LENGTH_SHORT).show();
+                final Intent intent2 = new Intent(context, EmptyCallActivity.class);
+                intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        context.startActivity(intent2);
+                    }
+                }, 1000);
 
                 if (extras != null) {
                     if (state.equals(TelephonyManager.EXTRA_STATE_RINGING)) {
+
+                        String incomingNumber = intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER);
+                        Toast.makeText(context, "incoming call  "+incomingNumber, Toast.LENGTH_SHORT).show();
+                        Api api = BaseClient.getBaseClient().create(Api.class);
+                        api.getPhoneData(
+                                SharedHelper.getKey(context, LoginActivity.TOKEN),
+                                SharedHelper.getKey(context, LoginActivity.USER_ID),
+                                incomingNumber
+                        ).enqueue(new Callback<SimpleOrderResponse>() {
+                            @Override
+                            public void onResponse(Call<SimpleOrderResponse> call, Response<SimpleOrderResponse> response) {
+                                if (response.body().getCode().equals("1401")){
+                                    Intent startHoverIntent = new Intent(context, MissedCallNoOrderService.class);
+                                    context.startService(startHoverIntent);
+                                }else if (response.body().getCode().equals("1200")){
+                                    OrderActivity.order =response.body().getOrder();
+                                    MissedCallOrderService.showFloatingMenu(context);
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<SimpleOrderResponse> call, Throwable t) {
+
+                            }
+                        });
+
+                        Log.d(TAG, "incomingNumber: " + incomingNumber);
+                        Log.d(TAG, "EXTRA_SUBSCRIPTION_ID: " + intent.getStringExtra("android.intent.extra.EXTRA_SUBSCRIPTION_ID"));
+
                         Log.d(TAG1, " Inside " + state);
                     /*int j=pref.getInt("numOfCalls",0);
                     pref.edit().putInt("numOfCalls",++j).apply();
@@ -88,11 +140,11 @@ public class CallsReceiver extends BroadcastReceiver {
                             Intent reivToServ = new Intent(context, RecorderService.class);
                             reivToServ.putExtra("number", phoneNumber);
                             context.startService(reivToServ);
-
+                            inCall = true;
                             //name=new CommonMethods().getContactName(phoneNumber,context);
 
                             int serialNumber = pref.getInt("serialNumData", 1);
-                            new DatabaseManager(context).addCallDetails(new CallDetails(serialNumber, phoneNumber, new CommonMethods().getTIme(), new CommonMethods().getDate(),"not_yet"));
+                            new DatabaseManager(context).addCallDetails(new CallDetails(serialNumber, phoneNumber, new CommonMethods().getTIme(), new CommonMethods().getDate(), "not_yet"));
 
                             List<CallDetails> list = new DatabaseManager(context).getAllDetails();
                             for (CallDetails cd : list) {
@@ -116,7 +168,7 @@ public class CallsReceiver extends BroadcastReceiver {
                             Log.d(TAG1, " Inside to stop recorder " + state);
 
                             context.stopService(new Intent(context, RecorderService.class));
-
+                            inCall = true;
                             pref.edit().putBoolean("recordStarted", false).apply();
                             if (currentCallListener != null) {
                                 currentCallListener.callEnded();

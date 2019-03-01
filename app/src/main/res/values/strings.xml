@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">Tajr</string>
-
+    <string name="top_sheet_behavior" translatable="false">com.greyeg.tajr.sheets.TopSheetBehavior</string>
     <string name="calc_dialog_clear">Clear</string>
     <string name="calc_dialog_cancel">Cancel</string>
     <string name="calc_dialog_ok">OK</string>
@@ -212,5 +212,16 @@
     <string name="wrong_email_pass">Wrong Password or email</string>
     <string name="problem_in_order">Order has problem</string>
     <string name="recharge">Recharge</string>
+    <string name="go_to_order">Go to order</string>
+    <string name="add_product">Add product</string>
+    <string name="Products">Products</string>
+    <string name="not_available">Not available</string>
+    <string name="automatic_update_orders">Auto update orders</string>
+    <string name="True">True</string>
+    <string name="False">False</string>
+    <string name="delay_order">Delay the order</string>
+    <string name="confirm_shipper_status">Confirm shipper status</string>
+    <string name="no_order_is_found_do_you_want_to_goto_order_activity">No order is found do you want to goto order activity</string>
+    <string name="show_missed_call_view">Show missed call view</string>
 
 </resources>

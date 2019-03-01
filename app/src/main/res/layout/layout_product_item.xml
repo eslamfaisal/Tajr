@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="@dimen/_8sdp">
+
+    <ImageView
+        android:id="@+id/delete"
+        android:layout_width="@dimen/_50sdp"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/_8sdp"
+        android:src="@drawable/ic_delete_product" />
+
+    <TextView
+        android:layout_toEndOf="@id/delete"
+        android:layout_toStartOf="@id/items_no"
+        android:gravity="center"
+        android:id="@+id/product_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="جهاز لونا فوريو ميني✨FOREO LUNA Mini ✨"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="@dimen/_14sdp" />
+
+    <TextView
+        android:layout_alignParentEnd="true"
+        android:gravity="center"
+        android:id="@+id/items_no"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/_8sdp"
+        android:text="5"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="@dimen/_14sdp" />
+
+
+</RelativeLayout>

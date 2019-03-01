@@ -3,20 +3,21 @@ package com.greyeg.tajr;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.preference.PreferenceManager;
 import android.support.multidex.MultiDex;
+import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
 import com.evernote.android.job.JobManager;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.greyeg.tajr.activities.ChatActivity;
-import com.greyeg.tajr.activities.LoginActivity;
 import com.greyeg.tajr.helper.SharedHelper;
 import com.greyeg.tajr.job.DemoJobCreator;
+import com.greyeg.tajr.over.theming.Bus;
+import com.greyeg.tajr.over.theming.HoverTheme;
+import com.greyeg.tajr.over.theming.HoverThemeManager;
 import com.onesignal.OSNotification;
 import com.onesignal.OSNotificationAction;
 import com.onesignal.OSNotificationOpenResult;
@@ -27,7 +28,6 @@ import org.json.JSONObject;
 import java.util.Locale;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
-import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class App extends Application {
 
@@ -76,7 +76,18 @@ public class App extends Application {
             setLocale("ar");
 
         }
+
+        setupTheme();
+
     }
+
+    private void setupTheme() {
+        HoverTheme defaultTheme = new HoverTheme(
+                ContextCompat.getColor(this, R.color.gray),
+                ContextCompat.getColor(this, R.color.white));
+        HoverThemeManager.init(Bus.getInstance(), defaultTheme);
+    }
+
     public void setLocale(String lang) {
         Locale myLocale = new Locale(lang);
         Resources res = getResources();

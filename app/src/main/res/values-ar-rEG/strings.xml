@@ -169,6 +169,17 @@
     <string name="remember_password">تذكر كلمة المرور</string>
     <string name="wrong_email_pass">خطأ فى كلمة المرور او الايميل</string>
     <string name="problem_in_order">مشكلة فى الطلب</string>
-    <string name="recharge">Recharge</string>
+    <string name="recharge">اعادة الشحن</string>
+    <string name="go_to_order">الرجوع الى الاوردر</string>
+    <string name="add_product">اضافة منتج</string>
+    <string name="Products">المنتجات</string>
+    <string name="not_available">غير متاح</string>
+    <string name="automatic_update_orders">تحديث الاوردر اوتوماتيكي</string>
+    <string name="True">تم التفعيل</string>
+    <string name="False">تم الايقاف</string>
+    <string name="delay_order">تاجيل الاوردر</string>
+    <string name="confirm_shipper_status">تاكيد حالة الشحن</string>
+    <string name="no_order_is_found_do_you_want_to_goto_order_activity">لم يوجد اوردر لهذا الرقم هل تريد الذهاب الى صفحة الاوردرات ؟</string>
+    <string name="show_missed_call_view">اظهر صفحة المكالمة الفائتة</string>
 
 </resources>

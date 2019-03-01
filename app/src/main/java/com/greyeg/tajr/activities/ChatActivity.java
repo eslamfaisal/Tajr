@@ -67,6 +67,7 @@ import id.zelory.compressor.Compressor;
 
 public class ChatActivity extends AppCompatActivity implements AudioRecordView.RecordingListener {
 
+
     public static Activity context;
     private static String mFileName = null;
     private MediaRecorder mRecorder = null;

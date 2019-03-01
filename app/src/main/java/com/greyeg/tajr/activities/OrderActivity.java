@@ -33,6 +33,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.telephony.TelephonyManager;
 import android.util.Log;
@@ -42,6 +44,8 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -50,13 +54,18 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RadioGroup;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.internal.telephony.ITelephony;
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.github.clans.fab.FloatingActionButton;
+import com.github.clans.fab.FloatingActionMenu;
 import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork;
 import com.greyeg.tajr.R;
+import com.greyeg.tajr.adapters.ProductSpinnerAdapter;
+import com.greyeg.tajr.adapters.ProductsAdapter;
 import com.greyeg.tajr.calc.CalcDialog;
 import com.greyeg.tajr.call_receiver.PhoneCallReceiver;
 import com.greyeg.tajr.fragments.NewOrderFragment;
@@ -66,30 +75,37 @@ import com.greyeg.tajr.helper.SharedHelper;
 import com.greyeg.tajr.helper.TimerTextView;
 import com.greyeg.tajr.helper.font.RobotoTextView;
 import com.greyeg.tajr.models.AllProducts;
+import com.greyeg.tajr.models.Cities;
+import com.greyeg.tajr.models.DeleteAddProductResponse;
 import com.greyeg.tajr.models.LastCallDetails;
 import com.greyeg.tajr.models.ProductData;
+import com.greyeg.tajr.models.ProductForSpinner;
 import com.greyeg.tajr.models.SimpleOrderResponse;
 import com.greyeg.tajr.models.UpdateOrderResponse;
+import com.greyeg.tajr.models.UpdateOrdreDataRespnse;
 import com.greyeg.tajr.models.UpdateOrederNewResponse;
 import com.greyeg.tajr.models.UploadPhoneResponse;
 import com.greyeg.tajr.models.UploadVoiceResponse;
 import com.greyeg.tajr.models.UserWorkTimeResponse;
+import com.greyeg.tajr.over.FloatLayout;
 import com.greyeg.tajr.records.CallDetails;
 import com.greyeg.tajr.records.CallsReceiver;
 import com.greyeg.tajr.records.DatabaseManager;
 import com.greyeg.tajr.server.Api;
 import com.greyeg.tajr.server.BaseClient;
+import com.greyeg.tajr.sheets.TopSheetBehavior;
 import com.jpardogo.android.googleprogressbar.library.ChromeFloatingCirclesDrawable;
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
-import com.thefinestartist.movingbutton.MovingButton;
-import com.thefinestartist.movingbutton.enums.ButtonPosition;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -116,17 +132,13 @@ public class OrderActivity extends AppCompatActivity
         NewOrderFragment.SendOrderListener,
         CalcDialog.CalcDialogCallback {
     public static final String client_busy = "client_busy";
-    public static final String CLIENT_BUSY_NAME = "العميل مشغول";
-    public static final String client_delay = "client_delay";
     public static final String client_cancel = "client_cancel";
-    public static final String CANCEL_ORDER_NAME = "الغاء الطلب";
     public static final String client_noanswer = "client_noanswer";
     public static final String order_data_confirmed = "order_data_confirmed";
-    public static final String CONFIRM_ORDER_NAME = "تاكيد الطلب";
     public static final String client_phone_error = "client_phone_error";
-    public static final String WRONG_PHONE_NAME = "رقم هاتف خاطئ";
-    public static final String CLIENT_PROBLEM = "مشكلة";
-    public static final String RECHARGE = "اعادة شحن";
+    public static final String client_delay = "client_delay ";
+
+
     private static final String TAG = CalcActivity.class.getSimpleName();
     private static final int DIALOG_REQUEST_CODE = 0;
     public static TimerTextView timerTextView;
@@ -147,7 +159,8 @@ public class OrderActivity extends AppCompatActivity
     @BindView(R.id.client_area)
     EditText client_area;
     @BindView(R.id.client_city)
-    EditText client_city;
+    Spinner client_city;
+
     @BindView(R.id.item_no)
     EditText item_no;
     @BindView(R.id.client_order_phone1)
@@ -161,11 +174,20 @@ public class OrderActivity extends AppCompatActivity
     @BindView(R.id.item_cost)
     EditText item_cost;
 
+    @BindView(R.id.ntes)
+    EditText notes;
+
+    @BindView(R.id.products_recycler_view)
+    RecyclerView productsRecyclerView;
+
+    LinearLayoutManager productsLinearLayoutManager;
+
     //    @BindView(R.id.update)
-//    DrawMeButton update;
-//
-//    @BindView(R.id.cancel)
-//    DrawMeButton cancel;
+    //    DrawMeButton update;
+    //
+    //    @BindView(R.id.cancel)
+    //    DrawMeButton cancel;
+
     @BindView(R.id.discount)
     EditText discount;
     @BindView(R.id.order_cost)
@@ -179,9 +201,25 @@ public class OrderActivity extends AppCompatActivity
     DatabaseManager databaseManager;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
+
+    @BindView(R.id.products_view)
+    View productsView;
+
+    @BindView(R.id.client_phone_error2)
+    FloatingActionButton client_phone_error2;
+
+    @BindView(R.id.order_shipper_confirmed2)
+    FloatingActionButton order_shipper_confirmed2;
+
+    @BindView(R.id.order_data_confirmed2)
+    FloatingActionButton order_data_confirmed2;
+
+    @BindView(R.id.problem2)
+    FloatingActionButton problem2;
+
+
+
     long startWorkTime;
-    @BindView(R.id.updating_button)
-    MovingButton updatingButton;
 
     RadioGroup radioGroup;
     Button ok;
@@ -206,15 +244,15 @@ public class OrderActivity extends AppCompatActivity
     ProgressBar mProgressBar4;
     @BindView(R.id.present)
     TextView present;
+
     String connectionType;
     boolean hasInternet;
     Menu naveMenu;
-    @BindView(R.id.move_listener)
-    TextView moveListener;
+
     Timer updateOrderTimer;
     int updateOrderTimerCount = 0;
     Dialog warningDialog;
-    SimpleOrderResponse.Order order;
+    public static SimpleOrderResponse.Order order;
     String orderStatus = null;
     boolean firstOrder;
     int firstRemaining;
@@ -226,8 +264,8 @@ public class OrderActivity extends AppCompatActivity
     MenuItem micMode;
     boolean productShowen;
     ProductData currentProduct;
-    @BindView(R.id.product_view)
-    View productView;
+    //    @BindView(R.id.product_view)
+//    View productView;
     String phoneNumber = null;
     String callDuration2 = null;
     String calType = null;
@@ -294,7 +332,7 @@ public class OrderActivity extends AppCompatActivity
         setContentView(R.layout.activity_update_order);
         ButterKnife.bind(this);
         openRecords();
-
+        getProducts();
         setConnectionListener();
         setUpProgressBar();
         setCalc(savedInstanceState);
@@ -317,6 +355,9 @@ public class OrderActivity extends AppCompatActivity
         if (audioManager.isMicrophoneMute()) {
             audioManager.setMicrophoneMute(false);
         }
+        productsLinearLayoutManager = new LinearLayoutManager(this);
+        productsRecyclerView.setLayoutManager(productsLinearLayoutManager);
+
         finish = false;
         askToFinishWork = false;
         invalidateOptionsMenu();
@@ -329,30 +370,73 @@ public class OrderActivity extends AppCompatActivity
                 .add(this.getString(R.string.search), SearchOrderPhoneFragment.class)
                 .create());
 
-        ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
+        ViewPager viewPager = findViewById(R.id.viewpager);
         viewPager.setAdapter(adapter);
 
-        SmartTabLayout viewPagerTab = (SmartTabLayout) findViewById(R.id.viewpagertab);
+        SmartTabLayout viewPagerTab = findViewById(R.id.viewpagertab);
         viewPagerTab.setViewPager(viewPager);
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        BottomNavigationView navigation = findViewById(R.id.navigation);
         naveMenu = navigation.getMenu();
 
         micMode = naveMenu.findItem(R.id.mic_mode);
 
         if (!micMute) {
+
             micMode.setIcon(R.drawable.ic_mic_none_black_24dp);
             micMode.setTitle(getString(R.string.mute_mic));
 
         } else {
+
             micMode.setIcon(R.drawable.ic_mic_off_black_24dp);
             micMode.setTitle(getString(R.string.turn_on_mic));
+
         }
 
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-        getProducts();
-        getFirstOrder();
+
+        Api api = BaseClient.getBaseClient().create(Api.class);
+        getcities(api);
+
         createWarningDialog();
         Log.d("dddddddddd", "time started: " + timeWork);
+
+
+        View sheet = findViewById(R.id.top_sheet);
+        TopSheetBehavior tt = TopSheetBehavior.from(sheet);
+
+        tt.setTopSheetCallback(new TopSheetBehavior.TopSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                animationShow();
+                Log.d("TAG", "newState: " + newState);
+
+                if (newState == 3) {
+                    findViewById(R.id.to_bottom_button).setVisibility(View.GONE);
+                    findViewById(R.id.shadow).setVisibility(View.VISIBLE);
+                } else {
+                    findViewById(R.id.to_bottom_button).setVisibility(View.VISIBLE);
+                    findViewById(R.id.shadow).setVisibility(View.GONE);
+
+                }
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset, Boolean isOpening) {
+                Log.d("TAG", "slideOffset: " + slideOffset);
+                if (isOpening != null) {
+                    Log.d("TAG", "isOpening: " + isOpening);
+
+                    if (isOpening) {
+                        findViewById(R.id.to_bottom_button).setVisibility(View.GONE);
+                        findViewById(R.id.shadow).setVisibility(View.VISIBLE);
+                    } else {
+                        findViewById(R.id.to_bottom_button).setVisibility(View.VISIBLE);
+                        findViewById(R.id.shadow).setVisibility(View.GONE);
+
+                    }
+                }
+            }
+        });
 
     }
 
@@ -382,152 +466,86 @@ public class OrderActivity extends AppCompatActivity
                 });
     }
 
-    void initUpdatingButton() {
-        updatingButton.setMovementLeft(300);
+    @BindView(R.id.right_menu)
+    FloatingActionMenu floatingActionMenu;
 
-        updatingButton.setMovementRight(300);
-
-        updatingButton.setMovementTop(300);
-
-        updatingButton.setMovementBottom(300);
-
-        updatingButton.setOnPositionChangedListener(new MovingButton.OnPositionChangedListener() {
-            @Override
-            public void onPositionChanged(int action, ButtonPosition position) {
-                //your code here
-
-                moveListener.setText(position.name());
-            }
-
-            @Override
-            public void moveUp(String position) {
-                Toast.makeText(OrderActivity.this, position, Toast.LENGTH_SHORT).show();
-            }
-        });
-
-    }
-
-    void initUpdateAsNewOrder() {
-        updatingButton.setMovementLeft(200);
-
-        updatingButton.setMovementRight(200);
-
-        updatingButton.setMovementTop(200);
-
-        updatingButton.setMovementBottom(200);
-
-        updatingButton.setOnPositionChangedListener(new MovingButton.OnPositionChangedListener() {
-            @Override
-            public void onPositionChanged(int action, ButtonPosition position) {
-                //your code here
-
-                moveListener.setText(setNameNewOrder(position.name()));
-            }
-
-            @Override
-            public void moveUp(String d) {
-
-                if (d.equals(MovingButton.UP)) {
-                    updateOrder(client_phone_error);
-                } else if (d.equals(MovingButton.DOWN)) {
-                    updateOrder(client_busy);
-                } else if (d.equals(MovingButton.RIGHT)) {
-                    updateOrder(order_data_confirmed);
-                } else if (d.equals(MovingButton.LEFT)) {
-                    updateOrder(client_cancel);
-                }
-            }
-        });
-
-    }
-
-    void initUpdateAsOldOrder() {
-
-        updatingButton.setMovementLeft(200);
-
-        updatingButton.setMovementRight(200);
-
-        updatingButton.setMovementTop(200);
-
-        updatingButton.setMovementBottom(200);
-
-        updatingButton.setOnPositionChangedListener(new MovingButton.OnPositionChangedListener() {
-            @Override
-            public void onPositionChanged(int action, ButtonPosition position) {
-                //your code here
-
-                moveListener.setText(setNameOldOrder(position.name()));
-            }
-
-            @Override
-            public void moveUp(String d) {
-
-                if (d.equals(MovingButton.UP)) {
-                    updateOrder(client_phone_error);
-                } else if (d.equals(MovingButton.DOWN)) {
-                    updateOrder(client_busy);
-                } else if (d.equals(MovingButton.RIGHT)) {
-                    updateOrder(order_data_confirmed);
-                } else if (d.equals(MovingButton.LEFT)) {
-                    showProblemNoteDialog();
-                }
-            }
-        });
-
-    }
-
-    String setNameNewOrder(String name) {
-        if (name.equals(MovingButton.UP)) {
-            return WRONG_PHONE_NAME;
-        } else if (name.equals(MovingButton.DOWN)) {
-            return CLIENT_BUSY_NAME;
-        } else if (name.equals(MovingButton.LEFT)) {
-            return CANCEL_ORDER_NAME;
-        } else if (name.equals(MovingButton.RIGHT)) {
-            return CONFIRM_ORDER_NAME;
-        } else
-            return "ازاى مفيش";
-
-    }
-
-    String setNameOldOrder(String name) {
-        if (name.equals(MovingButton.UP)) {
-            return RECHARGE;
-        } else if (name.equals(MovingButton.DOWN)) {
-            return CLIENT_BUSY_NAME;
-        } else if (name.equals(MovingButton.LEFT)) {
-            return CLIENT_PROBLEM;
-        } else if (name.equals(MovingButton.RIGHT)) {
-            return CONFIRM_ORDER_NAME;
-        } else
-            return "ازاى مفيش";
-
-    }
-
-    @OnClick(R.id.cancel_order)
+    @OnClick(R.id.cancel_order2)
     void cancelOrder() {
+        floatingActionMenu.close(true);
         updateOrder(client_cancel);
     }
 
-    @OnClick(R.id.problem)
+    @OnClick(R.id.problem2)
     void problem() {
+        floatingActionMenu.close(true);
         showProblemNoteDialog();
     }
 
-    @OnClick(R.id.client_phone_error)
+    @OnClick(R.id.client_phone_error2)
     void client_phone_error() {
+        floatingActionMenu.close(true);
         updateOrder(client_phone_error);
     }
 
-    @OnClick(R.id.order_data_confirmed)
+    @OnClick(R.id.delay)
+    void clent_delay() {
+        floatingActionMenu.close(true);
+        updateOrder(client_delay);
+    }
+
+    @OnClick(R.id.no_answer)
+    void no_answer() {
+        floatingActionMenu.close(true);
+        updateOrder(client_noanswer);
+    }
+
+    @OnClick(R.id.busy)
+    void busy() {
+        floatingActionMenu.close(true);
+        updateOrder(client_busy);
+    }
+
+    @OnClick(R.id.order_data_confirmed2)
     void order_data_confirmed() {
+        floatingActionMenu.close(true);
         updateOrder(order_data_confirmed);
     }
 
+    void updateOrderData() {
+
+        Api api = BaseClient.getBaseClient().create(Api.class);
+        api.updateOrderData(
+                SharedHelper.getKey(this, LoginActivity.TOKEN),
+                SharedHelper.getKey(this, LoginActivity.USER_ID),
+                CITY_ID,
+                client_name.getText().toString(),
+                client_address.getText().toString(),
+                client_area.getText().toString(),
+                item_no.getText().toString(),
+                notes.getText().toString(),
+                discount.getText().toString()
+
+        ).enqueue(new Callback<UpdateOrdreDataRespnse>() {
+            @Override
+            public void onResponse(Call<UpdateOrdreDataRespnse> call, Response<UpdateOrdreDataRespnse> response) {
+                Log.d("555555", "onResponse: orders updates");
+
+
+            }
+
+            @Override
+            public void onFailure(Call<UpdateOrdreDataRespnse> call, Throwable t) {
+                Log.d(TAG, "onFailure: " + t.getMessage());
+            }
+        });
+    }
+
     void updateOrder(String value) {
+        updateOrderData();
         if (value == null || order_ud == null) {
             return;
         }
+
         if (updateOrderTimer != null) {
             updateOrderTimer.cancel();
             updateOrderTimerCount = 0;
@@ -540,7 +558,7 @@ public class OrderActivity extends AppCompatActivity
                 value
         ).enqueue(new Callback<UpdateOrederNewResponse>() {
             @Override
-            public void onResponse(Call<UpdateOrederNewResponse> call, Response<UpdateOrederNewResponse> response) {
+            public void onResponse(@NotNull Call<UpdateOrederNewResponse> call, @NotNull Response<UpdateOrederNewResponse> response) {
                 Log.d("eeeeeeeeeeeeee", "onResponse: " + value + response.body().getCode());
 
                 if (response.body().getCode().equals("1200") || response.body().getCode().equals("1202")) {
@@ -559,6 +577,51 @@ public class OrderActivity extends AppCompatActivity
             @Override
             public void onFailure(Call<UpdateOrederNewResponse> call, Throwable t) {
                 progressBar.setVisibility(View.GONE);
+                Log.d("dddddddddd", "onFailure:update " + value + t.getMessage());
+                Toast.makeText(OrderActivity.this, ""+t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+
+    void confirm_shipper_status(String value) {
+        updateOrderData();
+        if (value == null || order_ud == null) {
+            return;
+        }
+
+        if (updateOrderTimer != null) {
+            updateOrderTimer.cancel();
+            updateOrderTimerCount = 0;
+        }
+
+        Api api = BaseClient.getBaseClient().create(Api.class);
+        api.updateOrders(
+                SharedHelper.getKey(this, LoginActivity.TOKEN),
+                order_ud,
+                value
+        ).enqueue(new Callback<UpdateOrederNewResponse>() {
+            @Override
+            public void onResponse(@NotNull Call<UpdateOrederNewResponse> call, @NotNull Response<UpdateOrederNewResponse> response) {
+                Log.d("eeeeeeeeeeeeee", "onResponse: " + value + response.body().getCode());
+
+                if (response.body().getCode().equals("1200") || response.body().getCode().equals("1202")) {
+                    Log.d("eeeeeeeeeeeeee", "onResponse: " + value + response.body().getCode());
+                    progressBar.setVisibility(View.GONE);
+                    if (askToFinishWork) {
+                        finishTheWorkNow();
+                    } else
+                        getFirstOrder();
+                } else {
+                    getFirstOrder();
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<UpdateOrederNewResponse> call, Throwable t) {
+                progressBar.setVisibility(View.GONE);
+                Toast.makeText(OrderActivity.this, ""+t.getMessage(), Toast.LENGTH_SHORT).show();
                 Log.d("dddddddddd", "onFailure:update " + value + t.getMessage());
                 //  finishTheWorkNow();
             }
@@ -682,6 +745,8 @@ public class OrderActivity extends AppCompatActivity
         stoped = true;
     }
 
+    ProductsAdapter productsAdapter;
+
     private void getFirstOrder() {
         progressBar.setVisibility(View.VISIBLE);
 
@@ -698,25 +763,42 @@ public class OrderActivity extends AppCompatActivity
                             mProgressBar4.setMax(firstRemaining);
 
                         }
+
                         mProgressBar4.setProgress(firstRemaining - response.body().getRemainig_orders());
                         int a = (int) (100 * Float.parseFloat(String.valueOf(finishedOrders)) / Float.parseFloat(String.valueOf(firstRemaining)));
-                        String test =String.valueOf(response.body().getRemainig_orders())+"  ("+ String.valueOf(a) + "%)";
+                        String test = String.valueOf(response.body().getRemainig_orders()) + "  (" + String.valueOf(a) + "%)";
                         present.setText(test);
-
                         finishedOrders++;
+
 //                        if (5 == 5) {
+//                            floatingActionMenu.hideMenu(true);
 //                            missed_call_view.setVisibility(View.VISIBLE);
 //                            orederView.setVisibility(View.GONE);
+//
 //                            return;
 //                        }
+
                         if (response.body().getOrder_type().equals("missed_call") || response.body().getOrder_type().equals("order_exsist")) {
-                            missed_call_view.setVisibility(View.VISIBLE);
-                            orederView.setVisibility(View.GONE);
+                            showMissedCall();
                             return;
                         } else {
-                            missed_call_view.setVisibility(View.GONE);
-                            orederView.setVisibility(View.VISIBLE);
+                            showOrderView();
                         }
+
+                        if (response.body().getOrder_type().equals("new_order") || response.body().getOrder_type().equals("pending_order")) {
+                            problem2.setVisibility(View.GONE);
+                            order_shipper_confirmed2.setVisibility(View.GONE);
+                            order_data_confirmed2.setVisibility(View.VISIBLE);
+                            client_phone_error2.setVisibility(View.VISIBLE);
+                        } else {
+
+                            problem2.setVisibility(View.VISIBLE);
+                            order_shipper_confirmed2.setVisibility(View.VISIBLE);
+                            order_data_confirmed2.setVisibility(View.GONE);
+                            client_phone_error2.setVisibility(View.GONE);
+
+                        }
+
 
                         order = response.body().getOrder();
                         if (order != null) {
@@ -727,7 +809,20 @@ public class OrderActivity extends AppCompatActivity
                             client_name.setText(order.getClient_name());
                             client_address.setText(order.getClient_address());
                             client_area.setText(order.getClient_area());
-                            client_city.setText(order.getClient_city());
+                            client_city.setSelection(citiesId.indexOf(order.getClient_city_id()));
+                            client_city.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                                @Override
+                                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                                    CITY_ID = String.valueOf(citiesId.get(position));
+
+                                }
+
+                                @Override
+                                public void onNothingSelected(AdapterView<?> parent) {
+
+                                }
+                            });
+                            client_city.setSelection(citiesId.indexOf(order_ud));
                             phone = order.getPhone_1();
                             shipping_status.setText(order.getOrder_shipping_status());
                             client_order_phone1.setText(order.getPhone_1());
@@ -740,17 +835,22 @@ public class OrderActivity extends AppCompatActivity
                             sender_name.setText(order.getSender_name());
                             //order_type.setText(order.getOrder_type());
                             client_feedback.setText(order.getClient_feedback());
-
-                            if (!stoped) ;
+                            notes.setText(order.getNotes());
+                            //   if (!stoped) ;
                             //   callClient(order.getPhone_1());
 
-                            if (orderStatus != null) {
-                                if (orderStatus.equals("new_order") || orderStatus.equals("pending_order")) {
-                                    initUpdateAsNewOrder();
-                                } else {
-                                    initUpdateAsOldOrder();
-                                }
+                            productsAdapter = new ProductsAdapter(getApplicationContext(), order.getMulti_orders(), order.getId());
+                            if (order.getMulti_orders().size() > 0) {
+                                Log.d("ProductsAdapter", "onResponse: " + order.getMulti_orders().get(0).getProduct_name());
+                                productsView.setVisibility(View.VISIBLE);
+                                productsRecyclerView.setAdapter(productsAdapter);
+                                product_label_view.setVisibility(View.GONE);
+
+                            } else {
+                                product_label_view.setVisibility(View.VISIBLE);
+                                productsView.setVisibility(View.GONE);
                             }
+
                         } else {
                         }
 
@@ -768,12 +868,81 @@ public class OrderActivity extends AppCompatActivity
             public void onFailure(Call<SimpleOrderResponse> call, Throwable t) {
                 Toast.makeText(OrderActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
                 progressBar.setVisibility(View.GONE);
-                finish();
+                //   finish();
             }
         });
     }
 
+
+    List<String> cities = new ArrayList<>();
+    List<String> citiesId = new ArrayList<>();
+
+    public static String CITY_ID;
+
+    private List<Cities.City> citiesBody;
+
+    private void getcities(Api api) {
+
+        if (cities != null && cities.size() > 1) {
+            cities.clear();
+        }
+        Call<Cities> getCiriesCall = api.getCities(
+                SharedHelper.getKey(this, LoginActivity.TOKEN),
+                SharedHelper.getKey(this, LoginActivity.USER_ID)
+        );
+
+        getCiriesCall.enqueue(new Callback<Cities>() {
+            @Override
+            public void onResponse(Call<Cities> call, Response<Cities> response) {
+                if (response.body() != null&&response.body().getCities()!=null) {
+                    if (response.body().getCities().size() > 0) {
+
+                        citiesBody = response.body().getCities();
+                        for (Cities.City city : citiesBody) {
+                            cities.add(city.getCity_name());
+                            citiesId.add(city.getCity_id());
+                        }
+                        ArrayAdapter adapter = new ArrayAdapter(getApplicationContext(), R.layout.layout_cities_spinner_item, cities);
+
+                        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                        client_city.setAdapter(adapter);
+                        getFirstOrder();
+                    }
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<Cities> call, Throwable t) {
+
+            }
+        });
+    }
+
+
+    private void showOrderView() {
+        missed_call_view.setVisibility(View.GONE);
+        orederView.setVisibility(View.VISIBLE);
+        floatingActionMenu.showMenu(true);
+        top_sheet.setVisibility(View.VISIBLE);
+    }
+
+    private void showMissedCall() {
+        missed_call_view.setVisibility(View.VISIBLE);
+        orederView.setVisibility(View.GONE);
+        top_sheet.setVisibility(View.GONE);
+        floatingActionMenu.hideMenu(true);
+    }
+
+    @BindView(R.id.product_label_view)
+    View product_label_view;
+
+
+    @BindView(R.id.top_sheet)
+    View top_sheet;
+
     public void callClient(String phone) {
+
         Intent callIntent = new Intent(Intent.ACTION_CALL);
         callIntent.setData(Uri.parse("tel:" + phone));
         Log.d("xxxxxxxxxx", "callClient: " + phone);
@@ -792,6 +961,8 @@ public class OrderActivity extends AppCompatActivity
                 currentCallTimerCount += 1;
             }
         }, 0, 1000);
+
+
     }
 
     @Override
@@ -805,33 +976,40 @@ public class OrderActivity extends AppCompatActivity
     @Override
     protected void onPause() {
         super.onPause();
-        if (!finish) {
-            pauseActivityTimer = new Timer();
-            pauseActivityTimer.scheduleAtFixedRate(new TimerTask() {
-                @Override
-                public void run() {
-                    pauseActivityTimerCount += 1;
-                    if (pauseActivityTimerCount == 2) {
-                        pauseActivityTimerCount = 0;
-                        Intent intent = new Intent(getApplicationContext(), EmptyCallActivity.class);
-                        startActivity(intent);
-                    }
-                }
-            }, 0, 1000);
-        } else {
-            stoped = true;
-        }
+        CallsReceiver.inOrderActivity = false;
+        // startService(new Intent(this, FloatLayout.class));
+
+
+//        if (!finish) {
+//            pauseActivityTimer = new Timer();
+//            pauseActivityTimer.scheduleAtFixedRate(new TimerTask() {
+//                @Override
+//                public void run() {
+//                    pauseActivityTimerCount += 1;
+//                    if (pauseActivityTimerCount == 2) {
+//                        pauseActivityTimerCount = 0;
+//                        Intent intent = new Intent(getApplicationContext(), EmptyCallActivity.class);
+//                        startActivity(intent);
+//                    }
+//                }
+//            }, 0, 1000);
+//        } else {
+//            stoped = true;
+//        }
 
     }
+
 
     @Override
     protected void onResume() {
         super.onResume();
+        CallsReceiver.inOrderActivity = true;
+        //  stopService(new Intent(this, FloatLayout.class));
         finish = false;
-        if (pauseActivityTimer != null) {
-            pauseActivityTimer.cancel();
-            pauseActivityTimer = null;
-        }
+//        if (pauseActivityTimer != null) {
+//            pauseActivityTimer.cancel();
+//            pauseActivityTimer = null;
+//        }
 
 //        if (orderStatus != null) {
 //            if (orderStatus.equals("new_order") || orderStatus.equals("pending_order")) {
@@ -846,6 +1024,7 @@ public class OrderActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.order_menu, menu);
 
+
         askToFinishWortkItem = menu.findItem(R.id.ask_finish_work);
         finishWok = menu.findItem(R.id.finish_work);
 //        micMode = menu.findItem(R.id.mic_mode);
@@ -853,8 +1032,8 @@ public class OrderActivity extends AppCompatActivity
             finishWok.setVisible(true);
             askToFinishWortkItem.setVisible(false);
         } else {
-            finishWok.setVisible(false);
-            askToFinishWortkItem.setVisible(true);
+            finishWok.setVisible(true);
+            askToFinishWortkItem.setVisible(false);
         }
 
         return true;
@@ -877,12 +1056,21 @@ public class OrderActivity extends AppCompatActivity
 
         } else if (id == R.id.calc) {
             showCalculatoe();
-        } else if (id == R.id.product) {
-            showProductDetails();
+        }else if (id == R.id.show_missed_call) {
+            if (!inMissed)
+            {
+                inMissed = true;
+                showMissedCall();
+            }
+            else {
+                inMissed = false;
+                showOrderView();
+            }
         }
         return super.onOptionsItemSelected(item);
     }
 
+    boolean inMissed = false;
     void showProductDetails() {
 
         if (!productShowen) {
@@ -890,12 +1078,14 @@ public class OrderActivity extends AppCompatActivity
             animationShow();
         } else {
             productShowen = false;
-            animationHide();
+
         }
     }
 
     private void animationShow() {
 
+        if (order == null)
+            return;
         if (allProducts != null) {
             for (ProductData data : allProducts.getProducts()) {
                 if (data.getProduct_name().equals(order.getProduct_name())) {
@@ -905,23 +1095,21 @@ public class OrderActivity extends AppCompatActivity
 
         }
 
-        TextView textView = productView.findViewById(R.id.name);
-        TextView price = productView.findViewById(R.id.price);
-        TextView description = productView.findViewById(R.id.description);
+        TextView textView = findViewById(R.id.name);
+        TextView price = findViewById(R.id.price);
+        TextView description = findViewById(R.id.description);
 
-        SimpleDraweeView image = productView.findViewById(R.id.product_image);
+        SimpleDraweeView image = findViewById(R.id.product_image);
         image.setImageURI(currentProduct.getProduct_image());
         textView.setText(currentProduct.getProduct_name());
         description.setText(currentProduct.getProduct_describtion());
         price.setText(currentProduct.getProduct_real_price() + " " + getString(R.string.omla));
-        Animation anim = AnimationUtils.loadAnimation(this, R.anim.alerter_slide_in_from_top);
-        productView.startAnimation(anim);
-        productView.setVisibility(View.VISIBLE);
+
     }
 
-    private void animationHide() {
-        productView.setVisibility(View.GONE);
-    }
+//    private void animationHide() {
+//        productView.setVisibility(View.GONE);
+//    }
 
     protected synchronized void getProducts() {
         Api api = BaseClient.getBaseClient().create(Api.class);
@@ -933,6 +1121,7 @@ public class OrderActivity extends AppCompatActivity
                 Log.d("eeeeeeeeeeeeeee", "respons: " + response.body().getProducts_count());
                 if (response.body() != null) {
                     allProducts = response.body();
+
                 }
             }
 
@@ -971,6 +1160,8 @@ public class OrderActivity extends AppCompatActivity
     }
 
     void endCAll() {
+        //stopService(new Intent(this, FloatLayout.class));
+
         PhoneCallReceiver.enCallFromMe = true;
         TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
         Class clazz = null;
@@ -1047,6 +1238,7 @@ public class OrderActivity extends AppCompatActivity
     protected void onDestroy() {
         super.onDestroy();
         closeRecords();
+        stopService(new Intent(this, FloatLayout.class));
         //  unregisterReceiver(networkStateReceiver);
         if (pauseActivityTimer != null) {
             pauseActivityTimer.cancel();
@@ -1144,6 +1336,7 @@ public class OrderActivity extends AppCompatActivity
 
     @Override
     public void callEnded() {
+
         Log.d("callEndedcallEnded", "callEnded: ");
         if (hasInternet && connectionType.equals("WIFI"))
             uploadVoices();
@@ -1178,24 +1371,26 @@ public class OrderActivity extends AppCompatActivity
 
                         } else if (callDetails.getType().equals("OUTGOING")) {
 
-                            if (callDetails.getDuration().equals("0")) {
-                                if (currentCallTimerCount <= 30) {
-                                    currentCallTimerCount = 0;
-                                    if (currentCallTimer != null)
-                                        currentCallTimer.cancel();
-                                    Toast.makeText(OrderActivity.this, "تم انهاء الطلب العميل مشغول او غير متاح", Toast.LENGTH_SHORT).show();
-                                    updateOrder(client_busy);
+                            if (getAutoValue())
+                                if (callDetails.getDuration().equals("0")) {
+                                    if (currentCallTimerCount <= 30) {
+                                        currentCallTimerCount = 0;
+                                        if (currentCallTimer != null)
+                                            currentCallTimer.cancel();
+                                        Toast.makeText(OrderActivity.this, "تم انهاء الطلب العميل مشغول او غير متاح", Toast.LENGTH_SHORT).show();
+                                        updateOrder(client_busy);
+                                    } else {
+                                        currentCallTimerCount = 0;
+                                        if (currentCallTimer != null)
+                                            currentCallTimer.cancel();
+                                        Toast.makeText(OrderActivity.this, "تم انهاء الطلب العميل لم يرد", Toast.LENGTH_SHORT).show();
+                                        updateOrder(client_noanswer);
+                                    }
+
                                 } else {
-                                    currentCallTimerCount = 0;
-                                    if (currentCallTimer != null)
-                                        currentCallTimer.cancel();
-                                    Toast.makeText(OrderActivity.this, "تم انهاء الطلب العميل لم يرد", Toast.LENGTH_SHORT).show();
-                                    updateOrder(client_noanswer);
+                                    minutesUsage(callDetails.getDuration());
+                                    updateOrderTimer();
                                 }
-                            } else {
-                                minutesUsage(callDetails.getDuration());
-                                updateOrderTimer();
-                            }
                         }
 
 
@@ -1206,6 +1401,12 @@ public class OrderActivity extends AppCompatActivity
         }, 1000);
 
     }
+
+    private boolean getAutoValue() {
+        SharedPreferences auto = PreferenceManager.getDefaultSharedPreferences(this);
+        return auto.getBoolean("autoUpdate", false);
+    }
+
 
     @SuppressLint("ApplySharedPref")
     private void minutesUsage(String seconds) {
@@ -1293,6 +1494,7 @@ public class OrderActivity extends AppCompatActivity
         Intent intent = new Intent(getApplicationContext(), NoInternetActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivityForResult(intent, 8523);
+        Toast.makeText(this, "لا يوجد اتصال بالانترنت", Toast.LENGTH_SHORT).show();
         finishTheWorkNow();
     }
 
@@ -1504,5 +1706,84 @@ public class OrderActivity extends AppCompatActivity
         pref1.edit().putLong("timeWork", 0).apply();
         Log.d("saveWorkedTime", "setPldTimeWorkZero: ");
     }
+
+    List<ProductForSpinner> products;
+    Spinner productSpinner;
+    String productId;
+    EditText productNo;
+    RobotoTextView addProductBtn;
+
+    public void showNewProductDialog(View view) {
+        Api api = BaseClient.getBaseClient().create(Api.class);
+        Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.layout_add_rpoduct_dialog);
+        productSpinner = dialog.findViewById(R.id.product_spinner);
+        productNo = dialog.findViewById(R.id.product_no);
+
+        products = new ArrayList<>();
+        for (ProductData product : allProducts.getProducts()) {
+            products.add(new ProductForSpinner(product.getProduct_name(), product.getProduct_image(), product.getProduct_id()));
+        }
+
+        ArrayAdapter<String> myAdapter = new ProductSpinnerAdapter(
+                this, products);
+        productSpinner.setAdapter(myAdapter);
+
+        productSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                productId = allProducts.getProducts().get(position).getProduct_id();
+                // Toast.makeText(getActivity(), ""+productId, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+        lp.copyFrom(dialog.getWindow().getAttributes());
+        lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        dialog.show();
+        dialog.getWindow().setAttributes(lp);
+        addProductBtn = dialog.findViewById(R.id.add_product);
+        addProductBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                api.addProduct(
+                        SharedHelper.getKey(getApplicationContext(), LoginActivity.TOKEN),
+                        order_ud,
+                        productId,
+                        item_no.getText().toString()
+                ).enqueue(new Callback<DeleteAddProductResponse>() {
+                    @Override
+                    public void onResponse(Call<DeleteAddProductResponse> call, Response<DeleteAddProductResponse> response) {
+                        Log.d("DeleteAddProduct", "onResponse: " + response.body().getCode());
+                        if (response.body().getCode().equals("1200")) {
+                            Toast.makeText(OrderActivity.this, "تم اضافة المنتج", Toast.LENGTH_SHORT).show();
+                            getFirstOrder();
+                        }
+
+                        dialog.dismiss();
+                    }
+
+                    @Override
+                    public void onFailure(Call<DeleteAddProductResponse> call, Throwable t) {
+                        Log.d("DeleteAddProduct", "onFailure: " + t.getMessage());
+                        dialog.dismiss();
+                        getFirstOrder();
+                    }
+                });
+            }
+        });
+
+        dialog.show();
+    }
+
+
+
+
 }
 

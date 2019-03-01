@@ -15,6 +15,7 @@
         android:layout_centerInParent="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -101,7 +102,7 @@
                 <CheckBox
                     android:id="@+id/remember_pass"
                     style="@style/CheckBoxStyle.Dark"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:padding="16dp"
                     android:text="@string/remember_password" />
             </LinearLayout>

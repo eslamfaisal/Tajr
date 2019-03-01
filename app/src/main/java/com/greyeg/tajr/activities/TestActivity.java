@@ -1,32 +1,18 @@
 package com.greyeg.tajr.activities;
 
-import android.content.SharedPreferences;
-import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
-import android.preference.PreferenceManager;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.widget.ProgressBar;
+import android.support.annotation.NonNull;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.View;
 
 import com.greyeg.tajr.R;
-import com.jpardogo.android.googleprogressbar.library.ChromeFloatingCirclesDrawable;
-import com.jpardogo.android.googleprogressbar.library.FoldingCirclesDrawable;
-import com.jpardogo.android.googleprogressbar.library.GoogleMusicDicesDrawable;
-import com.jpardogo.android.googleprogressbar.library.NexusRotationCrossDrawable;
+import com.greyeg.tajr.sheets.TopSheetBehavior;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class TestActivity extends AppCompatActivity {
 
-    @BindView(R.id.progress_bar)
-    ProgressBar mProgressBar;
-    @BindView(R.id.progress_bar2)
-    ProgressBar mProgressBar2;
-    @BindView(R.id.progress_bar3)
-    ProgressBar mProgressBar3;
-    @BindView(R.id.ProgressBar)
-    ProgressBar mProgressBar4;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,65 +32,27 @@ public class TestActivity extends AppCompatActivity {
 //
 //        mProgressBar4.setIndeterminateDrawable(getProgressDrawable4());
 //        mProgressBar4.getIndeterminateDrawable().setBounds(bounds);
+        View sheet = findViewById(R.id.top_sheet);
+        TopSheetBehavior tt = TopSheetBehavior.from(sheet);
+        tt.setState(TopSheetBehavior.STATE_EXPANDED);
+        tt.setTopSheetCallback(new TopSheetBehavior.TopSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
 
-        mProgressBar4.setProgress(110);
-        mProgressBar4.setMax(5);
+                Log.d("TAG", "newState: " + newState);
 
-    }
-    private Drawable getProgressDrawable() {
-        Drawable progressDrawable = null;
-                progressDrawable = new FoldingCirclesDrawable.Builder(this)
-                        .colors(getProgressDrawableColors())
-                        .build();
+            }
 
-        return progressDrawable;
-    }
-    private Drawable getProgressDrawable2() {
-        Drawable progressDrawable = null;
-        progressDrawable = new GoogleMusicDicesDrawable.Builder().build();
-        return progressDrawable;
-    }
-
-    private Drawable getProgressDrawable3() {
-        Drawable progressDrawable = null;
-        progressDrawable = new NexusRotationCrossDrawable.Builder(this)
-                .colors(getProgressDrawableColors())
-                .build();
-
-        return progressDrawable;
-    }
-    private Drawable getProgressDrawable4() {
-        Drawable progressDrawable = null;
-        progressDrawable = new ChromeFloatingCirclesDrawable.Builder(this)
-                .colors(getProgressDrawableColors())
-                .build();
-
-        return progressDrawable;
-    }
-
-    private int[] getProgressDrawableColors() {
-        int[] colors = new int[4];
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        colors[0] =getResources().getColor(R.color.red);
-        colors[1] = getResources().getColor(R.color.blue);
-        colors[2] = getResources().getColor(R.color.yellow);
-        colors[3] = getResources().getColor(R.color.green);
-        return colors;
-    }
-
-    void setUpProgressBar(){
-        int[] colors = new int[4];
-        colors[0] =getResources().getColor(R.color.red);
-        colors[1] = getResources().getColor(R.color.blue);
-        colors[2] = getResources().getColor(R.color.yellow);
-        colors[3] = getResources().getColor(R.color.green);
-        Drawable  progressDrawable = new ChromeFloatingCirclesDrawable.Builder(this)
-                .colors(colors)
-                .build();
-        Rect bounds = mProgressBar.getIndeterminateDrawable().getBounds();
-        mProgressBar.setIndeterminateDrawable(progressDrawable);
-        mProgressBar.getIndeterminateDrawable().setBounds(bounds);
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset, Boolean isOpening) {
+                Log.d("TAG", "slideOffset: " + slideOffset);
+                if (isOpening != null) {
+                    Log.d("TAG", "isOpening: " + isOpening);
+                }
+            }
+        });
 
     }
+
 
 }

@@ -8,14 +8,15 @@ import com.greyeg.tajr.models.CartResponse;
 import com.greyeg.tajr.models.CashRequestHistory;
 import com.greyeg.tajr.models.Cities;
 import com.greyeg.tajr.models.CurrentOrderResponse;
+import com.greyeg.tajr.models.DeleteAddProductResponse;
 import com.greyeg.tajr.models.MoneyHistory;
 import com.greyeg.tajr.models.MoneyRequestResponse;
 import com.greyeg.tajr.models.NewOrderResponse;
-import com.greyeg.tajr.models.PhonNumberResponse;
 import com.greyeg.tajr.models.PointsHistory;
 import com.greyeg.tajr.models.SimpleOrderResponse;
 import com.greyeg.tajr.models.ToalAvailableBalance;
 import com.greyeg.tajr.models.UpdateOrderResponse;
+import com.greyeg.tajr.models.UpdateOrdreDataRespnse;
 import com.greyeg.tajr.models.UpdateOrederNewResponse;
 import com.greyeg.tajr.models.UploadPhoneResponse;
 import com.greyeg.tajr.models.UploadVoiceResponse;
@@ -23,13 +24,11 @@ import com.greyeg.tajr.models.UserOrders;
 import com.greyeg.tajr.models.UserResponse;
 import com.greyeg.tajr.models.UserWorkTimeResponse;
 
-import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
-import retrofit2.http.GET;
 import retrofit2.http.Headers;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
@@ -59,7 +58,7 @@ public interface Api {
     Call<UserOrders> getOrders(@Field("token") String token);
 
     @Headers({"Content-Type: application/json"})
-    @GET("send/get_orders")
+    @POST("send/get_orders")
     Call<SimpleOrderResponse> getFuckenOrders(@Query("token")String token);
 
     // log in user client
@@ -77,12 +76,22 @@ public interface Api {
 
     );
 
+    @FormUrlEncoded
+    @POST("send/confirm_shipper_status")
+    Call<UpdateOrederNewResponse> confirm_shipper_status(
+            @Field("token") String token,
+            @Field("order_id") String order_id
+
+    );
+
     // log in user client
     @FormUrlEncoded
     @POST("send/get_phone")
-    Call<UserOrders> getPhoneData(@Field("token") String token,
+    Call<SimpleOrderResponse> getPhoneData(@Field("token") String token,
                                           @Field("user_id") String user_id,
                                           @Field("phone") String phone);
+
+
 
     @FormUrlEncoded
     @POST("send/phone")
@@ -97,14 +106,12 @@ public interface Api {
                                             @Field("user_id") String user_id,
                                             @Field("activity") String activity);
 
-    // log in user client
     @FormUrlEncoded
-    @POST("send/logout")
-    Call<PhonNumberResponse> updateOrderData(
+    @POST("send/set_data")
+    Call<UpdateOrdreDataRespnse> updateOrderData(
             @Field("token") String token,
             @Field("user_id") String user_id,
             @Field("order_id") String order_id,
-            @Field("client_city") String client_city,
             @Field("client_name") String client_name,
             @Field("client_address") String client_address,
             @Field("client_area") String client_area,
@@ -150,8 +157,7 @@ public interface Api {
     // log in user client
     @FormUrlEncoded
     @POST("send/cash_history")
-    Call<MoneyHistory> getMoneyHistory(@Field("token") String token,
-                                       @Field("user_id") String  user_id);
+    Call<MoneyHistory> getMoneyHistory(@Field("token") String token);
 
     // log in user client
     @FormUrlEncoded
@@ -206,6 +212,24 @@ public interface Api {
     @FormUrlEncoded
     @POST("send/all_records")
     Call<AdminRecordsResponse> getRecords(@Field("token") String token);
+
+    @FormUrlEncoded
+    @POST("send/delete_product_from_order")
+    Call<DeleteAddProductResponse> deleteProduct(
+            @Field("token") String token,
+            @Field("order_id") String order_id,
+            @Field("extra_product_key") String extra_product_key,
+            @Field("product_id") String product_id
+    );
+
+    @FormUrlEncoded
+    @POST("send/add_product_to_order")
+    Call<DeleteAddProductResponse> addProduct(
+            @Field("token") String token,
+            @Field("order_id") String order_id,
+            @Field("product_id") String product_id,
+            @Field("items_no") String items_no
+    );
 
 
 }

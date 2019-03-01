@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <dimen name="default_offset_inner">16dp</dimen>
-    <dimen name="default_offset_outer">23dp</dimen>
-</resources>

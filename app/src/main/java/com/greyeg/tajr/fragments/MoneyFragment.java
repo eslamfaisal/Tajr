@@ -22,7 +22,6 @@ import android.widget.TextView;
 import com.greyeg.tajr.R;
 import com.greyeg.tajr.activities.LoginActivity;
 import com.greyeg.tajr.helper.SharedHelper;
-import com.greyeg.tajr.models.ActivityHistory;
 import com.greyeg.tajr.models.MoneyHistory;
 import com.greyeg.tajr.server.Api;
 import com.greyeg.tajr.server.BaseClient;
@@ -104,13 +103,15 @@ public class MoneyFragment extends Fragment {
         }
 
         api.getMoneyHistory(
-                SharedHelper.getKey(getActivity(), LoginActivity.TOKEN),
-                SharedHelper.getKey(getActivity(), LoginActivity.USER_ID)
+                SharedHelper.getKey(getActivity(), LoginActivity.TOKEN)
         ).enqueue(new Callback<MoneyHistory>() {
             @Override
             public void onResponse(Call<MoneyHistory> call, Response<MoneyHistory> response) {
 
-                if (response.body() != null) {
+                if (response.body() != null&&response.body().getHistory()!=null) {
+                    if (response.body().getHistory().size()<1){
+                        return;
+                    }
                     // if (response.body().getHistory().size()>0){
                     List<MoneyHistory.Year> years = response.body().getHistory();
                     List<GroupItem> items = new ArrayList<GroupItem>();
