@@ -237,14 +237,13 @@
                                 android:layout_height="wrap_content"
                                 android:background="@drawable/ic_background_gray">
 
-                                <EditText
+                                <Spinner
                                     android:id="@+id/product"
-
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_gravity="center_vertical"
                                     android:layout_marginEnd="26dp"
-                                    android:inputType="text"
+                                    android:background="@color/gray"
                                     android:paddingStart="16dp"
                                     android:tag="client_name_label" />
                             </FrameLayout>
@@ -601,7 +600,6 @@
                                 android:orientation="vertical">
 
                                 <TextView
-
                                     android:id="@+id/client_city_label"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
@@ -626,6 +624,7 @@
                                         android:background="@color/gray"
                                         android:paddingStart="16dp"
                                         android:tag="client_name_label" />
+
                                 </FrameLayout>
 
                             </LinearLayout>
@@ -1025,14 +1024,14 @@
             </RelativeLayout>
         </FrameLayout>
 
-        <com.github.clans.fab.FloatingActionMenu
-            xmlns:fab="http://schemas.android.com/apk/res-auto"
+        <com.github.clans.fab.FloatingActionMenu xmlns:fab="http://schemas.android.com/apk/res-auto"
             android:id="@+id/right_menu"
-            android:padding="@dimen/_16sdp"
-            android:visibility="visible"
-            android:layout_above="@id/navigation"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_above="@id/navigation"
+            android:layout_marginBottom="0dp"
+            android:padding="@dimen/_16sdp"
+            android:visibility="visible"
             fab:menu_backgroundColor="#ccffffff"
             fab:menu_colorNormal="@color/colorPrimaryDark"
             fab:menu_colorPressed="#2E7D32"
@@ -1043,18 +1042,18 @@
 
             <com.github.clans.fab.FloatingActionButton
                 android:id="@+id/order_data_confirmed2"
-                android:background="#00000000"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:background="#00000000"
                 android:src="@drawable/ic_confirm"
                 fab:fab_label="@string/order_data_confirmed"
                 fab:fab_size="mini" />
 
             <com.github.clans.fab.FloatingActionButton
                 android:id="@+id/order_shipper_confirmed2"
-                android:background="#00000000"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:background="#00000000"
                 android:src="@drawable/ic_confirm"
                 fab:fab_label="@string/confirm_shipper_status"
                 fab:fab_size="mini" />
@@ -1074,6 +1073,7 @@
                 android:src="@drawable/ic_error_phone"
                 fab:fab_label="@string/client_phone_error"
                 fab:fab_size="mini" />
+
             <com.github.clans.fab.FloatingActionButton
                 android:id="@+id/no_answer"
                 android:layout_width="wrap_content"
@@ -1081,21 +1081,22 @@
                 android:src="@drawable/ic_phone_call_end"
                 fab:fab_label="@string/client_noanswer"
                 fab:fab_size="mini" />
+
             <com.github.clans.fab.FloatingActionButton
                 android:id="@+id/busy"
-                app:fab_progress_backgroundColor="@color/red"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_not_available"
+                app:fab_progress_backgroundColor="@color/red"
                 fab:fab_label="@string/client_busy"
                 fab:fab_size="mini" />
 
             <com.github.clans.fab.FloatingActionButton
                 android:id="@+id/delay"
-                app:fab_progress_backgroundColor="@color/red"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_warning"
+                app:fab_progress_backgroundColor="@color/red"
                 fab:fab_label="@string/delay_order"
                 fab:fab_size="mini" />
 

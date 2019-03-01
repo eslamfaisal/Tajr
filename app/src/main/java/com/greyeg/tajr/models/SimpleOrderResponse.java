@@ -35,7 +35,19 @@ public class SimpleOrderResponse {
     @Expose
     private Order order;
 
+    @SerializedName("cities")
+    @Expose
+    private List<City> cities;
+
     public SimpleOrderResponse() {
+    }
+
+    public List<City> getCities() {
+        return cities;
+    }
+
+    public void setCities(List<City> cities) {
+        this.cities = cities;
     }
 
     public int getRemainig_orders() {
@@ -99,6 +111,11 @@ public class SimpleOrderResponse {
         @SerializedName("id")
         @Expose
         private String id;
+
+        @SerializedName("product_id")
+        @Expose
+        private String product_id;
+
 
         @SerializedName("product_name")
         @Expose
@@ -397,6 +414,14 @@ public class SimpleOrderResponse {
 
         public void setOrder_type(String order_type) {
             this.order_type = order_type;
+        }
+
+        public String getProduct_id() {
+            return product_id;
+        }
+
+        public void setProduct_id(String product_id) {
+            this.product_id = product_id;
         }
     }
 }

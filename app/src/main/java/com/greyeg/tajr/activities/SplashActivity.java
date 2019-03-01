@@ -56,6 +56,7 @@ public class SplashActivity extends AppCompatActivity {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
+                setLocale(SharedHelper.getKey(getApplicationContext(),"lang"));
                 Intent intent = new Intent(getApplicationContext(),tClass);
                 startActivity(intent);
                 overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
@@ -76,6 +77,8 @@ public class SplashActivity extends AppCompatActivity {
         startActivity(refresh);
         finish();
     }
+
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (REQUEST_CODE_HOVER_PERMISSION == requestCode) {

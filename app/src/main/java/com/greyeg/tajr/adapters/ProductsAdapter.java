@@ -46,6 +46,12 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.Holder
     @Override
     public void onBindViewHolder(@NonNull Holder holder, int i) {
 
+        if (i==0){
+            holder.itemView.setVisibility(View.GONE);
+            holder.itemView.setLayoutParams(new RecyclerView.LayoutParams(0, 0));
+
+            return;
+        }
         ProDuct proDuct =  proDucts.get(i);
         holder.name.setText( proDuct.getProduct_name());
         holder.no.setText( proDuct.getItems_no());

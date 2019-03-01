@@ -13,7 +13,19 @@ public class City {
     @Expose
     private String c_name;
 
+    @SerializedName("shipping_cost")
+    @Expose
+    private String shipping_cost;
+
     public City() {
+    }
+
+    public String getShipping_cost() {
+        return shipping_cost;
+    }
+
+    public void setShipping_cost(String shipping_cost) {
+        this.shipping_cost = shipping_cost;
     }
 
     public String getC_id() {

@@ -150,16 +150,14 @@ public class OrderActivity extends AppCompatActivity
     public static Activity orderActivity;
     public static boolean stoped = false;
     public AllProducts allProducts;
-    @BindView(R.id.product)
-    EditText product;
+
+
     @BindView(R.id.client_name)
     EditText client_name;
     @BindView(R.id.client_address)
     EditText client_address;
     @BindView(R.id.client_area)
     EditText client_area;
-    @BindView(R.id.client_city)
-    Spinner client_city;
 
     @BindView(R.id.item_no)
     EditText item_no;
@@ -217,6 +215,8 @@ public class OrderActivity extends AppCompatActivity
     @BindView(R.id.problem2)
     FloatingActionButton problem2;
 
+    @BindView(R.id.client_city)
+    Spinner client_city;
 
 
     long startWorkTime;
@@ -763,20 +763,11 @@ public class OrderActivity extends AppCompatActivity
                             mProgressBar4.setMax(firstRemaining);
 
                         }
-
                         mProgressBar4.setProgress(firstRemaining - response.body().getRemainig_orders());
                         int a = (int) (100 * Float.parseFloat(String.valueOf(finishedOrders)) / Float.parseFloat(String.valueOf(firstRemaining)));
                         String test = String.valueOf(response.body().getRemainig_orders()) + "  (" + String.valueOf(a) + "%)";
                         present.setText(test);
                         finishedOrders++;
-
-//                        if (5 == 5) {
-//                            floatingActionMenu.hideMenu(true);
-//                            missed_call_view.setVisibility(View.VISIBLE);
-//                            orederView.setVisibility(View.GONE);
-//
-//                            return;
-//                        }
 
                         if (response.body().getOrder_type().equals("missed_call") || response.body().getOrder_type().equals("order_exsist")) {
                             showMissedCall();
@@ -804,7 +795,7 @@ public class OrderActivity extends AppCompatActivity
                         if (order != null) {
                             order_ud = order.getId();
                             discount.setText(order.getDiscount());
-                            product.setText(order.getProduct_name());
+                            setSingleProducts(order.getProduct_id());
                             status.setText(order.getOrder_status());
                             client_name.setText(order.getClient_name());
                             client_address.setText(order.getClient_address());
@@ -822,6 +813,7 @@ public class OrderActivity extends AppCompatActivity
 
                                 }
                             });
+
                             client_city.setSelection(citiesId.indexOf(order_ud));
                             phone = order.getPhone_1();
                             shipping_status.setText(order.getOrder_shipping_status());
@@ -882,7 +874,7 @@ public class OrderActivity extends AppCompatActivity
     private List<Cities.City> citiesBody;
 
     private void getcities(Api api) {
-
+        progressBar.setVisibility(View.VISIBLE);
         if (cities != null && cities.size() > 1) {
             cities.clear();
         }
@@ -894,6 +886,7 @@ public class OrderActivity extends AppCompatActivity
         getCiriesCall.enqueue(new Callback<Cities>() {
             @Override
             public void onResponse(Call<Cities> call, Response<Cities> response) {
+                progressBar.setVisibility(View.GONE);
                 if (response.body() != null&&response.body().getCities()!=null) {
                     if (response.body().getCities().size() > 0) {
 
@@ -908,13 +901,19 @@ public class OrderActivity extends AppCompatActivity
                         client_city.setAdapter(adapter);
                         getFirstOrder();
                     }
+                }else {
+                    SharedHelper.putKey(getApplicationContext(), IS_LOGIN, "اعادة تسجيل الدخول");
+                    startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+                    finishTheWorkNow();
+
                 }
 
             }
 
             @Override
             public void onFailure(Call<Cities> call, Throwable t) {
-
+                progressBar.setVisibility(View.GONE);
+                Toast.makeText(OrderActivity.this, ""+t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -1707,11 +1706,46 @@ public class OrderActivity extends AppCompatActivity
         Log.d("saveWorkedTime", "setPldTimeWorkZero: ");
     }
 
+    List<ProductForSpinner> singleProducts;
+    List<String> singleProductIds;
+    String singleProductId;
+
+    @BindView(R.id.product)
+    Spinner singleProductSpinner;
+
+    private  void setSingleProducts(String selection){
+        singleProducts = new ArrayList<>();
+        singleProductIds = new ArrayList<>();
+        for (ProductData product : allProducts.getProducts()) {
+            singleProducts.add(new ProductForSpinner(product.getProduct_name(), product.getProduct_image(), product.getProduct_id()));
+            singleProductIds.add(product.getProduct_id());
+        }
+
+        ArrayAdapter<String> myAdapter = new ProductSpinnerAdapter(
+                this, singleProducts);
+        singleProductSpinner.setAdapter(myAdapter);
+        singleProductSpinner.setSelection(singleProductIds.indexOf(selection));
+        singleProductId = selection;
+        singleProductSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                singleProductId = singleProductIds.get(position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+    }
+
     List<ProductForSpinner> products;
     Spinner productSpinner;
     String productId;
     EditText productNo;
     RobotoTextView addProductBtn;
+
+
 
     public void showNewProductDialog(View view) {
         Api api = BaseClient.getBaseClient().create(Api.class);
