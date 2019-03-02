@@ -32,7 +32,6 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -54,6 +53,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RadioGroup;
@@ -141,7 +141,6 @@ public class OrderActivity extends AppCompatActivity
     public static final String client_phone_error = "client_phone_error";
     public static final String client_delay = "client_delay ";
 
-
     private static final String TAG = CalcActivity.class.getSimpleName();
     private static final int DIALOG_REQUEST_CODE = 0;
     public static TimerTextView timerTextView;
@@ -205,7 +204,7 @@ public class OrderActivity extends AppCompatActivity
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
-    @BindView(R.id.products_view)
+    @BindView(R.id.no_products)
     View productsView;
 
     @BindView(R.id.client_phone_error2)
@@ -223,6 +222,8 @@ public class OrderActivity extends AppCompatActivity
     @BindView(R.id.client_city)
     Spinner client_city;
 
+    @BindView(R.id.add_product)
+    ImageView add_product;
 
     long startWorkTime;
 
@@ -349,6 +350,7 @@ public class OrderActivity extends AppCompatActivity
         if (audioManager.isMicrophoneMute()) {
             audioManager.setMicrophoneMute(false);
         }
+
         productsLinearLayoutManager = new LinearLayoutManager(this);
         productsRecyclerView.setLayoutManager(productsLinearLayoutManager);
 
@@ -454,7 +456,7 @@ public class OrderActivity extends AppCompatActivity
                     hasInternet = isConnected;
                     //    tvInternetStatus.setText(isConnected.toString());
                     if (!isConnected) {
-                        onConnectionLost();
+                        //onConnectionLost();
                     }
                     Log.d("ssssssssssssss", "onCreate: " + isConnected.toString());
                 });
@@ -761,7 +763,10 @@ public class OrderActivity extends AppCompatActivity
 
                         int b = firstRemaining - response.body().getRemainig_orders();
                         mProgressBar4.setProgress(b);
+                        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(OrderActivity.this);
+                        if (sharedPreferences.getBoolean("autoNotifiction", false))
                         createNotification(String.valueOf(firstRemaining - b));
+
                         int a = (int) (100 * Float.parseFloat(String.valueOf(finishedOrders)) / Float.parseFloat(String.valueOf(firstRemaining)));
                         String test = String.valueOf(response.body().getRemainig_orders()) + "  (" + String.valueOf(a) + "%)";
                         present.setText(test);
@@ -831,16 +836,16 @@ public class OrderActivity extends AppCompatActivity
                             //   if (!stoped) ;
                             //   callClient(order.getPhone_1());
 
-                            productsAdapter = new ProductsAdapter(getApplicationContext(), order.getMulti_orders(), order.getId());
+                            productsAdapter = new ProductsAdapter(OrderActivity.this, order.getMulti_orders(), order.getId());
                             if (order.getMulti_orders().size() > 0) {
                                 Log.d("ProductsAdapter", "onResponse: " + order.getMulti_orders().get(0).getProduct_name());
-                                productsView.setVisibility(View.VISIBLE);
+                                productsView.setVisibility(View.GONE);
                                 productsRecyclerView.setAdapter(productsAdapter);
 //                                product_label_view.setVisibility(View.GONE);
 
                             } else {
 //                                product_label_view.setVisibility(View.VISIBLE);
-                                productsView.setVisibility(View.GONE);
+                                productsView.setVisibility(View.VISIBLE);
                             }
 
                         } else {
@@ -1116,44 +1121,52 @@ public class OrderActivity extends AppCompatActivity
 //        productView.setVisibility(View.GONE);
 //    }
 
-    @SuppressLint("NewApi")
+
     public void createNotification(String first) {
 
-        Intent intent2 = new Intent(getApplicationContext(), OrderActivity.class);
-        intent2.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        PendingIntent pendingIntent2 = PendingIntent.getActivity(this, 0, intent2, 0);
 
-//        Drawable drawable = ContextCompat.getDrawable(this,R.drawable.ic_launcher);
-//
-//        Bitmap bitmap = ((BitmapDrawable)drawable).getBitmap();
-
-        NotificationCompat.Action action = new NotificationCompat.Action(R.drawable.notification_icon, getResources().getString(R.string.cancel), pendingIntent2);
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        NotificationChannel channel = new NotificationChannel("5", "eslam", NotificationManager.IMPORTANCE_HIGH);
-        channel.setDescription("5");
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "5")
-                .setSmallIcon(getApplicationInfo().icon)
-                .setContentTitle("orders")
-                .setOngoing(true)
-                .setColor(Color.RED)
-                // .addAction(action)
-                .setContentText(getString(R.string.remaining) + " " + first + " " + getString(R.string.order))
-                .setSmallIcon(R.drawable.ic_launcher);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            NotificationChannel channel = null;
 
-        Intent intent = new Intent(this, OrderActivity.class);
-        intent.setAction(Intent.ACTION_MAIN);
-        intent.addCategory(Intent.CATEGORY_LAUNCHER);
+            channel = new NotificationChannel("5", "eslam", NotificationManager.IMPORTANCE_HIGH);
+            channel.setDescription("5");
+            notificationManager.createNotificationChannel(channel);
 
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-        stackBuilder.addParentStack(this);
-        stackBuilder.addNextIntent(intent);
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "5")
+                    .setSmallIcon(getApplicationInfo().icon)
+                    .setContentTitle("orders")
+                    .setOngoing(true)
+                    .setColor(Color.RED)
+                    .addAction(R.drawable.ic_call_end_red, getResources().getString(R.string.start_work),
+                            PendingIntent.getActivity(this, 0, new Intent(this,
+                                    OrderActivity.class).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP
+                                    | Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT
+                                    | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT), 0))
+                    .setContentText(getString(R.string.remaining) + " " + first + " " + getString(R.string.order))
+                    .setSmallIcon(R.drawable.ic_launcher);
 
-        PendingIntent pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        //builder.setContentIntent(pendingIntent);
-        notificationManager.createNotificationChannel(channel);
-        notificationManager.notify(5, builder.build());
-        Toast.makeText(this, "created", Toast.LENGTH_SHORT).show();
+            notificationManager.notify(5, builder.build());
+
+        }
+        else {
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
+                    .setSmallIcon(getApplicationInfo().icon)
+                    .setContentTitle("orders")
+                    .setOngoing(true)
+                    .setColor(Color.RED)
+                    .addAction(R.drawable.ic_call_end_red, getResources().getString(R.string.start_work),
+                            PendingIntent.getActivity(this, 0, new Intent(this,
+                                    OrderActivity.class).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP
+                                    | Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT
+                                    | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT), 0))
+                    .setContentText(getString(R.string.remaining) + " " + first + " " + getString(R.string.order))
+                    .setSmallIcon(R.drawable.ic_launcher);
+
+
+            notificationManager.notify(5, builder.build());
+        }
 
 
     }
@@ -1173,32 +1186,6 @@ public class OrderActivity extends AppCompatActivity
 //        }
 //    }
 
-
-    public void updateNotificationText(String inString) {
-        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
-                .setContentText(inString)
-                .setOngoing(true)
-                .setContentTitle("orders")
-                .setSmallIcon(R.drawable.ic_launcher)
-                .setOngoing(true)
-                .setAutoCancel(false);
-
-        Intent intent = new Intent(this, ChatActivity.class);
-        intent.setAction(Intent.ACTION_MAIN);
-        intent.addCategory(Intent.CATEGORY_LAUNCHER);
-
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-
-        stackBuilder.addNextIntent(intent);
-        stackBuilder.addParentStack(ChatActivity.class);
-        PendingIntent pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        builder.setContentIntent(pendingIntent);
-
-        notificationManager.notify(5, builder.build());
-    }
 
     public void cancelNotification() {
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -1590,7 +1577,7 @@ public class OrderActivity extends AppCompatActivity
         Intent intent = new Intent(getApplicationContext(), NoInternetActivity.class);
         startActivityForResult(intent, 8523);
         Toast.makeText(this, "لا يوجد اتصال بالانترنت", Toast.LENGTH_SHORT).show();
-       // finishTheWorkNow();
+        // finishTheWorkNow();
     }
 
     public void onConnectionFound() {
@@ -1806,6 +1793,8 @@ public class OrderActivity extends AppCompatActivity
     Spinner singleProductSpinner;
 
     private void setSingleProducts(String selection) {
+        if (allProducts == null)
+            return;
         singleProducts = new ArrayList<>();
         singleProductIds = new ArrayList<>();
         for (ProductData product : allProducts.getProducts()) {
@@ -1839,6 +1828,8 @@ public class OrderActivity extends AppCompatActivity
 
 
     public void showNewProductDialog(View view) {
+        if(allProducts==null) return;
+
         Api api = BaseClient.getBaseClient().create(Api.class);
         Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.layout_add_rpoduct_dialog);
@@ -1857,6 +1848,7 @@ public class OrderActivity extends AppCompatActivity
         productSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
                 productId = allProducts.getProducts().get(position).getProduct_id();
                 // Toast.makeText(getActivity(), ""+productId, Toast.LENGTH_SHORT).show();
             }
@@ -1877,6 +1869,8 @@ public class OrderActivity extends AppCompatActivity
         addProductBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (productNo.getText().length() <= 0)
+                    return;
                 api.addProduct(
                         SharedHelper.getKey(getApplicationContext(), LoginActivity.TOKEN),
                         order_ud,

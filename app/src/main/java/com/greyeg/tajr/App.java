@@ -13,7 +13,6 @@ import android.util.Log;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.greyeg.tajr.activities.ChatActivity;
 import com.greyeg.tajr.helper.SharedHelper;
-import com.greyeg.tajr.jobs.ReminderUtilities;
 import com.greyeg.tajr.over.theming.Bus;
 import com.greyeg.tajr.over.theming.HoverTheme;
 import com.greyeg.tajr.over.theming.HoverThemeManager;
@@ -50,7 +49,7 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        ReminderUtilities.scheduleOrderReminder(getApplicationContext());
+
         // OneSignal Initialization
         OneSignal.startInit(this)
                 .setNotificationReceivedHandler(new ExampleNotificationReceivedHandler())

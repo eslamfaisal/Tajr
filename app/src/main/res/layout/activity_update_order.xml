@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:fresco="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    xmlns:fresco="http://schemas.android.com/apk/res-auto"
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".activities.OrderActivity">
@@ -248,6 +247,7 @@
                                     android:tag="client_name_label" />
                             </FrameLayout>
                         </LinearLayout>
+
                         <LinearLayout
                             android:id="@+id/products_view"
                             android:layout_width="match_parent"
@@ -255,9 +255,9 @@
                             android:layout_marginStart="16dp"
                             android:layout_marginTop="20dp"
                             android:layout_marginEnd="16dp"
-                            android:visibility="gone"
                             android:onClick="showLabel"
-                            android:orientation="vertical">
+                            android:orientation="vertical"
+                            android:visibility="visible">
 
                             <TextView
                                 android:id="@+id/products"
@@ -275,27 +275,40 @@
                                 android:layout_height="wrap_content"
                                 android:background="@drawable/ic_background_gray">
 
-                                <android.support.v7.widget.RecyclerView
-                                    android:id="@+id/products_recycler_view"
+                                <TextView
+                                    android:id="@+id/no_products"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:text="@string/no_extra_products" />
+
+                                <LinearLayout
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginEnd="@dimen/_18ssp"
-                                    android:padding="@dimen/_4sdp">
+                                    android:orientation="horizontal">
+                                    <ImageView
+                                        android:id="@+id/add_product"
+                                        android:layout_width="@dimen/_40sdp"
+                                        android:layout_height="@dimen/_35sdp"
+                                        android:layout_gravity="center"
+                                        android:onClick="showNewProductDialog"
+                                        android:paddingTop="@dimen/_4sdp"
+                                        android:src="@drawable/ic_add_circle_black_24dp" />
 
-                                </android.support.v7.widget.RecyclerView>
+                                    <android.support.v7.widget.RecyclerView
+                                        android:id="@+id/products_recycler_view"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginEnd="@dimen/_18ssp"
+                                        android:padding="@dimen/_4sdp" />
+
+
+                                </LinearLayout>
+
                             </FrameLayout>
-
 
                         </LinearLayout>
 
-
-                        <Button
-                            android:onClick="showNewProductDialog"
-                            android:layout_gravity="center"
-                            android:textColor="@color/green"
-                            android:text="@string/add_product"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
                         <LinearLayout
                             android:id="@+id/ddafdff"
                             android:layout_width="match_parent"
@@ -572,13 +585,13 @@
                                 android:background="@drawable/ic_background_gray">
 
                                 <EditText
-                                    android:layout_marginEnd="26dp"
-                                    android:tag="client_name_label"
                                     android:id="@+id/client_address"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
+                                    android:layout_marginEnd="26dp"
                                     android:paddingStart="8dp"
-                                    android:paddingEnd="8dp" />
+                                    android:paddingEnd="8dp"
+                                    android:tag="client_name_label" />
                             </FrameLayout>
                         </LinearLayout>
 
@@ -717,6 +730,7 @@
                                     android:tag="client_name_label" />
                             </FrameLayout>
                         </LinearLayout>
+
                         <LinearLayout
                             android:id="@+id/ddrftgfdf"
                             android:layout_width="match_parent"
@@ -733,7 +747,7 @@
                                 android:id="@+id/order_cost_label"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/order_cost"
+                                android:text="@string/product_cost"
                                 android:textColor="@color/colorPrimary"
                                 android:textSize="18sp"
                                 android:textStyle="bold"
@@ -969,13 +983,13 @@
                                 android:background="@drawable/ic_background_gray">
 
                                 <EditText
-                                    android:layout_marginEnd="26dp"
+                                    android:id="@+id/ntes"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
+                                    android:layout_marginEnd="26dp"
+                                    android:hint="@string/notes"
                                     android:paddingStart="8dp"
-                                    android:paddingEnd="8dp"
-                                    android:id="@+id/ntes"
-                                    android:hint="@string/notes" />
+                                    android:paddingEnd="8dp" />
 
                             </FrameLayout>
                         </LinearLayout>
@@ -1000,13 +1014,13 @@
                     </LinearLayout>
 
                     <LinearLayout
-                        android:visibility="invisible"
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/_50sdp"
                         android:layout_marginTop="@dimen/_16sdp"
                         android:layout_marginBottom="@dimen/_16sdp"
                         android:background="#40000000"
-                        android:orientation="vertical">
+                        android:orientation="vertical"
+                        android:visibility="invisible">
 
                     </LinearLayout>
 
@@ -1066,14 +1080,14 @@
             android:layout_above="@id/navigation"
             android:layout_marginBottom="0dp"
             android:padding="@dimen/_16sdp"
-            android:visibility="visible"
-            fab:menu_labels_showShadow="true"
+            android:visibility="gone"
             fab:menu_backgroundColor="#ccffffff"
             fab:menu_colorNormal="@color/colorPrimaryDark"
             fab:menu_colorPressed="#2E7D32"
             fab:menu_colorRipple="#1B5E20"
             fab:menu_labels_ellipsize="start"
             fab:menu_labels_position="right"
+            fab:menu_labels_showShadow="true"
             fab:menu_labels_singleLine="true">
 
             <com.github.clans.fab.FloatingActionButton
@@ -1399,7 +1413,8 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:behavior_peekHeight="?attr/actionBarSize"
-        app:layout_behavior="@string/top_sheet_behavior">
+        app:layout_behavior="@string/top_sheet_behavior"
+        tools:ignore="MissingPrefix">
 
         <ScrollView
             android:layout_width="match_parent"
@@ -1465,6 +1480,7 @@
                     android:text="description"
                     android:textColor="@color/colorPrimaryDark"
                     android:textSize="16sp" />
+
                 <TextView
                     android:id="@+id/category_name"
                     android:layout_width="match_parent"
@@ -1473,6 +1489,7 @@
                     android:text="description"
                     android:textColor="@color/colorPrimaryDark"
                     android:textSize="16sp" />
+
                 <TextView
                     android:id="@+id/product_info"
                     android:layout_width="match_parent"

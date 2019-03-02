@@ -10,6 +10,7 @@ import android.util.DisplayMetrics;
 import com.greyeg.tajr.MainActivity;
 import com.greyeg.tajr.R;
 import com.greyeg.tajr.helper.SharedHelper;
+import com.greyeg.tajr.jobs.ReminderUtilities;
 
 import java.util.Locale;
 import java.util.Timer;
@@ -29,6 +30,7 @@ public class SplashActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+        ReminderUtilities.scheduleOrderReminder(getApplicationContext());
 //        startService(new Intent(this, FloatLayout.class));
 
 //        Intent startHoverIntent = new Intent(SplashActivity.this, MissedCallNoOrderService.class);

@@ -6,9 +6,8 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.graphics.Color;
-import android.os.AsyncTask;
 import android.support.v4.app.NotificationCompat;
-import android.widget.Toast;
+import android.util.Log;
 
 import com.firebase.jobdispatcher.JobParameters;
 import com.firebase.jobdispatcher.JobService;
@@ -31,8 +30,6 @@ import retrofit2.Response;
 
 public class OrderReminderJobService extends JobService {
 
-    private static AsyncTask mBackgroundTask;
-
     @SuppressLint("StaticFieldLeak")
     @Override
     public boolean onStartJob(final JobParameters jobParameters) {
@@ -41,6 +38,7 @@ public class OrderReminderJobService extends JobService {
         api.getFuckenOrders(SharedHelper.getKey(this, LoginActivity.TOKEN)).enqueue(new Callback<SimpleOrderResponse>() {
             @Override
             public void onResponse(Call<SimpleOrderResponse> call, Response<SimpleOrderResponse> response) {
+                Log.d("OrderReminderJobService", "onResponse: "+response.message());
                 if (response.body() != null) {
                     if (response.body().getOrder()!=null){
                         createNotification(String.valueOf(response.body().getRemainig_orders()));
@@ -51,10 +49,11 @@ public class OrderReminderJobService extends JobService {
 
             @Override
             public void onFailure(Call<SimpleOrderResponse> call, Throwable t) {
+                Log.d("OrderReminderJobService", "failer: "+t.getMessage());
                 createNotification(String.valueOf(t.getMessage()));
+                jobFinished(jobParameters, false);
             }
         });
-
 
 
         return true;
@@ -62,8 +61,6 @@ public class OrderReminderJobService extends JobService {
 
     @Override
     public boolean onStopJob(JobParameters job) {
-        if (mBackgroundTask != null)
-            mBackgroundTask.cancel(true);
         return true;
     }
 
@@ -71,36 +68,49 @@ public class OrderReminderJobService extends JobService {
     @SuppressLint("NewApi")
     public void createNotification(String first) {
 
-        Intent intent2 = new Intent(getApplicationContext(), OrderActivity.class);
-        intent2.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        PendingIntent pendingIntent2 = PendingIntent.getActivity(this, 0, intent2, 0);
 
-//        Drawable drawable = ContextCompat.getDrawable(this,R.drawable.ic_launcher);
-//
-//        Bitmap bitmap = ((BitmapDrawable)drawable).getBitmap();
-
-        NotificationCompat.Action action = new NotificationCompat.Action(R.drawable.notification_icon, getResources().getString(R.string.cancel), pendingIntent2);
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        NotificationChannel channel = new NotificationChannel("5", "eslam", NotificationManager.IMPORTANCE_HIGH);
-        channel.setDescription("5");
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "5")
-                .setSmallIcon(getApplicationInfo().icon)
-                .setContentTitle("orders")
-                .setOngoing(true)
-                .setColor(Color.RED)
-                 .addAction(action)
-                .setContentText(getString(R.string.remaining) + " " + first + " " + getString(R.string.order))
-                .setSmallIcon(R.drawable.ic_launcher);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            NotificationChannel channel = null;
 
-        Intent intent = new Intent(this, OrderActivity.class);
-        intent.setAction(Intent.ACTION_MAIN);
-        intent.addCategory(Intent.CATEGORY_LAUNCHER);
+            channel = new NotificationChannel("5", "eslam", NotificationManager.IMPORTANCE_HIGH);
+            channel.setDescription("5");
+            notificationManager.createNotificationChannel(channel);
 
-        //builder.setContentIntent(pendingIntent);
-        notificationManager.createNotificationChannel(channel);
-        notificationManager.notify(5, builder.build());
-        Toast.makeText(this, "created", Toast.LENGTH_SHORT).show();
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "5")
+                    .setSmallIcon(getApplicationInfo().icon)
+                    .setContentTitle("orders")
+                    .setOngoing(true)
+                    .setColor(Color.RED)
+                    .addAction(R.drawable.ic_call_end_red, getResources().getString(R.string.start_work),
+                            PendingIntent.getActivity(this, 0, new Intent(this,
+                                    OrderActivity.class).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP
+                                    | Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT
+                                    | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT), 0))
+                    .setContentText(getString(R.string.remaining) + " " + first + " " + getString(R.string.order))
+                    .setSmallIcon(R.drawable.ic_launcher);
 
+
+            notificationManager.notify(5, builder.build());
+
+        }
+        else {
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
+                    .setSmallIcon(getApplicationInfo().icon)
+                    .setContentTitle("orders")
+                    .setOngoing(true)
+                    .setColor(Color.RED)
+                    .addAction(R.drawable.ic_call_end_red, getResources().getString(R.string.start_work),
+                            PendingIntent.getActivity(this, 0, new Intent(this,
+                                    OrderActivity.class).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP
+                                    | Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT
+                                    | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT), 0))
+                    .setContentText(getString(R.string.remaining) + " " + first + " " + getString(R.string.order))
+                    .setSmallIcon(R.drawable.ic_launcher);
+
+
+            notificationManager.notify(5, builder.build());
+        }
 
     }
 }

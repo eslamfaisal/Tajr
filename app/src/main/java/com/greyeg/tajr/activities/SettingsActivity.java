@@ -2,6 +2,7 @@ package com.greyeg.tajr.activities;
 
 import android.Manifest;
 import android.app.Dialog;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -57,34 +58,7 @@ public class SettingsActivity extends AppCompatActivity {
     private String TAG = "ttttttttttt";
 
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_settings);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        ButterKnife.bind(this);
-        setAutoUpdate();
-        if (SharedHelper.getKey(getApplicationContext(), "sub_num").equals("1")) {
-            simNum.setText(getString(R.string.default_sim_activ));
-            simNum.setClickable(false);
-        } else {
-            if (SharedHelper.getKey(getApplicationContext(), "activated_sub_num").equals("1")) {
-                simNum.setText(getString(R.string.sim_1) + "  " + SharedHelper.getKey(getApplicationContext(), "activated_sub_net_name"));
-            } else if (SharedHelper.getKey(getApplicationContext(), "activated_sub_num").equals("2")) {
-                simNum.setText(getString(R.string.sim_2) + "  " + SharedHelper.getKey(getApplicationContext(), "activated_sub_net_name"));
-            }
-        }
-        if (SharedHelper.getKey(getApplicationContext(), "lang").equals("en")) {
-
-            langName.setText(getString(R.string.english));
-
-        } else if (SharedHelper.getKey(getApplicationContext(), "lang").equals("ar")) {
-
-            langName.setText(getString(R.string.arabic));
-
-        }
-
-    }
+    TextView autoNotifictionTv;
 //
 
     RadioGroup radioGroup;
@@ -277,4 +251,83 @@ public class SettingsActivity extends AppCompatActivity {
             autoUpdateFalse();
         }
     }
+
+    //////////////////////////
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_settings);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ButterKnife.bind(this);
+        setAutoUpdate();
+        setAutoNotifiction();
+        if (SharedHelper.getKey(getApplicationContext(), "sub_num").equals("1")) {
+            simNum.setText(getString(R.string.default_sim_activ));
+            simNum.setClickable(false);
+        } else {
+            if (SharedHelper.getKey(getApplicationContext(), "activated_sub_num").equals("1")) {
+                simNum.setText(getString(R.string.sim_1) + "  " + SharedHelper.getKey(getApplicationContext(), "activated_sub_net_name"));
+            } else if (SharedHelper.getKey(getApplicationContext(), "activated_sub_num").equals("2")) {
+                simNum.setText(getString(R.string.sim_2) + "  " + SharedHelper.getKey(getApplicationContext(), "activated_sub_net_name"));
+            }
+        }
+        if (SharedHelper.getKey(getApplicationContext(), "lang").equals("en")) {
+
+            langName.setText(getString(R.string.english));
+
+        } else if (SharedHelper.getKey(getApplicationContext(), "lang").equals("ar")) {
+
+            langName.setText(getString(R.string.arabic));
+
+        }
+
+    }
+
+    private void autoNotifictionTrue() {
+        SharedPreferences pref1 = PreferenceManager.getDefaultSharedPreferences(this);
+        pref1.edit().putBoolean("autoNotifiction", true).apply();
+        autoNotifictionTv.setText(getString(R.string.True));
+    }
+
+    private void autoNotifictionFalse() {
+        SharedPreferences pref1 = PreferenceManager.getDefaultSharedPreferences(this);
+        pref1.edit().putBoolean("autoNotifiction", false).apply();
+        autoNotifictionTv.setText(getString(R.string.False));
+
+
+    }
+
+    private boolean getAutoNotifiction() {
+        SharedPreferences auto = PreferenceManager.getDefaultSharedPreferences(this);
+        return auto.getBoolean("autoNotifiction", false);
+    }
+
+    void setAutoNotifiction() {
+        autoNotifictionTv = findViewById(R.id.notifications_option);
+        SharedPreferences auto = PreferenceManager.getDefaultSharedPreferences(this);
+
+        if (auto.getBoolean("autoNotifiction", false)) {
+            autoNotifictionTv.setText(getString(R.string.True));
+        } else {
+            autoNotifictionTv.setText(getString(R.string.False));
+        }
+
+    }
+
+    @OnClick(R.id.notifications_view)
+    void setAutoNotifictionTv() {
+        if (!getAutoNotifiction()) {
+            autoNotifictionTrue();
+        } else {
+            autoNotifictionFalse();
+            cancelNotification();
+        }
+    }
+
+    public void cancelNotification() {
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancel(5);
+    }
+
 }

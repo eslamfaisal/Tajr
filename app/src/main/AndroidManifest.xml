@@ -148,7 +148,8 @@
         <activity
             android:name=".activities.NewsActivity"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".activities.NoInternetActivity" />
+        <activity android:name=".activities.NoInternetActivity"
+            android:parentActivityName=".MainActivity"/>
         <activity
             android:name=".RequestMoneyActivity"
             android:parentActivityName=".MainActivity" />

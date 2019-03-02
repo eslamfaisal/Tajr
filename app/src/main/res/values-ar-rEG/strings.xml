@@ -183,5 +183,10 @@
     <string name="show_missed_call_view">اظهر صفحة المكالمة الفائتة</string>
     <string name="shipping_cost">تكلفة الشحن</string>
     <string name="order">طلب</string>
+    <string name="delete_product">Delete product</string>
+    <string name="do_you_want_to_delete_this_product">Do you want to delete this product</string>
+    <string name="no_extra_products">No extra Products</string>
+    <string name="show_notification">Show notification</string>
+    <string name="product_cost">Product cost</string>
 
 </resources>
