@@ -39,6 +39,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.telephony.TelephonyManager;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -78,7 +80,7 @@ import com.greyeg.tajr.helper.SharedHelper;
 import com.greyeg.tajr.helper.TimerTextView;
 import com.greyeg.tajr.helper.font.RobotoTextView;
 import com.greyeg.tajr.models.AllProducts;
-import com.greyeg.tajr.models.Cities;
+import com.greyeg.tajr.models.City;
 import com.greyeg.tajr.models.DeleteAddProductResponse;
 import com.greyeg.tajr.models.LastCallDetails;
 import com.greyeg.tajr.models.ProductData;
@@ -128,6 +130,7 @@ import retrofit2.Response;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 import static com.greyeg.tajr.activities.LoginActivity.IS_LOGIN;
+import static com.greyeg.tajr.adapters.ProductsAdapter.totalCost;
 
 public class OrderActivity extends AppCompatActivity
         implements CurrentCallListener,
@@ -151,16 +154,15 @@ public class OrderActivity extends AppCompatActivity
     public static boolean askToFinishWork = false;
     public static Activity orderActivity;
     public static boolean stoped = false;
+    public static SimpleOrderResponse.Order order;
+    public static String CITY_ID;
     public AllProducts allProducts;
-
-
     @BindView(R.id.client_name)
     EditText client_name;
     @BindView(R.id.client_address)
     EditText client_address;
     @BindView(R.id.client_area)
     EditText client_area;
-
     @BindView(R.id.item_no)
     EditText item_no;
     @BindView(R.id.client_order_phone1)
@@ -175,25 +177,20 @@ public class OrderActivity extends AppCompatActivity
     EditText sender_name;
     @BindView(R.id.item_cost)
     EditText item_cost;
-
     @BindView(R.id.ntes)
     EditText notes;
-
-    @BindView(R.id.products_recycler_view)
-    RecyclerView productsRecyclerView;
-
-    LinearLayoutManager productsLinearLayoutManager;
 
     //    @BindView(R.id.update)
     //    DrawMeButton update;
     //
     //    @BindView(R.id.cancel)
     //    DrawMeButton cancel;
-
+    @BindView(R.id.products_recycler_view)
+    RecyclerView productsRecyclerView;
+    LinearLayoutManager productsLinearLayoutManager;
     @BindView(R.id.discount)
     EditText discount;
-    @BindView(R.id.order_cost)
-    EditText order_cost;
+
     @BindView(R.id.order_total_cost)
     EditText order_total_cost;
     @BindView(R.id.client_feedback)
@@ -203,44 +200,35 @@ public class OrderActivity extends AppCompatActivity
     DatabaseManager databaseManager;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
-
     @BindView(R.id.no_products)
     View productsView;
-
     @BindView(R.id.client_phone_error2)
     FloatingActionButton client_phone_error2;
-
     @BindView(R.id.order_shipper_confirmed2)
     FloatingActionButton order_shipper_confirmed2;
-
     @BindView(R.id.order_data_confirmed2)
     FloatingActionButton order_data_confirmed2;
-
     @BindView(R.id.problem2)
     FloatingActionButton problem2;
-
     @BindView(R.id.client_city)
     Spinner client_city;
-
     @BindView(R.id.add_product)
     ImageView add_product;
 
-    long startWorkTime;
+    @BindView(R.id.order_type)
+    EditText order_type;
 
+    long startWorkTime;
     RadioGroup radioGroup;
     Button ok;
     View view;
     String newStatus;
     String newStatusTag;
-
     Timer pauseActivityTimer;
-
     long pauseActivityTimerCount;
     ProgressDialog progressDialog;
-
     @BindView(R.id.progress_bar)
     ProgressBar progressBar;
-
     boolean micMute = false;
     @BindView(R.id.order_view)
     View orederView;
@@ -250,15 +238,12 @@ public class OrderActivity extends AppCompatActivity
     ProgressBar mProgressBar4;
     @BindView(R.id.present)
     TextView present;
-
     String connectionType;
     boolean hasInternet;
     Menu naveMenu;
-
     Timer updateOrderTimer;
     int updateOrderTimerCount = 0;
     Dialog warningDialog;
-    public static SimpleOrderResponse.Order order;
     String orderStatus = null;
     boolean firstOrder;
     int firstRemaining;
@@ -278,8 +263,36 @@ public class OrderActivity extends AppCompatActivity
     String activatedNum;
     List<CallDetails> callDetailsList;
     Timer workTimer;
-
     CalcDialog calcDialog;
+    SimpleOrderResponse simpleOrderResponse;
+    @BindView(R.id.right_menu)
+    FloatingActionMenu floatingActionMenu;
+    ProductsAdapter productsAdapter;
+    List<String> cities = new ArrayList<>();
+    List<String> citiesId = new ArrayList<>();
+    List<String> shippingCosts = new ArrayList<>();
+    String SHIPPING_COST = "0";
+    @BindView(R.id.product_label_view)
+    View product_label_view;
+    @BindView(R.id.top_sheet)
+    View top_sheet;
+    boolean inMissed = false;
+    List<ProductForSpinner> singleProducts;
+    List<String> singleProductIds;
+    String singleProductId;
+    @BindView(R.id.product)
+    Spinner singleProductSpinner;
+    List<ProductForSpinner> products;
+    Spinner productSpinner;
+    String productId;
+    EditText productNo;
+    RobotoTextView addProductBtn;
+    String newShippingCost;
+    String newDiscount;
+    String newTotalItems;
+    String newToataCost;
+    int extraProductsCost;
+    ProductForSpinner productForSpinner;
     private TextView valueTxv;
     private CheckBox signChk;
     private @Nullable
@@ -310,6 +323,7 @@ public class OrderActivity extends AppCompatActivity
             return false;
         }
     };
+    private List<City> citiesBody;
 
     public static void finishTheWorkNow() {
         finish = true;
@@ -327,7 +341,7 @@ public class OrderActivity extends AppCompatActivity
         setContentView(R.layout.activity_update_order);
         ButterKnife.bind(this);
         openRecords();
-        getProducts();
+
         setConnectionListener();
         setUpProgressBar();
         setCalc(savedInstanceState);
@@ -390,12 +404,10 @@ public class OrderActivity extends AppCompatActivity
 
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-        Api api = BaseClient.getBaseClient().create(Api.class);
-        getcities(api);
+        getFirstOrder();
 
         createWarningDialog();
         Log.d("dddddddddd", "time started: " + timeWork);
-
 
         View sheet = findViewById(R.id.top_sheet);
         TopSheetBehavior tt = TopSheetBehavior.from(sheet);
@@ -403,7 +415,9 @@ public class OrderActivity extends AppCompatActivity
         tt.setTopSheetCallback(new TopSheetBehavior.TopSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
-                animationShow();
+                if (allProducts != null)
+
+                    animationShow();
                 Log.d("TAG", "newState: " + newState);
 
                 if (newState == 3) {
@@ -434,6 +448,22 @@ public class OrderActivity extends AppCompatActivity
             }
         });
 
+        item_no.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
     }
 
     private void setConnectionListener() {
@@ -461,9 +491,6 @@ public class OrderActivity extends AppCompatActivity
                     Log.d("ssssssssssssss", "onCreate: " + isConnected.toString());
                 });
     }
-
-    @BindView(R.id.right_menu)
-    FloatingActionMenu floatingActionMenu;
 
     @OnClick(R.id.cancel_order2)
     void cancelOrder() {
@@ -507,17 +534,24 @@ public class OrderActivity extends AppCompatActivity
         updateOrder(order_data_confirmed);
     }
 
+
+    @OnClick(R.id.order_shipper_confirmed2)
+    void order_shipper_confirmed2() {
+        floatingActionMenu.close(true);
+        updateOrder(order_data_confirmed);
+    }
+
     void updateOrderData() {
 
         Api api = BaseClient.getBaseClient().create(Api.class);
         api.updateOrderData(
                 SharedHelper.getKey(this, LoginActivity.TOKEN),
                 SharedHelper.getKey(this, LoginActivity.USER_ID),
+                order_ud,
                 CITY_ID,
                 client_name.getText().toString(),
                 client_address.getText().toString(),
                 client_area.getText().toString(),
-                item_no.getText().toString(),
                 notes.getText().toString(),
                 discount.getText().toString()
 
@@ -536,8 +570,44 @@ public class OrderActivity extends AppCompatActivity
         });
     }
 
+    void updateSingleOrderData() {
+
+        Api api = BaseClient.getBaseClient().create(Api.class);
+        api.updateOrderData(
+                SharedHelper.getKey(this, LoginActivity.TOKEN),
+                SharedHelper.getKey(this, LoginActivity.USER_ID),
+                order_ud,
+                singleProductId,
+                CITY_ID,
+                client_name.getText().toString(),
+                client_address.getText().toString(),
+                client_area.getText().toString(),
+                item_no.getText().toString(),
+                notes.getText().toString(),
+                discount.getText().toString(),
+                productForSpinner.getItemCost(),
+                order_total_cost.getText().toString()
+
+        ).enqueue(new Callback<UpdateOrdreDataRespnse>() {
+            @Override
+            public void onResponse(Call<UpdateOrdreDataRespnse> call, Response<UpdateOrdreDataRespnse> response) {
+                Log.d("555555", "onResponse: orders updates");
+
+
+            }
+
+            @Override
+            public void onFailure(Call<UpdateOrdreDataRespnse> call, Throwable t) {
+                Log.d(TAG, "onFailure: " + t.getMessage());
+            }
+        });
+    }
+
     void updateOrder(String value) {
-        updateOrderData();
+        if (order.getOrder_type().equals("single order")) {
+            updateSingleOrderData();
+        } else
+            updateOrderData();
         if (value == null || order_ud == null) {
             return;
         }
@@ -555,7 +625,6 @@ public class OrderActivity extends AppCompatActivity
         ).enqueue(new Callback<UpdateOrederNewResponse>() {
             @Override
             public void onResponse(@NotNull Call<UpdateOrederNewResponse> call, @NotNull Response<UpdateOrederNewResponse> response) {
-                Log.d("eeeeeeeeeeeeee", "onResponse: " + value + response.body().getCode());
 
                 if (response.body().getCode().equals("1200") || response.body().getCode().equals("1202")) {
                     Log.d("eeeeeeeeeeeeee", "onResponse: " + value + response.body().getCode());
@@ -579,7 +648,6 @@ public class OrderActivity extends AppCompatActivity
         });
     }
 
-
     void confirm_shipper_status(String value) {
         updateOrderData();
         if (value == null || order_ud == null) {
@@ -599,7 +667,7 @@ public class OrderActivity extends AppCompatActivity
         ).enqueue(new Callback<UpdateOrederNewResponse>() {
             @Override
             public void onResponse(@NotNull Call<UpdateOrederNewResponse> call, @NotNull Response<UpdateOrederNewResponse> response) {
-                Log.d("eeeeeeeeeeeeee", "onResponse: " + value + response.body().getCode());
+
 
                 if (response.body().getCode().equals("1200") || response.body().getCode().equals("1202")) {
                     Log.d("eeeeeeeeeeeeee", "onResponse: " + value + response.body().getCode());
@@ -741,8 +809,6 @@ public class OrderActivity extends AppCompatActivity
         stoped = true;
     }
 
-    ProductsAdapter productsAdapter;
-
     private void getFirstOrder() {
         progressBar.setVisibility(View.VISIBLE);
 
@@ -753,19 +819,18 @@ public class OrderActivity extends AppCompatActivity
                     progressBar.setVisibility(View.GONE);
                     if (response.body().getCode().equals("1202") || response.body().getCode().equals("1200")) {
                         orderStatus = response.body().getOrder_type();
-                        if (!firstOrder) {
 
+                        if (!firstOrder) {
                             firstOrder = true;
                             firstRemaining = response.body().getRemainig_orders();
                             mProgressBar4.setMax(firstRemaining);
-
                         }
 
                         int b = firstRemaining - response.body().getRemainig_orders();
                         mProgressBar4.setProgress(b);
                         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(OrderActivity.this);
                         if (sharedPreferences.getBoolean("autoNotifiction", false))
-                        createNotification(String.valueOf(firstRemaining - b));
+                            createNotification(String.valueOf(firstRemaining - b));
 
                         int a = (int) (100 * Float.parseFloat(String.valueOf(finishedOrders)) / Float.parseFloat(String.valueOf(firstRemaining)));
                         String test = String.valueOf(response.body().getRemainig_orders()) + "  (" + String.valueOf(a) + "%)";
@@ -795,21 +860,49 @@ public class OrderActivity extends AppCompatActivity
 
                         order = response.body().getOrder();
                         if (order != null) {
+
+
+                            simpleOrderResponse = response.body();
+                            getProducts(response.body().getUser_id(), order.getProduct_id());
+                            // setSingleProducts(order.getProduct_id());
                             order_ud = order.getId();
-                            discount.setText(order.getDiscount());
-                            setSingleProducts(order.getProduct_id());
+
+
                             status.setText(order.getOrder_status());
                             client_name.setText(order.getClient_name());
                             client_address.setText(order.getClient_address());
                             client_area.setText(order.getClient_area());
+
+                            citiesBody = response.body().getCities();
+                            for (City city : citiesBody) {
+                                cities.add(city.getC_name());
+                                citiesId.add(city.getC_id());
+                                shippingCosts.add(city.getShipping_cost());
+                            }
+
+                            ArrayAdapter adapter = new ArrayAdapter(getApplicationContext(), R.layout.layout_cities_spinner_item, cities);
+                            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                            client_city.setAdapter(adapter);
                             int cityIndex = citiesId.indexOf(order.getClient_city_id());
+                            if (cityIndex < 0) {
+                                cityIndex = 0;
+                            }
                             client_city.setSelection(cityIndex);
                             SHIPPING_COST = shippingCosts.get(cityIndex);
                             client_city.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                                 @Override
                                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                                     CITY_ID = String.valueOf(citiesId.get(position));
+                                    if (!SHIPPING_COST.equals(shippingCosts.get(position))) {
+                                        int oldTotalCost = Integer.parseInt(order_total_cost.getText().toString());
+                                        int totalWithDis = oldTotalCost - Integer.parseInt(SHIPPING_COST);
+                                        SHIPPING_COST = shippingCosts.get(position);
+                                        int newTotalCost = totalWithDis + Integer.parseInt(SHIPPING_COST);
+                                        order_total_cost.setText(String.valueOf(newTotalCost));
+
+                                    }
                                     SHIPPING_COST = shippingCosts.get(position);
+                                    shipping_cost.setText(SHIPPING_COST);
 
                                 }
 
@@ -819,6 +912,7 @@ public class OrderActivity extends AppCompatActivity
                                 }
                             });
 
+
                             shipping_cost.setText(SHIPPING_COST);
                             phone = order.getPhone_1();
                             shipping_status.setText(order.getOrder_shipping_status());
@@ -826,17 +920,20 @@ public class OrderActivity extends AppCompatActivity
                             order_id.setText(order.getId());
                             item_cost.setText(order.getItem_cost());
                             item_no.setText(order.getItems_no());
-
-                            order_cost.setText(order.getOrder_cost());
                             order_total_cost.setText(order.getTotal_order_cost());
                             sender_name.setText(order.getSender_name());
-                            //order_type.setText(order.getOrder_type());
+                            order_type.setText(order.getOrder_type());
                             client_feedback.setText(order.getClient_feedback());
                             notes.setText(order.getNotes());
                             //   if (!stoped) ;
                             //   callClient(order.getPhone_1());
 
-                            productsAdapter = new ProductsAdapter(OrderActivity.this, order.getMulti_orders(), order.getId());
+                            productsAdapter = new ProductsAdapter(OrderActivity.this, order.getMulti_orders(), order.getId(), response.body().getUser_id(), new ProductsAdapter.GetOrderInterface() {
+                                @Override
+                                public void getOrder() {
+                                    getFirstOrder();
+                                }
+                            });
                             if (order.getMulti_orders().size() > 0) {
                                 Log.d("ProductsAdapter", "onResponse: " + order.getMulti_orders().get(0).getProduct_name());
                                 productsView.setVisibility(View.GONE);
@@ -848,7 +945,117 @@ public class OrderActivity extends AppCompatActivity
                                 productsView.setVisibility(View.VISIBLE);
                             }
 
-                        } else {
+                            if (order.getOrder_type().equals("multi order")) {
+                                findViewById(R.id.product_label_view).setVisibility(View.GONE);
+                                item_no.setFocusableInTouchMode(false); // user touches widget on phone with touch screen
+                                item_no.setClickable(false);
+                                item_no.setFocusable(false);
+                                item_no.setEnabled(false);
+                            } else {
+                                item_no.setFocusableInTouchMode(true); // user touches widget on phone with touch screen
+                                item_no.setClickable(true);
+                                item_no.setFocusable(true);
+                                item_no.setEnabled(true);
+                                item_no.addTextChangedListener(new TextWatcher() {
+                                    @Override
+                                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                                    }
+
+                                    @Override
+                                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                                        if (s.toString().equals("")) {
+                                            order_total_cost.setText("0");
+                                            return;
+                                        }
+
+                                        int dis = 0;
+                                        int itemCost = 0;
+                                        int sh_cost = 0;
+
+                                        if (!productForSpinner.getItemCost().equals("")) {
+                                            itemCost = Integer.parseInt(productForSpinner.getItemCost());
+                                        }
+
+                                        if (!discount.getText().toString().equals("")) {
+                                            dis = Integer.parseInt(discount.getText().toString());
+                                        }
+                                        if (SHIPPING_COST.length() > 0) {
+                                            Integer.parseInt(SHIPPING_COST);
+                                        }
+                                        int newTotaolCost =
+                                                (itemCost * Integer.parseInt(s.toString())) +
+                                                        sh_cost -
+                                                        dis;
+                                        order_total_cost.setText(String.valueOf(newTotaolCost));
+                                        Log.d("onTextChanged", "onTextChanged: " + Integer.parseInt(s.toString()));
+                                    }
+
+                                    @Override
+                                    public void afterTextChanged(Editable s) {
+
+                                    }
+                                });
+                                findViewById(R.id.product_label_view).setVisibility(View.VISIBLE);
+                            }
+                            discount.setText(order.getDiscount());
+                            if (response.body().getOrder().getOrder_type().equals("single order")) {
+                                discount.addTextChangedListener(new TextWatcher() {
+                                    @Override
+                                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                                    }
+
+                                    @Override
+                                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+
+                                        int dis = 0;
+                                        if (!s.toString().equals("")) {
+                                            dis = Integer.parseInt(s.toString());
+
+                                        } else {
+                                            return;
+                                        }
+                                        if (order.getOrder_type().equals("single order")) {
+
+
+                                            int items = 0;
+                                            int itemCost = 0;
+                                            int sh_cost = 0;
+
+                                            if (!productForSpinner.getItemCost().equals("")) {
+                                                itemCost = Integer.parseInt(productForSpinner.getItemCost());
+                                            }
+                                            if (!item_no.getText().toString().equals("")) {
+                                                items = Integer.parseInt(item_no.getText().toString());
+                                            }
+
+                                            if (SHIPPING_COST.length() > 0) {
+                                                Integer.parseInt(SHIPPING_COST);
+                                            }
+
+
+                                            int newTotaolCost =
+                                                    (itemCost * items) +
+                                                            sh_cost -
+                                                            dis;
+                                            order_total_cost.setText(String.valueOf(newTotaolCost));
+
+                                        } else {
+                                            order_total_cost.setText(String.valueOf(totalCost + dis));
+                                        }
+
+
+                                    }
+
+                                    @Override
+                                    public void afterTextChanged(Editable s) {
+
+                                    }
+                                });
+                            }
                         }
 
                     } else {
@@ -870,62 +1077,92 @@ public class OrderActivity extends AppCompatActivity
         });
     }
 
-
-    List<String> cities = new ArrayList<>();
-    List<String> citiesId = new ArrayList<>();
-    List<String> shippingCosts = new ArrayList<>();
-
-    public static String CITY_ID;
-    String SHIPPING_COST;
-
-    private List<Cities.City> citiesBody;
-
-    private void getcities(Api api) {
-        progressBar.setVisibility(View.VISIBLE);
-        if (cities != null && cities.size() > 1) {
-            cities.clear();
-        }
-        Call<Cities> getCiriesCall = api.getCities(
-                SharedHelper.getKey(this, LoginActivity.TOKEN),
-                SharedHelper.getKey(this, LoginActivity.USER_ID)
-        );
-
-        getCiriesCall.enqueue(new Callback<Cities>() {
+    protected synchronized void getProducts(String id, String selection) {
+        Api api = BaseClient.getBaseClient().create(Api.class);
+        api.getProducts(SharedHelper.getKey(this, LoginActivity.TOKEN),
+                id
+        ).enqueue(new Callback<AllProducts>() {
             @Override
-            public void onResponse(Call<Cities> call, Response<Cities> response) {
-                progressBar.setVisibility(View.GONE);
-                if (response.body() != null && response.body().getCities() != null) {
-                    if (response.body().getCities().size() > 0) {
+            public void onResponse(Call<AllProducts> call, final Response<AllProducts> response) {
 
-                        citiesBody = response.body().getCities();
-                        for (Cities.City city : citiesBody) {
-                            cities.add(city.getCity_name());
-                            citiesId.add(city.getCity_id());
-                            shippingCosts.add(city.getShipping_cost());
-                        }
-                        ArrayAdapter adapter = new ArrayAdapter(getApplicationContext(), R.layout.layout_cities_spinner_item, cities);
+                if (response.body() != null) {
+                    allProducts = response.body();
+                    singleProducts = new ArrayList<>();
+                    singleProductIds = new ArrayList<>();
 
-                        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                        client_city.setAdapter(adapter);
-                        getFirstOrder();
+                    for (ProductData product : response.body().getProducts()) {
+                        extraProductsCost = extraProductsCost + Integer.parseInt(product.getProduct_real_price());
+                        singleProducts.add(new ProductForSpinner(product.getProduct_name(), product.getProduct_image(), product.getProduct_id(), product.getProduct_real_price()));
+
+                        singleProductIds.add(product.getProduct_id());
                     }
-                } else {
-                    SharedHelper.putKey(getApplicationContext(), IS_LOGIN, "اعادة تسجيل الدخول");
-                    startActivity(new Intent(getApplicationContext(), LoginActivity.class));
-                    finishTheWorkNow();
+
+                    ArrayAdapter<String> myAdapter = new ProductSpinnerAdapter(getApplicationContext(), singleProducts);
+
+                    singleProductSpinner.setAdapter(myAdapter);
+                    singleProductSpinner.setSelection(singleProductIds.indexOf(selection));
+                    singleProductId = selection;
+                    singleProductSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                            if (!singleProductId.equals(singleProductIds.get(position)) &&
+                                    !order.getOrder_type().equals("multi order")) {
+
+                                singleProductId = singleProductIds.get(position);
+                                Log.d(TAG, "onItemSelected: " + singleProductId);
+
+                                productForSpinner = singleProducts.get(position);
+                                item_cost.setText(productForSpinner.getItemCost());
+
+                                int items = 0;
+                                int dis = 0;
+                                int itemCost = 0;
+                                int sh_cost = 0;
+
+                                if (!productForSpinner.getItemCost().equals("")) {
+                                    itemCost = Integer.parseInt(productForSpinner.getItemCost());
+                                }
+                                if (!item_no.getText().toString().equals("")) {
+                                    items = Integer.parseInt(item_no.getText().toString());
+                                }
+
+                                if (!discount.getText().toString().equals("")) {
+                                    dis = Integer.parseInt(discount.getText().toString());
+                                }
+                                if (SHIPPING_COST.length() > 0) {
+                                    Integer.parseInt(SHIPPING_COST);
+                                }
+                                int newTotaolCost =
+                                        (itemCost * items) +
+                                                sh_cost -
+                                                dis;
+                                order_total_cost.setText(String.valueOf(newTotaolCost));
+                            } else {
+                                productForSpinner = singleProducts.get(position);
+                                singleProductId = singleProductIds.get(position);
+                            }
+                        }
+
+                        @Override
+                        public void onNothingSelected(AdapterView<?> parent) {
+
+                        }
+                    });
 
                 }
-
             }
 
             @Override
-            public void onFailure(Call<Cities> call, Throwable t) {
-                progressBar.setVisibility(View.GONE);
-                Toast.makeText(OrderActivity.this, "" + t.getMessage(), Toast.LENGTH_SHORT).show();
+            public void onFailure(Call<AllProducts> call, Throwable t) {
+                Log.d("eeeeeeeeeeeeeee", "onFailure: " + t.getMessage());
             }
         });
+
     }
 
+    void setAllProductsCost() {
+
+    }
 
     private void showOrderView() {
         missed_call_view.setVisibility(View.GONE);
@@ -934,6 +1171,10 @@ public class OrderActivity extends AppCompatActivity
         top_sheet.setVisibility(View.VISIBLE);
     }
 
+//    private void animationHide() {
+//        productView.setVisibility(View.GONE);
+//    }
+
     private void showMissedCall() {
         missed_call_view.setVisibility(View.VISIBLE);
         orederView.setVisibility(View.GONE);
@@ -941,12 +1182,20 @@ public class OrderActivity extends AppCompatActivity
         floatingActionMenu.hideMenu(true);
     }
 
-    @BindView(R.id.product_label_view)
-    View product_label_view;
-
-
-    @BindView(R.id.top_sheet)
-    View top_sheet;
+//    private void createNotificationChannel() {
+//        // Create the NotificationChannel, but only on API 26+ because
+//        // the NotificationChannel class is new and not in the support library
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//
+//            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+//            NotificationChannel channel = new NotificationChannel("5", "eslam", importance);
+//            channel.setDescription(description);
+//            // Register the channel with the system; you can't change the importance
+//            // or other notification behaviors after this
+//            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+//            notificationManager.createNotificationChannel(channel);
+//        }
+//    }
 
     public void callClient(String phone) {
 
@@ -1005,7 +1254,6 @@ public class OrderActivity extends AppCompatActivity
 //        }
 
     }
-
 
     @Override
     protected void onResume() {
@@ -1075,8 +1323,6 @@ public class OrderActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    boolean inMissed = false;
-
     void showProductDetails() {
 
         if (!productShowen) {
@@ -1117,11 +1363,6 @@ public class OrderActivity extends AppCompatActivity
 
     }
 
-//    private void animationHide() {
-//        productView.setVisibility(View.GONE);
-//    }
-
-
     public void createNotification(String first) {
 
 
@@ -1149,8 +1390,7 @@ public class OrderActivity extends AppCompatActivity
 
             notificationManager.notify(5, builder.build());
 
-        }
-        else {
+        } else {
             NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
                     .setSmallIcon(getApplicationInfo().icon)
                     .setContentTitle("orders")
@@ -1171,49 +1411,12 @@ public class OrderActivity extends AppCompatActivity
 
     }
 
-//    private void createNotificationChannel() {
-//        // Create the NotificationChannel, but only on API 26+ because
-//        // the NotificationChannel class is new and not in the support library
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//
-//            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-//            NotificationChannel channel = new NotificationChannel("5", "eslam", importance);
-//            channel.setDescription(description);
-//            // Register the channel with the system; you can't change the importance
-//            // or other notification behaviors after this
-//            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-//            notificationManager.createNotificationChannel(channel);
-//        }
-//    }
-
-
     public void cancelNotification() {
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         notificationManager.cancel(5);
     }
 
-    protected synchronized void getProducts() {
-        Api api = BaseClient.getBaseClient().create(Api.class);
-        api.getProducts(SharedHelper.getKey(this, LoginActivity.TOKEN),
-                SharedHelper.getKey(this, LoginActivity.USER_ID)
-        ).enqueue(new Callback<AllProducts>() {
-            @Override
-            public void onResponse(Call<AllProducts> call, final Response<AllProducts> response) {
-                Log.d("eeeeeeeeeeeeeee", "respons: " + response.body().getProducts_count());
-                if (response.body() != null) {
-                    allProducts = response.body();
-
-                }
-            }
-
-            @Override
-            public void onFailure(Call<AllProducts> call, Throwable t) {
-                Log.d("eeeeeeeeeeeeeee", "onFailure: " + t.getMessage());
-            }
-        });
-
-    }
 
     void modifyMic() {
 
@@ -1490,7 +1693,6 @@ public class OrderActivity extends AppCompatActivity
         return auto.getBoolean("autoUpdate", false);
     }
 
-
     @SuppressLint("ApplySharedPref")
     private void minutesUsage(String seconds) {
         Log.d("minutesUsage", "minutesUsage: call time seconds" + seconds);
@@ -1523,11 +1725,12 @@ public class OrderActivity extends AppCompatActivity
                 MultipartBody.Part image = MultipartBody.Part.createFormData("voice_note", file.getName(), surveyBody);
                 RequestBody title1 = RequestBody.create(MediaType.parse("text/plain"), order_ud);
                 RequestBody token = RequestBody.create(MediaType.parse("text/plain"), SharedHelper.getKey(this, LoginActivity.TOKEN));
+
                 BaseClient.getBaseClient().create(Api.class).uploadVoice(token, title1, image).enqueue(new Callback<UploadVoiceResponse>() {
                     @Override
                     public void onResponse(Call<UploadVoiceResponse> call2, Response<UploadVoiceResponse> response) {
                         databaseManager.updateCallDetails(call);
-                        Log.d("caaaaaaaaaaaaaal", "onResponse: " + response.body().getInfo());
+
                     }
 
                     @Override
@@ -1583,7 +1786,6 @@ public class OrderActivity extends AppCompatActivity
     public void onConnectionFound() {
 
     }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -1785,20 +1987,12 @@ public class OrderActivity extends AppCompatActivity
         Log.d("saveWorkedTime", "setPldTimeWorkZero: ");
     }
 
-    List<ProductForSpinner> singleProducts;
-    List<String> singleProductIds;
-    String singleProductId;
-
-    @BindView(R.id.product)
-    Spinner singleProductSpinner;
-
     private void setSingleProducts(String selection) {
-        if (allProducts == null)
-            return;
+
         singleProducts = new ArrayList<>();
         singleProductIds = new ArrayList<>();
         for (ProductData product : allProducts.getProducts()) {
-            singleProducts.add(new ProductForSpinner(product.getProduct_name(), product.getProduct_image(), product.getProduct_id()));
+            singleProducts.add(new ProductForSpinner(product.getProduct_name(), product.getProduct_image(), product.getProduct_id(), product.getProduct_real_price()));
             singleProductIds.add(product.getProduct_id());
         }
 
@@ -1820,15 +2014,9 @@ public class OrderActivity extends AppCompatActivity
         });
     }
 
-    List<ProductForSpinner> products;
-    Spinner productSpinner;
-    String productId;
-    EditText productNo;
-    RobotoTextView addProductBtn;
-
 
     public void showNewProductDialog(View view) {
-        if(allProducts==null) return;
+        if (allProducts == null) return;
 
         Api api = BaseClient.getBaseClient().create(Api.class);
         Dialog dialog = new Dialog(this);
@@ -1838,8 +2026,9 @@ public class OrderActivity extends AppCompatActivity
 
         products = new ArrayList<>();
         for (ProductData product : allProducts.getProducts()) {
-            products.add(new ProductForSpinner(product.getProduct_name(), product.getProduct_image(), product.getProduct_id()));
+            products.add(new ProductForSpinner(product.getProduct_name(), product.getProduct_image(), product.getProduct_id(), product.getProduct_real_price()));
         }
+
 
         ArrayAdapter<String> myAdapter = new ProductSpinnerAdapter(
                 this, products);
@@ -1850,6 +2039,7 @@ public class OrderActivity extends AppCompatActivity
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
                 productId = allProducts.getProducts().get(position).getProduct_id();
+
                 // Toast.makeText(getActivity(), ""+productId, Toast.LENGTH_SHORT).show();
             }
 
@@ -1869,17 +2059,29 @@ public class OrderActivity extends AppCompatActivity
         addProductBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (productNo.getText().length() <= 0)
+                if (productNo.getText().length() <= 0) {
+                    Log.d("onClick", "onClick: returned");
                     return;
+                }
+
+
+                if (order.getOrder_type().equals("single order")) {
+                    updateSingleOrderData();
+                } else {
+                    updateOrderData();
+                }
+
                 api.addProduct(
                         SharedHelper.getKey(getApplicationContext(), LoginActivity.TOKEN),
                         order_ud,
                         productId,
-                        item_no.getText().toString()
+                        simpleOrderResponse.getUser_id(),
+                        Integer.parseInt(productNo.getText().toString().trim())
                 ).enqueue(new Callback<DeleteAddProductResponse>() {
                     @Override
                     public void onResponse(Call<DeleteAddProductResponse> call, Response<DeleteAddProductResponse> response) {
-                        Log.d("DeleteAddProduct", "onResponse: " + response.body().getCode());
+
+
                         if (response.body().getCode().equals("1200")) {
                             Toast.makeText(OrderActivity.this, "تم اضافة المنتج", Toast.LENGTH_SHORT).show();
                             getFirstOrder();
@@ -1895,12 +2097,12 @@ public class OrderActivity extends AppCompatActivity
                         getFirstOrder();
                     }
                 });
+
+
             }
         });
 
         dialog.show();
     }
-
-
 }
 

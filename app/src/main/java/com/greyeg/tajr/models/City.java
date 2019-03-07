@@ -5,11 +5,11 @@ import com.google.gson.annotations.SerializedName;
 
 public class City {
 
-    @SerializedName("c_id")
+    @SerializedName("city_id")
     @Expose
     private String c_id;
 
-    @SerializedName("c_name")
+    @SerializedName("city_name")
     @Expose
     private String c_name;
 

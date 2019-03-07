@@ -158,7 +158,7 @@ public class NewOrderFragment extends Fragment {
             @Override
             public void onResponse(Call<AllProducts> call, final Response<AllProducts> response) {
                 Log.d("eeeeeeeeeeeeeee", "respons: " + response.body().getProducts_count());
-                if (response.body() != null) {
+                if (response.body() != null&&response.body().getProducts()!=null) {
                     allProducts = response.body();
                     if (response.body().getProducts().size() > 0) {
                         productId = response.body().getProducts().get(0).getProduct_id();
@@ -166,7 +166,7 @@ public class NewOrderFragment extends Fragment {
                     }
                     products = new ArrayList<>();
                     for (ProductData product : response.body().getProducts()) {
-                        products.add(new ProductForSpinner(product.getProduct_name(), product.getProduct_image(), product.getProduct_id()));
+                        products.add(new ProductForSpinner(product.getProduct_name(), product.getProduct_image(), product.getProduct_id(),product.getProduct_real_price()));
                     }
                     ArrayAdapter<String> myAdapter = new ProductSpinnerAdapter(
                             getActivity(), products);

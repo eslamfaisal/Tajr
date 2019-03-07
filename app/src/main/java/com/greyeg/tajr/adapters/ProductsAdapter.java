@@ -27,15 +27,20 @@ import retrofit2.Response;
 
 public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.Holder> {
 
+    public static int totalCost;
+
     Activity context;
     List<ProDuct> proDucts;
     String orderId;
+    String user_id;
+    GetOrderInterface getOrderInterface;
 
-
-    public ProductsAdapter(Activity context, List<ProDuct> proDucts, String orderId) {
+    public ProductsAdapter(Activity context, List<ProDuct> proDucts, String orderId, String user_id, GetOrderInterface getOrderInterface) {
         this.context = context;
         this.proDucts = proDucts;
         this.orderId = orderId;
+        this.user_id = user_id;
+        this.getOrderInterface = getOrderInterface;
     }
 
     @NonNull
@@ -48,13 +53,9 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.Holder
     @Override
     public void onBindViewHolder(@NonNull Holder holder, int i) {
 
-        if (i == 0) {
-            holder.itemView.setVisibility(View.GONE);
-            holder.itemView.setLayoutParams(new RecyclerView.LayoutParams(0, 0));
 
-            return;
-        }
         ProDuct proDuct = proDucts.get(i);
+        totalCost = totalCost+(Integer.parseInt(proDucts.get(i).getItem_cost())*Integer.parseInt(proDucts.get(i).getItems_no()));
         holder.name.setText(proDuct.getProduct_name());
         holder.no.setText(proDuct.getItems_no());
         holder.delete.setOnClickListener(new View.OnClickListener() {
@@ -107,6 +108,7 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.Holder
                 SharedHelper.getKey(context, LoginActivity.TOKEN),
                 orderId,
                 extra_product_key,
+                user_id,
                 product_id
         ).enqueue(new Callback<DeleteAddProductResponse>() {
             @Override
@@ -116,6 +118,9 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.Holder
                     proDucts.remove(position);
 
                     notifyDataSetChanged();
+                    if (proDucts.size()==1){
+                        getOrderInterface.getOrder();
+                    }
 
                 }
                 Toast.makeText(context, "" + response.body().getDetails(), Toast.LENGTH_SHORT).show();

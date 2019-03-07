@@ -39,8 +39,14 @@ public class SimpleOrderResponse {
     @Expose
     private List<City> cities;
 
+
+    @SerializedName("user_id")
+    @Expose
+    private String user_id;
+
     public SimpleOrderResponse() {
     }
+
 
     public List<City> getCities() {
         return cities;
@@ -48,6 +54,14 @@ public class SimpleOrderResponse {
 
     public void setCities(List<City> cities) {
         this.cities = cities;
+    }
+
+    public String getUser_id() {
+        return user_id;
+    }
+
+    public void setUser_id(String user_id) {
+        this.user_id = user_id;
     }
 
     public int getRemainig_orders() {
@@ -106,7 +120,7 @@ public class SimpleOrderResponse {
         this.order = order;
     }
 
-    public class Order{
+    public class Order {
 
         @SerializedName("id")
         @Expose

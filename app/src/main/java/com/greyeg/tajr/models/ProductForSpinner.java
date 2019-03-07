@@ -4,14 +4,23 @@ public class ProductForSpinner {
     private String name;
     private String image;
     private String id;
-
+    private String itemCost;
     public ProductForSpinner() {
     }
 
-    public ProductForSpinner(String name, String image, String id) {
+    public ProductForSpinner(String name, String image, String id, String itemCost) {
         this.name = name;
         this.image = image;
         this.id = id;
+        this.itemCost = itemCost;
+    }
+
+    public String getItemCost() {
+        return itemCost;
+    }
+
+    public void setItemCost(String itemCost) {
+        this.itemCost = itemCost;
     }
 
     public String getName() {

@@ -92,7 +92,6 @@ public interface Api {
                                           @Field("phone") String phone);
 
 
-
     @FormUrlEncoded
     @POST("send/phone")
     Call<UploadPhoneResponse> uploadPhone(@Field("token") String token,
@@ -112,12 +111,38 @@ public interface Api {
             @Field("token") String token,
             @Field("user_id") String user_id,
             @Field("order_id") String order_id,
+            @Field("product_id") String product_id,
+            @Field("client_city") String client_city,
             @Field("client_name") String client_name,
             @Field("client_address") String client_address,
             @Field("client_area") String client_area,
             @Field("items_no") String items_no,
             @Field("notes") String notes,
+            @Field("discount") String discount,
+            @Field("order_cost") String order_cost,
+            @Field("total_order_cost") String total_order_cost
+
+
+
+
+            );
+
+    @FormUrlEncoded
+    @POST("send/set_data")
+    Call<UpdateOrdreDataRespnse> updateOrderData(
+            @Field("token") String token,
+            @Field("user_id") String user_id,
+            @Field("order_id") String order_id,
+            @Field("client_city") String client_city,
+            @Field("client_name") String client_name,
+            @Field("client_address") String client_address,
+            @Field("client_area") String client_area,
+            @Field("notes") String notes,
             @Field("discount") String discount
+
+
+
+
     );
 
     // log in user client
@@ -219,6 +244,7 @@ public interface Api {
             @Field("token") String token,
             @Field("order_id") String order_id,
             @Field("extra_product_key") String extra_product_key,
+            @Field("user_id") String user_id,
             @Field("product_id") String product_id
     );
 
@@ -228,7 +254,8 @@ public interface Api {
             @Field("token") String token,
             @Field("order_id") String order_id,
             @Field("product_id") String product_id,
-            @Field("items_no") String items_no
+            @Field("user_id") String user_id,
+            @Field("items_no") int items_no
     );
 
 

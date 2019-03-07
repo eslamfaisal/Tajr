@@ -27,9 +27,9 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ProgressBar;
 import android.widget.Toast;
-
-import com.esafirm.imagepicker.features.ImagePicker;
-import com.esafirm.imagepicker.model.Image;
+//
+//import com.esafirm.imagepicker.features.ImagePicker;
+//import com.esafirm.imagepicker.model.Image;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -175,11 +175,11 @@ public class ChatActivity extends AppCompatActivity implements AudioRecordView.R
         audioRecordView.getAttachmentView().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ImagePicker.create(ChatActivity.this)
-                        .limit(1)
-                        .theme(R.style.UCrop)
-                        .folderMode(false)
-                        .start();
+//                ImagePicker.create(ChatActivity.this)
+//                        .limit(1)
+//                        .theme(R.style.UCrop)
+//                        .folderMode(false)
+//                        .start();
             }
         });
 
@@ -669,35 +669,35 @@ public class ChatActivity extends AppCompatActivity implements AudioRecordView.R
 
     }
 
-
-    @Override
-    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (data == null) {
-            //Toast.makeText(this, "", Toast.LENGTH_LONG).show();
-            return;
-        }
-        String destinationFileName = "SAMPLE_CROPPED_IMAGE_NAME" + ".jpg";
-
-        if (ImagePicker.shouldHandle(requestCode, resultCode, data)) {
-
-            Image image = ImagePicker.getFirstImageOrNull(data);
-            Uri res_url = Uri.fromFile(new File((image.getPath())));
-            CropImage(image, res_url);
-
-        } else if (resultCode == RESULT_OK && requestCode == UCrop.REQUEST_CROP) {
-            final Uri resultUri = UCrop.getOutput(data);
-            //  if (resultUri!=null)
-            assert resultUri != null;
-            bitmapCompress(resultUri);
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            thumbBitmap.compress(Bitmap.CompressFormat.JPEG, 75, byteArrayOutputStream);
-            imageBytes = byteArrayOutputStream.toByteArray();
-            uploadThumbImage(imageBytes);
-            Log.d("TAG", "onActivityResult: " + Arrays.toString(imageBytes));
-        }
-
-    }
+//
+//    @Override
+//    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//        if (data == null) {
+//            //Toast.makeText(this, "", Toast.LENGTH_LONG).show();
+//            return;
+//        }
+//        String destinationFileName = "SAMPLE_CROPPED_IMAGE_NAME" + ".jpg";
+//
+//        if (ImagePicker.shouldHandle(requestCode, resultCode, data)) {
+//
+//            Image image = ImagePicker.getFirstImageOrNull(data);
+//            Uri res_url = Uri.fromFile(new File((image.getPath())));
+//            CropImage(image, res_url);
+//
+//        } else if (resultCode == RESULT_OK && requestCode == UCrop.REQUEST_CROP) {
+//            final Uri resultUri = UCrop.getOutput(data);
+//            //  if (resultUri!=null)
+//            assert resultUri != null;
+//            bitmapCompress(resultUri);
+//            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+//            thumbBitmap.compress(Bitmap.CompressFormat.JPEG, 75, byteArrayOutputStream);
+//            imageBytes = byteArrayOutputStream.toByteArray();
+//            uploadThumbImage(imageBytes);
+//            Log.d("TAG", "onActivityResult: " + Arrays.toString(imageBytes));
+//        }
+//
+//    }
 
     //upload thumb image
     private void uploadThumbImage(byte[] thumbByte) {
@@ -745,25 +745,25 @@ public class ChatActivity extends AppCompatActivity implements AudioRecordView.R
 
     }
 
-
-    private void CropImage(Image image, Uri res_url) {
-        UCrop.of(res_url, Uri.fromFile(new File(getCacheDir(), image.getName())))
-                .withOptions(options)
-                .start(ChatActivity.this);
-    }
-
-    private void bitmapCompress(Uri resultUri) {
-        final File thumbFilepathUri = new File(resultUri.getPath());
-
-        try {
-            thumbBitmap = new Compressor(this)
-                    .setQuality(50)
-                    .compressToBitmap(thumbFilepathUri);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+//
+//    private void CropImage(Image image, Uri res_url) {
+//        UCrop.of(res_url, Uri.fromFile(new File(getCacheDir(), image.getName())))
+//                .withOptions(options)
+//                .start(ChatActivity.this);
+//    }
+//
+//    private void bitmapCompress(Uri resultUri) {
+//        final File thumbFilepathUri = new File(resultUri.getPath());
+//
+//        try {
+//            thumbBitmap = new Compressor(this)
+//                    .setQuality(50)
+//                    .compressToBitmap(thumbFilepathUri);
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     public void closeMentionView(View view) {
         hideUsersToMention();
