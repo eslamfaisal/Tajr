@@ -11,6 +11,8 @@ public class CallDetails {
     private String time;
     private String date;
     private String uploaded;
+    private String duration;
+
     public CallDetails(){
 
     }
@@ -30,6 +32,23 @@ public class CallDetails {
         this.uploaded = uploaded;
         this.time = time;
         this.date = date;
+    }
+
+    public CallDetails(int serial, String num, String time, String date, String uploaded, String duration) {
+        this.serial = serial;
+        this.num = num;
+        this.time = time;
+        this.date = date;
+        this.uploaded = uploaded;
+        this.duration = duration;
+    }
+
+    public String getDuration() {
+        return duration;
+    }
+
+    public void setDuration(String duration) {
+        this.duration = duration;
     }
 
     public int getSerial()

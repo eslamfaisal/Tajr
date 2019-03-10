@@ -7,26 +7,24 @@ package com.greyeg.tajr.call_receiver;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.os.Handler;
 import android.telephony.TelephonyManager;
-import android.util.Log;
 
 import com.greyeg.tajr.activities.EmptyCallActivity;
-import com.greyeg.tajr.activities.OrderActivity;
 import com.greyeg.tajr.helper.CurrentCallListener;
 
 import java.util.Date;
 
 
 public abstract class PhoneCallReceiver extends BroadcastReceiver {
+
+    public static String myCallNumber;
+    public static boolean enCallFromMe;
+    public static CurrentCallListener currentCallListener;
     private static int lastState = TelephonyManager.CALL_STATE_IDLE;
     private static Date callStartTime;
     private static boolean isIncoming;
     private static String savedNumber;
-    public static String myCallNumber;
-    public static boolean enCallFromMe;
-    public static CurrentCallListener currentCallListener;
 
     public static void setCurrentCallListener(CurrentCallListener listener) {
         currentCallListener = listener;
@@ -48,8 +46,8 @@ public abstract class PhoneCallReceiver extends BroadcastReceiver {
 
             } else {
                 String stateStr = intent.getExtras().getString(TelephonyManager.EXTRA_STATE);
-              //  String number = intent.getExtras().getString(TelephonyManager.EXTRA_INCOMING_NUMBER);
-              //  String sub = intent.getExtras().getString(TelephonyManager.EXTRA_SUBSCRIPTION_ID);
+                //  String number = intent.getExtras().getString(TelephonyManager.EXTRA_INCOMING_NUMBER);
+                //  String sub = intent.getExtras().getString(TelephonyManager.EXTRA_SUBSCRIPTION_ID);
                 int state = 0;
                 if (stateStr.equals(TelephonyManager.EXTRA_STATE_IDLE)) {
                     state = TelephonyManager.CALL_STATE_IDLE;
@@ -64,9 +62,9 @@ public abstract class PhoneCallReceiver extends BroadcastReceiver {
 
                 } else if (stateStr.equals("IDLE")) {
 
-                    if (currentCallListener != null) {
-                       currentCallListener.callEnded();
-                    }
+//                    if (currentCallListener != null) {
+//                       currentCallListener.callEnded();
+//                    }
                 }
             }
 

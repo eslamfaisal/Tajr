@@ -30,6 +30,8 @@ public class DatabaseManager {
         values.put(DatabaseHandler.UPLOADED,callDetails.getUploaded());
         values.put(DatabaseHandler.TIME, callDetails.getTime1());
         values.put(DatabaseHandler.DATE, callDetails.getDate1());
+        values.put(DatabaseHandler.DURATION, callDetails.getDuration());
+
 
         sqLiteDatabase.insert(DatabaseHandler.TABLE_RECORD, null, values);
     }
@@ -41,6 +43,7 @@ public class DatabaseManager {
         values.put(DatabaseHandler.UPLOADED,"uploaded");
         values.put(DatabaseHandler.TIME, callDetails.getTime1());
         values.put(DatabaseHandler.DATE, callDetails.getDate1());
+        values.put(DatabaseHandler.DURATION, callDetails.getDuration());
         sqLiteDatabase.update(DatabaseHandler.TABLE_RECORD, values, SERIAL_NUMBER+"="+callDetails.getSerial(), null);
 
     }

@@ -19,6 +19,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
    // public static final String CONTACT_NAME="contactName";
     public static final String TIME = "time";
     public static final String DATE = "date";
+    public static final String DURATION = "duration";
 
 
     public DatabaseHandler(Context context)
@@ -31,7 +32,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         String CREATE_LOG_TABLE="CREATE TABLE " + TABLE_RECORD + "("
                 + SERIAL_NUMBER + " INTEGER PRIMARY KEY,"+ PHONE_NUMBER + " TEXT," + TIME + " TEXT,"+ UPLOADED + " TEXT,"
-                + DATE + " TEXT" + ")";
+                + DATE + " TEXT," +DURATION + " TEXT"+")";
 
         db.execSQL(CREATE_LOG_TABLE);
     }

@@ -143,18 +143,7 @@ public class CallsReceiver extends BroadcastReceiver {
                             inCall = true;
                             //name=new CommonMethods().getContactName(phoneNumber,context);
 
-                            int serialNumber = pref.getInt("serialNumData", 1);
-                            new DatabaseManager(context).addCallDetails(new CallDetails(serialNumber, phoneNumber, new CommonMethods().getTIme(), new CommonMethods().getDate(), "not_yet"));
 
-                            List<CallDetails> list = new DatabaseManager(context).getAllDetails();
-                            for (CallDetails cd : list) {
-                                String log = "Serial Number : " + cd.getSerial() + " | Phone num : " + cd.getNum() + " | Time : " + cd.getTime1() + " | Date : " + cd.getDate1();
-                                Log.d("Database ", log);
-                            }
-
-                            //recordStarted=true;
-                            pref.edit().putInt("serialNumData", ++serialNumber).apply();
-                            pref.edit().putBoolean("recordStarted", true).apply();
                         }
 
                     } else if (state.equals(TelephonyManager.EXTRA_STATE_IDLE)) {
@@ -168,10 +157,25 @@ public class CallsReceiver extends BroadcastReceiver {
                             Log.d(TAG1, " Inside to stop recorder " + state);
 
                             context.stopService(new Intent(context, RecorderService.class));
-                            inCall = true;
+                            inCall = false;
+
                             pref.edit().putBoolean("recordStarted", false).apply();
+                            int serialNumber = pref.getInt("serialNumData", 1);
+//                            new DatabaseManager(context).addCallDetails(new CallDetails(serialNumber, phoneNumber, new CommonMethods().getTIme(), new CommonMethods().getDate(), "not_yet"));
+
+//                            List<CallDetails> list = new DatabaseManager(context).getAllDetails();
+//                            for (CallDetails cd : list) {
+//                                String log = "Serial Number : " + cd.getSerial() + " | Phone num : " + cd.getNum() + " | Time : " + cd.getTime1() + " | Date : " + cd.getDate1();
+//                                Log.d("Database ", log);
+//                            }
+
+                            //recordStarted=true;
+                            pref.edit().putInt("serialNumData", ++serialNumber).apply();
+                            pref.edit().putBoolean("recordStarted", true).apply();
+
+
                             if (currentCallListener != null) {
-                                currentCallListener.callEnded();
+                                currentCallListener.callEnded(serialNumber,phoneNumber);
                             }
 
                         }

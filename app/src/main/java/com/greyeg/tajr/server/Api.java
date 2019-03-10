@@ -66,12 +66,32 @@ public interface Api {
     @POST("send/fetch_orders")
     Call<CurrentOrderResponse> getCurrentOrder(@Part("token") RequestBody token);
 
-    // log in user client
     @FormUrlEncoded
     @POST("send/update_order")
     Call<UpdateOrederNewResponse> updateOrders(
             @Field("token") String token,
             @Field("order_id") String order_id,
+            @Field("user_id") String user_id,
+            @Field("status") String status
+
+    );
+
+    @FormUrlEncoded
+    @POST("send/update_order")
+    Call<UpdateOrederNewResponse> updateOrders(
+            @Field("token") String token,
+            @Field("order_id") String order_id,
+            @Field("status") String status
+
+    );
+
+    @FormUrlEncoded
+    @POST("send/update_order")
+    Call<UpdateOrederNewResponse> updateDelayedOrders(
+            @Field("token") String token,
+            @Field("order_id") String order_id,
+            @Field("delayed_until") String delayed_until,
+            @Field("user_id") String user_id,
             @Field("status") String status
 
     );
@@ -121,9 +141,6 @@ public interface Api {
             @Field("discount") String discount,
             @Field("order_cost") String order_cost,
             @Field("total_order_cost") String total_order_cost
-
-
-
 
             );
 
@@ -231,7 +248,10 @@ public interface Api {
 
     @Multipart
     @POST("send/upload_voice_notes")
-    Call<UploadVoiceResponse> uploadVoice(@Part("token") RequestBody token, @Part("order_id") RequestBody order_id,@Part MultipartBody.Part audio);
+    Call<UploadVoiceResponse> uploadVoice(@Part("token") RequestBody token,
+                                          @Part("order_id") RequestBody order_id,
+                                          @Part("call_duration") RequestBody call_duration,
+                                          @Part MultipartBody.Part audio);
 
     // log in user client
     @FormUrlEncoded

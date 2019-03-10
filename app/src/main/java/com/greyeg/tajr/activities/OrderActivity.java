@@ -3,6 +3,7 @@ package com.greyeg.tajr.activities;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -95,6 +96,7 @@ import com.greyeg.tajr.models.UserWorkTimeResponse;
 import com.greyeg.tajr.over.FloatLayout;
 import com.greyeg.tajr.records.CallDetails;
 import com.greyeg.tajr.records.CallsReceiver;
+import com.greyeg.tajr.records.CommonMethods;
 import com.greyeg.tajr.records.DatabaseManager;
 import com.greyeg.tajr.server.Api;
 import com.greyeg.tajr.server.BaseClient;
@@ -110,7 +112,9 @@ import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -142,7 +146,7 @@ public class OrderActivity extends AppCompatActivity
     public static final String client_noanswer = "client_noanswer";
     public static final String order_data_confirmed = "order_data_confirmed";
     public static final String client_phone_error = "client_phone_error";
-    public static final String client_delay = "client_delay ";
+    public static final String client_delay = "client_delay";
 
     private static final String TAG = CalcActivity.class.getSimpleName();
     private static final int DIALOG_REQUEST_CODE = 0;
@@ -448,22 +452,6 @@ public class OrderActivity extends AppCompatActivity
             }
         });
 
-        item_no.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
     }
 
     private void setConnectionListener() {
@@ -513,7 +501,29 @@ public class OrderActivity extends AppCompatActivity
     @OnClick(R.id.delay)
     void clent_delay() {
         floatingActionMenu.close(true);
-        updateOrder(client_delay);
+        chooseDate();
+    }
+
+    private void chooseDate() {
+        final Calendar calendar = Calendar.getInstance();
+        final int year = calendar.get(Calendar.YEAR);
+        final int month = calendar.get(Calendar.MONTH);
+        final int day = calendar.get(Calendar.DAY_OF_MONTH);
+        DatePickerDialog datePicker =
+                new DatePickerDialog(this, (view, year1, month1, dayOfMonth) -> {
+
+                    @SuppressLint("SimpleDateFormat")
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                    calendar.set(year1, month1, dayOfMonth);
+                    String dateString = sdf.format(calendar.getTime());
+
+                    updateOrder(client_delay, dateString);
+
+                }, year, month, day); // set date picker to current date
+
+        datePicker.show();
+
+        datePicker.setOnCancelListener(dialog -> dialog.dismiss());
     }
 
     @OnClick(R.id.no_answer)
@@ -563,6 +573,7 @@ public class OrderActivity extends AppCompatActivity
 
             }
 
+
             @Override
             public void onFailure(Call<UpdateOrdreDataRespnse> call, Throwable t) {
                 Log.d(TAG, "onFailure: " + t.getMessage());
@@ -591,7 +602,7 @@ public class OrderActivity extends AppCompatActivity
         ).enqueue(new Callback<UpdateOrdreDataRespnse>() {
             @Override
             public void onResponse(Call<UpdateOrdreDataRespnse> call, Response<UpdateOrdreDataRespnse> response) {
-                Log.d("555555", "onResponse: orders updates");
+                Log.d("updateSingleOrderData", "onResponse: orders updates");
 
 
             }
@@ -602,6 +613,7 @@ public class OrderActivity extends AppCompatActivity
             }
         });
     }
+
 
     void updateOrder(String value) {
         if (order.getOrder_type().equals("single order")) {
@@ -621,11 +633,62 @@ public class OrderActivity extends AppCompatActivity
         api.updateOrders(
                 SharedHelper.getKey(this, LoginActivity.TOKEN),
                 order_ud,
+                simpleOrderResponse.getUser_id(),
+
                 value
         ).enqueue(new Callback<UpdateOrederNewResponse>() {
             @Override
             public void onResponse(@NotNull Call<UpdateOrederNewResponse> call, @NotNull Response<UpdateOrederNewResponse> response) {
 
+                if (response.body().getCode().equals("1200") || response.body().getCode().equals("1202")) {
+                    Log.d("eeeeeeeeeeeeee", "onResponse: " + value + response.body().getCode());
+                    progressBar.setVisibility(View.GONE);
+                    if (askToFinishWork) {
+                        finishTheWorkNow();
+                    } else
+                        getFirstOrder();
+                } else {
+                    getFirstOrder();
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<UpdateOrederNewResponse> call, Throwable t) {
+                progressBar.setVisibility(View.GONE);
+                Log.d("dddddddddd", "onFailure:update " + value + t.getMessage());
+                Toast.makeText(OrderActivity.this, "" + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+
+    void updateOrder(String value, String until) {
+        if (order.getOrder_type().equals("single order")) {
+            updateSingleOrderData();
+        } else
+            updateOrderData();
+        if (value == null || order_ud == null) {
+            return;
+        }
+
+        if (updateOrderTimer != null) {
+            updateOrderTimer.cancel();
+            updateOrderTimerCount = 0;
+        }
+
+        Api api = BaseClient.getBaseClient().create(Api.class);
+        api.updateDelayedOrders(
+                SharedHelper.getKey(this, LoginActivity.TOKEN),
+                order_ud,
+                until,
+                simpleOrderResponse.getUser_id(),
+
+                value
+        ).enqueue(new Callback<UpdateOrederNewResponse>() {
+            @Override
+            public void onResponse(@NotNull Call<UpdateOrederNewResponse> call, @NotNull Response<UpdateOrederNewResponse> response) {
+                Log.d("eeeeeeeeeeeeee", "onResponse: " + value + response.body().getCode());
                 if (response.body().getCode().equals("1200") || response.body().getCode().equals("1202")) {
                     Log.d("eeeeeeeeeeeeee", "onResponse: " + value + response.body().getCode());
                     progressBar.setVisibility(View.GONE);
@@ -663,6 +726,7 @@ public class OrderActivity extends AppCompatActivity
         api.updateOrders(
                 SharedHelper.getKey(this, LoginActivity.TOKEN),
                 order_ud,
+                simpleOrderResponse.getUser_id(),
                 value
         ).enqueue(new Callback<UpdateOrederNewResponse>() {
             @Override
@@ -815,6 +879,7 @@ public class OrderActivity extends AppCompatActivity
         api.getFuckenOrders(SharedHelper.getKey(this, LoginActivity.TOKEN)).enqueue(new Callback<SimpleOrderResponse>() {
             @Override
             public void onResponse(Call<SimpleOrderResponse> call, Response<SimpleOrderResponse> response) {
+                Log.d("getFirstOrder", "onResponse: "+response.body().getData());
                 if (response.body() != null) {
                     progressBar.setVisibility(View.GONE);
                     if (response.body().getCode().equals("1202") || response.body().getCode().equals("1200")) {
@@ -982,7 +1047,7 @@ public class OrderActivity extends AppCompatActivity
                                             dis = Integer.parseInt(discount.getText().toString());
                                         }
                                         if (SHIPPING_COST.length() > 0) {
-                                            Integer.parseInt(SHIPPING_COST);
+                                            sh_cost = Integer.parseInt(SHIPPING_COST);
                                         }
                                         int newTotaolCost =
                                                 (itemCost * Integer.parseInt(s.toString())) +
@@ -1033,7 +1098,7 @@ public class OrderActivity extends AppCompatActivity
                                             }
 
                                             if (SHIPPING_COST.length() > 0) {
-                                                Integer.parseInt(SHIPPING_COST);
+                                                sh_cost = Integer.parseInt(SHIPPING_COST);
                                             }
 
 
@@ -1064,12 +1129,12 @@ public class OrderActivity extends AppCompatActivity
                         finishTheWorkNow();
 
                     }
-                    Log.d("eeeeeeeee", "onResponse: " + response.body().getInfo());
                 }
             }
 
             @Override
             public void onFailure(Call<SimpleOrderResponse> call, Throwable t) {
+                Log.d("getFirstOrder", "onFailure: "+t.getMessage());
                 Toast.makeText(OrderActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
                 progressBar.setVisibility(View.GONE);
                 //   finish();
@@ -1130,7 +1195,7 @@ public class OrderActivity extends AppCompatActivity
                                     dis = Integer.parseInt(discount.getText().toString());
                                 }
                                 if (SHIPPING_COST.length() > 0) {
-                                    Integer.parseInt(SHIPPING_COST);
+                                    sh_cost = Integer.parseInt(SHIPPING_COST);
                                 }
                                 int newTotaolCost =
                                         (itemCost * items) +
@@ -1621,11 +1686,10 @@ public class OrderActivity extends AppCompatActivity
     }
 
     @Override
-    public void callEnded() {
+    public void callEnded(int serialNumber, String phoneNumber) {
 
         Log.d("callEndedcallEnded", "callEnded: ");
-        if (hasInternet && connectionType.equals("WIFI"))
-            uploadVoices();
+
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -1674,6 +1738,9 @@ public class OrderActivity extends AppCompatActivity
                                     }
 
                                 } else {
+                                    new DatabaseManager(getApplicationContext()).addCallDetails(new CallDetails(serialNumber,
+                                            phoneNumber, new CommonMethods().getTIme(), new CommonMethods().getDate(), "not_yet", callDetails.getDuration()));
+
                                     minutesUsage(callDetails.getDuration());
                                     updateOrderTimer();
                                 }
@@ -1686,6 +1753,8 @@ public class OrderActivity extends AppCompatActivity
             }
         }, 1000);
 
+        if (hasInternet && connectionType.equals("WIFI"))
+            uploadVoices();
     }
 
     private boolean getAutoValue() {
@@ -1724,9 +1793,10 @@ public class OrderActivity extends AppCompatActivity
                 RequestBody surveyBody = RequestBody.create(MediaType.parse("audio/*"), file);
                 MultipartBody.Part image = MultipartBody.Part.createFormData("voice_note", file.getName(), surveyBody);
                 RequestBody title1 = RequestBody.create(MediaType.parse("text/plain"), order_ud);
+                RequestBody duration = RequestBody.create(MediaType.parse("text/plain"), call.getDuration());
                 RequestBody token = RequestBody.create(MediaType.parse("text/plain"), SharedHelper.getKey(this, LoginActivity.TOKEN));
 
-                BaseClient.getBaseClient().create(Api.class).uploadVoice(token, title1, image).enqueue(new Callback<UploadVoiceResponse>() {
+                BaseClient.getBaseClient().create(Api.class).uploadVoice(token, title1, duration, image).enqueue(new Callback<UploadVoiceResponse>() {
                     @Override
                     public void onResponse(Call<UploadVoiceResponse> call2, Response<UploadVoiceResponse> response) {
                         databaseManager.updateCallDetails(call);
@@ -2063,7 +2133,6 @@ public class OrderActivity extends AppCompatActivity
                     Log.d("onClick", "onClick: returned");
                     return;
                 }
-
 
                 if (order.getOrder_type().equals("single order")) {
                     updateSingleOrderData();
