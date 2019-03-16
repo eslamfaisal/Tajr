@@ -874,12 +874,19 @@ public class OrderActivity extends AppCompatActivity
     }
 
     private void getFirstOrder() {
+        item_no.setText("0");
+        item_cost.setText("0");
+        order_total_cost.setText("0");
+        shipping_cost.setText("0");
+        item_no.setText("0");
+        discount.setText("0");
+
         progressBar.setVisibility(View.VISIBLE);
 
         api.getFuckenOrders(SharedHelper.getKey(this, LoginActivity.TOKEN)).enqueue(new Callback<SimpleOrderResponse>() {
             @Override
             public void onResponse(Call<SimpleOrderResponse> call, Response<SimpleOrderResponse> response) {
-                Log.d("getFirstOrder", "onResponse: "+response.body().getData());
+                Log.d("getFirstOrder", "onResponse: " + response.body().getData());
                 if (response.body() != null) {
                     progressBar.setVisibility(View.GONE);
                     if (response.body().getCode().equals("1202") || response.body().getCode().equals("1200")) {
@@ -952,6 +959,8 @@ public class OrderActivity extends AppCompatActivity
                             if (cityIndex < 0) {
                                 cityIndex = 0;
                             }
+
+                            //179+99+600
                             client_city.setSelection(cityIndex);
                             SHIPPING_COST = shippingCosts.get(cityIndex);
                             client_city.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -1074,14 +1083,10 @@ public class OrderActivity extends AppCompatActivity
 
                                     @Override
                                     public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-
                                         int dis = 0;
+
                                         if (!s.toString().equals("")) {
                                             dis = Integer.parseInt(s.toString());
-
-                                        } else {
-                                            return;
                                         }
                                         if (order.getOrder_type().equals("single order")) {
 
@@ -1121,6 +1126,7 @@ public class OrderActivity extends AppCompatActivity
                                     }
                                 });
                             }
+
                         }
 
                     } else {
@@ -1134,7 +1140,7 @@ public class OrderActivity extends AppCompatActivity
 
             @Override
             public void onFailure(Call<SimpleOrderResponse> call, Throwable t) {
-                Log.d("getFirstOrder", "onFailure: "+t.getMessage());
+                Log.d("getFirstOrder", "onFailure: " + t.getMessage());
                 Toast.makeText(OrderActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
                 progressBar.setVisibility(View.GONE);
                 //   finish();
