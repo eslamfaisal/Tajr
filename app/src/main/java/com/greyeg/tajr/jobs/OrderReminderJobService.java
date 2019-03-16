@@ -5,7 +5,9 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
@@ -38,9 +40,10 @@ public class OrderReminderJobService extends JobService {
         api.getFuckenOrders(SharedHelper.getKey(this, LoginActivity.TOKEN)).enqueue(new Callback<SimpleOrderResponse>() {
             @Override
             public void onResponse(Call<SimpleOrderResponse> call, Response<SimpleOrderResponse> response) {
-                Log.d("OrderReminderJobService", "onResponse: "+response.message());
+                Log.d("OrderReminderJobService", "onResponse: " + response.message());
                 if (response.body() != null) {
-                    if (response.body().getOrder()!=null){
+                    if (response.body().getOrder() != null) {
+                        if (getAutoNotifiction())
                         createNotification(String.valueOf(response.body().getRemainig_orders()));
                         jobFinished(jobParameters, false);
                     }
@@ -49,8 +52,10 @@ public class OrderReminderJobService extends JobService {
 
             @Override
             public void onFailure(Call<SimpleOrderResponse> call, Throwable t) {
-                Log.d("OrderReminderJobService", "failer: "+t.getMessage());
-                createNotification(String.valueOf(t.getMessage()));
+                Log.d("OrderReminderJobService", "failer: " + t.getMessage());
+
+                NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                notificationManager.cancel(5);
                 jobFinished(jobParameters, false);
             }
         });
@@ -93,8 +98,7 @@ public class OrderReminderJobService extends JobService {
 
             notificationManager.notify(5, builder.build());
 
-        }
-        else {
+        } else {
             NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
                     .setSmallIcon(getApplicationInfo().icon)
                     .setContentTitle("orders")
@@ -112,5 +116,10 @@ public class OrderReminderJobService extends JobService {
             notificationManager.notify(5, builder.build());
         }
 
+    }
+
+    private boolean getAutoNotifiction() {
+        SharedPreferences auto = PreferenceManager.getDefaultSharedPreferences(this);
+        return auto.getBoolean("autoNotifiction", false);
     }
 }

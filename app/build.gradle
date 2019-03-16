@@ -128,6 +128,8 @@ dependencies {
     implementation 'io.mattcarroll.hover:hover:0.9.8'
     implementation 'com.github.clans:fab:1.6.4'
     implementation 'de.greenrobot:eventbus:2.4.0'
+// Android plugin 3.0.0 or higher.
+    implementation 'com.sangcomz:FishBun:0.8.8'
 
-}
+    implementation 'com.squareup.picasso:picasso:2.71828'}
 apply plugin: 'com.google.gms.google-services'

@@ -230,5 +230,6 @@
     <string name="no_extra_products">No extra Products</string>
     <string name="show_notification">Show notification</string>
     <string name="product_cost">Product cost</string>
+    <string name="no_orders">No orders yet</string>
 
 </resources>

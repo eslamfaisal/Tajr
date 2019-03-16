@@ -1129,6 +1129,10 @@ public class OrderActivity extends AppCompatActivity
 
                         }
 
+                    } else if (response.body().getCode().equals("1300")) {
+
+                        finishTheWorkNow();
+                        Toast.makeText(OrderActivity.this, R.string.no_orders, Toast.LENGTH_LONG).show();
                     } else {
                         SharedHelper.putKey(getApplicationContext(), IS_LOGIN, "اعادة تسجيل الدخول");
                         startActivity(new Intent(getApplicationContext(), LoginActivity.class));

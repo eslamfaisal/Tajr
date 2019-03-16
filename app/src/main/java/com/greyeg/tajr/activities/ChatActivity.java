@@ -50,6 +50,8 @@ import com.greyeg.tajr.models.User;
 import com.greyeg.tajr.view.AudioRecordView;
 import com.jpardogo.android.googleprogressbar.library.ChromeFloatingCirclesDrawable;
 import com.rygelouv.audiosensei.player.AudioSenseiListObserver;
+import com.sangcomz.fishbun.FishBun;
+import com.sangcomz.fishbun.adapter.image.impl.GlideAdapter;
 import com.yalantis.ucrop.UCrop;
 
 import net.gotev.speech.Speech;
@@ -164,6 +166,8 @@ public class ChatActivity extends AppCompatActivity implements AudioRecordView.R
             @Override
             public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
+
+
             }
 
             @Override
@@ -171,24 +175,13 @@ public class ChatActivity extends AppCompatActivity implements AudioRecordView.R
 
             }
         });
-        audioRecordView.getMessageView().setHint(R.string.wrong_message);
-        audioRecordView.getAttachmentView().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                ImagePicker.create(ChatActivity.this)
-//                        .limit(1)
-//                        .theme(R.style.UCrop)
-//                        .folderMode(false)
-//                        .start();
-            }
-        });
 
-        audioRecordView.getSendView().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sendMessage();
-            }
-        });
+        audioRecordView.getMessageView().setHint(R.string.wrong_message);
+        audioRecordView.getAttachmentView().setOnClickListener(v -> FishBun.with(ChatActivity.this)
+                .setImageAdapter(new GlideAdapter())
+                .startAlbum());
+
+        audioRecordView.getSendView().setOnClickListener(v -> sendMessage());
 
     }
 
