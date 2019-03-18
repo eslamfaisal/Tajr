@@ -756,6 +756,7 @@ public class OrderActivity extends AppCompatActivity
         });
     }
 
+
     void showProblemNoteDialog() {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
         alertDialog.setTitle("مشكلة");
@@ -1073,6 +1074,7 @@ public class OrderActivity extends AppCompatActivity
                                 });
                                 findViewById(R.id.product_label_view).setVisibility(View.VISIBLE);
                             }
+
                             discount.setText(order.getDiscount());
                             if (response.body().getOrder().getOrder_type().equals("single order")) {
                                 discount.addTextChangedListener(new TextWatcher() {

@@ -38,7 +38,7 @@ android {
         sourceCompatibility = '1.8'
         targetCompatibility = '1.8'
     }
-    packagingOptions{
+    packagingOptions {
         exclude 'AndroidManifest.xml'
         exclude 'lib/arm64-v8a/libcardioDecider.so'
         exclude 'lib/arm64-v8a/libcardioRecognizer.so'
@@ -95,7 +95,7 @@ dependencies {
     implementation 'com.squareup.retrofit2:retrofit:2.4.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:3.9.0'
-   // implementation 'com.github.esafirm.android-image-picker:rximagepicker:1.13.1'
+    // implementation 'com.github.esafirm.android-image-picker:rximagepicker:1.13.1'
     implementation 'com.squareup.okhttp3:okhttp:3.12.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
     implementation 'com.google.code.gson:gson:2.8.2'
@@ -131,5 +131,6 @@ dependencies {
 // Android plugin 3.0.0 or higher.
     implementation 'com.sangcomz:FishBun:0.8.8'
 
-    implementation 'com.squareup.picasso:picasso:2.71828'}
+    implementation 'com.squareup.picasso:picasso:2.71828'
+}
 apply plugin: 'com.google.gms.google-services'

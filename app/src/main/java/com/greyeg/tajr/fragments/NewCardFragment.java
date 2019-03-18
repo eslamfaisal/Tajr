@@ -109,6 +109,7 @@ public class NewCardFragment extends Fragment {
             @Override
             public void onResponse(Call<CardsResponse> call, Response<CardsResponse> response) {
 
+
                 Log.d(TAG, "onResponse: "+response.body().getData().getEtisalat());
                 etisalats.addAll(response.body().getData().getEtisalat());
                 we.addAll(response.body().getData().getWe());
@@ -189,6 +190,9 @@ public class NewCardFragment extends Fragment {
                                 @SuppressLint("ApplySharedPref")
                                 @Override
                                 public void onResponse(Call<CartResponse> call, Response<CartResponse> response) {
+                                    if(response.body().getCode().equals("1510")){
+                                        Toast.makeText(getActivity(), ""+response.body().getResponse(), Toast.LENGTH_LONG).show();
+                                    }
                                     if (response.body().getResponse().equals("success")) {
                                         copy_view.setVisibility(View.VISIBLE);
                                         requestView.setVisibility(View.GONE);
