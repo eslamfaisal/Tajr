@@ -12,11 +12,11 @@ import com.greyeg.tajr.models.DeleteAddProductResponse;
 import com.greyeg.tajr.models.MoneyHistory;
 import com.greyeg.tajr.models.MoneyRequestResponse;
 import com.greyeg.tajr.models.NewOrderResponse;
+import com.greyeg.tajr.models.OrderStatusHistoryResponse;
 import com.greyeg.tajr.models.PointsHistory;
 import com.greyeg.tajr.models.SimpleOrderResponse;
 import com.greyeg.tajr.models.ToalAvailableBalance;
 import com.greyeg.tajr.models.UpdateOrderResponse;
-import com.greyeg.tajr.models.UpdateOrdreDataRespnse;
 import com.greyeg.tajr.models.UpdateOrederNewResponse;
 import com.greyeg.tajr.models.UploadPhoneResponse;
 import com.greyeg.tajr.models.UploadVoiceResponse;
@@ -59,7 +59,7 @@ public interface Api {
 
     @Headers({"Content-Type: application/json"})
     @POST("send/get_orders")
-    Call<SimpleOrderResponse> getFuckenOrders(@Query("token")String token);
+    Call<SimpleOrderResponse> getFuckenOrders(@Query("token") String token);
 
     // log in user client
     @Multipart
@@ -73,6 +73,16 @@ public interface Api {
             @Field("order_id") String order_id,
             @Field("user_id") String user_id,
             @Field("status") String status
+
+    );
+
+    @FormUrlEncoded
+    @POST("send/shipping_attempts")
+    Call<UpdateOrederNewResponse> updateShippingOrders(
+            @Field("token") String token,
+            @Field("order_id") String order_id,
+            @Field("action") String action,
+            @Field("user_id") String user_id
 
     );
 
@@ -108,8 +118,8 @@ public interface Api {
     @FormUrlEncoded
     @POST("send/get_phone")
     Call<SimpleOrderResponse> getPhoneData(@Field("token") String token,
-                                          @Field("user_id") String user_id,
-                                          @Field("phone") String phone);
+                                           @Field("user_id") String user_id,
+                                           @Field("phone") String phone);
 
 
     @FormUrlEncoded
@@ -126,41 +136,42 @@ public interface Api {
                                             @Field("activity") String activity);
 
     @FormUrlEncoded
-    @POST("send/set_data")
-    Call<UpdateOrdreDataRespnse> updateOrderData(
+    @POST("send/set_client_data")
+    Call<SimpleOrderResponse> updateOrderData(
+            @Field("token") String token,
+            @Field("user_id") String user_id,
+            @Field("order_id") String order_id,
+            @Field("client_name") String client_name,
+            @Field("client_address") String client_address,
+            @Field("client_area") String client_area,
+            @Field("notes") String notes
+
+    );
+
+    @FormUrlEncoded
+    @POST("send/set_order_data")
+    Call<SimpleOrderResponse> updateOrderCalculationsSingleOrder(
             @Field("token") String token,
             @Field("user_id") String user_id,
             @Field("order_id") String order_id,
             @Field("product_id") String product_id,
             @Field("client_city") String client_city,
-            @Field("client_name") String client_name,
-            @Field("client_address") String client_address,
-            @Field("client_area") String client_area,
             @Field("items_no") String items_no,
-            @Field("notes") String notes,
-            @Field("discount") String discount,
-            @Field("order_cost") String order_cost,
-            @Field("total_order_cost") String total_order_cost
+            @Field("discount") String discount
 
-            );
+    );
 
     @FormUrlEncoded
-    @POST("send/set_data")
-    Call<UpdateOrdreDataRespnse> updateOrderData(
+    @POST("send/set_order_data")
+    Call<SimpleOrderResponse> updateOrderCalculationsMultiOrder(
             @Field("token") String token,
             @Field("user_id") String user_id,
             @Field("order_id") String order_id,
             @Field("client_city") String client_city,
-            @Field("client_name") String client_name,
-            @Field("client_address") String client_address,
-            @Field("client_area") String client_area,
-            @Field("notes") String notes,
             @Field("discount") String discount
 
-
-
-
     );
+
 
     // log in user client
     @FormUrlEncoded
@@ -182,19 +193,19 @@ public interface Api {
     @FormUrlEncoded
     @POST("send/get_products")
     Call<AllProducts> getProducts(@Field("token") String token,
-                              @Field("user_id") String  user_id);
+                                  @Field("user_id") String user_id);
 
     // log in user client
     @FormUrlEncoded
     @POST("send/activity_history")
     Call<ActivityHistory> getActivityHistory(@Field("token") String token,
-                                             @Field("user_id") String  user_id);
+                                             @Field("user_id") String user_id);
 
     // log in user client
     @FormUrlEncoded
     @POST("send/points_history")
     Call<PointsHistory> getPointsHistory(@Field("token") String token,
-                                         @Field("user_id") String  user_id);
+                                         @Field("user_id") String user_id);
 
     // log in user client
     @FormUrlEncoded
@@ -237,7 +248,7 @@ public interface Api {
     @POST("send/available_cards")
     Call<CardsResponse> getCarts(@Field("token") String token);
 
-     // log in user client
+    // log in user client
     @FormUrlEncoded
     @POST("send/retrieve_cards")
     Call<CartResponse> getCartDetails(@Field("token") String token, @Field("amount") String amount, @Field("type") String type);
@@ -245,6 +256,28 @@ public interface Api {
     @FormUrlEncoded
     @POST("send/balance")
     Call<ToalAvailableBalance> getTotalAvailableBalance(@Field("token") String token);
+
+    @FormUrlEncoded
+    @POST("send/balance")
+    Call<ToalAvailableBalance> getNormalAvailableBalance(@Field("token") String token, @Field("type") String type);
+
+    @FormUrlEncoded
+    @POST("send/balance")
+    Call<ToalAvailableBalance> getCustomelAvailableBalance(@Field("token") String token,
+                                                           @Field("type") String type,
+                                                           @Field("year") String year,
+                                                           @Field("month") String month,
+                                                           @Field("day") String day
+    );
+
+    @FormUrlEncoded
+    @POST("send/get_status_history")
+    Call<OrderStatusHistoryResponse> getSatusHistoryResponse(@Field("token") String token,
+                                                             @Field("order_id") String order_id,
+                                                             @Field("status_type") String status_type,
+                                                             @Field("user_id") String user_id
+    );
+
 
     @Multipart
     @POST("send/upload_voice_notes")

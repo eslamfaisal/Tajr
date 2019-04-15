@@ -3,6 +3,8 @@ package com.greyeg.tajr.models;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
+
 public class UserResponse {
 
     @SerializedName("response")
@@ -26,7 +28,19 @@ public class UserResponse {
     private String token;
 
 
+    @SerializedName("clients")
+    @Expose
+    private List<Clients> clients;
+
     public UserResponse() {
+    }
+
+    public List<Clients> getClients() {
+        return clients;
+    }
+
+    public void setClients(List<Clients> clients) {
+        this.clients = clients;
     }
 
     public String getToken() {
@@ -179,6 +193,35 @@ public class UserResponse {
         }
     }
 
+    public class Clients {
+
+        @SerializedName("id")
+        @Expose
+        private String id;
+
+        @SerializedName("name")
+        @Expose
+        private String name;
+
+        public Clients() {
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+    }
 
 
 

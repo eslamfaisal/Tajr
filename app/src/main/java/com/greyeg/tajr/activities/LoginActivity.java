@@ -63,41 +63,32 @@ public class LoginActivity extends AppCompatActivity {
     public static final String PARENT_TAJR_ID = "parent_tajr_id";
     public static final String TOKEN = "token";
     public static final String IS_LOGIN = "is_login";
+    public static final String PARENT_ID = "PARENT_ID";
     public static final String REMEMBER_PASS = "REMEMBER_PASS";
     public static final String REMEMBERED_PASS = "REMEMBERED_PASS";
     public static final String REMEMBERED_EMAIL = "REMEMBERED_EMAIL";
-
-
+    public static StringBuilder idListString;
+    final List<String> ids = new ArrayList<>();
     @BindView(R.id.loginbtn)
     RobotoTextView loginBtn;
-
     @BindView(R.id.email)
     FloatLabeledEditText email;
-
     @BindView(R.id.password)
     FloatLabeledEditText pass;
-
     @BindView(R.id.ken_burns_images)
     KenBurnsView mKenBurns;
-
     @BindView(R.id.logo)
     ImageView mLogo;
-
     @BindView(R.id.progress_log_in)
     ProgressWheel progressLogin;
-
     @BindView(R.id.remember_pass)
     CheckBox rememberPass;
-
     ProgressDialog progressDialog;
     Api api;
-
     List<User> users = new ArrayList<>();
-    final List<String> ids = new ArrayList<>();
-    public static StringBuilder idListString;
+    SharedPreferences sharedPreferences;
     private String TAG = "LoginActivity";
 
-    SharedPreferences sharedPreferences;
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
@@ -113,10 +104,10 @@ public class LoginActivity extends AppCompatActivity {
         progressDialog.setMessage(getString(R.string.wati_to_log_in));
         api = BaseClient.getBaseClient().create(Api.class);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean rem = sharedPreferences.getBoolean(REMEMBER_PASS,false);
-        if (rem){
-            email.setText(SharedHelper.getKey(this,REMEMBERED_EMAIL));
-            pass.setText(SharedHelper.getKey(this,REMEMBERED_PASS));
+        boolean rem = sharedPreferences.getBoolean(REMEMBER_PASS, false);
+        if (rem) {
+            email.setText(SharedHelper.getKey(this, REMEMBERED_EMAIL));
+            pass.setText(SharedHelper.getKey(this, REMEMBERED_PASS));
             rememberPass.setChecked(true);
         }
         setAnimation(SPLASH_SCREEN_OPTION_3);
@@ -126,13 +117,13 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 OneSignal.sendTag("User_ID", email.getText().toString());
                 loginBtn.setVisibility(View.GONE);
-                sharedPreferences.edit().putBoolean(REMEMBER_PASS,rememberPass.isChecked()).apply();
-                if (rememberPass.isChecked()){
-                    SharedHelper.putKey(getApplicationContext(),REMEMBERED_PASS,pass.getText().toString());
-                    SharedHelper.putKey(getApplicationContext(),REMEMBERED_EMAIL,email.getText().toString());
-                }else {
-                    SharedHelper.putKey(getApplicationContext(),REMEMBERED_PASS,"");
-                    SharedHelper.putKey(getApplicationContext(),REMEMBERED_EMAIL,"");
+                sharedPreferences.edit().putBoolean(REMEMBER_PASS, rememberPass.isChecked()).apply();
+                if (rememberPass.isChecked()) {
+                    SharedHelper.putKey(getApplicationContext(), REMEMBERED_PASS, pass.getText().toString());
+                    SharedHelper.putKey(getApplicationContext(), REMEMBERED_EMAIL, email.getText().toString());
+                } else {
+                    SharedHelper.putKey(getApplicationContext(), REMEMBERED_PASS, "");
+                    SharedHelper.putKey(getApplicationContext(), REMEMBERED_EMAIL, "");
                 }
 
                 progressLogin.setVisibility(View.VISIBLE);
@@ -146,9 +137,13 @@ public class LoginActivity extends AppCompatActivity {
                         public void onResponse(Call<UserResponse> call, final Response<UserResponse> response) {
                             if (response.body() != null) {
                                 if (response.body().getCode().equals("1202") || response.body().getCode().equals("1212")) {
+                                    String onsignalid = OneSignal.getPermissionSubscriptionState().getSubscriptionStatus().getUserId();
+                                    while (onsignalid == null) {
 
+                                        onsignalid = null;
+                                    }
                                     FirebaseDatabase.getInstance().getReference().child("users")
-                                            .child(OneSignal.getPermissionSubscriptionState().getSubscriptionStatus().getUserId())
+                                            .child(onsignalid)
                                             .setValue(new User(response.body().getData().getLogin_data().getUsername(), OneSignal.getPermissionSubscriptionState().getSubscriptionStatus().getUserId()))
                                             .addOnCompleteListener(new OnCompleteListener<Void>() {
                                                 @Override
@@ -158,6 +153,7 @@ public class LoginActivity extends AppCompatActivity {
                                                         loginBtn.setVisibility(View.VISIBLE);
                                                         progressLogin.setVisibility(View.GONE);
                                                         SharedHelper.putKey(getApplicationContext(), LOG_IN_FROM, "employee");
+                                                        SharedHelper.putKey(getApplicationContext(), PARENT_ID, response.body().getClients().get(0).getId());
                                                         SharedHelper.putKey(getApplicationContext(), IS_LOGIN, "yes");
                                                         SharedHelper.putKey(getApplicationContext(), USER_NAME, response.body().getData().getLogin_data().getUsername());
                                                         SharedHelper.putKey(getApplicationContext(), USER_ID, response.body().getData().getLogin_data().getUser_id());
@@ -168,22 +164,22 @@ public class LoginActivity extends AppCompatActivity {
                                                         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                                                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                                         startActivity(intent);
-                                                        overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+                                                        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                                                         finish();
 
                                                     }
                                                 }
                                             });
 
-                                }else {
-                                     Snackbar.make(v, R.string.wrong_email_pass,Snackbar.LENGTH_SHORT).show();
+                                } else {
+                                    Snackbar.make(v, R.string.wrong_email_pass, Snackbar.LENGTH_SHORT).show();
                                 }
                             }
                         }
 
                         @Override
                         public void onFailure(Call<UserResponse> call, Throwable t) {
-                            Snackbar.make(v, R.string.wrong_email_pass,Snackbar.LENGTH_LONG).show();
+                            Snackbar.make(v, R.string.wrong_email_pass, Snackbar.LENGTH_LONG).show();
                             loginBtn.setVisibility(View.VISIBLE);
                             progressLogin.setVisibility(View.GONE);
                             Log.d("eeeeeeeeeeeeeeee", "onFailure: " + t.getMessage());
@@ -195,21 +191,21 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    private void minutesUsage(  ){
+    private void minutesUsage() {
 
         int totalSeconds = Integer.parseInt("60");
-        int minutes = totalSeconds/59;
+        int minutes = totalSeconds / 59;
         int remaining = 0;
-        if ((totalSeconds%59)>0){
+        if ((totalSeconds % 59) > 0) {
             remaining = 1;
         }
 
         SharedPreferences pref1 = PreferenceManager.getDefaultSharedPreferences(this);
-        float oldUsage = pref1.getFloat("cards_usage",0f);
-        float currentUsage = (float) (minutes+remaining);
-        float newUsage = oldUsage+currentUsage;
-        pref1.edit().putFloat("cards_usage",newUsage).apply();
-        Log.d("minutesUsage", "minutesUsage: "+pref1.getFloat("cards_usage",0f));
+        float oldUsage = pref1.getFloat("cards_usage", 0f);
+        float currentUsage = (float) (minutes + remaining);
+        float newUsage = oldUsage + currentUsage;
+        pref1.edit().putFloat("cards_usage", newUsage).apply();
+        Log.d("minutesUsage", "minutesUsage: " + pref1.getFloat("cards_usage", 0f));
 
     }
 
@@ -217,7 +213,7 @@ public class LoginActivity extends AppCompatActivity {
         if (category.equals(SPLASH_SCREEN_OPTION_1)) {
             mKenBurns.setImageResource(R.drawable.background_media);
             animation1();
-        }  else if (category.equals(SPLASH_SCREEN_OPTION_3)) {
+        } else if (category.equals(SPLASH_SCREEN_OPTION_3)) {
             mKenBurns.setImageResource(R.drawable.ic_traffic);
             animation2();
             animation3();
@@ -256,8 +252,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
-
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -265,7 +259,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void adminLogIn(View view) {
-        startActivity(new Intent(this,AdminLoginActivity.class));
+        startActivity(new Intent(this, AdminLoginActivity.class));
     }
 }
 

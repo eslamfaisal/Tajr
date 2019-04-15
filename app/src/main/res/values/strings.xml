@@ -231,5 +231,24 @@
     <string name="show_notification">Show notification</string>
     <string name="product_cost">Product cost</string>
     <string name="no_orders">No orders yet</string>
+    <string name="edite">Edit</string>
+    <string name="today">Today</string>
+    <string name="this_month">This month</string>
+    <string name="this_year">This year</string>
+    <string name="specific_day">Specific day</string>
+    <string name="specific_month">Specific month</string>
+    <string name="specific_year">Specific year</string>
+    <string name="day">Day</string>
+    <string name="select_year">Select your year</string>
+    <string name="select_month">Select your month</string>
+    <string name="select_day">Select your day</string>
+    <string name="order_id">Order id</string>
+    <string name="status">Status</string>
+    <string name="date">Date</string>
+    <string name="source">Source</string>
+    <string name="order_status_history">Order status history</string>
+    <string name="shipping_status_history">Shipping status history</string>
+    <string name="deliver">Deliver</string>
+    <string name="return_order">Return order</string>
 
 </resources>

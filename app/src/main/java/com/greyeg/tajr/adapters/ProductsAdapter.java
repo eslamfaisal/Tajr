@@ -27,8 +27,6 @@ import retrofit2.Response;
 
 public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.Holder> {
 
-    public static int totalCost;
-
     Activity context;
     List<ProDuct> proDucts;
     String orderId;
@@ -55,7 +53,6 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.Holder
 
 
         ProDuct proDuct = proDucts.get(i);
-        totalCost = totalCost+(Integer.parseInt(proDucts.get(i).getItem_cost())*Integer.parseInt(proDucts.get(i).getItems_no()));
         holder.name.setText(proDuct.getProduct_name());
         holder.no.setText(proDuct.getItems_no());
         holder.delete.setOnClickListener(new View.OnClickListener() {

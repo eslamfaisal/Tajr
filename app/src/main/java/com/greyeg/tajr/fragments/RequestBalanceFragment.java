@@ -1,9 +1,7 @@
 package com.greyeg.tajr.fragments;
 
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
+import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -12,10 +10,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AccelerateDecelerateInterpolator;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.ImageView;
+import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,26 +23,27 @@ import com.greyeg.tajr.activities.BalanceActivity;
 import com.greyeg.tajr.activities.LoginActivity;
 import com.greyeg.tajr.helper.SharedHelper;
 import com.greyeg.tajr.helper.font.RobotoTextView;
-import com.greyeg.tajr.models.CashRequestHistory;
 import com.greyeg.tajr.models.MoneyRequestResponse;
 import com.greyeg.tajr.models.ToalAvailableBalance;
 import com.greyeg.tajr.server.Api;
 import com.greyeg.tajr.server.BaseClient;
 import com.greyeg.tajr.view.FloatLabeledEditText;
 import com.greyeg.tajr.view.ProgressWheel;
-import com.greyeg.tajr.view.kbv.KenBurnsView;
+
+import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class RequestBalanceFragment extends Fragment {
+
+    private final String TAG = "RequestBalanceFragment";
 
     public static final String SPLASH_SCREEN_OPTION = "com.csform.android.uiapptemplate.SplashScreensActivity";
     public static final String SPLASH_SCREEN_OPTION_1 = "Fade in + Ken Burns";
@@ -70,9 +70,8 @@ public class RequestBalanceFragment extends Fragment {
     @BindView(R.id.phone)
     FloatLabeledEditText phone;
 
-//    @BindView(R.id.ken_burns_images)
-//    KenBurnsView mKenBurns;
-
+    @BindView(R.id.balance_time)
+    Spinner balanceTimeSpinner;
 
     @BindView(R.id.progress_log_in)
     ProgressWheel progressLogin;
@@ -80,7 +79,8 @@ public class RequestBalanceFragment extends Fragment {
     ProgressDialog progressDialog;
     Api api;
 
-  public static TextView availableBalance;
+    @BindView(R.id.available_balance)
+    TextView availableBalance;
 
     public RequestBalanceFragment() {
         // Required empty public constructor
@@ -93,28 +93,18 @@ public class RequestBalanceFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_request_balance, container, false);
     }
 
+    ArrayList<String> timeTypeRequest;
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this, view);
+        setTimeTypeRequest();
         progressDialog = new ProgressDialog(getActivity());
         progressDialog.setMessage(getString(R.string.wati_to_log_in));
         api = BaseClient.getBaseClient().create(Api.class);
-        availableBalance = view.findViewById(R.id.available_balance);
+        initBalanceTimeSpinner();
 
-        api.getTotalAvailableBalance(
-                SharedHelper.getKey(getActivity(), LoginActivity.TOKEN)
-                ).enqueue(new Callback<ToalAvailableBalance>() {
-            @Override
-            public void onResponse(Call<ToalAvailableBalance> call, Response<ToalAvailableBalance> response) {
-                availableBalance.setText(response.body().getTotal_available());
-            }
-
-            @Override
-            public void onFailure(Call<ToalAvailableBalance> call, Throwable t) {
-
-            }
-        });
         loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -157,6 +147,131 @@ public class RequestBalanceFragment extends Fragment {
             }
         });
 //        getCallLogs();
+    }
+
+    void initBalanceTimeSpinner() {
+
+        ArrayAdapter adapter = new ArrayAdapter(getActivity(), R.layout.layout_cities_spinner_item, getTimeTypes());
+        balanceTimeSpinner.setAdapter(adapter);
+        balanceTimeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (position >= 0 && position <= 2) {
+                    api.getNormalAvailableBalance(
+                            SharedHelper.getKey(getActivity(), LoginActivity.TOKEN),
+                            getTypeRequest(position)
+                    ).enqueue(new Callback<ToalAvailableBalance>() {
+                        @Override
+                        public void onResponse(Call<ToalAvailableBalance> call, Response<ToalAvailableBalance> response) {
+                            availableBalance.setText("" + response.body().getTotal_available());
+                        }
+
+                        @Override
+                        public void onFailure(Call<ToalAvailableBalance> call, Throwable t) {
+                            Log.d(TAG, "onFailure: " + t.getMessage());
+                            availableBalance.setText(t.getMessage());
+                        }
+                    });
+                } else {
+                    showTimeDialog(position);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+    }
+
+    private ArrayList<String> getTimeTypes() {
+        ArrayList<String> timeType = new ArrayList<>();
+        timeType.add(getString(R.string.today));
+        timeType.add(getString(R.string.this_month));
+        timeType.add(getString(R.string.this_year));
+        timeType.add(getString(R.string.specific_year));
+        timeType.add(getString(R.string.specific_month));
+        timeType.add(getString(R.string.specific_day));
+        return timeType;
+    }
+
+    private void setTimeTypeRequest() {
+        timeTypeRequest = new ArrayList<>();
+        timeTypeRequest.add("today");
+        timeTypeRequest.add("this_month");
+        timeTypeRequest.add("this_year");
+        timeTypeRequest.add("specific_year");
+        timeTypeRequest.add("specific_month");
+        timeTypeRequest.add("specific_day");
+    }
+
+    private String getTypeRequest(int position) {
+        return timeTypeRequest.get(position);
+    }
+
+    private void showTimeDialog(int positin) {
+        Dialog timDialog = new Dialog(getActivity());
+        timDialog.setContentView(R.layout.dialog_balance_time);
+        EditText dayEdt = timDialog.findViewById(R.id.day);
+        EditText monthEdt = timDialog.findViewById(R.id.month);
+        EditText yearEdt = timDialog.findViewById(R.id.year);
+
+        RobotoTextView ok = timDialog.findViewById(R.id.ok);
+        RobotoTextView cancle = timDialog.findViewById(R.id.cancel);
+        RobotoTextView message = timDialog.findViewById(R.id.edit_type);
+
+        if (positin == 3) {
+            message.setText(getString(R.string.select_year));
+            monthEdt.setVisibility(View.GONE);
+            dayEdt.setVisibility(View.GONE);
+        } else if (positin == 4) {
+            message.setText(getString(R.string.select_month));
+            dayEdt.setVisibility(View.GONE);
+        } else {
+            message.setText(getString(R.string.select_day));
+        }
+
+        ok.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                timDialog.dismiss();
+                api.getCustomelAvailableBalance(
+                        SharedHelper.getKey(getActivity(), LoginActivity.TOKEN),
+                        getTypeRequest(positin),
+                        yearEdt.getText().toString(),
+                        monthEdt.getText().toString(),
+                        dayEdt.getText().toString()
+                ).enqueue(new Callback<ToalAvailableBalance>() {
+                    @Override
+                    public void onResponse(Call<ToalAvailableBalance> call, Response<ToalAvailableBalance> response) {
+
+                        availableBalance.setText(response.body().getTotal_available());
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<ToalAvailableBalance> call, Throwable t) {
+                        availableBalance.setText(t.getMessage());
+                        availableBalance.setText(t.getMessage());
+                    }
+                });
+            }
+        });
+
+        cancle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                timDialog.dismiss();
+            }
+        });
+
+        WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+        lp.copyFrom(timDialog.getWindow().getAttributes());
+        lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        timDialog.show();
+        timDialog.getWindow().setAttributes(lp);
+
     }
 
 //    private void setAnimation(String category) {

@@ -99,7 +99,7 @@
                                 android:id="@+id/order_idl"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="@string/client_name"
+                                android:text="@string/order_id"
                                 android:textColor="@color/colorPrimary"
                                 android:textSize="18sp"
                                 android:textStyle="bold"
@@ -112,7 +112,7 @@
                                 android:background="@drawable/ic_background_gray">
 
                                 <EditText
-                                    android:gravity="center"
+
                                     android:id="@+id/order_id"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
@@ -120,6 +120,7 @@
                                     android:layout_marginEnd="26dp"
                                     android:background="@color/gray"
                                     android:editable="false"
+                                    android:gravity="center"
                                     android:inputType="text"
                                     android:paddingStart="16dp"
                                     android:tag="client_name_label" />
@@ -154,17 +155,19 @@
                                 android:layout_height="wrap_content"
                                 android:background="@drawable/ic_background_gray">
 
-                                <EditText
-                                    android:gravity="center"
-
+                                <TextView
                                     android:id="@+id/client_name"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_gravity="center_vertical"
                                     android:layout_marginEnd="26dp"
-                                    android:inputType="text"
+                                    android:gravity="center"
+                                    android:onClick="changeClientName"
                                     android:paddingStart="16dp"
-                                    android:tag="client_name_label" />
+                                    android:tag="client_name_label"
+                                    android:textColor="@color/black_text_color"
+                                    android:textSize="@dimen/_14ssp" />
+
                             </FrameLayout>
 
 
@@ -200,16 +203,16 @@
 
                                 <EditText
                                     android:id="@+id/sender_name"
-                                    android:gravity="center"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_gravity="center_vertical"
                                     android:layout_marginEnd="26dp"
                                     android:background="@color/gray"
                                     android:editable="false"
+                                    android:gravity="center"
                                     android:paddingStart="16dp"
                                     android:tag="client_name_label" />
-                            </FrameLayout>Integer.parseInt(s.toString()
+                            </FrameLayout>
                         </LinearLayout>
 
                         <LinearLayout
@@ -282,8 +285,7 @@
                                     android:id="@+id/no_products"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_gravity="center"
-                                    android:text="@string/no_extra_products" />
+                                    android:layout_gravity="center" />
 
                                 <LinearLayout
                                     android:layout_width="match_parent"
@@ -340,8 +342,7 @@
                                 android:layout_height="wrap_content"
                                 android:background="@drawable/ic_background_gray">
 
-                                <EditText
-                                    android:gravity="center"
+                                <TextView
                                     android:id="@+id/status"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
@@ -349,7 +350,9 @@
                                     android:layout_marginEnd="26dp"
                                     android:background="@color/gray"
                                     android:editable="false"
+                                    android:gravity="center"
                                     android:inputType="text"
+                                    android:onClick="show_order_status_history"
                                     android:paddingStart="16dp"
                                     android:tag="client_name_label" />
                             </FrameLayout>
@@ -358,7 +361,6 @@
                         <LinearLayout
                             android:id="@+id/lotrsddf"
                             android:layout_width="match_parent"
-
                             android:layout_height="wrap_content"
                             android:layout_marginStart="16dp"
                             android:layout_marginTop="20dp"
@@ -383,8 +385,7 @@
                                 android:layout_height="wrap_content"
                                 android:background="@drawable/ic_background_gray">
 
-                                <EditText
-                                    android:gravity="center"
+                                <TextView
                                     android:id="@+id/shipping_status"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
@@ -392,7 +393,8 @@
                                     android:layout_marginEnd="26dp"
                                     android:background="@color/gray"
                                     android:editable="false"
-                                    android:inputType="text"
+                                    android:gravity="center"
+                                    android:onClick="show_shipping_status_history"
                                     android:paddingStart="16dp"
                                     android:tag="client_name_label" />
                             </FrameLayout>
@@ -429,13 +431,13 @@
 
                                 <EditText
                                     android:id="@+id/client_order_phone1"
-                                    android:gravity="center"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_gravity="center_vertical"
                                     android:layout_marginEnd="26dp"
                                     android:background="@color/gray"
                                     android:editable="false"
+                                    android:gravity="center"
                                     android:paddingStart="16dp"
                                     android:tag="client_name_label" />
                             </FrameLayout>
@@ -467,13 +469,13 @@
 
                                 <EditText
                                     android:id="@+id/order_type"
-                                    android:gravity="center"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_gravity="center_vertical"
                                     android:layout_marginEnd="26dp"
                                     android:background="@color/gray"
                                     android:editable="false"
+                                    android:gravity="center"
                                     android:paddingStart="16dp"
                                     android:tag="client_name_label" />
                             </FrameLayout>
@@ -506,13 +508,13 @@
 
                                 <EditText
                                     android:id="@+id/real_shipping_return_cost"
-                                    android:gravity="center"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_gravity="center_vertical"
                                     android:layout_marginEnd="26dp"
                                     android:background="@color/gray"
                                     android:editable="false"
+                                    android:gravity="center"
                                     android:paddingStart="16dp"
                                     android:tag="client_name_label" />
                             </FrameLayout>
@@ -548,7 +550,6 @@
                                 android:background="@drawable/ic_background_gray">
 
                                 <EditText
-                                    android:gravity="center"
                                     android:id="@+id/client_feedback"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
@@ -556,6 +557,7 @@
                                     android:layout_marginEnd="26dp"
                                     android:background="@color/gray"
                                     android:editable="false"
+                                    android:gravity="center"
                                     android:paddingStart="16dp"
                                     android:tag="client_name_label" />
                             </FrameLayout>
@@ -591,15 +593,18 @@
                                 android:layout_height="wrap_content"
                                 android:background="@drawable/ic_background_gray">
 
-                                <EditText
-                                    android:gravity="center"
+                                <TextView
                                     android:id="@+id/client_address"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_marginEnd="26dp"
+                                    android:gravity="center"
+                                    android:onClick="changeAddress"
                                     android:paddingStart="8dp"
                                     android:paddingEnd="8dp"
-                                    android:tag="client_name_label" />
+                                    android:tag="client_name_label"
+                                    android:textColor="@color/black_text_color"
+                                    android:textSize="@dimen/_14ssp" />
                             </FrameLayout>
                         </LinearLayout>
 
@@ -638,16 +643,19 @@
                                     android:layout_height="wrap_content"
                                     android:background="@drawable/ic_background_gray">
 
-                                    <EditText
+                                    <TextView
                                         android:id="@+id/client_area"
-                                        android:gravity="center"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:layout_gravity="center_vertical"
                                         android:layout_marginEnd="26dp"
+                                        android:gravity="center"
                                         android:inputType="text"
+                                        android:onClick="changArea"
                                         android:paddingStart="16dp"
-                                        android:tag="client_name_label" />
+                                        android:tag="client_name_label"
+                                        android:textColor="@color/black_text_color"
+                                        android:textSize="@dimen/_14ssp" />
                                 </FrameLayout>
 
                             </LinearLayout>
@@ -726,7 +734,6 @@
                                 android:background="@drawable/ic_background_gray">
 
                                 <EditText
-                                    android:gravity="center"
                                     android:id="@+id/shipping_cost"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
@@ -734,6 +741,8 @@
                                     android:layout_marginEnd="26dp"
                                     android:background="@color/gray"
                                     android:editable="false"
+                                    android:enabled="false"
+                                    android:gravity="center"
                                     android:inputType="text"
                                     android:paddingStart="16dp"
                                     android:tag="client_name_label" />
@@ -779,13 +788,13 @@
 
                                     <EditText
                                         android:id="@+id/item_cost"
-                                        android:gravity="center"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:layout_gravity="center_vertical"
                                         android:layout_marginEnd="26dp"
                                         android:background="@color/gray"
                                         android:editable="false"
+                                        android:gravity="center"
                                         android:paddingStart="16dp"
                                         android:tag="client_name_label" />
                                 </FrameLayout>
@@ -821,16 +830,18 @@
                                     android:layout_height="wrap_content"
                                     android:background="@drawable/ic_background_gray">
 
-                                    <EditText
-                                        android:gravity="center"
+                                    <TextView
                                         android:id="@+id/item_no"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:layout_gravity="center_vertical"
                                         android:layout_marginEnd="26dp"
-                                        android:inputType="number"
+                                        android:gravity="center"
+                                        android:onClick="changItemNumber"
                                         android:paddingStart="16dp"
-                                        android:tag="client_name_label" />
+                                        android:tag="client_name_label"
+                                        android:textColor="@color/black_text_color"
+                                        android:textSize="@dimen/_16ssp" />
                                 </FrameLayout>
 
                             </LinearLayout>
@@ -866,16 +877,18 @@
                                 android:layout_height="wrap_content"
                                 android:background="@drawable/ic_background_gray">
 
-                                <EditText
+                                <TextView
                                     android:id="@+id/discount"
-                                    android:gravity="center"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_gravity="center_vertical"
                                     android:layout_marginEnd="26dp"
-                                    android:inputType="number"
+                                    android:gravity="center"
+                                    android:onClick="changeDiscount"
                                     android:paddingStart="16dp"
-                                    android:tag="client_name_label" />
+                                    android:tag="client_name_label"
+                                    android:textColor="@color/black_text_color"
+                                    android:textSize="@dimen/_16ssp" />
                             </FrameLayout>
                         </LinearLayout>
 
@@ -909,7 +922,6 @@
                                 android:background="@drawable/ic_background_gray">
 
                                 <EditText
-                                    android:gravity="center"
                                     android:id="@+id/order_total_cost"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
@@ -917,6 +929,7 @@
                                     android:layout_marginEnd="26dp"
                                     android:background="@color/gray"
                                     android:editable="false"
+                                    android:gravity="center"
                                     android:paddingStart="16dp"
                                     android:tag="client_name_label" />
                             </FrameLayout>
@@ -934,7 +947,6 @@
                             android:orientation="vertical">
 
                             <TextView
-
                                 android:id="@+id/ntes_label"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -950,15 +962,17 @@
                                 android:layout_height="wrap_content"
                                 android:background="@drawable/ic_background_gray">
 
-                                <EditText
-                                    android:gravity="center"
+                                <TextView
                                     android:id="@+id/ntes"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_marginEnd="26dp"
+                                    android:gravity="center"
                                     android:hint="@string/notes"
+                                    android:onClick="changeNotes"
                                     android:paddingStart="8dp"
-                                    android:paddingEnd="8dp" />
+                                    android:paddingEnd="8dp"
+                                    android:textSize="@dimen/_16ssp" />
 
                             </FrameLayout>
                         </LinearLayout>
@@ -1078,11 +1092,28 @@
                 fab:fab_size="mini" />
 
             <com.github.clans.fab.FloatingActionButton
+                android:id="@+id/deliver"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#00000000"
+                android:src="@drawable/ic_confirm"
+                fab:fab_label="@string/deliver"
+                fab:fab_size="mini" />
+
+            <com.github.clans.fab.FloatingActionButton
                 android:id="@+id/cancel_order2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_cancel"
                 fab:fab_label="@string/cancel_order"
+                fab:fab_size="mini" />
+
+            <com.github.clans.fab.FloatingActionButton
+                android:id="@+id/return_order"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_cancel"
+                fab:fab_label="@string/return_order"
                 fab:fab_size="mini" />
 
             <com.github.clans.fab.FloatingActionButton
@@ -1095,6 +1126,14 @@
 
             <com.github.clans.fab.FloatingActionButton
                 android:id="@+id/no_answer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_phone_call_end"
+                fab:fab_label="@string/client_noanswer"
+                fab:fab_size="mini" />
+
+            <com.github.clans.fab.FloatingActionButton
+                android:id="@+id/shipping_no_answer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_phone_call_end"
@@ -1277,7 +1316,6 @@
 
             <EditText
 
-                android:gravity="center"
                 android:id="@+id/edt_max_value"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -1286,6 +1324,7 @@
                 android:layout_marginEnd="24dp"
                 android:layout_marginRight="24dp"
                 android:ems="10"
+                android:gravity="center"
                 android:inputType="numberDecimal"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/chk_max_value"
@@ -1309,7 +1348,6 @@
                 app:layout_constraintTop_toTopOf="@+id/edt_max_int" />
 
             <EditText
-                android:gravity="center"
                 android:id="@+id/edt_max_int"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -1319,6 +1357,7 @@
                 android:layout_marginEnd="24dp"
                 android:layout_marginRight="24dp"
                 android:ems="10"
+                android:gravity="center"
                 android:inputType="number"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.875"
@@ -1343,7 +1382,6 @@
                 app:layout_constraintTop_toTopOf="@+id/edt_max_frac" />
 
             <EditText
-                android:gravity="center"
                 android:id="@+id/edt_max_frac"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -1353,6 +1391,7 @@
                 android:layout_marginEnd="24dp"
                 android:layout_marginRight="24dp"
                 android:ems="10"
+                android:gravity="center"
                 android:inputType="number"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
@@ -1384,8 +1423,8 @@
         android:id="@+id/top_sheet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:layout_marginBottom="@dimen/_40sdp"
+        android:orientation="vertical"
         app:behavior_peekHeight="?attr/actionBarSize"
         app:layout_behavior="@string/top_sheet_behavior"
         tools:ignore="MissingPrefix">
@@ -1452,24 +1491,24 @@
                 android:textSize="16sp" />
 
             <TextView
-                android:visibility="visible"
                 android:id="@+id/category_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
                 android:text="description"
                 android:textColor="@color/colorPrimaryDark"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                android:visibility="visible" />
 
             <TextView
-                android:visibility="visible"
                 android:id="@+id/product_info"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
                 android:text="description"
                 android:textColor="@color/colorPrimaryDark"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                android:visibility="visible" />
 
 
         </LinearLayout>

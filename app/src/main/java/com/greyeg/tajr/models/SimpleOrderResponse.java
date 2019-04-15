@@ -31,6 +31,10 @@ public class SimpleOrderResponse {
     @Expose
     private String response;
 
+    @SerializedName("check_type")
+    @Expose
+    private String check_type;
+
     @SerializedName("order")
     @Expose
     private Order order;
@@ -47,6 +51,13 @@ public class SimpleOrderResponse {
     public SimpleOrderResponse() {
     }
 
+    public String getCheck_type() {
+        return check_type;
+    }
+
+    public void setCheck_type(String check_type) {
+        this.check_type = check_type;
+    }
 
     public List<City> getCities() {
         return cities;

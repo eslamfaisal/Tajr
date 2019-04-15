@@ -102,19 +102,20 @@ public class NewOrderFragment extends Fragment {
         getcities(api);
 
     }
+
     private void getcities(Api api) {
         if (cities != null && cities.size() > 1) {
             cities.clear();
         }
         Call<Cities> getCiriesCall = api.getCities(
                 SharedHelper.getKey(getActivity(), LoginActivity.TOKEN),
-                SharedHelper.getKey(getActivity(), LoginActivity.USER_ID)
+                SharedHelper.getKey(getActivity(), LoginActivity.PARENT_ID)
         );
 
         getCiriesCall.enqueue(new Callback<Cities>() {
             @Override
             public void onResponse(Call<Cities> call, Response<Cities> response) {
-                if (response.body() != null) {
+                if (response.body().getCities() != null) {
                     if (response.body().getCities().size() > 0) {
 
                         citiesBody = response.body().getCities();

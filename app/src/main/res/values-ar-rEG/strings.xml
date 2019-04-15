@@ -189,5 +189,24 @@
     <string name="show_notification">اظهار الاشعارات</string>
     <string name="product_cost">تكلفة المنتج</string>
     <string name="no_orders">ﻻ يوجد اوردرات الان</string>
+    <string name="edite">تعديل</string>
+    <string name="today">اليوم</string>
+    <string name="this_month">هذا الشهر</string>
+    <string name="this_year">هذة السنة</string>
+    <string name="specific_day">يوم محدد</string>
+    <string name="specific_month">شهر محدد</string>
+    <string name="specific_year">سنة محددة</string>
+    <string name="day">اليوم</string>
+    <string name="select_year">اختر السنة</string>
+    <string name="select_month">اختر الشهر</string>
+    <string name="select_day">اختر اليوم</string>
+    <string name="order_id">الرقم التعريفي للطلب</string>
+    <string name="status">الحالة</string>
+    <string name="date">التاريخ</string>
+    <string name="source">المصدر</string>
+    <string name="order_status_history">حالات الطلب القديمة</string>
+    <string name="shipping_status_history">حالات شحن الطلب</string>
+    <string name="deliver">توصيل الطلب</string>
+    <string name="return_order">ارجاع الطلب</string>
 
 </resources>
