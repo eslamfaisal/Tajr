@@ -163,7 +163,12 @@ public class RequestBalanceFragment extends Fragment {
                     ).enqueue(new Callback<ToalAvailableBalance>() {
                         @Override
                         public void onResponse(Call<ToalAvailableBalance> call, Response<ToalAvailableBalance> response) {
-                            availableBalance.setText("" + response.body().getTotal_available());
+
+                            if (response.body().getInfo().equals("no_data")) {
+                                availableBalance.setText("" + response.body().getData());
+                            } else
+                                availableBalance.setText("" + response.body().getTotalAvailableBalance());
+                            Log.d(TAG, "onResponse: " + response.body().toString());
                         }
 
                         @Override
@@ -244,8 +249,10 @@ public class RequestBalanceFragment extends Fragment {
                 ).enqueue(new Callback<ToalAvailableBalance>() {
                     @Override
                     public void onResponse(Call<ToalAvailableBalance> call, Response<ToalAvailableBalance> response) {
-
-                        availableBalance.setText(response.body().getTotal_available());
+                        Dialog dialog = new Dialog(getActivity());
+                        dialog.setTitle(response.body().getResponse());
+                        dialog.show();
+                        availableBalance.setText("" + response.body().getTotalAvailableBalance());
 
                     }
 

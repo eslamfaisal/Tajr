@@ -316,6 +316,10 @@ public class OrderActivity extends AppCompatActivity
 
     int extraProductsCost;
     ProductForSpinner productForSpinner;
+    public static String currentClientID;
+    List<OrderStatusHistoryResponse.History> orderHistoryList;
+    String orderErrorMsg;
+    List<OrderStatusHistoryResponse.History> shippingHistoryList;
     private TextView valueTxv;
     private CheckBox signChk;
     private @Nullable
@@ -347,6 +351,7 @@ public class OrderActivity extends AppCompatActivity
         }
     };
     private List<City> citiesBody;
+    String shippingErrorMsg;
 
     public static void finishTheWorkNow() {
         finish = true;
@@ -497,11 +502,6 @@ public class OrderActivity extends AppCompatActivity
                     Log.d("ssssssssssssss", "onCreate: " + isConnected.toString());
                 });
     }
-
-    List<OrderStatusHistoryResponse.History> orderHistoryList;
-    String orderErrorMsg;
-    List<OrderStatusHistoryResponse.History> shippingHistoryList;
-    String shippingErrorMsg;
 
     @OnClick(R.id.cancel_order2)
     void cancelOrder() {
@@ -690,8 +690,7 @@ public class OrderActivity extends AppCompatActivity
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            api.userWorkTime(SharedHelper.getKey(getApplicationContext(), LoginActivity.TOKEN),
-                                    SharedHelper.getKey(getApplicationContext(), LoginActivity.USER_ID), "-300")
+                            api.userWorkTime(SharedHelper.getKey(getApplicationContext(), LoginActivity.TOKEN), "-300")
                                     .enqueue(new Callback<UserWorkTimeResponse>() {
                                         @Override
                                         public void onResponse(Call<UserWorkTimeResponse> call, Response<UserWorkTimeResponse> response) {
@@ -861,7 +860,7 @@ public class OrderActivity extends AppCompatActivity
     public void callClient(String phone) {
 
         Intent callIntent = new Intent(Intent.ACTION_CALL);
-        callIntent.setData(Uri.parse("tel:" + phone));
+        callIntent.setData(Uri.parse("tel:" + "01022369592"));
         Log.d("xxxxxxxxxx", "callClient: " + phone);
         if (ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
@@ -1078,7 +1077,6 @@ public class OrderActivity extends AppCompatActivity
         notificationManager.cancel(5);
     }
 
-
     void modifyMic() {
 
         AudioManager audioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
@@ -1196,15 +1194,14 @@ public class OrderActivity extends AppCompatActivity
         }
         Log.d("dddddddddd", "time before end: " + timeWork);
         long currentWorkTime = getNotSavedWrokTime() + timeWork;
-        api.userWorkTime(SharedHelper.getKey(this, LoginActivity.TOKEN),
-                SharedHelper.getKey(this, LoginActivity.USER_ID), String.valueOf(currentWorkTime))
+        api.userWorkTime(SharedHelper.getKey(this, LoginActivity.TOKEN), String.valueOf(currentWorkTime))
                 .enqueue(new Callback<UserWorkTimeResponse>() {
                     @Override
                     public void onResponse(Call<UserWorkTimeResponse> call, Response<UserWorkTimeResponse> response) {
                         if (response.body() != null) {
 
-                            Log.d("dddddddddd", "onResponse: " + response.body().getData());
-                            Log.d("dddddddddd", "time after end: " + currentWorkTime);
+                            Log.d("userWorkTime", "onResponse: " + response.body().getData());
+                            Log.d("userWorkTime", "time after end: " + currentWorkTime);
                             setPldTimeWorkZero();
                             pauseServiceTimer();
                         }
@@ -1214,7 +1211,7 @@ public class OrderActivity extends AppCompatActivity
                     public void onFailure(Call<UserWorkTimeResponse> call, Throwable t) {
                         saveWorkedTime();
                         pauseServiceTimer();
-                        Log.d("dddddddddd", "onResponse: " + t.getMessage());
+                        Log.d("userWorkTime", "onResponse: " + t.getMessage());
                     }
                 });
         safelyDispose(networkDisposable, internetDisposable);
@@ -1294,6 +1291,7 @@ public class OrderActivity extends AppCompatActivity
                     public void run() {
 
                         LastCallDetails callDetails = getLastCallDetails();
+
                         Log.d("callDetails", "callDetails: " + callDetails.getType());
                         if (callDetails.getType().equals("MISSED") || callDetails.getType().equals("REJECTED")) {
                             if (callDetails.getActiveId().equals(SharedHelper.getKey(getApplicationContext(),
@@ -1334,6 +1332,7 @@ public class OrderActivity extends AppCompatActivity
                                     }
 
                                 } else {
+                                    Log.d(TAG, "run: add call to database");
                                     new DatabaseManager(getApplicationContext()).addCallDetails(new CallDetails(serialNumber,
                                             phoneNumber, new CommonMethods().getTIme(), new CommonMethods().getDate(), "not_yet", callDetails.getDuration()));
 
@@ -1905,6 +1904,7 @@ public class OrderActivity extends AppCompatActivity
                             }
                         });
 
+                        currentClientID = response.body().getUser_id();
                         getProducts(response.body().getUser_id(), order.getProduct_id());
                     } else if (response.body().getCode().equals("1300")) {
 

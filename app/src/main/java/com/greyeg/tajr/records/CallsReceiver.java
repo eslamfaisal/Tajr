@@ -22,8 +22,6 @@ import com.greyeg.tajr.over.MissedCallOrderService;
 import com.greyeg.tajr.server.Api;
 import com.greyeg.tajr.server.BaseClient;
 
-import java.util.List;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -36,15 +34,13 @@ public class CallsReceiver extends BroadcastReceiver {
 
     static final String TAG = "State";
     static final String TAG1 = " Inside State";
-    static Boolean recordStarted;
     public static String phoneNumber;
     public static String name;
-
-    private static String savedNumber;
-
     public static CurrentCallListener currentCallListener;
     public static boolean inOrderActivity = false;
     public static boolean inCall = false;
+    static Boolean recordStarted;
+    private static String savedNumber;
 
     public static void setCurrentCallListener(CurrentCallListener listener) {
         currentCallListener = listener;
@@ -70,7 +66,7 @@ public class CallsReceiver extends BroadcastReceiver {
                     }, 100);
 
                 } else {
-  }
+                }
 
                 System.out.println("Receiver Start");
 
@@ -92,7 +88,7 @@ public class CallsReceiver extends BroadcastReceiver {
                     if (state.equals(TelephonyManager.EXTRA_STATE_RINGING)) {
 
                         String incomingNumber = intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER);
-                        Toast.makeText(context, "incoming call  "+incomingNumber, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "incoming call  " + incomingNumber, Toast.LENGTH_SHORT).show();
                         Api api = BaseClient.getBaseClient().create(Api.class);
                         api.getPhoneData(
                                 SharedHelper.getKey(context, LoginActivity.TOKEN),
@@ -101,11 +97,11 @@ public class CallsReceiver extends BroadcastReceiver {
                         ).enqueue(new Callback<SimpleOrderResponse>() {
                             @Override
                             public void onResponse(Call<SimpleOrderResponse> call, Response<SimpleOrderResponse> response) {
-                                if (response.body().getCode().equals("1401")){
+                                if (response.body().getCode().equals("1401")) {
                                     Intent startHoverIntent = new Intent(context, MissedCallNoOrderService.class);
                                     context.startService(startHoverIntent);
-                                }else if (response.body().getCode().equals("1200")){
-                                    OrderActivity.order  = response.body().getOrder();
+                                } else if (response.body().getCode().equals("1200")) {
+                                    OrderActivity.order = response.body().getOrder();
                                     MissedCallOrderService.showFloatingMenu(context);
                                 }
                             }
@@ -153,14 +149,13 @@ public class CallsReceiver extends BroadcastReceiver {
                         Log.d(TAG1, " Inside " + state);
                         recordStarted = pref.getBoolean("recordStarted", false);
                         Log.d(TAG1, " recordStarted in idle :" + recordStarted);
-                        if (recordStarted && l == 0) {
-                            Log.d(TAG1, " Inside to stop recorder " + state);
+                        Log.d(TAG1, " Inside to stop recorder " + state);
 
-                            context.stopService(new Intent(context, RecorderService.class));
-                            inCall = false;
+                        context.stopService(new Intent(context, RecorderService.class));
+                        inCall = false;
 
-                            pref.edit().putBoolean("recordStarted", false).apply();
-                            int serialNumber = pref.getInt("serialNumData", 1);
+                        pref.edit().putBoolean("recordStarted", false).apply();
+                        int serialNumber = pref.getInt("serialNumData", 1);
 //                            new DatabaseManager(context).addCallDetails(new CallDetails(serialNumber, phoneNumber, new CommonMethods().getTIme(), new CommonMethods().getDate(), "not_yet"));
 
 //                            List<CallDetails> list = new DatabaseManager(context).getAllDetails();
@@ -169,16 +164,15 @@ public class CallsReceiver extends BroadcastReceiver {
 //                                Log.d("Database ", log);
 //                            }
 
-                            //recordStarted=true;
-                            pref.edit().putInt("serialNumData", ++serialNumber).apply();
-                            pref.edit().putBoolean("recordStarted", true).apply();
+                        //recordStarted=true;
+                        pref.edit().putInt("serialNumData", ++serialNumber).apply();
+                        pref.edit().putBoolean("recordStarted", true).apply();
 
 
-                            if (currentCallListener != null) {
-                                currentCallListener.callEnded(serialNumber,phoneNumber);
-                            }
-
+                        if (currentCallListener != null) {
+                            currentCallListener.callEnded(serialNumber, phoneNumber);
                         }
+
 
                     }
                 }

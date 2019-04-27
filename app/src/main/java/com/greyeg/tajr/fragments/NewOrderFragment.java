@@ -38,6 +38,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static com.greyeg.tajr.activities.OrderActivity.currentClientID;
+
 /**
  * A simple {@link Fragment} subclass.
  */
@@ -154,7 +156,7 @@ public class NewOrderFragment extends Fragment {
 
     private void getProducts(Api api) {
         api.getProducts(SharedHelper.getKey(getActivity(), LoginActivity.TOKEN),
-                SharedHelper.getKey(getActivity(), LoginActivity.USER_ID)
+                currentClientID
         ).enqueue(new Callback<AllProducts>() {
             @Override
             public void onResponse(Call<AllProducts> call, final Response<AllProducts> response) {

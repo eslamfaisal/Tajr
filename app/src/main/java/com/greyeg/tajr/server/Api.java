@@ -132,7 +132,6 @@ public interface Api {
     @FormUrlEncoded
     @POST("send/set_active_time")
     Call<UserWorkTimeResponse> userWorkTime(@Field("token") String token,
-                                            @Field("user_id") String user_id,
                                             @Field("activity") String activity);
 
     @FormUrlEncoded
@@ -252,10 +251,6 @@ public interface Api {
     @FormUrlEncoded
     @POST("send/retrieve_cards")
     Call<CartResponse> getCartDetails(@Field("token") String token, @Field("amount") String amount, @Field("type") String type);
-
-    @FormUrlEncoded
-    @POST("send/balance")
-    Call<ToalAvailableBalance> getTotalAvailableBalance(@Field("token") String token);
 
     @FormUrlEncoded
     @POST("send/balance")

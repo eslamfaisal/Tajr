@@ -109,60 +109,61 @@ public class NewCardFragment extends Fragment {
             @Override
             public void onResponse(Call<CardsResponse> call, Response<CardsResponse> response) {
 
+                if (response.body() != null && response.body().getData() != null) {
+                    etisalats.addAll(response.body().getData().getEtisalat());
+                    we.addAll(response.body().getData().getWe());
+                    orange.addAll(response.body().getData().getOrange());
+                    vodafone.addAll(response.body().getData().getVodafone());
 
-                Log.d(TAG, "onResponse: "+response.body().getData().getEtisalat());
-                etisalats.addAll(response.body().getData().getEtisalat());
-                we.addAll(response.body().getData().getWe());
-                orange.addAll(response.body().getData().getOrange());
-                vodafone.addAll(response.body().getData().getVodafone());
+                    types.add("vodafone");
+                    types.add("we");
+                    types.add("orange");
+                    types.add("etisalat");
 
-                types.add("vodafone");
-                types.add("we");
-                types.add("orange");
-                types.add("etisalat");
+                    ArrayAdapter adapter = new ArrayAdapter(getActivity(), android.R.layout.simple_spinner_dropdown_item, types);
 
-                ArrayAdapter adapter = new ArrayAdapter(getActivity(), android.R.layout.simple_spinner_dropdown_item, types);
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    typeSpinner.setAdapter(adapter);
+                    typeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                            TYPE = String.valueOf(types.get(position));
+                            if (position == 0) {
+                                amount = vodafone;
+                            } else if (position == 1) {
+                                amount = we;
+                            } else if (position == 2) {
+                                amount = orange;
+                            } else if (position == 3) {
+                                amount = etisalats;
+                            }
 
-                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                typeSpinner.setAdapter(adapter);
-                typeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                    @Override
-                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                        TYPE = String.valueOf(types.get(position));
-                        if (position == 0) {
-                            amount = vodafone;
-                        } else if (position == 1) {
-                            amount = we;
-                        } else if (position == 2) {
-                            amount = orange;
-                        } else if (position == 3) {
-                            amount = etisalats;
+                            ArrayAdapter adapter = new ArrayAdapter(getActivity(), android.R.layout.simple_spinner_dropdown_item, amount);
+
+                            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                            amountSpinner.setAdapter(adapter);
+                            amountSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                                @Override
+                                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                                    AMOUNT = String.valueOf(amount.get(position));
+
+                                }
+
+                                @Override
+                                public void onNothingSelected(AdapterView<?> parent) {
+
+                                }
+                            });
+
                         }
 
-                        ArrayAdapter adapter = new ArrayAdapter(getActivity(), android.R.layout.simple_spinner_dropdown_item, amount);
+                        @Override
+                        public void onNothingSelected(AdapterView<?> parent) {
 
-                        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                        amountSpinner.setAdapter(adapter);
-                        amountSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                            @Override
-                            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                                AMOUNT = String.valueOf(amount.get(position));
+                        }
+                    });
+                }
 
-                            }
-
-                            @Override
-                            public void onNothingSelected(AdapterView<?> parent) {
-
-                            }
-                        });
-
-                    }
-
-                    @Override
-                    public void onNothingSelected(AdapterView<?> parent) {
-
-                    }
-                });
             }
 
             @Override
