@@ -88,6 +88,7 @@ import com.greyeg.tajr.models.LastCallDetails;
 import com.greyeg.tajr.models.OrderStatusHistoryResponse;
 import com.greyeg.tajr.models.ProductData;
 import com.greyeg.tajr.models.ProductForSpinner;
+import com.greyeg.tajr.models.RemainingOrdersResponse;
 import com.greyeg.tajr.models.SimpleOrderResponse;
 import com.greyeg.tajr.models.UpdateOrderResponse;
 import com.greyeg.tajr.models.UpdateOrederNewResponse;
@@ -113,10 +114,12 @@ import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -160,6 +163,7 @@ public class OrderActivity extends AppCompatActivity
     public static boolean stoped = false;
     public static SimpleOrderResponse.Order order;
     public static String CITY_ID;
+    public static String currentClientID;
     public AllProducts allProducts;
     @BindView(R.id.client_name)
     TextView client_name;
@@ -185,13 +189,11 @@ public class OrderActivity extends AppCompatActivity
     EditText item_cost;
     @BindView(R.id.ntes)
     TextView notes;
-
     @BindView(R.id.products_recycler_view)
     RecyclerView productsRecyclerView;
     LinearLayoutManager productsLinearLayoutManager;
     @BindView(R.id.discount)
     TextView discount;
-
     @BindView(R.id.order_total_cost)
     EditText order_total_cost;
     @BindView(R.id.client_feedback)
@@ -205,45 +207,32 @@ public class OrderActivity extends AppCompatActivity
     View productsView;
     @BindView(R.id.client_phone_error2)
     FloatingActionButton client_phone_error2;
-
     @BindView(R.id.order_shipper_confirmed2)
     FloatingActionButton order_shipper_confirmed2;
-
     @BindView(R.id.order_data_confirmed2)
     FloatingActionButton order_data_confirmed2;
-
     @BindView(R.id.problem2)
     FloatingActionButton problem2;
-
     @BindView(R.id.deliver)
     FloatingActionButton deliver;
-
     @BindView(R.id.return_order)
     FloatingActionButton return_order;
-
     @BindView(R.id.shipping_no_answer)
     FloatingActionButton shipping_no_answer;
-
     @BindView(R.id.no_answer)
     FloatingActionButton no_answer;
-
     @BindView(R.id.cancel_order2)
     FloatingActionButton cancel_order2;
-
     @BindView(R.id.busy)
     FloatingActionButton busy;
-
     @BindView(R.id.delay)
     FloatingActionButton delay;
-
     @BindView(R.id.client_city)
     Spinner client_city;
     @BindView(R.id.add_product)
     ImageView add_product;
-
     @BindView(R.id.order_type)
     EditText order_type;
-
     long startWorkTime;
     RadioGroup radioGroup;
     Button ok;
@@ -313,13 +302,12 @@ public class OrderActivity extends AppCompatActivity
     String productId;
     EditText productNo;
     RobotoTextView addProductBtn;
-
     int extraProductsCost;
     ProductForSpinner productForSpinner;
-    public static String currentClientID;
     List<OrderStatusHistoryResponse.History> orderHistoryList;
     String orderErrorMsg;
     List<OrderStatusHistoryResponse.History> shippingHistoryList;
+    String shippingErrorMsg;
     private TextView valueTxv;
     private CheckBox signChk;
     private @Nullable
@@ -351,7 +339,6 @@ public class OrderActivity extends AppCompatActivity
         }
     };
     private List<City> citiesBody;
-    String shippingErrorMsg;
 
     public static void finishTheWorkNow() {
         finish = true;
@@ -589,9 +576,6 @@ public class OrderActivity extends AppCompatActivity
                 if (response.body().getCode().equals("1200") || response.body().getCode().equals("1202")) {
                     Log.d("eeeeeeeeeeeeee", "onResponse: " + value + response.body().getCode());
 
-                    if (askToFinishWork) {
-                        finishTheWorkNow();
-                    } else
                         getFirstOrder();
                 } else {
                     getFirstOrder();
@@ -690,7 +674,7 @@ public class OrderActivity extends AppCompatActivity
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            api.userWorkTime(SharedHelper.getKey(getApplicationContext(), LoginActivity.TOKEN), "-300",currentClientID)
+                            api.userWorkTime(SharedHelper.getKey(getApplicationContext(), LoginActivity.TOKEN), "-300", currentClientID)
                                     .enqueue(new Callback<UserWorkTimeResponse>() {
                                         @Override
                                         public void onResponse(Call<UserWorkTimeResponse> call, Response<UserWorkTimeResponse> response) {
@@ -792,7 +776,6 @@ public class OrderActivity extends AppCompatActivity
                 SharedHelper.getKey(this, LoginActivity.TOKEN),
                 order_ud,
                 simpleOrderResponse.getUser_id(),
-
                 value
         ).enqueue(new Callback<UpdateOrederNewResponse>() {
             @Override
@@ -1194,7 +1177,7 @@ public class OrderActivity extends AppCompatActivity
         }
         Log.d("dddddddddd", "time before end: " + timeWork);
         long currentWorkTime = getNotSavedWrokTime() + timeWork;
-        api.userWorkTime(SharedHelper.getKey(this, LoginActivity.TOKEN), String.valueOf(currentWorkTime),currentClientID)
+        api.userWorkTime(SharedHelper.getKey(this, LoginActivity.TOKEN), String.valueOf(currentWorkTime), currentClientID)
                 .enqueue(new Callback<UserWorkTimeResponse>() {
                     @Override
                     public void onResponse(Call<UserWorkTimeResponse> call, Response<UserWorkTimeResponse> response) {
@@ -1807,6 +1790,36 @@ public class OrderActivity extends AppCompatActivity
         });
     }
 
+    private void updateProgress(){
+        api.getRemainigOrders(SharedHelper.getKey(this,LoginActivity.TOKEN)).enqueue(new Callback<RemainingOrdersResponse>() {
+            @Override
+            public void onResponse(Call<RemainingOrdersResponse> call, Response<RemainingOrdersResponse> response) {
+                if (response.body()!=null){
+
+                    if (!firstOrder) {
+                        firstOrder = true;
+                        firstRemaining = response.body().getData();
+                        mProgressBar4.setMax(firstRemaining);
+                    }
+
+                    int b = firstRemaining - response.body().getData();
+                    mProgressBar4.setProgress(b);
+                    String remaining = getString(R.string.remaining)+" ( "+ NumberFormat.getNumberInstance(Locale.US).format(response.body().getData())+" ) "+getString(R.string.order);
+                    present.setText(remaining);
+                    SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(OrderActivity.this);
+                    if (sharedPreferences.getBoolean("autoNotifiction", false))
+                        createNotification(String.valueOf(firstRemaining - b));
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<RemainingOrdersResponse> call, Throwable t) {
+
+            }
+        });
+    }
+
     private void getFirstOrder() {
 
         progressBar.setVisibility(View.VISIBLE);
@@ -1820,23 +1833,6 @@ public class OrderActivity extends AppCompatActivity
                     if (response.body().getCode().equals("1202") || response.body().getCode().equals("1200")) {
                         orderStatus = response.body().getOrder_type();
 
-                        if (!firstOrder) {
-                            firstOrder = true;
-                            firstRemaining = response.body().getRemainig_orders();
-                            mProgressBar4.setMax(firstRemaining);
-                        }
-
-                        int b = firstRemaining - response.body().getRemainig_orders();
-                        mProgressBar4.setProgress(b);
-                        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(OrderActivity.this);
-                        if (sharedPreferences.getBoolean("autoNotifiction", false))
-                            createNotification(String.valueOf(firstRemaining - b));
-
-                        int a = (int) (100 * Float.parseFloat(String.valueOf(finishedOrders)) / Float.parseFloat(String.valueOf(firstRemaining)));
-                        String test = String.valueOf(response.body().getRemainig_orders()) + "  (" + String.valueOf(a) + "%)";
-                        present.setText(test);
-                        finishedOrders++;
-
                         if (response.body().getOrder_type().equals("missed_call") || response.body().getOrder_type().equals("order_exsist")) {
                             showMissedCall();
                             return;
@@ -1844,7 +1840,7 @@ public class OrderActivity extends AppCompatActivity
                             showOrderView();
                         }
 
-                        if (response.body().getOrder_type().equals("normal_order")) {
+                        if (response.body().getCheck_type().equals("normal_order")) {
                             deliver.setVisibility(View.GONE);
                             return_order.setVisibility(View.GONE);
                             shipping_no_answer.setVisibility(View.GONE);
@@ -1882,13 +1878,17 @@ public class OrderActivity extends AppCompatActivity
                         }
                         if (response.body().getOrder() != null)
                             updateOrderUiDate(response);
+
+                        currentClientID = response.body().getUser_id();
+                        getProducts(response.body().getUser_id(), order.getProduct_id());
+
                         client_city.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                             @Override
                             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                                 CITY_ID = citiesId.get(position);
                                 if (response.body().getOrder().getClient_city_id().equals("")) {
                                     Log.d(TAG, "onItemSelected: " + item_no.getText().toString() + " - ");
-                                    updateOrderCalculationsForSinglOrder("113", "1", "357", "1");
+                                    updateOrderCalculationsForSinglOrder(citiesId.get(0), "1", response.body().getOrder().getProduct_id(), "0");
 
                                 } else if (!citiesId.get(position).equals(response.body().getOrder().getClient_city_id())) {
                                     Log.d("selectedcity", "onItemSelected: selected id = " + CITY_ID + " , current id = " + response.body().getOrder().getClient_city_id());
@@ -1904,8 +1904,6 @@ public class OrderActivity extends AppCompatActivity
                             }
                         });
 
-                        currentClientID = response.body().getUser_id();
-                        getProducts(response.body().getUser_id(), order.getProduct_id());
                     } else if (response.body().getCode().equals("1300")) {
 
                         finishTheWorkNow();
@@ -1917,6 +1915,7 @@ public class OrderActivity extends AppCompatActivity
 
                     }
                 }
+                updateProgress();
             }
 
             @Override

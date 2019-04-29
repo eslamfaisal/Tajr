@@ -210,5 +210,7 @@
     <string name="return_order">ارجاع الطلب</string>
     <string name="notallowed">You are not allowed here</string>
     <string name="some_thing_went_wrong">Some thing went wrong</string>
+    <string name="invalid_ph_num">The Mobile number you Entered is Invalid</string>
+    <string name="added_success">Added successfully</string>
 
 </resources>

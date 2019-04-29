@@ -1,7 +1,9 @@
 package com.greyeg.tajr.fragments;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -214,11 +216,11 @@ public class NewOrderFragment extends Fragment {
             Api api = BaseClient.getBaseClient().create(Api.class);
             api.recordNewOrder(
                     SharedHelper.getKey(getActivity(),LoginActivity.TOKEN),
-                    Integer.parseInt(SharedHelper.getKey(getActivity(),LoginActivity.USER_ID)),
-                    Integer.parseInt(productId),
+                    currentClientID,
+                    productId,
                     client_name.getText().toString(),
                     client_order_phone1.getText().toString(),
-                    Integer.parseInt(CITY_ID),
+                    CITY_ID,
                     client_area.getText().toString(),
                     client_address.getText().toString(),
                     item_no.getText().toString()
@@ -227,8 +229,13 @@ public class NewOrderFragment extends Fragment {
                 public void onResponse(Call<NewOrderResponse> call, Response<NewOrderResponse> response) {
                     progressDialog.dismiss();
                     Log.d("GGGGGGGGGGgggggg", "onResponse: "+response.body().getCode());
-                    if (response.body().getInfo().equals("added")){
+                    if (response.body().getCode().equals("1411")){
+                        showDialog(getString(R.string.invalid_ph_num));
+                    }else if (response.body().getCode().equals("1200")){
+                        Toast.makeText(getActivity(), getString(R.string.added_success), Toast.LENGTH_SHORT).show();
                         onButtonPressed();
+                    }else {
+                        showDialog(response.body().getDetails());
                     }
                 }
 
@@ -242,6 +249,20 @@ public class NewOrderFragment extends Fragment {
             progressDialog.dismiss();
             Toast.makeText(getActivity(), "برجاء ادخال جميع البيانات", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void showDialog(String msg) {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setIcon(R.drawable.ic_warning);
+        builder.setMessage(msg);
+        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.show();
     }
 
     private SendOrderListener mListener;

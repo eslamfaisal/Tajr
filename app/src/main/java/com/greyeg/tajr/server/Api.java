@@ -14,6 +14,7 @@ import com.greyeg.tajr.models.MoneyRequestResponse;
 import com.greyeg.tajr.models.NewOrderResponse;
 import com.greyeg.tajr.models.OrderStatusHistoryResponse;
 import com.greyeg.tajr.models.PointsHistory;
+import com.greyeg.tajr.models.RemainingOrdersResponse;
 import com.greyeg.tajr.models.SimpleOrderResponse;
 import com.greyeg.tajr.models.ToalAvailableBalance;
 import com.greyeg.tajr.models.UpdateOrderResponse;
@@ -162,7 +163,7 @@ public interface Api {
     );
 
     @FormUrlEncoded
-    @POST("send/set_order_data")
+    @POST("send_test/set_order_data")
     Call<SimpleOrderResponse> updateOrderCalculationsMultiOrder(
             @Field("token") String token,
             @Field("user_id") String user_id,
@@ -172,6 +173,9 @@ public interface Api {
 
     );
 
+    @FormUrlEncoded
+    @POST("send_test/remaining_orders")
+    Call<RemainingOrdersResponse> getRemainigOrders(@Field("token") String token);
 
     // log in user client
     @FormUrlEncoded
@@ -217,11 +221,11 @@ public interface Api {
     @POST("send_test/new_order")
     Call<NewOrderResponse> recordNewOrder(
             @Field("token") String token,
-            @Field("user_id") int user_id,
-            @Field("product_id") int product_id,
+            @Field("user_id") String user_id,
+            @Field("product_id") String product_id,
             @Field("client_name") String client_name,
             @Field("client_phone") String client_phone,
-            @Field("city_id") int city_id,
+            @Field("city_id") String city_id,
             @Field("client_area") String client_area,
             @Field("client_address") String client_address,
             @Field("items") String items
