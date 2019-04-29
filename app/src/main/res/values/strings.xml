@@ -250,5 +250,7 @@
     <string name="shipping_status_history">Shipping status history</string>
     <string name="deliver">Deliver</string>
     <string name="return_order">Return order</string>
+    <string name="notallowed">You are not allowed here</string>
+    <string name="some_thing_went_wrong">Some thing went wrong</string>
 
 </resources>

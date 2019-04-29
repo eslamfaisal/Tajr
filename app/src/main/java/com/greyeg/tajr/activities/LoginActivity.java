@@ -135,7 +135,10 @@ public class LoginActivity extends AppCompatActivity {
                     api.login(email.getText().toString(), pass.getText().toString()).enqueue(new Callback<UserResponse>() {
                         @Override
                         public void onResponse(Call<UserResponse> call, final Response<UserResponse> response) {
+
+
                             if (response.body() != null) {
+                                Log.d(TAG, "onResponse: "+response.body().toString());
                                 if (response.body().getCode().equals("1202") || response.body().getCode().equals("1212")) {
                                     String onsignalid = OneSignal.getPermissionSubscriptionState().getSubscriptionStatus().getUserId();
                                     while (onsignalid == null) {

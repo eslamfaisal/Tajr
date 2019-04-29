@@ -33,9 +33,7 @@ public class BalanceActivity extends AppCompatActivity {
         FragmentPagerItemAdapter adapter = new FragmentPagerItemAdapter(
                 getSupportFragmentManager(), FragmentPagerItems.with(this)
                 .add(this.getString(R.string.request_money), RequestBalanceFragment.class)
-                .add(this.getString(R.string.balance_history), BalanceRequestHistoryFragment.class)
-                .add(this.getString(R.string.availabl_balance), AvailableBalanceFragment.class)
-                .create());
+                .add(this.getString(R.string.balance_history), BalanceRequestHistoryFragment.class).create());
 
         ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
         viewPager.setAdapter(adapter);

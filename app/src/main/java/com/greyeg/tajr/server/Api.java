@@ -29,6 +29,7 @@ import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.GET;
 import retrofit2.http.Headers;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
@@ -39,17 +40,17 @@ public interface Api {
 
     // log in user client
     @FormUrlEncoded
-    @POST("send/login")
+    @POST("send_test/login")
     Call<UserResponse> login(@Field("username") String email, @Field("password") String password);
 
     // log in user client
     @FormUrlEncoded
-    @POST("send/cpanel_login")
+    @POST("send_test/cpanel_login")
     Call<UserResponse> adminLogin(@Field("apiKey") String email, @Field("apiSecret") String password);
 
     // log in user client
     @FormUrlEncoded
-    @POST("send/logout")
+    @POST("send_test/logout")
     Call<UserResponse> logout(@Field("token") String token, @Field("user_id") String user_id);
 
     @Headers({"Content-Type: application/json"})
@@ -58,16 +59,16 @@ public interface Api {
     Call<UserOrders> getOrders(@Field("token") String token);
 
     @Headers({"Content-Type: application/json"})
-    @POST("send/get_orders")
+    @GET("send/get_orders")
     Call<SimpleOrderResponse> getFuckenOrders(@Query("token") String token);
 
     // log in user client
     @Multipart
-    @POST("send/fetch_orders")
+    @POST("send_test/fetch_orders")
     Call<CurrentOrderResponse> getCurrentOrder(@Part("token") RequestBody token);
 
     @FormUrlEncoded
-    @POST("send/update_order")
+    @POST("send_test/update_order")
     Call<UpdateOrederNewResponse> updateOrders(
             @Field("token") String token,
             @Field("order_id") String order_id,
@@ -77,7 +78,7 @@ public interface Api {
     );
 
     @FormUrlEncoded
-    @POST("send/shipping_attempts")
+    @POST("send_test/shipping_attempts")
     Call<UpdateOrederNewResponse> updateShippingOrders(
             @Field("token") String token,
             @Field("order_id") String order_id,
@@ -87,7 +88,7 @@ public interface Api {
     );
 
     @FormUrlEncoded
-    @POST("send/update_order")
+    @POST("send_test/update_order")
     Call<UpdateOrederNewResponse> updateOrders(
             @Field("token") String token,
             @Field("order_id") String order_id,
@@ -96,7 +97,7 @@ public interface Api {
     );
 
     @FormUrlEncoded
-    @POST("send/update_order")
+    @POST("send_test/update_order")
     Call<UpdateOrederNewResponse> updateDelayedOrders(
             @Field("token") String token,
             @Field("order_id") String order_id,
@@ -107,7 +108,7 @@ public interface Api {
     );
 
     @FormUrlEncoded
-    @POST("send/confirm_shipper_status")
+    @POST("send_test/confirm_shipper_status")
     Call<UpdateOrederNewResponse> confirm_shipper_status(
             @Field("token") String token,
             @Field("order_id") String order_id
@@ -116,14 +117,14 @@ public interface Api {
 
     // log in user client
     @FormUrlEncoded
-    @POST("send/get_phone")
+    @POST("send_test/get_phone")
     Call<SimpleOrderResponse> getPhoneData(@Field("token") String token,
                                            @Field("user_id") String user_id,
                                            @Field("phone") String phone);
 
 
     @FormUrlEncoded
-    @POST("send/phone")
+    @POST("send_test/phone")
     Call<UploadPhoneResponse> uploadPhone(@Field("token") String token,
                                           @Field("phone") String phone);
 
@@ -132,10 +133,10 @@ public interface Api {
     @FormUrlEncoded
     @POST("send/set_active_time")
     Call<UserWorkTimeResponse> userWorkTime(@Field("token") String token,
-                                            @Field("activity") String activity);
+                                            @Field("activity") String activity,@Field("user_id") String user_id);
 
     @FormUrlEncoded
-    @POST("send/set_client_data")
+    @POST("send_test/set_client_data")
     Call<SimpleOrderResponse> updateOrderData(
             @Field("token") String token,
             @Field("user_id") String user_id,
@@ -148,7 +149,7 @@ public interface Api {
     );
 
     @FormUrlEncoded
-    @POST("send/set_order_data")
+    @POST("send_test/set_order_data")
     Call<SimpleOrderResponse> updateOrderCalculationsSingleOrder(
             @Field("token") String token,
             @Field("user_id") String user_id,
@@ -174,7 +175,7 @@ public interface Api {
 
     // log in user client
     @FormUrlEncoded
-    @POST("send/send_problem")
+    @POST("send_test/send_problem")
     Call<UpdateOrderResponse> sendProblem(
             @Field("token") String token,
             @Field("user_id") int user_id,
@@ -185,35 +186,35 @@ public interface Api {
 
     // log in user client
     @FormUrlEncoded
-    @POST("send/get_cities")
+    @POST("send_test/get_cities")
     Call<Cities> getCities(@Field("token") String token, @Field("user_id") String user_id);
 
     // log in user client
     @FormUrlEncoded
-    @POST("send/get_products")
+    @POST("send_test/get_products")
     Call<AllProducts> getProducts(@Field("token") String token,
                                   @Field("user_id") String user_id);
 
     // log in user client
     @FormUrlEncoded
-    @POST("send/activity_history")
+    @POST("send_test/activity_history")
     Call<ActivityHistory> getActivityHistory(@Field("token") String token,
                                              @Field("user_id") String user_id);
 
     // log in user client
     @FormUrlEncoded
-    @POST("send/points_history")
+    @POST("send_test/points_history")
     Call<PointsHistory> getPointsHistory(@Field("token") String token,
                                          @Field("user_id") String user_id);
 
     // log in user client
     @FormUrlEncoded
-    @POST("send/cash_history")
+    @POST("send_test/cash_history")
     Call<MoneyHistory> getMoneyHistory(@Field("token") String token);
 
     // log in user client
     @FormUrlEncoded
-    @POST("send/new_order")
+    @POST("send_test/new_order")
     Call<NewOrderResponse> recordNewOrder(
             @Field("token") String token,
             @Field("user_id") int user_id,
@@ -228,7 +229,7 @@ public interface Api {
 
     // log in user client
     @FormUrlEncoded
-    @POST("send/cash_out")
+    @POST("send_test/cash_out")
     Call<MoneyRequestResponse> requestCash(
             @Field("token") String token,
             @Field("user_id") String user_id,
@@ -239,25 +240,25 @@ public interface Api {
 
     // log in user client
     @FormUrlEncoded
-    @POST("send/balance_history")
+    @POST("send_test/balance_history")
     Call<CashRequestHistory> getAvailableBalance(@Field("token") String token);
 
     // log in user client
     @FormUrlEncoded
-    @POST("send/available_cards")
+    @POST("send_test/available_cards")
     Call<CardsResponse> getCarts(@Field("token") String token);
 
     // log in user client
     @FormUrlEncoded
-    @POST("send/retrieve_cards")
+    @POST("send_test/retrieve_cards")
     Call<CartResponse> getCartDetails(@Field("token") String token, @Field("amount") String amount, @Field("type") String type);
 
     @FormUrlEncoded
-    @POST("send/balance")
+    @POST("send_test/balance")
     Call<ToalAvailableBalance> getNormalAvailableBalance(@Field("token") String token, @Field("type") String type);
 
     @FormUrlEncoded
-    @POST("send/balance")
+    @POST("send_test/balance")
     Call<ToalAvailableBalance> getCustomelAvailableBalance(@Field("token") String token,
                                                            @Field("type") String type,
                                                            @Field("year") String year,
@@ -266,7 +267,7 @@ public interface Api {
     );
 
     @FormUrlEncoded
-    @POST("send/get_status_history")
+    @POST("send_test/get_status_history")
     Call<OrderStatusHistoryResponse> getSatusHistoryResponse(@Field("token") String token,
                                                              @Field("order_id") String order_id,
                                                              @Field("status_type") String status_type,
@@ -275,7 +276,7 @@ public interface Api {
 
 
     @Multipart
-    @POST("send/upload_voice_notes")
+    @POST("send_test/upload_voice_notes")
     Call<UploadVoiceResponse> uploadVoice(@Part("token") RequestBody token,
                                           @Part("order_id") RequestBody order_id,
                                           @Part("call_duration") RequestBody call_duration,
@@ -283,11 +284,11 @@ public interface Api {
 
     // log in user client
     @FormUrlEncoded
-    @POST("send/all_records")
+    @POST("send_test/all_records")
     Call<AdminRecordsResponse> getRecords(@Field("token") String token);
 
     @FormUrlEncoded
-    @POST("send/delete_product_from_order")
+    @POST("send_test/delete_product_from_order")
     Call<DeleteAddProductResponse> deleteProduct(
             @Field("token") String token,
             @Field("order_id") String order_id,
@@ -297,7 +298,7 @@ public interface Api {
     );
 
     @FormUrlEncoded
-    @POST("send/add_product_to_order")
+    @POST("send_test/add_product_to_order")
     Call<DeleteAddProductResponse> addProduct(
             @Field("token") String token,
             @Field("order_id") String order_id,

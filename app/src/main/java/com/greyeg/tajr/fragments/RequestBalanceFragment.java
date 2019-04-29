@@ -1,7 +1,10 @@
 package com.greyeg.tajr.fragments;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -43,13 +46,10 @@ import retrofit2.Response;
  */
 public class RequestBalanceFragment extends Fragment {
 
-    private final String TAG = "RequestBalanceFragment";
-
     public static final String SPLASH_SCREEN_OPTION = "com.csform.android.uiapptemplate.SplashScreensActivity";
     public static final String SPLASH_SCREEN_OPTION_1 = "Fade in + Ken Burns";
     public static final String SPLASH_SCREEN_OPTION_2 = "Down + Ken Burns";
     public static final String SPLASH_SCREEN_OPTION_3 = "Down + fade in + Ken Burns";
-
     public static final String USER_NAME = "username";
     public static final String USER_TYPE = "user_type";
     public static final String USER_ID = "user_id";
@@ -57,7 +57,7 @@ public class RequestBalanceFragment extends Fragment {
     public static final String PARENT_TAJR_ID = "parent_tajr_id";
     public static final String TOKEN = "token";
     public static final String IS_LOGIN = "is_login";
-
+    private final String TAG = "RequestBalanceFragment";
     @BindView(R.id.loginbtn)
     RobotoTextView loginBtn;
 
@@ -81,6 +81,7 @@ public class RequestBalanceFragment extends Fragment {
 
     @BindView(R.id.available_balance)
     TextView availableBalance;
+    ArrayList<String> timeTypeRequest;
 
     public RequestBalanceFragment() {
         // Required empty public constructor
@@ -92,8 +93,6 @@ public class RequestBalanceFragment extends Fragment {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_request_balance, container, false);
     }
-
-    ArrayList<String> timeTypeRequest;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -133,7 +132,8 @@ public class RequestBalanceFragment extends Fragment {
                             }
                             progressLogin.setVisibility(View.GONE);
                             loginBtn.setVisibility(View.VISIBLE);
-                            Toast.makeText(getActivity(), response.body().getData(), Toast.LENGTH_LONG).show();
+
+                            showDialog(response.body().getData());
                         }
 
                         @Override
@@ -147,6 +147,20 @@ public class RequestBalanceFragment extends Fragment {
             }
         });
 //        getCallLogs();
+    }
+
+    private void showDialog(String msg) {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setIcon(R.drawable.ic_warning);
+        builder.setMessage(msg);
+        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.show();
     }
 
     void initBalanceTimeSpinner() {
@@ -164,10 +178,18 @@ public class RequestBalanceFragment extends Fragment {
                         @Override
                         public void onResponse(Call<ToalAvailableBalance> call, Response<ToalAvailableBalance> response) {
 
-                            if (response.body().getInfo().equals("no_data")) {
-                                availableBalance.setText("" + response.body().getData());
-                            } else
-                                availableBalance.setText("" + response.body().getTotalAvailableBalance());
+                            if (response.body().getCode().equals("1408") || response.body().getCode().equals("1407")) {
+                                SharedHelper.putKey(getActivity(), IS_LOGIN, "اعادة تسجيل الدخول");
+                                startActivity(new Intent(getActivity(), LoginActivity.class));
+                            } else if (response.body().getCode().equals("1425")) {
+                                availableBalance.setText(getString(R.string.notallowed));
+                                getActivity().onBackPressed();
+                            } else if (response.body().getCode().equals("1400")) {
+                                availableBalance.setText("totalAvailableBalance = " + String.valueOf(response.body().getTotalAvailableBalance()) + " ,but " + response.body().getData());
+                            } else if (response.body().getCode().equals("1200")) {
+                                availableBalance.setText(String.valueOf(response.body().getTotalAvailableBalance()));
+                            }
+
                             Log.d(TAG, "onResponse: " + response.body().toString());
                         }
 
@@ -249,10 +271,13 @@ public class RequestBalanceFragment extends Fragment {
                 ).enqueue(new Callback<ToalAvailableBalance>() {
                     @Override
                     public void onResponse(Call<ToalAvailableBalance> call, Response<ToalAvailableBalance> response) {
-                        Dialog dialog = new Dialog(getActivity());
-                        dialog.setTitle(response.body().getResponse());
-                        dialog.show();
-                        availableBalance.setText("" + response.body().getTotalAvailableBalance());
+                        if (response.body().getCode().equals("1200")) {
+                            availableBalance.setText("" + response.body().getTotalAvailableBalance());
+                        } else if (response.body().getCode().equals("1400")) {
+                            availableBalance.setText("" + response.body().getData());
+                        } else {
+                            availableBalance.setText(R.string.some_thing_went_wrong);
+                        }
 
                     }
 

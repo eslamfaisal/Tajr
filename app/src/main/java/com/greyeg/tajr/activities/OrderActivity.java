@@ -690,7 +690,7 @@ public class OrderActivity extends AppCompatActivity
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            api.userWorkTime(SharedHelper.getKey(getApplicationContext(), LoginActivity.TOKEN), "-300")
+                            api.userWorkTime(SharedHelper.getKey(getApplicationContext(), LoginActivity.TOKEN), "-300",currentClientID)
                                     .enqueue(new Callback<UserWorkTimeResponse>() {
                                         @Override
                                         public void onResponse(Call<UserWorkTimeResponse> call, Response<UserWorkTimeResponse> response) {
@@ -1194,7 +1194,7 @@ public class OrderActivity extends AppCompatActivity
         }
         Log.d("dddddddddd", "time before end: " + timeWork);
         long currentWorkTime = getNotSavedWrokTime() + timeWork;
-        api.userWorkTime(SharedHelper.getKey(this, LoginActivity.TOKEN), String.valueOf(currentWorkTime))
+        api.userWorkTime(SharedHelper.getKey(this, LoginActivity.TOKEN), String.valueOf(currentWorkTime),currentClientID)
                 .enqueue(new Callback<UserWorkTimeResponse>() {
                     @Override
                     public void onResponse(Call<UserWorkTimeResponse> call, Response<UserWorkTimeResponse> response) {
@@ -1844,7 +1844,7 @@ public class OrderActivity extends AppCompatActivity
                             showOrderView();
                         }
 
-                        if (response.body().getCheck_type().equals("normal_order")) {
+                        if (response.body().getOrder_type().equals("normal_order")) {
                             deliver.setVisibility(View.GONE);
                             return_order.setVisibility(View.GONE);
                             shipping_no_answer.setVisibility(View.GONE);
