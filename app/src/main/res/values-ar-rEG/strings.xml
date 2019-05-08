@@ -208,9 +208,12 @@
     <string name="shipping_status_history">حالات شحن الطلب</string>
     <string name="deliver">توصيل الطلب</string>
     <string name="return_order">ارجاع الطلب</string>
-    <string name="notallowed">You are not allowed here</string>
-    <string name="some_thing_went_wrong">Some thing went wrong</string>
-    <string name="invalid_ph_num">The Mobile number you Entered is Invalid</string>
-    <string name="added_success">Added successfully</string>
+    <string name="notallowed">غير مسموح لك هنا</string>
+    <string name="some_thing_went_wrong">حدث خطأ ما</string>
+    <string name="invalid_ph_num">خطا فى رقم المحمول</string>
+    <string name="added_success">تم الاضامفة بنجاح</string>
+    <string name="fetching_th_order">جار جلب الطلب</string>
+    <string name="no_more_orders">لا يوجد المزيد من الطلبات</string>
+    <string name="retry">اعادة المحاولة</string>
 
 </resources>

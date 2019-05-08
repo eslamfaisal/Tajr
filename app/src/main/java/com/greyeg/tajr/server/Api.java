@@ -7,7 +7,6 @@ import com.greyeg.tajr.models.CardsResponse;
 import com.greyeg.tajr.models.CartResponse;
 import com.greyeg.tajr.models.CashRequestHistory;
 import com.greyeg.tajr.models.Cities;
-import com.greyeg.tajr.models.CurrentOrderResponse;
 import com.greyeg.tajr.models.DeleteAddProductResponse;
 import com.greyeg.tajr.models.MoneyHistory;
 import com.greyeg.tajr.models.MoneyRequestResponse;
@@ -24,6 +23,7 @@ import com.greyeg.tajr.models.UploadVoiceResponse;
 import com.greyeg.tajr.models.UserOrders;
 import com.greyeg.tajr.models.UserResponse;
 import com.greyeg.tajr.models.UserWorkTimeResponse;
+import com.greyeg.tajr.order.models.CurrentOrderResponse;
 
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -63,10 +63,9 @@ public interface Api {
     @GET("send/get_orders")
     Call<SimpleOrderResponse> getFuckenOrders(@Query("token") String token);
 
-    // log in user client
-    @Multipart
-    @POST("send_test/fetch_orders")
-    Call<CurrentOrderResponse> getCurrentOrder(@Part("token") RequestBody token);
+    @Headers({"Content-Type: application/json"})
+    @GET("send/get_orders")
+    Call<CurrentOrderResponse> getNewCurrentOrderResponce(@Query("token") String token);
 
     @FormUrlEncoded
     @POST("send_test/update_order")

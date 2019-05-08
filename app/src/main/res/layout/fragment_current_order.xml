@@ -186,7 +186,7 @@
                         android:id="@+id/shipping_status2"
                         style="@style/oder_item_frame_style">
 
-                        <TextView
+                        <EditText
                             android:id="@+id/shipping_status"
                             style="@style/oder_item_edit_text_style" />
                     </FrameLayout>
@@ -207,65 +207,6 @@
 
                         <EditText
                             android:id="@+id/client_order_phone1"
-                            style="@style/oder_item_edit_text_style" />
-                    </FrameLayout>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/order_type_state"
-                    style="@style/linear_order_item_style">
-
-                    <TextView
-                        android:id="@+id/order_type_label"
-                        style="@style/oder_item_label_style"
-                        android:text="@string/order_type" />
-
-                    <FrameLayout
-                        android:id="@+id/order_type2"
-                        style="@style/oder_item_frame_style">
-
-                        <EditText
-                            android:id="@+id/order_type"
-                            style="@style/oder_item_edit_text_style" />
-                    </FrameLayout>
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/dpolkjhbvcdf"
-                    style="@style/linear_order_item_style">
-
-                    <TextView
-                        android:id="@+id/real_shipping_return_cost_label"
-                        style="@style/oder_item_label_style"
-                        android:text="@string/real_shipping_return_cost" />
-
-                    <FrameLayout
-                        android:id="@+id/real_shipping_return_cost2"
-                        style="@style/oder_item_frame_style">
-
-                        <EditText
-                            android:id="@+id/real_shipping_return_cost"
-                            style="@style/oder_item_edit_text_style" />
-                    </FrameLayout>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/tgjklkmjnhbddf"
-                    style="@style/linear_order_item_style">
-
-                    <TextView
-                        android:id="@+id/client_feedback_label"
-                        style="@style/oder_item_label_style"
-                        android:text="@string/client_feedback" />
-
-                    <FrameLayout
-                        android:id="@+id/client_feedback2"
-                        style="@style/oder_item_frame_style">
-
-                        <EditText
-                            android:id="@+id/client_feedback"
                             style="@style/oder_item_edit_text_style" />
                     </FrameLayout>
 
@@ -327,10 +268,11 @@
                         style="@style/oder_item_frame_style">
 
                         <Spinner
+                            android:gravity="center"
                             android:id="@+id/client_city"
-                            android:layout_width="match_parent"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
+                            android:layout_gravity="center"
                             android:layout_marginEnd="26dp"
                             android:background="@color/gray"
                             android:paddingStart="16dp"
@@ -395,7 +337,7 @@
                         android:id="@+id/item_no2"
                         style="@style/oder_item_frame_style">
 
-                        <TextView
+                        <EditText
                             android:id="@+id/item_no"
                             style="@style/oder_item_edit_text_style_editable" />
                     </FrameLayout>
@@ -416,7 +358,7 @@
                         android:id="@+id/discount2"
                         style="@style/oder_item_frame_style">
 
-                        <TextView
+                        <EditText
                             android:id="@+id/discount"
                             style="@style/oder_item_edit_text_style_editable" />
                     </FrameLayout>
@@ -444,6 +386,25 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/order_type_state"
+                    style="@style/linear_order_item_style">
+
+                    <TextView
+                        android:id="@+id/order_type_label"
+                        style="@style/oder_item_label_style"
+                        android:text="@string/order_type" />
+
+                    <FrameLayout
+                        android:id="@+id/order_type2"
+                        style="@style/oder_item_frame_style">
+
+                        <EditText
+                            android:id="@+id/order_type"
+                            style="@style/oder_item_edit_text_style" />
+                    </FrameLayout>
+                </LinearLayout>
+
+                <LinearLayout
                     android:id="@+id/ddfmn"
                     style="@style/linear_order_item_style">
 
@@ -456,11 +417,51 @@
                         android:id="@+id/ntes2"
                         style="@style/oder_item_frame_style">
 
-                        <TextView
+                        <EditText
                             android:id="@+id/ntes"
                             style="@style/oder_item_edit_text_style_editable" />
 
                     </FrameLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/dpolkjhbvcdf"
+                    style="@style/linear_order_item_style">
+
+                    <TextView
+                        android:id="@+id/real_shipping_return_cost_label"
+                        style="@style/oder_item_label_style"
+                        android:text="@string/real_shipping_return_cost" />
+
+                    <FrameLayout
+                        android:id="@+id/real_shipping_return_cost2"
+                        style="@style/oder_item_frame_style">
+
+                        <EditText
+                            android:id="@+id/real_shipping_return_cost"
+                            style="@style/oder_item_edit_text_style" />
+                    </FrameLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/tgjklkmjnhbddf"
+                    style="@style/linear_order_item_style">
+
+                    <TextView
+                        android:id="@+id/client_feedback_label"
+                        style="@style/oder_item_label_style"
+                        android:text="@string/client_feedback" />
+
+                    <FrameLayout
+                        android:id="@+id/client_feedback2"
+                        style="@style/oder_item_frame_style">
+
+                        <EditText
+                            android:id="@+id/client_feedback"
+                            style="@style/oder_item_edit_text_style" />
+                    </FrameLayout>
+
                 </LinearLayout>
 
             </LinearLayout>
