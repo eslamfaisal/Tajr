@@ -3,13 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.greyeg.tajr">
 
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS"/>
-
-    <uses-permission android:name="android.permission.CAPTURE_AUDIO_OUTPUT"
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS" />
+    <uses-permission
+        android:name="android.permission.CAPTURE_AUDIO_OUTPUT"
         tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -47,11 +47,6 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.BROADCAST_STICKY" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <!--
-     This tells the activity manager to not delay any of our activity
-     start requests, even if they happen immediately after the user
-     presses home.
-    -->
     <uses-permission android:name="android.permission.STOP_APP_SWITCHES" />
     <uses-permission android:name="android.permission.MODIFY_PHONE_STATE" />
     <uses-permission android:name="android.permission.ANSWER_PHONE_CALLS" />
@@ -74,7 +69,6 @@
 
     <application
         android:name=".App"
-        tools:replace="android:allowBackup"
         android:allowBackup="true"
         android:icon="@drawable/ic_logo"
         android:label="@string/app_name"
@@ -82,9 +76,18 @@
         android:screenOrientation="portrait"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".activities.AdminRecordsActivity"
-            android:parentActivityName=".MainActivity"></activity>
+        tools:ignore="GoogleAppIndexingWarning"
+        tools:replace="android:allowBackup">
+        <activity android:name=".order.NewOrderActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".activities.AdminRecordsActivity"
+            android:parentActivityName=".MainActivity" />
         <activity
             android:name=".activities.AdminLoginActivity"
             android:parentActivityName=".activities.LoginActivity" />
@@ -103,16 +106,11 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activities.LoginActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity
+            android:name=".activities.SplashActivity"
             android:theme="@style/AppTheme.NoActionBar">
 
-        </activity>
-        <activity android:name=".activities.SplashActivity"
-            android:theme="@style/AppTheme.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".call_receiver.MyCustomDialog"
@@ -148,8 +146,9 @@
         <activity
             android:name=".activities.NewsActivity"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".activities.NoInternetActivity"
-            android:parentActivityName=".MainActivity"/>
+        <activity
+            android:name=".activities.NoInternetActivity"
+            android:parentActivityName=".MainActivity" />
         <activity
             android:name=".RequestMoneyActivity"
             android:parentActivityName=".MainActivity" />
@@ -170,11 +169,11 @@
         <service android:name=".records.RecorderService" />
 
         <provider
-            tools:replace="android:authorities"
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.greyeg.tajr"
             android:exported="false"
-            android:grantUriPermissions="true">
+            android:grantUriPermissions="true"
+            tools:replace="android:authorities">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
@@ -219,26 +218,12 @@
                 <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE" />
             </intent-filter>
         </service>
-
         <service
             android:name=".over.FloatLayout"
             android:enabled="true"
             android:exported="false" />
-
         <service android:name=".over.MissedCallNoOrderService" />
         <service android:name=".over.MissedCallOrderService" />
-
     </application>
 
 </manifest>
-
-
-
-
-
-
-
-
-
-
-

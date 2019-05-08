@@ -1062,7 +1062,7 @@
             android:layout_above="@id/navigation"
             android:layout_marginBottom="0dp"
             android:padding="@dimen/_16sdp"
-            android:visibility="visible"
+            android:visibility="gone"
             fab:menu_backgroundColor="#ccffffff"
             fab:menu_colorNormal="@color/colorPrimaryDark"
             fab:menu_colorPressed="#2E7D32"
@@ -1183,6 +1183,7 @@
             app:layout_constraintRight_toRightOf="parent"
             app:menu="@menu/customer_navigation" />
 
+        <!--claculator-->
         <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:app="http://schemas.android.com/apk/res-auto"
             xmlns:tools="http://schemas.android.com/tools"
