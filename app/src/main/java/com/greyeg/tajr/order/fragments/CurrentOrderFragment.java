@@ -14,12 +14,11 @@ import android.widget.TextView;
 
 import com.greyeg.tajr.R;
 
-/**
- * A simple {@link Fragment} subclass.
- */
 public class CurrentOrderFragment extends Fragment {
 
-    private static final String TAG = "CurrentOrderFragment";
+    private final String TAG = "CurrentOrderFragment";
+
+    // main view of the CurrentOrderFragment
     View mainView;
 
     public CurrentOrderFragment() {
@@ -32,12 +31,13 @@ public class CurrentOrderFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         mainView = inflater.inflate(R.layout.fragment_current_order, container, false);
-
         initLabels();
+
 
         return mainView;
     }
 
+    // init hide and show labels
     private void initLabels() {
         LinearLayout linearLayout = mainView.findViewById(R.id.order_fields);
 
@@ -53,6 +53,7 @@ public class CurrentOrderFragment extends Fragment {
         }
     }
 
+    // animation for show and hide fields labels
     private void runAnimation(int id1, int id2) {
 
         TextView tv = (TextView) mainView.findViewById(id1);
