@@ -1,13 +1,19 @@
 package com.greyeg.tajr.order;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 
 import com.greyeg.tajr.R;
 import com.greyeg.tajr.helper.GuiManger;
 import com.greyeg.tajr.order.fragments.CurrentOrderFragment;
 
 public class NewOrderActivity extends AppCompatActivity {
+
+    //GUIManger Methods
+    public static void update() {
+        GuiManger.getInstance().getFragmentManager().beginTransaction().addToBackStack("")
+                .replace(R.id.Handle_Frame, GuiManger.getInstance().getcurrFragment(), null).commitAllowingStateLoss();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,17 +25,11 @@ public class NewOrderActivity extends AppCompatActivity {
         GuiManger.getInstance().setcurrFragment(new CurrentOrderFragment());
     }
 
-    //GUIManger Methods
-    public static void update() {
-        GuiManger.getInstance().getFragmentManager().beginTransaction().addToBackStack("")
-                .replace(R.id.Handle_Frame, GuiManger.getInstance().getcurrFragment(), null).commitAllowingStateLoss();
-    }
-
     @Override
     public void onBackPressed() {
-        if (GuiManger.getInstance().getcurrFragment() instanceof CurrentOrderFragment){
+        if (GuiManger.getInstance().getcurrFragment() instanceof CurrentOrderFragment) {
             finish();
-        }else
-        super.onBackPressed();
+        } else
+            super.onBackPressed();
     }
 }
