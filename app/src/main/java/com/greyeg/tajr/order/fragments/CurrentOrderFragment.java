@@ -1,6 +1,5 @@
 package com.greyeg.tajr.order.fragments;
 
-
 import android.app.Dialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -11,11 +10,15 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.NotificationCompat;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -37,6 +40,7 @@ import com.greyeg.tajr.helper.SharedHelper;
 import com.greyeg.tajr.models.RemainingOrdersResponse;
 import com.greyeg.tajr.order.CurrentOrderData;
 import com.greyeg.tajr.order.NewOrderActivity;
+import com.greyeg.tajr.order.adapters.MultiOrderProductsAdapter;
 import com.greyeg.tajr.order.adapters.SignleOrderProductsAdapter;
 import com.greyeg.tajr.order.enums.OrderProductsType;
 import com.greyeg.tajr.order.enums.ResponseCodeEnums;
@@ -67,7 +71,7 @@ public class CurrentOrderFragment extends Fragment {
     private final String TAG = "CurrentOrderFragment";
 
     // main view of the CurrentOrderFragment
-    View mainView;
+    private View mainView;
 
     @BindView(R.id.client_name)
     EditText client_name;
@@ -102,9 +106,6 @@ public class CurrentOrderFragment extends Fragment {
     @BindView(R.id.ntes)
     EditText notes;
 
-    @BindView(R.id.products_recycler_view)
-    RecyclerView productsRecyclerView;
-
     @BindView(R.id.discount)
     EditText discount;
 
@@ -135,6 +136,12 @@ public class CurrentOrderFragment extends Fragment {
     @BindView(R.id.present)
     TextView present;
 
+    // multi orders
+    @BindView(R.id.products_recycler_view)
+    RecyclerView multiOrderroductsRecyclerView;
+    private LinearLayoutManager multiOrderProductsLinearLayoutManager;
+    private MultiOrderProductsAdapter multiOrderProductsAdapter;
+
     private boolean firstOrder;
     private int firstRemaining;
 
@@ -150,7 +157,6 @@ public class CurrentOrderFragment extends Fragment {
         // Inflate the layout for this fragment
         mainView = inflater.inflate(R.layout.fragment_current_order, container, false);
         ButterKnife.bind(this, mainView);
-
         initLabels();
         getCurrentOrder();
         return mainView;
@@ -251,8 +257,24 @@ public class CurrentOrderFragment extends Fragment {
             single_order_product_spinner.setVisibility(View.VISIBLE);
             getSingleOrderProducts();
         } else {
+            getMultiOrdersProducts();
             single_order_product_spinner.setVisibility(View.GONE);
         }
+    }
+
+    private void getMultiOrdersProducts() {
+        multiOrderProductsAdapter = new MultiOrderProductsAdapter(getActivity(),
+                CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getMultiOrders(),
+                new MultiOrderProductsAdapter.GetOrderInterface() {
+                    @Override
+                    public void getOrder() {
+
+                    }
+                });
+        multiOrderProductsLinearLayoutManager = new LinearLayoutManager(getActivity());
+        multiOrderroductsRecyclerView.setLayoutManager(multiOrderProductsLinearLayoutManager);
+
+
     }
 
     private void getSingleOrderProducts() {
@@ -281,7 +303,9 @@ public class CurrentOrderFragment extends Fragment {
         if (CurrentOrderData.getInstance().getSingleOrderProductsResponse() != null) {
             ArrayAdapter adapter = new SignleOrderProductsAdapter(getActivity(),
                     CurrentOrderData.getInstance().getSingleOrderProductsResponse());
-
+            single_order_product_spinner.setSelection(CurrentOrderData.getInstance().getSingleOrderProductsResponse().getProducts().indexOf(
+                    CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getProductId()
+            ));
             single_order_product_spinner.setAdapter(adapter);
             single_order_product_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
@@ -393,7 +417,7 @@ public class CurrentOrderFragment extends Fragment {
 
                     @Override
                     public void onFailure(Call<RemainingOrdersResponse> call, Throwable t) {
-
+                        Log.d(TAG, "onFailure: "+t.getMessage());
                     }
                 });
     }

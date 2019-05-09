@@ -140,10 +140,7 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 import static com.greyeg.tajr.activities.LoginActivity.IS_LOGIN;
 
 public class OrderActivity extends AppCompatActivity
-        implements CurrentCallListener,
-        SearchOrderPhoneFragment.OnFragmentInteractionListener,
-        NewOrderFragment.SendOrderListener,
-        CalcDialog.CalcDialogCallback {
+        implements CurrentCallListener{
 
     public static final String client_busy = "client_busy";
     public static final String client_cancel = "client_cancel";
@@ -1397,17 +1394,17 @@ public class OrderActivity extends AppCompatActivity
         }
     }
 
-    @Override
-    public void onFragmentInteraction() {
-        Toast.makeText(this, "تم ارسال الطلب", Toast.LENGTH_SHORT).show();
-        getFirstOrder();
-    }
+//    @Override
+//    public void onFragmentInteraction() {
+//        Toast.makeText(this, "تم ارسال الطلب", Toast.LENGTH_SHORT).show();
+//        getFirstOrder();
+//    }
 
-    @Override
-    public void orderSentGetNewOrder() {
-        Toast.makeText(this, "تم ارسال الطلب", Toast.LENGTH_SHORT).show();
-        getFirstOrder();
-    }
+//    @Override
+//    public void orderSentGetNewOrder() {
+//        Toast.makeText(this, "تم ارسال الطلب", Toast.LENGTH_SHORT).show();
+//        getFirstOrder();
+//    }
 
     public void onConnectionLost() {
         Intent intent = new Intent(getApplicationContext(), NoInternetActivity.class);
@@ -1561,20 +1558,7 @@ public class OrderActivity extends AppCompatActivity
         if (value != null) {
             state.putString("value", value.toString());
         }
-    }
-
-    @Override
-    public void onValueEntered(int requestCode, BigDecimal value) {
-        // if (requestCode == DIALOG_REQUEST_CODE) {}  <-- If there's many dialogs
-
-        this.value = value;
-
-        if (value != null) {
-            valueTxv.setText(value.toPlainString());
-            signChk.setEnabled(value.compareTo(BigDecimal.ZERO) != 0);
-        }
-
-    }
+   }
 
     void setUpProgressBar() {
         int[] colors = new int[4];

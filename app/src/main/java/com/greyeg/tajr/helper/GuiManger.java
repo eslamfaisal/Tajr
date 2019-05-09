@@ -20,7 +20,6 @@ public class GuiManger {
         return gui_manger;
     }
 
-
     private Fragment currFragment;
     private FragmentManager fragmentManager;
 
