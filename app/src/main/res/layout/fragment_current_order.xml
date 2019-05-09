@@ -5,9 +5,34 @@
     android:layout_height="match_parent"
     tools:context=".order.fragments.CurrentOrderFragment">
 
+    <RelativeLayout
+        android:id="@+id/work_progress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ProgressBar
+            android:id="@+id/ProgressBar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="@dimen/_26sdp"
+            android:indeterminate="false"
+            android:maxHeight="10dip"
+            android:minHeight="10dip"
+            android:progress="0"
+            android:progressDrawable="@drawable/ic_greenprogress" />
+
+        <TextView
+            android:id="@+id/present"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:textColor="@color/white" />
+    </RelativeLayout>
+
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_below="@id/work_progress">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -268,13 +293,13 @@
                         style="@style/oder_item_frame_style">
 
                         <Spinner
-                            android:gravity="center"
                             android:id="@+id/client_city"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:layout_marginEnd="26dp"
                             android:background="@color/gray"
+                            android:gravity="center"
                             android:paddingStart="16dp"
                             android:tag="client_name_label" />
 

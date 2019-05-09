@@ -78,7 +78,11 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning"
         tools:replace="android:allowBackup">
-        <activity android:name=".order.NewOrderActivity">
+
+        <activity android:name=".order.NewOrderActivity"
+            android:launchMode="singleTask"
+            android:label=""
+            android:theme="@style/AppTheme.NoActionBar" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -1,10 +1,18 @@
 package com.greyeg.tajr.order.fragments;
 
 
+import android.app.Dialog;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,12 +26,15 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.greyeg.tajr.R;
 import com.greyeg.tajr.activities.LoginActivity;
+import com.greyeg.tajr.activities.OrderActivity;
 import com.greyeg.tajr.helper.SharedHelper;
+import com.greyeg.tajr.models.RemainingOrdersResponse;
 import com.greyeg.tajr.order.CurrentOrderData;
 import com.greyeg.tajr.order.NewOrderActivity;
 import com.greyeg.tajr.order.adapters.SignleOrderProductsAdapter;
@@ -37,7 +48,9 @@ import com.greyeg.tajr.server.Api;
 import com.greyeg.tajr.server.BaseClient;
 import com.greyeg.tajr.view.dialogs.Dialogs;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -45,6 +58,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static android.content.Context.NOTIFICATION_SERVICE;
 import static com.greyeg.tajr.activities.LoginActivity.IS_LOGIN;
 import static com.greyeg.tajr.view.dialogs.Dialogs.showProgressDialog;
 
@@ -115,6 +129,17 @@ public class CurrentOrderFragment extends Fragment {
     @BindView(R.id.single_order_product_spinner)
     Spinner single_order_product_spinner;
 
+    @BindView(R.id.ProgressBar)
+    ProgressBar mProgressBar4;
+
+    @BindView(R.id.present)
+    TextView present;
+
+    private boolean firstOrder;
+    private int firstRemaining;
+
+    private Dialog errorGetCurrentOrderDialog;
+
     public CurrentOrderFragment() {
         // Required empty public constructor
     }
@@ -144,6 +169,7 @@ public class CurrentOrderFragment extends Fragment {
                             if (response.body().getCode().equals(ResponseCodeEnums.code_1200.getCode())) {
                                 CurrentOrderData.getInstance().setCurrentOrderResponse(response.body());
                                 fillFieldsWithOrderData(response.body());
+                                updateProgress();
                             } else if (response.body().getCode().equals(ResponseCodeEnums.code_1300.getCode())) {
                                 // no new orders all handled
                                 Dialogs.showCustomDialog(getActivity(), getString(R.string.no_more_orders), getString(R.string.order),
@@ -166,28 +192,38 @@ public class CurrentOrderFragment extends Fragment {
                             }
 
                         } else {
-                            Dialogs.showCustomDialog(getActivity(),
-                                    response.toString(), getString(R.string.order),
-                                    getString(R.string.retry), getString(R.string.finish_work),
-                                    v -> getActivity().recreate(),
-                                    v -> NewOrderActivity.finishWork());
+                            showErrorGetCurrentOrderDialog( response.toString());
                             Log.d(TAG, "onResponse: null = " + response.toString());
                         }
                     }
 
                     @Override
                     public void onFailure(Call<CurrentOrderResponse> call, Throwable t) {
-                        Dialogs.showCustomDialog(getActivity(),
-                                t.getMessage(), getString(R.string.order),
-                                getString(R.string.retry), getString(R.string.finish_work),
-                                v -> getActivity().recreate(),
-                                v -> NewOrderActivity.finishWork());
-                        Log.d(TAG, "onFailure: " + t.getMessage());
                         progressDialog.dismiss();
+                        showErrorGetCurrentOrderDialog(t.getMessage());
+
                     }
                 });
     }
 
+    private void showErrorGetCurrentOrderDialog(String msg) {
+        errorGetCurrentOrderDialog = Dialogs.showCustomDialog(getActivity(),
+                msg, getString(R.string.order),
+                getString(R.string.retry), getString(R.string.finish_work), new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        errorGetCurrentOrderDialog.dismiss();
+                        getCurrentOrder();
+
+                    }
+                }, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        NewOrderActivity.finishWork();
+                    }
+                });
+        Log.d(TAG, "onFailure: " + msg);
+    }
 
     private void fillFieldsWithOrderData(CurrentOrderResponse orderResponse) {
 
@@ -211,9 +247,12 @@ public class CurrentOrderFragment extends Fragment {
 
         initCities(orderResponse);
 
-        if (order.getOrderType().equals(OrderProductsType.SingleOrder.getType()))
+        if (order.getOrderType().equals(OrderProductsType.SingleOrder.getType())) {
+            single_order_product_spinner.setVisibility(View.VISIBLE);
             getSingleOrderProducts();
-        else single_order_product_spinner.setVisibility(View.GONE);
+        } else {
+            single_order_product_spinner.setVisibility(View.GONE);
+        }
     }
 
     private void getSingleOrderProducts() {
@@ -226,7 +265,7 @@ public class CurrentOrderFragment extends Fragment {
                 if (response.body() != null) {
                     CurrentOrderData.getInstance().setSingleOrderProductsResponse(response.body());
                     fillSingleOrderProductsSpinner();
-                }else {
+                } else {
                     //TODO make dialog
                 }
             }
@@ -238,8 +277,8 @@ public class CurrentOrderFragment extends Fragment {
         });
     }
 
-    private void fillSingleOrderProductsSpinner(){
-        if (CurrentOrderData.getInstance().getSingleOrderProductsResponse()!=null){
+    private void fillSingleOrderProductsSpinner() {
+        if (CurrentOrderData.getInstance().getSingleOrderProductsResponse() != null) {
             ArrayAdapter adapter = new SignleOrderProductsAdapter(getActivity(),
                     CurrentOrderData.getInstance().getSingleOrderProductsResponse());
 
@@ -247,7 +286,7 @@ public class CurrentOrderFragment extends Fragment {
             single_order_product_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    Log.d(TAG, "onItemSelected: "+single_order_product_spinner.getSelectedItemPosition());
+                    Log.d(TAG, "onItemSelected: " + single_order_product_spinner.getSelectedItemPosition());
                 }
 
                 @Override
@@ -327,5 +366,83 @@ public class CurrentOrderFragment extends Fragment {
 
     }
 
+    private void updateProgress() {
+        BaseClient.getBaseClient().create(Api.class)
+                .getRemainigOrders(SharedHelper.getKey(getActivity(), LoginActivity.TOKEN))
+                .enqueue(new Callback<RemainingOrdersResponse>() {
+                    @Override
+                    public void onResponse(Call<RemainingOrdersResponse> call, Response<RemainingOrdersResponse> response) {
+                        if (response.body() != null) {
+
+                            if (!firstOrder) {
+                                firstOrder = true;
+                                firstRemaining = response.body().getData();
+                                mProgressBar4.setMax(firstRemaining);
+                            }
+
+                            int b = firstRemaining - response.body().getData();
+                            mProgressBar4.setProgress(b);
+                            String remaining = getString(R.string.remaining) + " ( " + NumberFormat.getNumberInstance(Locale.US).format(response.body().getData()) + " ) " + getString(R.string.order);
+                            present.setText(remaining);
+                            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+                            if (sharedPreferences.getBoolean("autoNotifiction", false))
+                                createNotification(String.valueOf(firstRemaining - b));
+
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<RemainingOrdersResponse> call, Throwable t) {
+
+                    }
+                });
+    }
+
+    public void createNotification(String first) {
+
+        NotificationManager notificationManager = (NotificationManager) getActivity().getSystemService(NOTIFICATION_SERVICE);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            NotificationChannel channel = null;
+
+            channel = new NotificationChannel("5", "eslam", NotificationManager.IMPORTANCE_HIGH);
+            channel.setDescription("5");
+            notificationManager.createNotificationChannel(channel);
+
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(getActivity(), "5")
+                    .setSmallIcon(getActivity().getApplicationInfo().icon)
+                    .setContentTitle("orders")
+                    .setOngoing(true)
+                    .setColor(Color.RED)
+                    .addAction(R.drawable.ic_call_end_red, getResources().getString(R.string.start_work),
+                            PendingIntent.getActivity(getActivity(), 0, new Intent(getActivity(),
+                                    NewOrderActivity.class).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP
+                                    | Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT
+                                    | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT), 0))
+                    .setContentText(getString(R.string.remaining) + " " + first + " " + getString(R.string.order))
+                    .setSmallIcon(R.drawable.ic_launcher);
+
+
+            notificationManager.notify(5, builder.build());
+
+        } else {
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(getActivity())
+                    .setSmallIcon(getActivity().getApplicationInfo().icon)
+                    .setContentTitle("orders")
+                    .setOngoing(true)
+                    .setColor(Color.RED)
+                    .addAction(R.drawable.ic_call_end_red, getResources().getString(R.string.start_work),
+                            PendingIntent.getActivity(getActivity(), 0, new Intent(getActivity(),
+                                    OrderActivity.class).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP
+                                    | Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT
+                                    | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT), 0))
+                    .setContentText(getString(R.string.remaining) + " " + first + " " + getString(R.string.order))
+                    .setSmallIcon(R.drawable.ic_launcher);
+
+
+            notificationManager.notify(5, builder.build());
+        }
+
+
+    }
 
 }
