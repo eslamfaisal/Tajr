@@ -1,6 +1,6 @@
 package com.greyeg.tajr.order.enums;
 
-public enum   OrderTypeEnums {
+public enum OrderTypeEnums {
     solved_order,
     missed_call,
     pre_new_order,
@@ -8,4 +8,5 @@ public enum   OrderTypeEnums {
     returned_order,
     delayed_order,
     new_order;
+
 }

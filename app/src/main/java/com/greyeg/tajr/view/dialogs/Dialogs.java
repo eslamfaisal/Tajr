@@ -5,7 +5,6 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 
 import com.greyeg.tajr.R;
 import com.greyeg.tajr.helper.font.RobotoTextView;
@@ -37,13 +36,14 @@ public class Dialogs {
             cancelBtn.setVisibility(View.GONE);
             divider.setVisibility(View.GONE);
         }
-       warningDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT);
+        warningDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
         warningDialog.show();
 
         return warningDialog;
     }
-    public static ProgressDialog showProgressDialog(Activity activity ,String msg) {
+
+    public static ProgressDialog showProgressDialog(Activity activity, String msg) {
         ProgressDialog progressDialog = new ProgressDialog(activity);
         progressDialog.setMessage(msg);
         progressDialog.setCancelable(false);

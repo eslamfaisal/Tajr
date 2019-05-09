@@ -13,7 +13,6 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class NewOrderActivity extends AppCompatActivity {
 
-    public static CurrentOrderResponse currentOrderResponse;
 
     @Override
     protected void attachBaseContext(Context newBase) {

@@ -24,11 +24,15 @@ import android.widget.TextView;
 import com.greyeg.tajr.R;
 import com.greyeg.tajr.activities.LoginActivity;
 import com.greyeg.tajr.helper.SharedHelper;
+import com.greyeg.tajr.order.CurrentOrderData;
 import com.greyeg.tajr.order.NewOrderActivity;
+import com.greyeg.tajr.order.adapters.SignleOrderProductsAdapter;
+import com.greyeg.tajr.order.enums.OrderProductsType;
 import com.greyeg.tajr.order.enums.ResponseCodeEnums;
 import com.greyeg.tajr.order.models.City;
 import com.greyeg.tajr.order.models.CurrentOrderResponse;
 import com.greyeg.tajr.order.models.Order;
+import com.greyeg.tajr.order.models.SingleOrderProductsResponse;
 import com.greyeg.tajr.server.Api;
 import com.greyeg.tajr.server.BaseClient;
 import com.greyeg.tajr.view.dialogs.Dialogs;
@@ -108,6 +112,9 @@ public class CurrentOrderFragment extends Fragment {
     @BindView(R.id.order_type)
     EditText order_type;
 
+    @BindView(R.id.single_order_product_spinner)
+    Spinner single_order_product_spinner;
+
     public CurrentOrderFragment() {
         // Required empty public constructor
     }
@@ -126,7 +133,7 @@ public class CurrentOrderFragment extends Fragment {
 
     private void getCurrentOrder() {
 
-        ProgressDialog progressDialog = showProgressDialog(getActivity(),getString(R.string.fetching_th_order));
+        ProgressDialog progressDialog = showProgressDialog(getActivity(), getString(R.string.fetching_th_order));
         BaseClient.getBaseClient().create(Api.class)
                 .getNewCurrentOrderResponce(SharedHelper.getKey(getActivity(), LoginActivity.TOKEN))
                 .enqueue(new Callback<CurrentOrderResponse>() {
@@ -135,11 +142,10 @@ public class CurrentOrderFragment extends Fragment {
                         progressDialog.dismiss();
                         if (response.body() != null) {
                             if (response.body().getCode().equals(ResponseCodeEnums.code_1200.getCode())) {
-                                NewOrderActivity.currentOrderResponse = response.body();
+                                CurrentOrderData.getInstance().setCurrentOrderResponse(response.body());
                                 fillFieldsWithOrderData(response.body());
                             } else if (response.body().getCode().equals(ResponseCodeEnums.code_1300.getCode())) {
                                 // no new orders all handled
-                                //TODO make dialog with return
                                 Dialogs.showCustomDialog(getActivity(), getString(R.string.no_more_orders), getString(R.string.order),
                                         "Back", null, new View.OnClickListener() {
                                             @Override
@@ -165,7 +171,6 @@ public class CurrentOrderFragment extends Fragment {
                                     getString(R.string.retry), getString(R.string.finish_work),
                                     v -> getActivity().recreate(),
                                     v -> NewOrderActivity.finishWork());
-                            //TODO maje dialog
                             Log.d(TAG, "onResponse: null = " + response.toString());
                         }
                     }
@@ -182,6 +187,7 @@ public class CurrentOrderFragment extends Fragment {
                     }
                 });
     }
+
 
     private void fillFieldsWithOrderData(CurrentOrderResponse orderResponse) {
 
@@ -204,6 +210,52 @@ public class CurrentOrderFragment extends Fragment {
         shipping_cost.setText(order.getShippingCost());
 
         initCities(orderResponse);
+
+        if (order.getOrderType().equals(OrderProductsType.SingleOrder.getType()))
+            getSingleOrderProducts();
+        else single_order_product_spinner.setVisibility(View.GONE);
+    }
+
+    private void getSingleOrderProducts() {
+        BaseClient.getBaseClient().create(Api.class)
+                .getSingleOrderProducts(SharedHelper.getKey(getActivity(), LoginActivity.TOKEN),
+                        CurrentOrderData.getInstance().getCurrentOrderResponse().getUserId()
+                ).enqueue(new Callback<SingleOrderProductsResponse>() {
+            @Override
+            public void onResponse(Call<SingleOrderProductsResponse> call, Response<SingleOrderProductsResponse> response) {
+                if (response.body() != null) {
+                    CurrentOrderData.getInstance().setSingleOrderProductsResponse(response.body());
+                    fillSingleOrderProductsSpinner();
+                }else {
+                    //TODO make dialog
+                }
+            }
+
+            @Override
+            public void onFailure(Call<SingleOrderProductsResponse> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void fillSingleOrderProductsSpinner(){
+        if (CurrentOrderData.getInstance().getSingleOrderProductsResponse()!=null){
+            ArrayAdapter adapter = new SignleOrderProductsAdapter(getActivity(),
+                    CurrentOrderData.getInstance().getSingleOrderProductsResponse());
+
+            single_order_product_spinner.setAdapter(adapter);
+            single_order_product_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    Log.d(TAG, "onItemSelected: "+single_order_product_spinner.getSelectedItemPosition());
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+
+                }
+            });
+        }
     }
 
     private void initCities(CurrentOrderResponse order) {
@@ -223,8 +275,8 @@ public class CurrentOrderFragment extends Fragment {
         client_city.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Log.d(TAG, "onItemSelected: "+position);
-                Log.d(TAG, "onItemSelected: "+client_city.getSelectedItemPosition());
+                Log.d(TAG, "onItemSelected: " + position);
+                Log.d(TAG, "onItemSelected: " + client_city.getSelectedItemPosition());
             }
 
             @Override
@@ -274,6 +326,6 @@ public class CurrentOrderFragment extends Fragment {
         }
 
     }
-    
+
 
 }
