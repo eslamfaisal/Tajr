@@ -61,8 +61,8 @@ public class NewOrderActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         } else if (id == R.id.call_client) {
-            if (CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder() != null)
-                callClient();
+//            if (CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder() != null)
+//                callClient();
         } else if (id == R.id.mic_mode) {
             modifyMic();
         }

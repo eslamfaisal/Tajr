@@ -2,6 +2,7 @@ package com.greyeg.tajr.order.adapters;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -16,6 +17,7 @@ import com.greyeg.tajr.activities.LoginActivity;
 import com.greyeg.tajr.helper.SharedHelper;
 import com.greyeg.tajr.models.DeleteAddProductResponse;
 import com.greyeg.tajr.order.CurrentOrderData;
+import com.greyeg.tajr.order.enums.ResponseCodeEnums;
 import com.greyeg.tajr.order.models.MultiOrderProducts;
 import com.greyeg.tajr.server.Api;
 import com.greyeg.tajr.server.BaseClient;
@@ -25,6 +27,8 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static com.greyeg.tajr.view.dialogs.Dialogs.showProgressDialog;
 
 public class MultiOrderProductsAdapter extends RecyclerView.Adapter<MultiOrderProductsAdapter.Holder> {
 
@@ -88,6 +92,7 @@ public class MultiOrderProductsAdapter extends RecyclerView.Adapter<MultiOrderPr
     }
 
     private void deleteProduct(String orderId, String extra_product_key, String product_id, int position) {
+        ProgressDialog progressDialog = showProgressDialog(context, context.getString(R.string.delete_product));
         Api api = BaseClient.getBaseClient().create(Api.class);
 
         api.deleteProduct(
@@ -99,8 +104,8 @@ public class MultiOrderProductsAdapter extends RecyclerView.Adapter<MultiOrderPr
         ).enqueue(new Callback<DeleteAddProductResponse>() {
             @Override
             public void onResponse(Call<DeleteAddProductResponse> call, Response<DeleteAddProductResponse> response) {
-
-                if (response.body().getCode().equals("1200")) {
+                progressDialog.dismiss();
+                if (response.body().getCode().equals(ResponseCodeEnums.code_1200.getCode())) {
                     proDucts.remove(position);
 
                     notifyDataSetChanged();
@@ -114,6 +119,7 @@ public class MultiOrderProductsAdapter extends RecyclerView.Adapter<MultiOrderPr
 
             @Override
             public void onFailure(Call<DeleteAddProductResponse> call, Throwable t) {
+                progressDialog.dismiss();
                 Toast.makeText(context, "" + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });

@@ -10,17 +10,17 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
-import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
@@ -32,11 +32,14 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.greyeg.tajr.R;
 import com.greyeg.tajr.activities.LoginActivity;
 import com.greyeg.tajr.activities.OrderActivity;
 import com.greyeg.tajr.helper.SharedHelper;
+import com.greyeg.tajr.helper.ViewAnimation;
+import com.greyeg.tajr.models.DeleteAddProductResponse;
 import com.greyeg.tajr.models.RemainingOrdersResponse;
 import com.greyeg.tajr.order.CurrentOrderData;
 import com.greyeg.tajr.order.NewOrderActivity;
@@ -58,6 +61,7 @@ import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -69,83 +73,69 @@ import static com.greyeg.tajr.view.dialogs.Dialogs.showProgressDialog;
 public class CurrentOrderFragment extends Fragment {
 
     private final String TAG = "CurrentOrderFragment";
-
-    // main view of the CurrentOrderFragment
-    private View mainView;
-
     @BindView(R.id.client_name)
     EditText client_name;
-
     @BindView(R.id.client_address)
     EditText client_address;
-
     @BindView(R.id.client_area)
     EditText client_area;
-
     @BindView(R.id.item_no)
     EditText item_no;
-
     @BindView(R.id.client_order_phone1)
     EditText client_order_phone1;
-
     @BindView(R.id.status)
     EditText status;
-
     @BindView(R.id.shipping_status)
     EditText shipping_status;
-
     @BindView(R.id.shipping_cost)
     EditText shipping_cost;
-
     @BindView(R.id.sender_name)
     EditText sender_name;
-
     @BindView(R.id.item_cost)
     EditText item_cost;
-
     @BindView(R.id.ntes)
     EditText notes;
-
     @BindView(R.id.discount)
     EditText discount;
-
     @BindView(R.id.order_total_cost)
     EditText order_total_cost;
-
     @BindView(R.id.client_feedback)
     EditText client_feedback;
-
     @BindView(R.id.order_id)
     EditText order_id;
-
     @BindView(R.id.client_city)
     Spinner client_city;
-
     @BindView(R.id.add_product)
     ImageView add_product;
-
     @BindView(R.id.order_type)
     EditText order_type;
-
     @BindView(R.id.single_order_product_spinner)
     Spinner single_order_product_spinner;
-
     @BindView(R.id.ProgressBar)
     ProgressBar mProgressBar4;
-
     @BindView(R.id.present)
     TextView present;
 
+    @BindView(R.id.fabShowUpdateOrderButtons)
+    FloatingActionButton fabShiwUpdateOrderButtons;
+    @BindView(R.id.back_drop)
+    View back_drop;
     // multi orders
     @BindView(R.id.products_recycler_view)
     RecyclerView multiOrderroductsRecyclerView;
+    @BindView(R.id.client_cancel)
+    View client_cancel;
+
+    @BindView(R.id.confirm_data)
+    View order_data_confirmed;
+    // main view of the CurrentOrderFragment
+    private View mainView;
     private LinearLayoutManager multiOrderProductsLinearLayoutManager;
     private MultiOrderProductsAdapter multiOrderProductsAdapter;
-
     private boolean firstOrder;
     private int firstRemaining;
-
     private Dialog errorGetCurrentOrderDialog;
+    private boolean rotate = false;
 
     public CurrentOrderFragment() {
         // Required empty public constructor
@@ -159,7 +149,132 @@ public class CurrentOrderFragment extends Fragment {
         ButterKnife.bind(this, mainView);
         initLabels();
         getCurrentOrder();
+        setListeners();
         return mainView;
+    }
+
+    private void setListeners() {
+        add_product.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addProductToMultiOrdersTv();
+            }
+        });
+        back_drop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                back_drop.setVisibility(View.GONE);
+                toggleFabMode(fabShiwUpdateOrderButtons);
+            }
+        });
+        fabShiwUpdateOrderButtons.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toggleFabMode(fabShiwUpdateOrderButtons);
+            }
+        });
+
+        
+    }
+
+    void addProductToMultiOrdersTv() {
+        Dialog dialog = new Dialog(getActivity());
+        dialog.setContentView(R.layout.layout_add_rpoduct_dialog);
+
+        Spinner productSpinner = dialog.findViewById(R.id.product_spinner);
+        productSpinner.setTag(OrderProductsType.MuhltiOrder.getType());
+        EditText productNo = dialog.findViewById(R.id.product_no);
+        TextView addProductBtn = dialog.findViewById(R.id.add_product);
+        productNo.setInputType(InputType.TYPE_CLASS_NUMBER);
+        fillSpinnerWithProduts(productSpinner);
+        WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+        lp.copyFrom(dialog.getWindow().getAttributes());
+        lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        dialog.getWindow().setAttributes(lp);
+        addProductBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                addProductToMultiOrder(Integer.valueOf(productNo.getText().toString()), productSpinner.getSelectedItemPosition());
+            }
+        });
+        dialog.show();
+
+    }
+
+    private void toggleFabMode(View v) {
+        rotate = ViewAnimation.rotateFab(v, !rotate);
+        if (rotate) {
+            ViewAnimation.showIn(client_cancel);
+            ViewAnimation.showIn(order_data_confirmed);
+            back_drop.setVisibility(View.VISIBLE);
+        } else {
+            ViewAnimation.showOut(client_cancel);
+            ViewAnimation.showOut(order_data_confirmed);
+            back_drop.setVisibility(View.GONE);
+        }
+    }
+
+    private void addProductToMultiOrder(int number, int index) {
+        ProgressDialog progressDialog = showProgressDialog(getActivity(), getString(R.string.add_product));
+        BaseClient.getBaseClient().create(Api.class).addProduct(
+                SharedHelper.getKey(getActivity(), LoginActivity.TOKEN),
+                CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getId(),
+                CurrentOrderData.getInstance().getSingleOrderProductsResponse().getProducts().get(index).getProductId(),
+                CurrentOrderData.getInstance().getCurrentOrderResponse().getUserId(),
+                number
+        ).enqueue(new Callback<DeleteAddProductResponse>() {
+            @Override
+            public void onResponse(Call<DeleteAddProductResponse> call, Response<DeleteAddProductResponse> response) {
+                progressDialog.dismiss();
+                if (response.body() != null) {
+
+                    if (response.body().getCode().equals(ResponseCodeEnums.code_1200.getCode())) {
+                        Toast.makeText(getActivity(), getString(R.string.added_success), Toast.LENGTH_SHORT).show();
+                        getCurrentOrder();
+                    }
+
+                } else {
+                    errorGetCurrentOrderDialog = Dialogs.showCustomDialog(getActivity(),
+                            response.toString(), getString(R.string.order),
+                            getString(R.string.retry), getString(R.string.finish_work), new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    errorGetCurrentOrderDialog.dismiss();
+                                    getCurrentOrder();
+                                }
+                            }, new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    NewOrderActivity.finishWork();
+                                }
+                            });
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<DeleteAddProductResponse> call, Throwable t) {
+                progressDialog.dismiss();
+                Log.d("DeleteAddProduct", "onFailure: " + t.getMessage());
+                errorGetCurrentOrderDialog = Dialogs.showCustomDialog(getActivity(),
+                        t.getMessage().toString(), getString(R.string.order),
+                        getString(R.string.retry), getString(R.string.finish_work), new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                errorGetCurrentOrderDialog.dismiss();
+                                getCurrentOrder();
+                            }
+                        }, new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                NewOrderActivity.finishWork();
+                            }
+                        });
+            }
+        });
+
     }
 
     private void getCurrentOrder() {
@@ -198,7 +313,7 @@ public class CurrentOrderFragment extends Fragment {
                             }
 
                         } else {
-                            showErrorGetCurrentOrderDialog( response.toString());
+                            showErrorGetCurrentOrderDialog(response.toString());
                             Log.d(TAG, "onResponse: null = " + response.toString());
                         }
                     }
@@ -252,10 +367,9 @@ public class CurrentOrderFragment extends Fragment {
         shipping_cost.setText(order.getShippingCost());
 
         initCities(orderResponse);
-
+        getSingleOrderProducts();
         if (order.getOrderType().equals(OrderProductsType.SingleOrder.getType())) {
             single_order_product_spinner.setVisibility(View.VISIBLE);
-            getSingleOrderProducts();
         } else {
             getMultiOrdersProducts();
             single_order_product_spinner.setVisibility(View.GONE);
@@ -268,11 +382,12 @@ public class CurrentOrderFragment extends Fragment {
                 new MultiOrderProductsAdapter.GetOrderInterface() {
                     @Override
                     public void getOrder() {
-
+                        getCurrentOrder();
                     }
                 });
         multiOrderProductsLinearLayoutManager = new LinearLayoutManager(getActivity());
         multiOrderroductsRecyclerView.setLayoutManager(multiOrderProductsLinearLayoutManager);
+        multiOrderroductsRecyclerView.setAdapter(multiOrderProductsAdapter);
 
 
     }
@@ -286,7 +401,8 @@ public class CurrentOrderFragment extends Fragment {
             public void onResponse(Call<SingleOrderProductsResponse> call, Response<SingleOrderProductsResponse> response) {
                 if (response.body() != null) {
                     CurrentOrderData.getInstance().setSingleOrderProductsResponse(response.body());
-                    fillSingleOrderProductsSpinner();
+                    single_order_product_spinner.setTag(OrderProductsType.SingleOrder.getType());
+                    fillSpinnerWithProduts(single_order_product_spinner);
                 } else {
                     //TODO make dialog
                 }
@@ -299,18 +415,24 @@ public class CurrentOrderFragment extends Fragment {
         });
     }
 
-    private void fillSingleOrderProductsSpinner() {
+    private void fillSpinnerWithProduts(Spinner spinner) {
         if (CurrentOrderData.getInstance().getSingleOrderProductsResponse() != null) {
             ArrayAdapter adapter = new SignleOrderProductsAdapter(getActivity(),
                     CurrentOrderData.getInstance().getSingleOrderProductsResponse());
-            single_order_product_spinner.setSelection(CurrentOrderData.getInstance().getSingleOrderProductsResponse().getProducts().indexOf(
+            spinner.setSelection(CurrentOrderData.getInstance().getSingleOrderProductsResponse().getProducts().indexOf(
                     CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getProductId()
             ));
-            single_order_product_spinner.setAdapter(adapter);
-            single_order_product_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            spinner.setAdapter(adapter);
+            spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    Log.d(TAG, "onItemSelected: " + single_order_product_spinner.getSelectedItemPosition());
+
+                    if (spinner.getTag().equals(OrderProductsType.MuhltiOrder.getType())) {
+                        Log.d(TAG, "onItemSelected: from multi " + spinner.getSelectedItemPosition());
+                    } else if (spinner.getTag().equals(OrderProductsType.SingleOrder.getType())) {
+
+                        Log.d(TAG, "onItemSelected: from single " + spinner.getSelectedItemPosition());
+                    }
                 }
 
                 @Override
@@ -417,7 +539,7 @@ public class CurrentOrderFragment extends Fragment {
 
                     @Override
                     public void onFailure(Call<RemainingOrdersResponse> call, Throwable t) {
-                        Log.d(TAG, "onFailure: "+t.getMessage());
+                        Log.d(TAG, "onFailure: " + t.getMessage());
                     }
                 });
     }

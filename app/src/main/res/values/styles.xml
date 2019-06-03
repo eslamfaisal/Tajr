@@ -141,5 +141,21 @@
         <item name="android:gravity">center</item>
     </style>
 
+    <style name="fab_buttons_CardView_Style">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">@dimen/spacing_middle</item>
+        <item name="android:layout_gravity">center_vertical|end|right</item>
+    </style>
+
+    <style name="fab_buttons_TextView_Style">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Body2</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:layout_gravity">center</item>
+    </style>
 
 </resources>
