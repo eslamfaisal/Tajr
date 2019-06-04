@@ -33,9 +33,10 @@
                         </option>
                         <option name="values">
                           <map>
+                            <entry key="assetSourceType" value="FILE" />
                             <entry key="color" value="ffffff" />
-                            <entry key="outputName" value="ic_history_black_24dp" />
-                            <entry key="sourceFile" value="C:\Users\eslam" />
+                            <entry key="outputName" value="ic_save_edite" />
+                            <entry key="sourceFile" value="C:\Users\eslam\Downloads\check-mark.svg" />
                           </map>
                         </option>
                       </PersistentState>

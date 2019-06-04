@@ -1,5 +1,7 @@
 package com.greyeg.tajr.order.fragments;
 
+import android.annotation.SuppressLint;
+import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -13,9 +15,12 @@ import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.NotificationCompat;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
 import android.text.InputType;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -41,11 +46,13 @@ import com.greyeg.tajr.helper.SharedHelper;
 import com.greyeg.tajr.helper.ViewAnimation;
 import com.greyeg.tajr.models.DeleteAddProductResponse;
 import com.greyeg.tajr.models.RemainingOrdersResponse;
+import com.greyeg.tajr.models.UpdateOrederNewResponse;
 import com.greyeg.tajr.order.CurrentOrderData;
 import com.greyeg.tajr.order.NewOrderActivity;
 import com.greyeg.tajr.order.adapters.MultiOrderProductsAdapter;
 import com.greyeg.tajr.order.adapters.SignleOrderProductsAdapter;
 import com.greyeg.tajr.order.enums.OrderProductsType;
+import com.greyeg.tajr.order.enums.OrderUpdateStatusEnums;
 import com.greyeg.tajr.order.enums.ResponseCodeEnums;
 import com.greyeg.tajr.order.models.City;
 import com.greyeg.tajr.order.models.CurrentOrderResponse;
@@ -55,8 +62,12 @@ import com.greyeg.tajr.server.Api;
 import com.greyeg.tajr.server.BaseClient;
 import com.greyeg.tajr.view.dialogs.Dialogs;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Locale;
 
 import butterknife.BindView;
@@ -115,18 +126,13 @@ public class CurrentOrderFragment extends Fragment {
     @BindView(R.id.present)
     TextView present;
 
-    @BindView(R.id.fabShowUpdateOrderButtons)
-    FloatingActionButton fabShiwUpdateOrderButtons;
+
     @BindView(R.id.back_drop)
     View back_drop;
     // multi orders
     @BindView(R.id.products_recycler_view)
     RecyclerView multiOrderroductsRecyclerView;
-    @BindView(R.id.client_cancel)
-    View client_cancel;
 
-    @BindView(R.id.confirm_data)
-    View order_data_confirmed;
     // main view of the CurrentOrderFragment
     private View mainView;
     private LinearLayoutManager multiOrderProductsLinearLayoutManager;
@@ -135,6 +141,31 @@ public class CurrentOrderFragment extends Fragment {
     private int firstRemaining;
     private Dialog errorGetCurrentOrderDialog;
     private boolean rotate = false;
+
+    // update normal order
+    @BindView(R.id.normal_order_data_confirmed)
+    CardView normal_order_data_confirmed;
+
+    @BindView(R.id.normal_client_phone_error)
+    CardView normal_client_phone_error;
+
+    @BindView(R.id.normal_no_answer)
+    CardView normal_no_answer;
+
+    @BindView(R.id.normal_delay)
+    CardView normal_delay;
+
+    @BindView(R.id.normal_client_cancel)
+    CardView normal_client_cancel;
+
+    @BindView(R.id.normal_busy)
+    CardView normal_busy;
+
+    @BindView(R.id.normalUpdateButton)
+    FloatingActionButton normalUpdateButton;
+
+    @BindView(R.id.save_edit)
+    FloatingActionButton save_edit;
 
     public CurrentOrderFragment() {
         // Required empty public constructor
@@ -163,17 +194,209 @@ public class CurrentOrderFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 back_drop.setVisibility(View.GONE);
-                toggleFabMode(fabShiwUpdateOrderButtons);
-            }
-        });
-        fabShiwUpdateOrderButtons.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                toggleFabMode(fabShiwUpdateOrderButtons);
+                toggleFabMode(normalUpdateButton);
             }
         });
 
-        
+        normalUpdateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toggleFabMode(normalUpdateButton);
+            }
+        });
+
+        normal_busy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toggleFabMode(normalUpdateButton);
+                normalUpdateOrder(OrderUpdateStatusEnums.client_busy.name());
+            }
+        });
+
+        normal_client_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toggleFabMode(normalUpdateButton);
+                normalUpdateOrder(OrderUpdateStatusEnums.client_cancel.name());
+            }
+        });
+
+        normal_client_phone_error.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toggleFabMode(normalUpdateButton);
+                normalUpdateOrder(OrderUpdateStatusEnums.client_phone_error.name());
+            }
+        });
+
+        normal_no_answer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toggleFabMode(normalUpdateButton);
+                normalUpdateOrder(OrderUpdateStatusEnums.client_noanswer.name());
+            }
+        });
+
+        normal_order_data_confirmed.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toggleFabMode(normalUpdateButton);
+                normalUpdateOrder(OrderUpdateStatusEnums.order_data_confirmed.name());
+            }
+        });
+
+        normal_delay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toggleFabMode(normalUpdateButton);
+                chooseDate();
+            }
+        });
+        save_edit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+    }
+
+    public void updateClientData() {
+        BaseClient.getBaseClient().create(Api.class).updateClientData(
+                SharedHelper.getKey(getActivity(),LoginActivity.TOKEN),
+                CurrentOrderData.getInstance().getCurrentOrderResponse().getUserId(),
+                CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getId(),
+                client_name.getTag().toString(),
+                client_address.getTag().toString(),
+                client_area.getTag().toString(),
+                notes.getTag().toString()
+        ).enqueue(new Callback<CurrentOrderResponse>() {
+            @Override
+            public void onResponse(Call<CurrentOrderResponse> call, Response<CurrentOrderResponse> response) {
+
+            }
+
+            @Override
+            public void onFailure(Call<CurrentOrderResponse> call, Throwable t) {
+
+            }
+        });
+    }
+
+    public void updateSingleOrderData() {
+        BaseClient.getBaseClient().create(Api.class).updateSingleOrderData(
+                SharedHelper.getKey(getActivity(),LoginActivity.TOKEN),
+                CurrentOrderData.getInstance().getCurrentOrderResponse().getUserId(),
+                CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getId(),
+                CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getProductId(),
+                client_city.getTag().toString(),
+                item_no.getText().toString().trim(),
+                discount.getText().toString().trim()
+        ).enqueue(new Callback<CurrentOrderResponse>() {
+            @Override
+            public void onResponse(Call<CurrentOrderResponse> call, Response<CurrentOrderResponse> response) {
+
+            }
+
+            @Override
+            public void onFailure(Call<CurrentOrderResponse> call, Throwable t) {
+
+            }
+        });
+    }
+    public void updateOrderMultiOrderData() {
+        BaseClient.getBaseClient().create(Api.class).updateOrderMultiOrderData(
+                SharedHelper.getKey(getActivity(),LoginActivity.TOKEN),
+                CurrentOrderData.getInstance().getCurrentOrderResponse().getUserId(),
+                CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getId(),
+                client_city.getTag().toString(),
+                discount.getText().toString().trim()
+        ).enqueue(new Callback<CurrentOrderResponse>() {
+            @Override
+            public void onResponse(Call<CurrentOrderResponse> call, Response<CurrentOrderResponse> response) {
+
+                Log.d(TAG, "onResponse: " + response.toString());
+            }
+
+            @Override
+            public void onFailure(Call<CurrentOrderResponse> call, Throwable t) {
+                Log.d(TAG, "onFailure: " + t.getMessage());
+
+            }
+        });
+    }
+
+    private void normalUpdateOrder(String status){
+        ProgressDialog progressDialog = showProgressDialog(getActivity(), getString(R.string.fetching_th_order));
+
+        BaseClient.getBaseClient().create(Api.class).updateOrders(
+                SharedHelper.getKey(getActivity(),LoginActivity.TOKEN),
+                CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getId(),
+                CurrentOrderData.getInstance().getCurrentOrderResponse().getUserId(),
+                status
+        )
+                .enqueue(new Callback<UpdateOrederNewResponse>() {
+                    @Override
+                    public void onResponse(Call<UpdateOrederNewResponse> call, Response<UpdateOrederNewResponse> response) {
+                        progressDialog.dismiss();
+                        if (response.body().getResponse().equals("Success")){
+                            getCurrentOrder();
+                        }
+                        Log.d(TAG, "onResponse: " + response.toString());
+                    }
+
+                    @Override
+                    public void onFailure(Call<UpdateOrederNewResponse> call, Throwable t) {
+                        progressDialog.dismiss();
+                        Log.d(TAG, "onFailure: " + t.getMessage());
+                        showErrorGetCurrentOrderDialog(t.getMessage());
+                    }
+                });
+    }
+
+    private void chooseDate() {
+        final Calendar calendar = Calendar.getInstance();
+        final int year = calendar.get(Calendar.YEAR);
+        final int month = calendar.get(Calendar.MONTH);
+        final int day = calendar.get(Calendar.DAY_OF_MONTH);
+        DatePickerDialog datePicker =
+                new DatePickerDialog(getActivity(), (view, year1, month1, dayOfMonth) -> {
+
+                    @SuppressLint("SimpleDateFormat")
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                    calendar.set(year1, month1, dayOfMonth);
+                    String dateString = sdf.format(calendar.getTime());
+                    ProgressDialog progressDialog = showProgressDialog(getActivity(), getString(R.string.fetching_th_order));
+
+                    Api api = BaseClient.getBaseClient().create(Api.class);
+                    api.updateDelayedOrders(
+                            SharedHelper.getKey(getActivity(),LoginActivity.TOKEN),
+                            CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getId(),
+                            dateString,
+                            CurrentOrderData.getInstance().getCurrentOrderResponse().getUserId(),
+                            OrderUpdateStatusEnums.client_delay.name()
+                    ).enqueue(new Callback<UpdateOrederNewResponse>() {
+                        @Override
+                        public void onResponse(@NotNull Call<UpdateOrederNewResponse> call, @NotNull Response<UpdateOrederNewResponse> response) {
+                            progressDialog.dismiss();
+                            if (response.body().getResponse().equals("Success")){
+                                getCurrentOrder();
+                            }
+                            Log.d(TAG, "onResponse: " + response.toString());
+                        }
+
+                        @Override
+                        public void onFailure(Call<UpdateOrederNewResponse> call, Throwable t) {
+                            progressDialog.dismiss();
+                            Log.d(TAG, "onFailure: " + t.getMessage());
+                            showErrorGetCurrentOrderDialog(t.getMessage());
+                        }
+                    });
+                }, year, month, day); // set date picker to current date
+
+        datePicker.show();
+
+        datePicker.setOnCancelListener(dialog -> dialog.dismiss());
     }
 
     void addProductToMultiOrdersTv() {
@@ -205,12 +428,20 @@ public class CurrentOrderFragment extends Fragment {
     private void toggleFabMode(View v) {
         rotate = ViewAnimation.rotateFab(v, !rotate);
         if (rotate) {
-            ViewAnimation.showIn(client_cancel);
-            ViewAnimation.showIn(order_data_confirmed);
+            ViewAnimation.showIn(normal_busy);
+            ViewAnimation.showIn(normal_client_cancel);
+            ViewAnimation.showIn(normal_client_phone_error);
+            ViewAnimation.showIn(normal_delay);
+            ViewAnimation.showIn(normal_no_answer);
+            ViewAnimation.showIn(normal_order_data_confirmed);
             back_drop.setVisibility(View.VISIBLE);
         } else {
-            ViewAnimation.showOut(client_cancel);
-            ViewAnimation.showOut(order_data_confirmed);
+            ViewAnimation.showOut(normal_busy);
+            ViewAnimation.showOut(normal_client_cancel);
+            ViewAnimation.showOut(normal_client_phone_error);
+            ViewAnimation.showOut(normal_delay);
+            ViewAnimation.showOut(normal_no_answer);
+            ViewAnimation.showOut(normal_order_data_confirmed);
             back_drop.setVisibility(View.GONE);
         }
     }

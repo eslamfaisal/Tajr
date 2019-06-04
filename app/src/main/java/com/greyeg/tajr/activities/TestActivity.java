@@ -1,12 +1,17 @@
 package com.greyeg.tajr.activities;
 
+import android.annotation.SuppressLint;
+import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.greyeg.tajr.R;
+import com.greyeg.tajr.helper.SharedHelper;
 import com.greyeg.tajr.models.AllProducts;
 import com.greyeg.tajr.models.CardsResponse;
 import com.greyeg.tajr.models.Cities;
@@ -23,7 +28,11 @@ import com.greyeg.tajr.order.models.CurrentOrderResponse;
 import com.greyeg.tajr.server.Api;
 import com.greyeg.tajr.server.BaseClient;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -48,7 +57,7 @@ public class TestActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test);
         ButterKnife.bind(this);
-        missedCall();
+        chooseDate();
 
     }
 
@@ -425,5 +434,51 @@ public class TestActivity extends AppCompatActivity {
                         error.setText(t.getMessage());
                     }
                 });
+    }
+
+    private void delayOrder(){
+
+    }
+
+
+    private void chooseDate() {
+        final Calendar calendar = Calendar.getInstance();
+        final int year = calendar.get(Calendar.YEAR);
+        final int month = calendar.get(Calendar.MONTH);
+        final int day = calendar.get(Calendar.DAY_OF_MONTH);
+        DatePickerDialog datePicker =
+                new DatePickerDialog(this, (view, year1, month1, dayOfMonth) -> {
+
+                    @SuppressLint("SimpleDateFormat")
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                    calendar.set(year1, month1, dayOfMonth);
+                    String dateString = sdf.format(calendar.getTime());
+
+                    Api api = BaseClient.getBaseClient().create(Api.class);
+                    api.updateDelayedOrders(
+                            "pvBZJQ6tEeWDO8UjTnxdcboP",
+                            "8320",
+                            dateString,
+                            "127",
+                            "client_delay"
+                    ).enqueue(new Callback<UpdateOrederNewResponse>() {
+                        @Override
+                        public void onResponse(@NotNull Call<UpdateOrederNewResponse> call, @NotNull Response<UpdateOrederNewResponse> response) {
+                            success.setText(response.body().toString());
+                            Log.d(TAG, "onResponse: " + response.toString());
+
+                        }
+
+                        @Override
+                        public void onFailure(Call<UpdateOrederNewResponse> call, Throwable t) {
+                            Log.d(TAG, "onFailure: " + t.getMessage());
+                            error.setText(t.getMessage());
+                        }
+                    });
+                }, year, month, day); // set date picker to current date
+
+        datePicker.show();
+
+        datePicker.setOnCancelListener(dialog -> dialog.dismiss());
     }
 }

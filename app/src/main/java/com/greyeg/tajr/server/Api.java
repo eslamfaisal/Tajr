@@ -226,6 +226,18 @@ public interface Api {
                                          @Field("phone") String phone);
 
 
+    @FormUrlEncoded
+    @POST("send_test/update_order")
+    Call<UpdateOrederNewResponse> updateDelayedOrders(
+            @Field("token") String token,
+            @Field("order_id") String order_id,
+            @Field("delayed_until") String delayed_until,
+            @Field("user_id") String user_id,
+            @Field("status") String status
+
+    );
+
+
     ///////////////////////////////////////////////////////
 
 
@@ -254,16 +266,6 @@ public interface Api {
 
     );
 
-    @FormUrlEncoded
-    @POST("send_test/update_order")
-    Call<UpdateOrederNewResponse> updateDelayedOrders(
-            @Field("token") String token,
-            @Field("order_id") String order_id,
-            @Field("delayed_until") String delayed_until,
-            @Field("user_id") String user_id,
-            @Field("status") String status
-
-    );
 
     @FormUrlEncoded
     @POST("send_test/confirm_shipper_status")
