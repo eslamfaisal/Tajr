@@ -136,4 +136,21 @@ public class ProductData {
 //    public String getExtra_data() {
 //        return extra_data;
 //    }
+
+
+    @Override
+    public String toString() {
+        return "ProductData{" +
+                "product_id='" + product_id + '\'' +
+                ", product_name='" + product_name + '\'' +
+                ", category_id='" + category_id + '\'' +
+                ", category_name='" + category_name + '\'' +
+                ", sub_category_id='" + sub_category_id + '\'' +
+                ", sub_category_name='" + sub_category_name + '\'' +
+                ", product_describtion='" + product_describtion + '\'' +
+                ", product_image='" + product_image + '\'' +
+                ", product_info='" + product_info + '\'' +
+                ", product_real_price='" + product_real_price + '\'' +
+                '}';
+    }
 }

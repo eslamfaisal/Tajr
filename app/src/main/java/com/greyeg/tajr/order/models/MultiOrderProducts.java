@@ -116,4 +116,19 @@ public class MultiOrderProducts {
     public void setNotes(String notes) {
         this.notes = notes;
     }
+
+    @Override
+    public String toString() {
+        return "MultiOrderProducts{" +
+                "extra_product_key=" + extra_product_key +
+                ", product_id='" + product_id + '\'' +
+                ", product_name='" + product_name + '\'' +
+                ", order_cost='" + order_cost + '\'' +
+                ", order_phone='" + order_phone + '\'' +
+                ", item_cost='" + item_cost + '\'' +
+                ", items_no='" + items_no + '\'' +
+                ", notes='" + notes + '\'' +
+                ", extra_data=" + extra_data +
+                '}';
+    }
 }

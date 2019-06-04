@@ -58,6 +58,16 @@ public class CardsResponse {
         this.data = data;
     }
 
+    @Override
+    public String toString() {
+        return "CardsResponse{" +
+                "code='" + code + '\'' +
+                ", info='" + info + '\'' +
+                ", response='" + response + '\'' +
+                ", data=" + data +
+                '}';
+    }
+
     public class Data{
 
         @SerializedName("etisalat")
@@ -109,6 +119,16 @@ public class CardsResponse {
 
         public void setWe(List<String> we) {
             this.we = we;
+        }
+
+        @Override
+        public String toString() {
+            return "Data{" +
+                    "etisalat=" + etisalat +
+                    ", orange=" + orange +
+                    ", vodafone=" + vodafone +
+                    ", we=" + we +
+                    '}';
         }
     }
 }

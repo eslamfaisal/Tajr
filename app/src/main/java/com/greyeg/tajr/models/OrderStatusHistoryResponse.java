@@ -27,6 +27,7 @@ public class OrderStatusHistoryResponse {
     @Expose
     private List<History> historyList;
 
+
     public OrderStatusHistoryResponse() {
     }
 
@@ -70,6 +71,17 @@ public class OrderStatusHistoryResponse {
         this.historyList = historyList;
     }
 
+    @Override
+    public String toString() {
+        return "OrderStatusHistoryResponse{" +
+                "code='" + code + '\'' +
+                ", info='" + info + '\'' +
+                ", response='" + response + '\'' +
+                ", data='" + data + '\'' +
+                ", historyList=" + historyList +
+                '}';
+    }
+
     public class History {
         @SerializedName("status")
         @Expose
@@ -108,6 +120,15 @@ public class OrderStatusHistoryResponse {
 
         public void setDate(String date) {
             this.date = date;
+        }
+
+        @Override
+        public String toString() {
+            return "History{" +
+                    "status='" + status + '\'' +
+                    ", source='" + source + '\'' +
+                    ", date='" + date + '\'' +
+                    '}';
         }
     }
 }

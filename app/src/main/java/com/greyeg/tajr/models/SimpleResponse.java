@@ -1,23 +1,49 @@
 package com.greyeg.tajr.models;
 
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class UploadVoiceResponse {
+public class SimpleResponse {
+
+
+    @SerializedName("data")
+    @Expose
+    private String data;
+
+    @SerializedName("Details")
+    @Expose
+    private String Details;
 
     @SerializedName("code")
+    @Expose
     private String code;
 
     @SerializedName("info")
+    @Expose
     private String info;
 
-
     @SerializedName("response")
+    @Expose
     private String response;
 
-
-    public UploadVoiceResponse() {
+    public SimpleResponse() {
     }
 
+    public String getData() {
+        return data;
+    }
+
+    public void setData(String data) {
+        this.data = data;
+    }
+
+    public String getDetails() {
+        return Details;
+    }
+
+    public void setDetails(String details) {
+        Details = details;
+    }
 
     public String getCode() {
         return code;
@@ -43,27 +69,12 @@ public class UploadVoiceResponse {
         this.response = response;
     }
 
-    public class Data {
-
-        @SerializedName("error")
-        private String error;
-
-        public Data() {
-        }
-
-        public String getError() {
-            return error;
-        }
-
-        public void setError(String error) {
-            this.error = error;
-        }
-    }
-
     @Override
     public String toString() {
-        return "UploadVoiceResponse{" +
-                "code='" + code + '\'' +
+        return "UpdateOrederNewResponse{" +
+                "data='" + data + '\'' +
+                ", Details='" + Details + '\'' +
+                ", code='" + code + '\'' +
                 ", info='" + info + '\'' +
                 ", response='" + response + '\'' +
                 '}';

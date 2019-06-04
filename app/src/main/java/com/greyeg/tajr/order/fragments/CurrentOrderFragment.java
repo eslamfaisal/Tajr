@@ -61,7 +61,6 @@ import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -223,7 +222,7 @@ public class CurrentOrderFragment extends Fragment {
                 CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getId(),
                 CurrentOrderData.getInstance().getSingleOrderProductsResponse().getProducts().get(index).getProductId(),
                 CurrentOrderData.getInstance().getCurrentOrderResponse().getUserId(),
-                number
+                String.valueOf(number)
         ).enqueue(new Callback<DeleteAddProductResponse>() {
             @Override
             public void onResponse(Call<DeleteAddProductResponse> call, Response<DeleteAddProductResponse> response) {
@@ -514,7 +513,7 @@ public class CurrentOrderFragment extends Fragment {
 
     private void updateProgress() {
         BaseClient.getBaseClient().create(Api.class)
-                .getRemainigOrders(SharedHelper.getKey(getActivity(), LoginActivity.TOKEN))
+                .getRemainingOrders(SharedHelper.getKey(getActivity(), LoginActivity.TOKEN))
                 .enqueue(new Callback<RemainingOrdersResponse>() {
                     @Override
                     public void onResponse(Call<RemainingOrdersResponse> call, Response<RemainingOrdersResponse> response) {

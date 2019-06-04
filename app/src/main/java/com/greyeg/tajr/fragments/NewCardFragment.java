@@ -105,7 +105,7 @@ public class NewCardFragment extends Fragment {
 
 
         Api api = BaseClient.getBaseClient().create(Api.class);
-        api.getCarts(SharedHelper.getKey(getActivity(), LoginActivity.TOKEN)).enqueue(new Callback<CardsResponse>() {
+        api.getCards(SharedHelper.getKey(getActivity(), LoginActivity.TOKEN)).enqueue(new Callback<CardsResponse>() {
             @Override
             public void onResponse(Call<CardsResponse> call, Response<CardsResponse> response) {
 

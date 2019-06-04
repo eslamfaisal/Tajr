@@ -108,4 +108,18 @@ public class CurrentOrderResponse implements Serializable {
         this.cities = cities;
     }
 
+    @Override
+    public String toString() {
+        return "CurrentOrderResponse{" +
+                "code='" + code + '\'' +
+                ", info='" + info + '\'' +
+                ", orderType='" + orderType + '\'' +
+                ", remainigOrders=" + remainigOrders +
+                ", response='" + response + '\'' +
+                ", userId='" + userId + '\'' +
+                ", checkType='" + checkType + '\'' +
+                ", order=" + order +
+                ", cities=" + cities +
+                '}';
+    }
 }

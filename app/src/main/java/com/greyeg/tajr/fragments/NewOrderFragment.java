@@ -2,7 +2,6 @@ package com.greyeg.tajr.fragments;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -223,7 +222,8 @@ public class NewOrderFragment extends Fragment {
                     CITY_ID,
                     client_area.getText().toString(),
                     client_address.getText().toString(),
-                    item_no.getText().toString()
+                    item_no.getText().toString(),
+                    "0"
             ).enqueue(new Callback<NewOrderResponse>() {
                 @Override
                 public void onResponse(Call<NewOrderResponse> call, Response<NewOrderResponse> response) {

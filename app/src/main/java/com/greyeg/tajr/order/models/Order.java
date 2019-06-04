@@ -2,7 +2,6 @@ package com.greyeg.tajr.order.models;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.greyeg.tajr.models.ProDuct;
 
 import java.io.Serializable;
 import java.util.List;
@@ -329,4 +328,38 @@ public class Order implements Serializable {
         this.multiOrders = multiOrders;
     }
 
+    @Override
+    public String toString() {
+        return "Order{" +
+                "id='" + id + '\'' +
+                ", productId='" + productId + '\'' +
+                ", productName='" + productName + '\'' +
+                ", orderStatus='" + orderStatus + '\'' +
+                ", orderStatusType='" + orderStatusType + '\'' +
+                ", orderShippingStatus='" + orderShippingStatus + '\'' +
+                ", orderShippingStatusType='" + orderShippingStatusType + '\'' +
+                ", clientName='" + clientName + '\'' +
+                ", clientAddress='" + clientAddress + '\'' +
+                ", clientArea='" + clientArea + '\'' +
+                ", clientCity='" + clientCity + '\'' +
+                ", clientCityId='" + clientCityId + '\'' +
+                ", phone1='" + phone1 + '\'' +
+                ", phone2='" + phone2 + '\'' +
+                ", itemCost='" + itemCost + '\'' +
+                ", itemsNo='" + itemsNo + '\'' +
+                ", shippingCost='" + shippingCost + '\'' +
+                ", orderCost='" + orderCost + '\'' +
+                ", totalOrderCost='" + totalOrderCost + '\'' +
+                ", discount='" + discount + '\'' +
+                ", fbSenderId='" + fbSenderId + '\'' +
+                ", senderName='" + senderName + '\'' +
+                ", notes='" + notes + '\'' +
+                ", clientFeedback='" + clientFeedback + '\'' +
+                ", adminReply='" + adminReply + '\'' +
+                ", replyTime='" + replyTime + '\'' +
+                ", orderType='" + orderType + '\'' +
+                ", extraData=" + extraData +
+                ", multiOrders=" + multiOrders +
+                '}';
+    }
 }

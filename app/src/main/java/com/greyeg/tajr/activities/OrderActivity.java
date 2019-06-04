@@ -1261,7 +1261,7 @@ public class OrderActivity extends AppCompatActivity
                         if (callDetails.getType().equals("MISSED") || callDetails.getType().equals("REJECTED")) {
                             if (callDetails.getActiveId().equals(SharedHelper.getKey(getApplicationContext(),
                                     "activated_sub_id"))) {
-                                BaseClient.getBaseClient().create(Api.class).uploadPhone(SharedHelper.getKey(getApplicationContext(), LoginActivity.TOKEN), callDetails.getPhone())
+                                BaseClient.getBaseClient().create(Api.class).missedCall(SharedHelper.getKey(getApplicationContext(), LoginActivity.TOKEN), callDetails.getPhone())
                                         .enqueue(new Callback<UploadPhoneResponse>() {
                                             @Override
                                             public void onResponse(Call<UploadPhoneResponse> call, Response<UploadPhoneResponse> response) {
@@ -1685,7 +1685,7 @@ public class OrderActivity extends AppCompatActivity
                         order_ud,
                         productId,
                         simpleOrderResponse.getUser_id(),
-                        Integer.parseInt(productNo.getText().toString().trim())
+                        productNo.getText().toString().trim()
                 ).enqueue(new Callback<DeleteAddProductResponse>() {
                     @Override
                     public void onResponse(Call<DeleteAddProductResponse> call, Response<DeleteAddProductResponse> response) {
@@ -1760,7 +1760,7 @@ public class OrderActivity extends AppCompatActivity
     }
 
     private void updateProgress(){
-        api.getRemainigOrders(SharedHelper.getKey(this,LoginActivity.TOKEN)).enqueue(new Callback<RemainingOrdersResponse>() {
+        api.getRemainingOrders(SharedHelper.getKey(this, LoginActivity.TOKEN)).enqueue(new Callback<RemainingOrdersResponse>() {
             @Override
             public void onResponse(Call<RemainingOrdersResponse> call, Response<RemainingOrdersResponse> response) {
                 if (response.body()!=null){

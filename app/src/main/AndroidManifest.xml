@@ -65,11 +65,7 @@
             android:launchMode="singleTask"
             android:label=""
             android:theme="@style/AppTheme.NoActionBar" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".activities.AdminRecordsActivity"
@@ -143,7 +139,15 @@
             android:label="@string/Balance"
             android:parentActivityName=".MainActivity" />
         <activity android:name=".activities.CalcActivity" />
-        <activity android:name=".activities.TestActivity" />
+        <activity
+            android:name=".activities.TestActivity"
+            android:label="Test">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".activities.ChatActivity"
             android:theme="@style/AppTheme.NoActionBar" />

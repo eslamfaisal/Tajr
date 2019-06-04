@@ -1,8 +1,9 @@
 package com.greyeg.tajr.order.models;
 
-import java.io.Serializable;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+
+import java.io.Serializable;
 
 public class City implements Serializable
 {
@@ -41,4 +42,12 @@ public class City implements Serializable
         this.shippingCost = shippingCost;
     }
 
+    @Override
+    public String toString() {
+        return "City{" +
+                "cityId='" + cityId + '\'' +
+                ", cityName='" + cityName + '\'' +
+                ", shippingCost='" + shippingCost + '\'' +
+                '}';
+    }
 }

@@ -67,4 +67,15 @@ public class DeleteAddProductResponse {
     public void setData(String data) {
         this.data = data;
     }
+
+    @Override
+    public String toString() {
+        return "DeleteAddProductResponse{" +
+                "code='" + code + '\'' +
+                ", info='" + info + '\'' +
+                ", response='" + response + '\'' +
+                ", Details='" + Details + '\'' +
+                ", data='" + data + '\'' +
+                '}';
+    }
 }
