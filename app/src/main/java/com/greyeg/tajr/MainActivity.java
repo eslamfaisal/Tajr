@@ -64,6 +64,7 @@ import com.greyeg.tajr.adapters.DrawerAdapter;
 import com.greyeg.tajr.helper.SharedHelper;
 import com.greyeg.tajr.helper.TimerTextView;
 import com.greyeg.tajr.helper.font.RobotoTextView;
+import com.greyeg.tajr.order.NewOrderActivity;
 import com.greyeg.tajr.records.RecordsActivity;
 import com.greyeg.tajr.server.Api;
 import com.greyeg.tajr.server.BaseClient;
@@ -199,7 +200,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onStateChange(boolean active) {
                 if (active) {
-                    Intent intent = new Intent(getApplicationContext(), OrderActivity.class);
+                    Intent intent = new Intent(getApplicationContext(), NewOrderActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
 

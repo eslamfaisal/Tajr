@@ -66,7 +66,7 @@ public interface Api {
     Call<CardsResponse> getCards(@Field("token") String token);
 
     @FormUrlEncoded
-    @POST("send/set_active_time")
+    @POST("send_test/set_active_time")
     Call<UserWorkTimeResponse> userWorkTime(@Field("token") String token,
                                             @Field("activity") String activity, @Field("user_id") String user_id);
 
@@ -224,7 +224,6 @@ public interface Api {
     @POST("send_test/phone")
     Call<UploadPhoneResponse> missedCall(@Field("token") String token,
                                          @Field("phone") String phone);
-
 
     @FormUrlEncoded
     @POST("send_test/update_order")

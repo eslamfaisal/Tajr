@@ -18,9 +18,7 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
 import android.text.InputType;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -57,6 +55,7 @@ import com.greyeg.tajr.order.enums.ResponseCodeEnums;
 import com.greyeg.tajr.order.models.City;
 import com.greyeg.tajr.order.models.CurrentOrderResponse;
 import com.greyeg.tajr.order.models.Order;
+import com.greyeg.tajr.order.models.Product;
 import com.greyeg.tajr.order.models.SingleOrderProductsResponse;
 import com.greyeg.tajr.server.Api;
 import com.greyeg.tajr.server.BaseClient;
@@ -132,7 +131,23 @@ public class CurrentOrderFragment extends Fragment {
     // multi orders
     @BindView(R.id.products_recycler_view)
     RecyclerView multiOrderroductsRecyclerView;
-
+    // update normal order
+    @BindView(R.id.normal_order_data_confirmed)
+    CardView normal_order_data_confirmed;
+    @BindView(R.id.normal_client_phone_error)
+    CardView normal_client_phone_error;
+    @BindView(R.id.normal_no_answer)
+    CardView normal_no_answer;
+    @BindView(R.id.normal_delay)
+    CardView normal_delay;
+    @BindView(R.id.normal_client_cancel)
+    CardView normal_client_cancel;
+    @BindView(R.id.normal_busy)
+    CardView normal_busy;
+    @BindView(R.id.normalUpdateButton)
+    FloatingActionButton normalUpdateButton;
+    @BindView(R.id.save_edit)
+    FloatingActionButton save_edit;
     // main view of the CurrentOrderFragment
     private View mainView;
     private LinearLayoutManager multiOrderProductsLinearLayoutManager;
@@ -141,31 +156,6 @@ public class CurrentOrderFragment extends Fragment {
     private int firstRemaining;
     private Dialog errorGetCurrentOrderDialog;
     private boolean rotate = false;
-
-    // update normal order
-    @BindView(R.id.normal_order_data_confirmed)
-    CardView normal_order_data_confirmed;
-
-    @BindView(R.id.normal_client_phone_error)
-    CardView normal_client_phone_error;
-
-    @BindView(R.id.normal_no_answer)
-    CardView normal_no_answer;
-
-    @BindView(R.id.normal_delay)
-    CardView normal_delay;
-
-    @BindView(R.id.normal_client_cancel)
-    CardView normal_client_cancel;
-
-    @BindView(R.id.normal_busy)
-    CardView normal_busy;
-
-    @BindView(R.id.normalUpdateButton)
-    FloatingActionButton normalUpdateButton;
-
-    @BindView(R.id.save_edit)
-    FloatingActionButton save_edit;
 
     public CurrentOrderFragment() {
         // Required empty public constructor
@@ -255,58 +245,70 @@ public class CurrentOrderFragment extends Fragment {
         save_edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                updateClientData();
             }
         });
 
     }
 
     public void updateClientData() {
+        ProgressDialog progressDialog = showProgressDialog(getActivity(), getString(R.string.fetching_th_order));
         BaseClient.getBaseClient().create(Api.class).updateClientData(
-                SharedHelper.getKey(getActivity(),LoginActivity.TOKEN),
+                SharedHelper.getKey(getActivity(), LoginActivity.TOKEN),
                 CurrentOrderData.getInstance().getCurrentOrderResponse().getUserId(),
                 CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getId(),
-                client_name.getTag().toString(),
-                client_address.getTag().toString(),
-                client_area.getTag().toString(),
-                notes.getTag().toString()
+                client_name.getText().toString(),
+                client_address.getText().toString(),
+                client_area.getText().toString(),
+                notes.getText().toString()
         ).enqueue(new Callback<CurrentOrderResponse>() {
             @Override
             public void onResponse(Call<CurrentOrderResponse> call, Response<CurrentOrderResponse> response) {
-
+                if (CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getOrderType().equals(OrderProductsType.SingleOrder.getType())) {
+                    updateSingleOrderData(progressDialog);
+                } else {
+                    updateOrderMultiOrderData(progressDialog);
+                }
             }
 
             @Override
             public void onFailure(Call<CurrentOrderResponse> call, Throwable t) {
-
+                progressDialog.dismiss();
+                Log.d(TAG, "onFailure: " + t.getMessage());
+                showErrorGetCurrentOrderDialog(t.getMessage());
             }
         });
     }
 
-    public void updateSingleOrderData() {
+    public void updateSingleOrderData(ProgressDialog progressDialog) {
         BaseClient.getBaseClient().create(Api.class).updateSingleOrderData(
-                SharedHelper.getKey(getActivity(),LoginActivity.TOKEN),
+                SharedHelper.getKey(getActivity(), LoginActivity.TOKEN),
                 CurrentOrderData.getInstance().getCurrentOrderResponse().getUserId(),
                 CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getId(),
-                CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getProductId(),
+                single_order_product_spinner.getTag().toString(),
                 client_city.getTag().toString(),
                 item_no.getText().toString().trim(),
                 discount.getText().toString().trim()
         ).enqueue(new Callback<CurrentOrderResponse>() {
             @Override
             public void onResponse(Call<CurrentOrderResponse> call, Response<CurrentOrderResponse> response) {
-
+                progressDialog.dismiss();
+                getCurrentOrder();
+                Log.d(TAG, "onResponse: " + response.toString());
             }
 
             @Override
             public void onFailure(Call<CurrentOrderResponse> call, Throwable t) {
-
+                progressDialog.dismiss();
+                Log.d(TAG, "onFailure: " + t.getMessage());
+                showErrorGetCurrentOrderDialog(t.getMessage());
             }
         });
     }
-    public void updateOrderMultiOrderData() {
+
+    public void updateOrderMultiOrderData(ProgressDialog progressDialog) {
         BaseClient.getBaseClient().create(Api.class).updateOrderMultiOrderData(
-                SharedHelper.getKey(getActivity(),LoginActivity.TOKEN),
+                SharedHelper.getKey(getActivity(), LoginActivity.TOKEN),
                 CurrentOrderData.getInstance().getCurrentOrderResponse().getUserId(),
                 CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getId(),
                 client_city.getTag().toString(),
@@ -314,23 +316,26 @@ public class CurrentOrderFragment extends Fragment {
         ).enqueue(new Callback<CurrentOrderResponse>() {
             @Override
             public void onResponse(Call<CurrentOrderResponse> call, Response<CurrentOrderResponse> response) {
-
+                progressDialog.dismiss();
+                getCurrentOrder();
                 Log.d(TAG, "onResponse: " + response.toString());
             }
 
             @Override
             public void onFailure(Call<CurrentOrderResponse> call, Throwable t) {
+                progressDialog.dismiss();
                 Log.d(TAG, "onFailure: " + t.getMessage());
+                showErrorGetCurrentOrderDialog(t.getMessage());
 
             }
         });
     }
 
-    private void normalUpdateOrder(String status){
+    private void normalUpdateOrder(String status) {
         ProgressDialog progressDialog = showProgressDialog(getActivity(), getString(R.string.fetching_th_order));
 
         BaseClient.getBaseClient().create(Api.class).updateOrders(
-                SharedHelper.getKey(getActivity(),LoginActivity.TOKEN),
+                SharedHelper.getKey(getActivity(), LoginActivity.TOKEN),
                 CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getId(),
                 CurrentOrderData.getInstance().getCurrentOrderResponse().getUserId(),
                 status
@@ -339,7 +344,7 @@ public class CurrentOrderFragment extends Fragment {
                     @Override
                     public void onResponse(Call<UpdateOrederNewResponse> call, Response<UpdateOrederNewResponse> response) {
                         progressDialog.dismiss();
-                        if (response.body().getResponse().equals("Success")){
+                        if (response.body().getResponse().equals("Success")) {
                             getCurrentOrder();
                         }
                         Log.d(TAG, "onResponse: " + response.toString());
@@ -370,7 +375,7 @@ public class CurrentOrderFragment extends Fragment {
 
                     Api api = BaseClient.getBaseClient().create(Api.class);
                     api.updateDelayedOrders(
-                            SharedHelper.getKey(getActivity(),LoginActivity.TOKEN),
+                            SharedHelper.getKey(getActivity(), LoginActivity.TOKEN),
                             CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getId(),
                             dateString,
                             CurrentOrderData.getInstance().getCurrentOrderResponse().getUserId(),
@@ -379,7 +384,7 @@ public class CurrentOrderFragment extends Fragment {
                         @Override
                         public void onResponse(@NotNull Call<UpdateOrederNewResponse> call, @NotNull Response<UpdateOrederNewResponse> response) {
                             progressDialog.dismiss();
-                            if (response.body().getResponse().equals("Success")){
+                            if (response.body().getResponse().equals("Success")) {
                                 getCurrentOrder();
                             }
                             Log.d(TAG, "onResponse: " + response.toString());
@@ -631,7 +636,6 @@ public class CurrentOrderFragment extends Fragment {
             public void onResponse(Call<SingleOrderProductsResponse> call, Response<SingleOrderProductsResponse> response) {
                 if (response.body() != null) {
                     CurrentOrderData.getInstance().setSingleOrderProductsResponse(response.body());
-                    single_order_product_spinner.setTag(OrderProductsType.SingleOrder.getType());
                     fillSpinnerWithProduts(single_order_product_spinner);
                 } else {
                     //TODO make dialog
@@ -649,18 +653,23 @@ public class CurrentOrderFragment extends Fragment {
         if (CurrentOrderData.getInstance().getSingleOrderProductsResponse() != null) {
             ArrayAdapter adapter = new SignleOrderProductsAdapter(getActivity(),
                     CurrentOrderData.getInstance().getSingleOrderProductsResponse());
-            spinner.setSelection(CurrentOrderData.getInstance().getSingleOrderProductsResponse().getProducts().indexOf(
-                    CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getProductId()
-            ));
+
             spinner.setAdapter(adapter);
+            int index = 0;
+            for (Product product : CurrentOrderData.getInstance().getSingleOrderProductsResponse().getProducts()) {
+                if (product.getProductId().equals(CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getProductId())) {
+                    index = CurrentOrderData.getInstance().getSingleOrderProductsResponse().getProducts().indexOf(product);
+                }
+            }
+            spinner.setSelection(index);
             spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
                     if (spinner.getTag().equals(OrderProductsType.MuhltiOrder.getType())) {
                         Log.d(TAG, "onItemSelected: from multi " + spinner.getSelectedItemPosition());
-                    } else if (spinner.getTag().equals(OrderProductsType.SingleOrder.getType())) {
-
+                    } else {
+                        single_order_product_spinner.setTag(CurrentOrderData.getInstance().getSingleOrderProductsResponse().getProducts().get(position).getProductId());
                         Log.d(TAG, "onItemSelected: from single " + spinner.getSelectedItemPosition());
                     }
                 }
@@ -690,8 +699,21 @@ public class CurrentOrderFragment extends Fragment {
         client_city.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                client_city.setTag(CurrentOrderData.getInstance().getCurrentOrderResponse()
+                        .getCities().get(client_city.getSelectedItemPosition()).getCityId());
                 Log.d(TAG, "onItemSelected: " + position);
                 Log.d(TAG, "onItemSelected: " + client_city.getSelectedItemPosition());
+
+                if (!citiesNames.get(position).equals(CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getClientCity())) {
+
+                    ProgressDialog progressDialog = showProgressDialog(getActivity(), getString(R.string.fetching_th_order));
+                    if (CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getOrderType().equals(OrderProductsType.SingleOrder.getType())) {
+                        updateSingleOrderData(progressDialog);
+                    } else {
+                        updateOrderMultiOrderData(progressDialog);
+                    }
+                }
+
             }
 
             @Override
