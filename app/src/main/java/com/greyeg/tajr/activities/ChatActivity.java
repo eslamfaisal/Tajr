@@ -13,14 +13,14 @@ import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
@@ -30,6 +30,8 @@ import android.widget.Toast;
 //
 //import com.esafirm.imagepicker.features.ImagePicker;
 //import com.esafirm.imagepicker.model.Image;
+import com.esafirm.imagepicker.features.ImagePicker;
+import com.esafirm.imagepicker.model.Image;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -50,8 +52,7 @@ import com.greyeg.tajr.models.User;
 import com.greyeg.tajr.view.AudioRecordView;
 import com.jpardogo.android.googleprogressbar.library.ChromeFloatingCirclesDrawable;
 import com.rygelouv.audiosensei.player.AudioSenseiListObserver;
-import com.sangcomz.fishbun.FishBun;
-import com.sangcomz.fishbun.adapter.image.impl.GlideAdapter;
+
 import com.yalantis.ucrop.UCrop;
 
 import net.gotev.speech.Speech;
@@ -178,9 +179,12 @@ public class ChatActivity extends AppCompatActivity implements AudioRecordView.R
 
         audioRecordView.getMessageView().setHint(R.string.wrong_message);
         audioRecordView.getAttachmentView().setOnClickListener(v ->
-                FishBun.with(ChatActivity.this)
-                .setImageAdapter(new GlideAdapter())
-                .startAlbum());
+                ImagePicker.create(ChatActivity.this)
+                        .limit(1)
+                        .theme(R.style.UCrop)
+                        .folderMode(false)
+                        .start()
+        );
 
         audioRecordView.getSendView().setOnClickListener(v -> sendMessage());
 
@@ -663,56 +667,54 @@ public class ChatActivity extends AppCompatActivity implements AudioRecordView.R
 
     }
 
-//
-//    @Override
-//    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//        if (data == null) {
-//            //Toast.makeText(this, "", Toast.LENGTH_LONG).show();
-//            return;
-//        }
-//        String destinationFileName = "SAMPLE_CROPPED_IMAGE_NAME" + ".jpg";
-//
-//        if (ImagePicker.shouldHandle(requestCode, resultCode, data)) {
-//
-//            Image image = ImagePicker.getFirstImageOrNull(data);
-//            Uri res_url = Uri.fromFile(new File((image.getPath())));
-//            CropImage(image, res_url);
-//
-//        } else if (resultCode == RESULT_OK && requestCode == UCrop.REQUEST_CROP) {
-//            final Uri resultUri = UCrop.getOutput(data);
-//            //  if (resultUri!=null)
-//            assert resultUri != null;
-//            bitmapCompress(resultUri);
-//            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-//            thumbBitmap.compress(Bitmap.CompressFormat.JPEG, 75, byteArrayOutputStream);
-//            imageBytes = byteArrayOutputStream.toByteArray();
-//            uploadThumbImage(imageBytes);
-//            Log.d("TAG", "onActivityResult: " + Arrays.toString(imageBytes));
-//        }
-//
-//    }
 
+    @Override
+    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (data == null) {
+            //Toast.makeText(this, "", Toast.LENGTH_LONG).show();
+            return;
+        }
+        String destinationFileName = "SAMPLE_CROPPED_IMAGE_NAME" + ".jpg";
 
-//
-//    private void CropImage(Image image, Uri res_url) {
-//        UCrop.of(res_url, Uri.fromFile(new File(getCacheDir(), image.getName())))
-//                .withOptions(options)
-//                .start(ChatActivity.this);
-//    }
-//
-//    private void bitmapCompress(Uri resultUri) {
-//        final File thumbFilepathUri = new File(resultUri.getPath());
-//
-//        try {
-//            thumbBitmap = new Compressor(this)
-//                    .setQuality(50)
-//                    .compressToBitmap(thumbFilepathUri);
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
+        if (ImagePicker.shouldHandle(requestCode, resultCode, data)) {
+
+            Image image = ImagePicker.getFirstImageOrNull(data);
+            Uri res_url = Uri.fromFile(new File((image.getPath())));
+            CropImage(image, res_url);
+
+        } else if (resultCode == RESULT_OK && requestCode == UCrop.REQUEST_CROP) {
+            final Uri resultUri = UCrop.getOutput(data);
+            //  if (resultUri!=null)
+            assert resultUri != null;
+            bitmapCompress(resultUri);
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            thumbBitmap.compress(Bitmap.CompressFormat.JPEG, 75, byteArrayOutputStream);
+            imageBytes = byteArrayOutputStream.toByteArray();
+            uploadThumbImage(imageBytes);
+            Log.d("TAG", "onActivityResult: " + Arrays.toString(imageBytes));
+        }
+
+    }
+
+    private void CropImage(Image image, Uri res_url) {
+        UCrop.of(res_url, Uri.fromFile(new File(getCacheDir(), image.getName())))
+                .withOptions(options)
+                .start(ChatActivity.this);
+    }
+
+    private void bitmapCompress(Uri resultUri) {
+        final File thumbFilepathUri = new File(resultUri.getPath());
+
+        try {
+            thumbBitmap = new Compressor(this)
+                    .setQuality(50)
+                    .compressToBitmap(thumbFilepathUri);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
 
     //upload thumb image

@@ -4,14 +4,11 @@ import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.greyeg.tajr.R;
-import com.greyeg.tajr.helper.SharedHelper;
 import com.greyeg.tajr.models.AllProducts;
 import com.greyeg.tajr.models.CardsResponse;
 import com.greyeg.tajr.models.Cities;

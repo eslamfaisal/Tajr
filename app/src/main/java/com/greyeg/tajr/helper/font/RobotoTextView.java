@@ -8,7 +8,7 @@ import android.util.AttributeSet;
 import com.greyeg.tajr.R;
 
 
-public class RobotoTextView extends android.support.v7.widget.AppCompatTextView {
+public class RobotoTextView extends androidx.appcompat.widget.AppCompatTextView {
 
 	public RobotoTextView(Context context) {
 		super(context);

@@ -1,6 +1,6 @@
 package com.greyeg.tajr.records;
 
-import android.support.v4.content.FileProvider;
+import androidx.core.content.FileProvider;
 
 /**
  * Created by VS00481543 on 14-12-2017.

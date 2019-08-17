@@ -32,7 +32,7 @@ import android.widget.ImageView;
  * @see Transition
  * @see TransitionGenerator
  */
-public class KenBurnsView extends android.support.v7.widget.AppCompatImageView {
+public class KenBurnsView extends androidx.appcompat.widget.AppCompatImageView {
 
     /** Delay between a pair of frames at a 60 FPS frame rate. */
     private static final long FRAME_DELAY = 1000 / 60;

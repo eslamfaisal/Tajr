@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.v7.widget.CardView
+    <androidx.cardview.widget.CardView
         style="@style/CardViewTheme"
         android:layout_width="match_parent"
         android:layout_height="48dp"
@@ -21,9 +21,9 @@
             android:layout_gravity="bottom"
             android:translationZ="4dp" />
 
-    </android.support.v7.widget.CardView>
+    </androidx.cardview.widget.CardView>
 
-    <android.support.v7.widget.CardView
+    <androidx.cardview.widget.CardView
         android:id="@+id/layoutLock"
         style="@style/CardViewTheme"
         android:layout_width="56dp"
@@ -59,9 +59,9 @@
 
         </LinearLayout>
 
-    </android.support.v7.widget.CardView>
+    </androidx.cardview.widget.CardView>
 
-    <android.support.v7.widget.CardView
+    <androidx.cardview.widget.CardView
         android:id="@+id/imageViewAudio"
         style="@style/CardViewTheme"
         android:layout_width="44dp"
@@ -84,9 +84,9 @@
             android:layout_height="match_parent"
             android:src="@drawable/record_audio_ic" />
 
-    </android.support.v7.widget.CardView>
+    </androidx.cardview.widget.CardView>
 
-    <android.support.v7.widget.CardView
+    <androidx.cardview.widget.CardView
         android:id="@+id/imageViewStop"
         style="@style/CardViewTheme"
         android:layout_width="44dp"
@@ -110,9 +110,9 @@
             android:layout_height="match_parent"
             android:src="@drawable/stop_record_ic" />
 
-    </android.support.v7.widget.CardView>
+    </androidx.cardview.widget.CardView>
 
-    <android.support.v7.widget.CardView
+    <androidx.cardview.widget.CardView
         android:id="@+id/imageViewSend"
         style="@style/CardViewTheme"
         android:layout_width="44dp"
@@ -136,7 +136,7 @@
             android:layout_height="match_parent"
             android:src="@drawable/send_msg_ic" />
 
-    </android.support.v7.widget.CardView>
+    </androidx.cardview.widget.CardView>
 
     <LinearLayout
         android:id="@+id/layoutSlideCancel"

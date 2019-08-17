@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -18,7 +18,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <android.support.v7.widget.CardView
+            <androidx.cardview.widget.CardView
                 android:id="@+id/confirm_data"
                 style="@style/fab_buttons_CardView_Style"
                 app:cardBackgroundColor="@color/colorPrimary"
@@ -30,7 +30,7 @@
                     style="@style/fab_buttons_TextView_Style"
                     android:text="Confirm Order Data" />
 
-            </android.support.v7.widget.CardView>
+            </androidx.cardview.widget.CardView>
 
             <View
                 android:layout_width="@dimen/spacing_xmedium"
@@ -42,7 +42,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <android.support.v7.widget.CardView
+            <androidx.cardview.widget.CardView
                 android:id="@+id/client_cancel"
                 style="@style/fab_buttons_CardView_Style"
                 app:cardBackgroundColor="@color/colorPrimary"
@@ -54,7 +54,7 @@
                     style="@style/fab_buttons_TextView_Style"
                     android:text="Cancel Order" />
 
-            </android.support.v7.widget.CardView>
+            </androidx.cardview.widget.CardView>
 
             <View
                 android:layout_width="@dimen/spacing_xmedium"
@@ -66,7 +66,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <android.support.v7.widget.CardView
+            <androidx.cardview.widget.CardView
                 android:id="@+id/order_shipper_confirmed2"
                 style="@style/fab_buttons_CardView_Style"
                 app:cardBackgroundColor="@color/colorPrimary"
@@ -78,7 +78,7 @@
                     style="@style/fab_buttons_TextView_Style"
                     android:text="@string/confirm_shipper_status" />
 
-            </android.support.v7.widget.CardView>
+            </androidx.cardview.widget.CardView>
 
             <View
                 android:layout_width="@dimen/spacing_xmedium"
@@ -90,7 +90,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <android.support.v7.widget.CardView
+            <androidx.cardview.widget.CardView
                 android:id="@+id/deliver"
                 style="@style/fab_buttons_CardView_Style"
                 app:cardBackgroundColor="@color/colorPrimary"
@@ -102,7 +102,7 @@
                     style="@style/fab_buttons_TextView_Style"
                     android:text="@string/deliver" />
 
-            </android.support.v7.widget.CardView>
+            </androidx.cardview.widget.CardView>
 
             <View
                 android:layout_width="@dimen/spacing_xmedium"
@@ -114,7 +114,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <android.support.v7.widget.CardView
+            <androidx.cardview.widget.CardView
                 android:id="@+id/cancel_order"
                 style="@style/fab_buttons_CardView_Style"
                 app:cardBackgroundColor="@color/colorPrimary"
@@ -126,7 +126,7 @@
                     style="@style/fab_buttons_TextView_Style"
                     android:text="@string/cancel_order" />
 
-            </android.support.v7.widget.CardView>
+            </androidx.cardview.widget.CardView>
 
             <View
                 android:layout_width="@dimen/spacing_xmedium"
@@ -138,7 +138,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <android.support.v7.widget.CardView
+            <androidx.cardview.widget.CardView
                 android:id="@+id/return_order"
                 style="@style/fab_buttons_CardView_Style"
                 app:cardBackgroundColor="@color/colorPrimary"
@@ -150,7 +150,7 @@
                     style="@style/fab_buttons_TextView_Style"
                     android:text="@string/return_order" />
 
-            </android.support.v7.widget.CardView>
+            </androidx.cardview.widget.CardView>
 
             <View
                 android:layout_width="@dimen/spacing_xmedium"
@@ -162,7 +162,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <android.support.v7.widget.CardView
+            <androidx.cardview.widget.CardView
                 android:id="@+id/client_phone_error"
                 style="@style/fab_buttons_CardView_Style"
                 app:cardBackgroundColor="@color/colorPrimary"
@@ -174,7 +174,7 @@
                     style="@style/fab_buttons_TextView_Style"
                     android:text="@string/client_phone_error" />
 
-            </android.support.v7.widget.CardView>
+            </androidx.cardview.widget.CardView>
 
             <View
                 android:layout_width="@dimen/spacing_xmedium"
@@ -186,7 +186,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <android.support.v7.widget.CardView
+            <androidx.cardview.widget.CardView
                 android:id="@+id/no_answer"
                 style="@style/fab_buttons_CardView_Style"
                 app:cardBackgroundColor="@color/colorPrimary"
@@ -198,7 +198,7 @@
                     style="@style/fab_buttons_TextView_Style"
                     android:text="@string/client_noanswer" />
 
-            </android.support.v7.widget.CardView>
+            </androidx.cardview.widget.CardView>
 
             <View
                 android:layout_width="@dimen/spacing_xmedium"
@@ -210,7 +210,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <android.support.v7.widget.CardView
+            <androidx.cardview.widget.CardView
                 android:id="@+id/shipping_no_answer"
                 style="@style/fab_buttons_CardView_Style"
                 app:cardBackgroundColor="@color/colorPrimary"
@@ -222,7 +222,7 @@
                     style="@style/fab_buttons_TextView_Style"
                     android:text="@string/client_noanswer" />
 
-            </android.support.v7.widget.CardView>
+            </androidx.cardview.widget.CardView>
 
             <View
                 android:layout_width="@dimen/spacing_xmedium"
@@ -234,7 +234,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <android.support.v7.widget.CardView
+            <androidx.cardview.widget.CardView
                 android:id="@+id/busy"
                 style="@style/fab_buttons_CardView_Style"
                 app:cardBackgroundColor="@color/colorPrimary"
@@ -246,7 +246,7 @@
                     style="@style/fab_buttons_TextView_Style"
                     android:text="@string/client_busy" />
 
-            </android.support.v7.widget.CardView>
+            </androidx.cardview.widget.CardView>
 
             <View
                 android:layout_width="@dimen/spacing_xmedium"
@@ -258,7 +258,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <android.support.v7.widget.CardView
+            <androidx.cardview.widget.CardView
                 android:id="@+id/delay"
                 style="@style/fab_buttons_CardView_Style"
                 app:cardBackgroundColor="@color/colorPrimary"
@@ -270,7 +270,7 @@
                     style="@style/fab_buttons_TextView_Style"
                     android:text="@string/delay_order" />
 
-            </android.support.v7.widget.CardView>
+            </androidx.cardview.widget.CardView>
 
             <View
                 android:layout_width="@dimen/spacing_xmedium"
@@ -282,7 +282,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <android.support.v7.widget.CardView
+            <androidx.cardview.widget.CardView
                 android:id="@+id/problem"
                 style="@style/fab_buttons_CardView_Style"
                 app:cardBackgroundColor="@color/colorPrimary"
@@ -294,7 +294,7 @@
                     style="@style/fab_buttons_TextView_Style"
                     android:text="@string/problem_in_order" />
 
-            </android.support.v7.widget.CardView>
+            </androidx.cardview.widget.CardView>
 
             <View
                 android:layout_width="@dimen/spacing_xmedium"
@@ -302,7 +302,7 @@
 
         </LinearLayout>
 
-        <android.support.design.widget.FloatingActionButton
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fabShowUpdateOrderButtons"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -318,4 +318,4 @@
             app:srcCompat="@drawable/fab_add" />
 
     </LinearLayout>
-</android.support.constraint.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

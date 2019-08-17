@@ -4,7 +4,7 @@ import android.content.Context;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
 
-public class MaterialDesignIconsTextView extends android.support.v7.widget.AppCompatTextView {
+public class MaterialDesignIconsTextView extends androidx.appcompat.widget.AppCompatTextView {
 	
 	private static Typeface sMaterialDesignIcons;
 
