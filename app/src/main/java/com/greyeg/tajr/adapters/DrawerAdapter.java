@@ -32,12 +32,12 @@ public class DrawerAdapter extends BaseAdapter {
 		ArrayList<DummyModel> list = new ArrayList<>();
 		list.add(new DummyModel(0, "", context.getString(R.string.settings), R.string.material_icon_settings));
 		list.add(new DummyModel(1, "", context.getString(R.string.analytics), R.string.material_icon_settings));
-		list.add(new DummyModel(2, "", context.getString(R.string.news), R.string.material_icon_settings));
+		list.add(new DummyModel(6, "", context.getString(R.string.cards), R.string.material_icon_settings));
 		list.add(new DummyModel(3, "", context.getString(R.string.Balance), R.string.material_icon_settings));
 		list.add(new DummyModel(4, "", context.getString(R.string.chat), R.string.material_icon_settings));
 		list.add(new DummyModel(5, "", context.getString(R.string.recordes), R.string.material_icon_settings));
-		list.add(new DummyModel(6, "", context.getString(R.string.cards), R.string.material_icon_settings));
-		list.add(new DummyModel(7, "", context.getString(R.string.logout), R.string.material_icon_settings));
+
+		list.add(new DummyModel(6, "", context.getString(R.string.logout), R.string.material_icon_settings));
 		if (SharedHelper.getKey(context, LoginActivity.LOG_IN_FROM).equals("admin")){
 			list.add(new DummyModel(7, "", context.getString(R.string.amin_records), R.string.material_icon_settings));
 		}

@@ -779,21 +779,19 @@ public class MainActivity extends AppCompatActivity
             } else if (position == 2) {
                 intent = new Intent(getApplicationContext(), WorkHistoryActivity.class);
             } else if (position == 3) {
-                intent = new Intent(getApplicationContext(), NewsActivity.class);
+                intent = new Intent(getApplicationContext(), CartsActivity.class);
             } else if (position == 4) {
                 intent = new Intent(getApplicationContext(), BalanceActivity.class);
             } else if (position == 5) {
                 intent = new Intent(getApplicationContext(), ChatActivity.class);
             } else if (position == 6) {
                 intent = new Intent(getApplicationContext(), RecordsActivity.class);
-            }else if (position == 7) {
-                intent = new Intent(getApplicationContext(), CartsActivity.class);
             }
             if (intent != null) {
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
             }
-            if (position == 8) {
+            if (position == 7) {
                 SharedHelper.putKey(getApplicationContext(),LoginActivity.IS_LOGIN,"no");
                 intent = new Intent(getApplicationContext(), LoginActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

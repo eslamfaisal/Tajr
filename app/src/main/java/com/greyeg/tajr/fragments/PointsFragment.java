@@ -111,7 +111,7 @@ public class PointsFragment extends Fragment {
             @Override
             public void onResponse(Call<PointsHistory> call, Response<PointsHistory> response) {
 
-                if (response.body() != null) {
+                if (response.body() != null&&!response.body().getCode().equals("1400")) {
                     // if (response.body().getHistory().size()>0){
                     List<PointsHistory.Year> years = response.body().getHistory();
                     List<GroupItem> items = new ArrayList<GroupItem>();
@@ -157,6 +157,7 @@ public class PointsFragment extends Fragment {
     }
 
     private static class ChildHolder {
+        TextView type;
         TextView month;
         TextView hours;
     }
@@ -220,15 +221,17 @@ public class PointsFragment extends Fragment {
                 convertView = inflater.inflate(
                         R.layout.list_item_expandable_social_child, parent,
                         false);
-                holder.month = (TextView) convertView
+                holder.month = convertView
                         .findViewById(R.id.month);
                 holder.hours = convertView
                         .findViewById(R.id.hours);
+                holder.type = convertView
+                        .findViewById(R.id.type);
                 convertView.setTag(holder);
             } else {
                 holder = (ChildHolder) convertView.getTag();
             }
-
+            holder.type.setText(getString(R.string.points));
             holder.month.setText(item.month);
             holder.hours.setText(item.hours);
 

@@ -108,8 +108,8 @@ public class MoneyFragment extends Fragment {
             @Override
             public void onResponse(Call<MoneyHistory> call, Response<MoneyHistory> response) {
 
-                if (response.body() != null&&response.body().getHistory()!=null) {
-                    if (response.body().getHistory().size()<1){
+                if (response.body() != null && response.body().getHistory() != null) {
+                    if (response.body().getHistory().size() < 1) {
                         return;
                     }
                     // if (response.body().getHistory().size()>0){
@@ -131,7 +131,7 @@ public class MoneyFragment extends Fragment {
                     //items = fillData(items);
 
                     adapter.setData(items);
-                    listView.setAdapter((ExpandableListAdapter) adapter);
+                    listView.setAdapter(adapter);
                     // }
                 }
 
@@ -144,27 +144,6 @@ public class MoneyFragment extends Fragment {
         });
 
     }
-
-    private static class GroupItem {
-        String year;
-        List<ChildItem> items = new ArrayList<ChildItem>();
-    }
-
-    private static class ChildItem {
-        String monthEn;
-        String month;
-        String hours;
-    }
-
-    private static class ChildHolder {
-        TextView month;
-        TextView hours;
-    }
-
-    private static class GroupHolder {
-        TextView year;
-    }
-
 
     private List<GroupItem> fillData(List<GroupItem> items) {
         GroupItem item = new GroupItem();
@@ -185,6 +164,27 @@ public class MoneyFragment extends Fragment {
         items.add(item);
 
         return items;
+    }
+
+    private class GroupItem {
+        String year;
+        List<ChildItem> items = new ArrayList<ChildItem>();
+    }
+
+    private class ChildItem {
+        String monthEn;
+        String month;
+        String hours;
+    }
+
+    private class ChildHolder {
+        TextView month;
+        TextView hours;
+        TextView type;
+    }
+
+    private class GroupHolder {
+        TextView year;
     }
 
     private class ExampleAdapter extends AnimatedExpandableListView.AnimatedExpandableListAdapter {
@@ -220,15 +220,17 @@ public class MoneyFragment extends Fragment {
                 convertView = inflater.inflate(
                         R.layout.list_item_expandable_social_child, parent,
                         false);
-                holder.month = (TextView) convertView
+                holder.month = convertView
                         .findViewById(R.id.month);
                 holder.hours = convertView
                         .findViewById(R.id.hours);
+                holder.type = convertView
+                        .findViewById(R.id.type);
                 convertView.setTag(holder);
             } else {
                 holder = (ChildHolder) convertView.getTag();
             }
-
+            holder.type.setText(getString(R.string.money));
             holder.month.setText(item.month);
             holder.hours.setText(item.hours);
 
@@ -265,7 +267,7 @@ public class MoneyFragment extends Fragment {
                 convertView = inflater.inflate(
                         R.layout.list_item_expandable_social, parent, false);
 
-                holder.year = (TextView) convertView
+                holder.year = convertView
                         .findViewById(R.id.year);
                 convertView.setTag(holder);
             } else {

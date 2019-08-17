@@ -9,13 +9,13 @@
     <RelativeLayout
         android:id="@+id/work_progress"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="?attr/actionBarSize">
 
         <ProgressBar
             android:id="@+id/ProgressBar"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="fill_parent"
-            android:layout_height="@dimen/_26sdp"
+            android:layout_height="?attr/actionBarSize"
             android:indeterminate="false"
             android:maxHeight="10dip"
             android:minHeight="10dip"
@@ -28,6 +28,16 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:textColor="@color/white" />
+
+        <ImageButton
+            android:layout_alignParentEnd="true"
+            android:id="@+id/bt_expand"
+            android:layout_width="?attr/actionBarSize"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:rotation="180"
+            android:tint="@android:color/white"
+            app:srcCompat="@drawable/ic_expand_arrow" />
     </RelativeLayout>
 
     <android.support.v4.widget.NestedScrollView

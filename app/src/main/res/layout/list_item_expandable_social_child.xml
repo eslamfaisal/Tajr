@@ -47,6 +47,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
             android:layout_weight="0"
+            android:id="@+id/type"
             android:gravity="center_vertical"
             android:text="@string/hours"
             android:textColor="@color/black_text_color"

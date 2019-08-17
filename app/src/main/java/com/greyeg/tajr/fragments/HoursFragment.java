@@ -192,7 +192,7 @@ public class HoursFragment extends Fragment {
     }
 
     private static class ChildItem {
-        String monthEn;
+
         String month;
         String hours;
     }
@@ -200,6 +200,7 @@ public class HoursFragment extends Fragment {
     private static class ChildHolder {
         TextView month;
         TextView hours;
+        TextView type;
     }
 
     private static class GroupHolder {
@@ -261,15 +262,17 @@ public class HoursFragment extends Fragment {
                 convertView = inflater.inflate(
                         R.layout.list_item_expandable_social_child, parent,
                         false);
-                holder.month = (TextView) convertView
+                holder.month = convertView
                         .findViewById(R.id.month);
                 holder.hours = convertView
                         .findViewById(R.id.hours);
+                holder.type = convertView
+                        .findViewById(R.id.type);
                 convertView.setTag(holder);
             } else {
                 holder = (ChildHolder) convertView.getTag();
             }
-
+            holder.type.setText(getString(R.string.hours));
             holder.month.setText(item.month);
             holder.hours.setText(item.hours);
 

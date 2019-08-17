@@ -257,5 +257,6 @@
     <string name="fetching_th_order">Fetching the order</string>
     <string name="no_more_orders">No more orders</string>
     <string name="retry">Retry</string>
+    <string name="product_details">Product details</string>
 
 </resources>

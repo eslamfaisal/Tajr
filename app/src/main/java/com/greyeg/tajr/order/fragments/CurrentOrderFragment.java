@@ -59,6 +59,7 @@ import com.greyeg.tajr.order.models.Product;
 import com.greyeg.tajr.order.models.SingleOrderProductsResponse;
 import com.greyeg.tajr.server.Api;
 import com.greyeg.tajr.server.BaseClient;
+import com.greyeg.tajr.sheets.FragmentBottomSheetDialogFull;
 import com.greyeg.tajr.view.dialogs.Dialogs;
 
 import org.jetbrains.annotations.NotNull;
@@ -71,6 +72,7 @@ import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -148,6 +150,7 @@ public class CurrentOrderFragment extends Fragment {
     FloatingActionButton normalUpdateButton;
     @BindView(R.id.save_edit)
     FloatingActionButton save_edit;
+
     // main view of the CurrentOrderFragment
     private View mainView;
     private LinearLayoutManager multiOrderProductsLinearLayoutManager;
@@ -156,6 +159,8 @@ public class CurrentOrderFragment extends Fragment {
     private int firstRemaining;
     private Dialog errorGetCurrentOrderDialog;
     private boolean rotate = false;
+    private boolean productExbandable = false;
+
 
     public CurrentOrderFragment() {
         // Required empty public constructor
@@ -250,6 +255,13 @@ public class CurrentOrderFragment extends Fragment {
         });
 
     }
+    @OnClick(R.id.bt_expand)
+    void showCurrentProductDetails(){
+        if (!productExbandable)
+            return;
+        FragmentBottomSheetDialogFull fragment = new FragmentBottomSheetDialogFull();
+        fragment.show(getChildFragmentManager(), fragment.getTag());
+    }
 
     public void updateClientData() {
         ProgressDialog progressDialog = showProgressDialog(getActivity(), getString(R.string.fetching_th_order));
@@ -304,6 +316,13 @@ public class CurrentOrderFragment extends Fragment {
                 showErrorGetCurrentOrderDialog(t.getMessage());
             }
         });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // display first sheet
+
     }
 
     public void updateOrderMultiOrderData(ProgressDialog progressDialog) {
@@ -524,6 +543,8 @@ public class CurrentOrderFragment extends Fragment {
                                 CurrentOrderData.getInstance().setCurrentOrderResponse(response.body());
                                 fillFieldsWithOrderData(response.body());
                                 updateProgress();
+                                productExbandable= true;
+
                             } else if (response.body().getCode().equals(ResponseCodeEnums.code_1300.getCode())) {
                                 // no new orders all handled
                                 Dialogs.showCustomDialog(getActivity(), getString(R.string.no_more_orders), getString(R.string.order),
