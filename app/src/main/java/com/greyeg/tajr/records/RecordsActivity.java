@@ -36,8 +36,6 @@ public class RecordsActivity extends AppCompatActivity {
     List<CallDetails> callDetailsList;
     boolean checkResume = false;
     DatabaseManager databaseManager;
-    private Disposable networkDisposable;
-    private Disposable internetDisposable;
 
     @SuppressLint("CheckResult")
     @Override
@@ -46,66 +44,9 @@ public class RecordsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_records);
         databaseManager = new DatabaseManager(this);
 
-//        networkDisposable = ReactiveNetwork.observeNetworkConnectivity(getApplicationContext())
-//                .subscribeOn(Schedulers.io())
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe(new Consumer<Connectivity>() {
-//                    @Override
-//                    public void accept(Connectivity connectivity) throws Exception {
-//                        Log.d(TAGMA, connectivity.toString());
-//                        final NetworkInfo.State state = connectivity.state();
-//                        final String name = connectivity.typeName();
-//                        Log.d("ssssssssssssss", "onCreate: " + String.format("state: %s, typeName: %s", state, name));
-//                    }
-//                });
-//
-//        internetDisposable = ReactiveNetwork.observeInternetConnectivity()
-//                .subscribeOn(Schedulers.io())
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe(new Consumer<Boolean>() {
-//                    @Override
-//                    public void accept(Boolean isConnected) throws Exception {
-//                        Log.d("ssssssssssssss", "onCreate: " + isConnected.toString());
-//                    }
-//                });
-
-        networkDisposable = ReactiveNetwork.observeNetworkConnectivity(getApplicationContext())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(connectivity -> {
-                    Log.d("ssssssssssssss", connectivity.toString());
-                    final NetworkInfo.State state = connectivity.state();
-                    final String name = connectivity.typeName();
-                  //  tvConnectivityStatus.setText(String.format("state: %s, typeName: %s", state, name));
-                    Log.d("ssssssssssssss", "onCreate: "+String.format("state: %s, typeName: %s", state, name));
-                });
-
-        internetDisposable = ReactiveNetwork.observeInternetConnectivity()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(isConnected -> {
-                //    tvInternetStatus.setText(isConnected.toString());
-                    Log.d("ssssssssssssss", "onCreate: " + isConnected.toString());
-                });
-
-        /*StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
-        StrictMode.setVmPolicy(builder.build());*/
-
-      /*  if(Build.VERSION.SDK_INT>=24){
-            try{
-                Method m = StrictMode.class.getMethod("disableDeathOnFileUriExposure");
-                m.invoke(null);
-            }catch(Exception e){
-                e.printStackTrace();
-            }
-        }*/
-
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
         pref.edit().putInt("numOfCalls", 0).apply();
 
-        // pref.edit().putInt("serialNumData", 1).apply();
-
-        //rAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -130,7 +71,6 @@ public class RecordsActivity extends AppCompatActivity {
             pref3.edit().putBoolean("pauseStateVLC", false).apply();
         } else
             checkResume = false;
-        safelyDispose(networkDisposable, internetDisposable);
     }
 
     private void safelyDispose(Disposable... disposables) {

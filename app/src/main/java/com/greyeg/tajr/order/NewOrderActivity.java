@@ -1,31 +1,56 @@
 package com.greyeg.tajr.order;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.FragmentManager;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
+import android.os.Environment;
+import android.os.Handler;
+import android.preference.PreferenceManager;
+import android.provider.CallLog;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.FragmentManager;
+
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.greyeg.tajr.R;
+import com.greyeg.tajr.activities.LoginActivity;
 import com.greyeg.tajr.calc.CalcDialog;
+import com.greyeg.tajr.helper.CurrentCallListener;
 import com.greyeg.tajr.helper.GuiManger;
+import com.greyeg.tajr.helper.SharedHelper;
+import com.greyeg.tajr.models.LastCallDetails;
+import com.greyeg.tajr.models.UploadPhoneResponse;
+import com.greyeg.tajr.models.UploadVoiceResponse;
+import com.greyeg.tajr.models.UserWorkTimeResponse;
 import com.greyeg.tajr.order.fragments.CurrentOrderFragment;
 import com.greyeg.tajr.order.fragments.MissedCallFragment;
+import com.greyeg.tajr.records.CallDetails;
+import com.greyeg.tajr.records.CallsReceiver;
+import com.greyeg.tajr.records.CommonMethods;
+import com.greyeg.tajr.records.DatabaseManager;
+import com.greyeg.tajr.server.Api;
+import com.greyeg.tajr.server.BaseClient;
 
+import java.io.File;
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -33,9 +58,15 @@ import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
-public class NewOrderActivity extends AppCompatActivity {
+public class NewOrderActivity extends AppCompatActivity implements CurrentCallListener {
 
     private final String TAG = "NewOrderActivity";
 
@@ -72,6 +103,7 @@ public class NewOrderActivity extends AppCompatActivity {
     private int DIALOG_REQUEST_CODE = 25;
     private CalcDialog calcDialog;
     private MissedCallFragment missedCallFragment;
+    private DatabaseManager databaseManager;
 
     //GUIManger Methods
     public static void update() {
@@ -94,6 +126,9 @@ public class NewOrderActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_order);
         ButterKnife.bind(this);
+        CallsReceiver.setCurrentCallListener(this);
+        databaseManager = new DatabaseManager(this);
+        openRecords();
         initToolBar();
         GuiManger.getInstance().setActivity(this);
         GuiManger.getInstance().setFragmentManager(getSupportFragmentManager());
@@ -142,6 +177,7 @@ public class NewOrderActivity extends AppCompatActivity {
                     timerTv.setText(getDurationBreakdown(count * 1000));
                 });
                 timerTv.setTag(count);
+                saveWorkedTime();
             }
         }, 0, 1000);
     }
@@ -224,7 +260,7 @@ public class NewOrderActivity extends AppCompatActivity {
     public void callClient() {
 
         Intent callIntent = new Intent(Intent.ACTION_CALL);
-        callIntent.setData(Uri.parse("tel:" + "01022369592"));
+        callIntent.setData(Uri.parse("tel:" + CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getPhone1()));
         if (ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -266,4 +302,241 @@ public class NewOrderActivity extends AppCompatActivity {
             calcDialog.show(fm, "calc_dialog");
         }
     }
+
+    private void openRecords() {
+        SharedPreferences pref1 = PreferenceManager.getDefaultSharedPreferences(this);
+        pref1.edit().putBoolean("switchOn", true).apply();
+    }
+
+    private void closeRecords() {
+        SharedPreferences pref1 = PreferenceManager.getDefaultSharedPreferences(this);
+        pref1.edit().putBoolean("switchOn", false).apply();
+    }
+
+    private void saveWorkedTime() {
+        SharedPreferences pref1 = PreferenceManager.getDefaultSharedPreferences(this);
+        long oldWork = pref1.getLong("timeWork", 0);
+        long newWorkedTime = oldWork + 1;
+        Log.d("saveWorkedTime", "saveWorkedTime: " + newWorkedTime);
+        pref1.edit().putLong("timeWork", newWorkedTime).apply();
+    }
+
+    private long getNotSavedWrokTime() {
+        SharedPreferences pref1 = PreferenceManager.getDefaultSharedPreferences(this);
+        return pref1.getLong("timeWork", 0);
+    }
+
+    private void setPldTimeWorkZero() {
+        SharedPreferences pref1 = PreferenceManager.getDefaultSharedPreferences(this);
+        pref1.edit().putLong("timeWork", 0).apply();
+        Log.d("saveWorkedTime", "setPldTimeWorkZero: ");
+    }
+
+    private void saveWorkTime() {
+        long currentWorkTime = getNotSavedWrokTime() + Integer.valueOf(timerTv.getTag().toString());
+        BaseClient.getBaseClient().create(Api.class).userWorkTime(SharedHelper.getKey(this, LoginActivity.TOKEN),
+                String.valueOf(currentWorkTime),
+                CurrentOrderData.getInstance().getCurrentOrderResponse().getUserId())
+                .enqueue(new Callback<UserWorkTimeResponse>() {
+                    @Override
+                    public void onResponse(Call<UserWorkTimeResponse> call, Response<UserWorkTimeResponse> response) {
+                        if (response.body() != null) {
+
+                            Log.d("userWorkTime", "onResponse: " + response.body().getData());
+                            Log.d("userWorkTime", "time after end: " + currentWorkTime);
+                            setPldTimeWorkZero();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<UserWorkTimeResponse> call, Throwable t) {
+
+                        Log.d("userWorkTime", "onResponse: " + t.getMessage());
+                    }
+                });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        cancelNotification();
+        closeRecords();
+        saveWorkTime();
+    }
+
+    public void cancelNotification() {
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancel(5);
+    }
+
+
+    private LastCallDetails getLastCallDetails() {
+        StringBuffer sb = new StringBuffer();
+        Uri contacts = CallLog.Calls.CONTENT_URI;
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CALL_LOG) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+        }
+        Cursor managedCursor = getContentResolver().query(contacts, null,
+                null, null, null);
+        int number = managedCursor.getColumnIndex(CallLog.Calls.NUMBER);
+        int type = managedCursor.getColumnIndex(CallLog.Calls.TYPE);
+        int duration = managedCursor.getColumnIndex(CallLog.Calls.DURATION);
+        int activeID = managedCursor.getColumnIndex(CallLog.Calls.PHONE_ACCOUNT_ID);
+
+        sb.append("Call Details :");
+        String phoneNumber = null;
+        String callDuration2 = null;
+        String activatedNum = null;
+        String calType = null;
+        while (managedCursor.moveToNext()) {
+            phoneNumber = managedCursor.getString(number);
+            String callType = managedCursor.getString(type);
+            callDuration2 = managedCursor.getString(duration);
+            activatedNum = managedCursor.getString(activeID);
+            String dir = null;
+            int dircode = Integer.parseInt(callType);
+            switch (dircode) {
+                case CallLog.Calls.OUTGOING_TYPE:
+                    dir = "OUTGOING";
+                    break;
+
+                case CallLog.Calls.INCOMING_TYPE:
+                    dir = "INCOMING";
+                    break;
+
+                case CallLog.Calls.MISSED_TYPE:
+                    dir = "MISSED";
+                    break;
+                case CallLog.Calls.REJECTED_TYPE:
+                    dir = "REJECTED";
+                    break;
+            }
+
+            calType = dir;
+
+        }
+
+        managedCursor.close();
+        return new LastCallDetails(phoneNumber, callDuration2, activatedNum, calType);
+
+    }
+
+    @Override
+    public void callEnded(int serialNumber, String phoneNumber) {
+        Log.d("callEndedcallEnded", "callEnded: ");
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        LastCallDetails callDetails = getLastCallDetails();
+
+                        Log.d("callDetails", "callDetails: " + callDetails.getType());
+                        if (callDetails.getType().equals("MISSED") || callDetails.getType().equals("REJECTED")) {
+                            if (callDetails.getActiveId().equals(SharedHelper.getKey(getApplicationContext(),
+                                    "activated_sub_id"))) {
+                                BaseClient.getBaseClient().create(Api.class).missedCall(SharedHelper.getKey(getApplicationContext(), LoginActivity.TOKEN), callDetails.getPhone())
+                                        .enqueue(new Callback<UploadPhoneResponse>() {
+                                            @Override
+                                            public void onResponse(Call<UploadPhoneResponse> call, Response<UploadPhoneResponse> response) {
+                                                if (response.body().getResponse().equals("Success")) {
+                                                    Toast.makeText(NewOrderActivity.this, "تم ارسال رقم  " + callDetails.getPhone() + " المكالمة الفائتة الى السيرفر", Toast.LENGTH_SHORT).show();
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onFailure(Call<UploadPhoneResponse> call, Throwable t) {
+
+                                            }
+                                        });
+
+                            }
+
+                        } else if (callDetails.getType().equals("OUTGOING")) {
+
+                            if (callDetails.getDuration().equals("0")) {
+                                Log.d(TAG, "run: add call to database");
+                                new DatabaseManager(getApplicationContext()).addCallDetails(new CallDetails(serialNumber,
+                                        phoneNumber, new CommonMethods().getTIme(), new CommonMethods().getDate(), "not_yet", callDetails.getDuration()));
+
+                                minutesUsage(callDetails.getDuration());
+                            }
+                        }
+
+
+                    }
+                });
+
+            }
+        }, 1000);
+
+        uploadVoices();
+    }
+
+
+    private boolean getAutoValue() {
+        SharedPreferences auto = PreferenceManager.getDefaultSharedPreferences(this);
+        return auto.getBoolean("autoUpdate", false);
+    }
+
+    @SuppressLint("ApplySharedPref")
+    private void minutesUsage(String seconds) {
+        Log.d("minutesUsage", "minutesUsage: call time seconds" + seconds);
+        int totalSeconds = 149 * 59;
+        int minutes = totalSeconds / 59;
+        int remaining = 0;
+        if ((totalSeconds % 59) > 0) {
+            remaining = 1;
+        }
+        Log.d("minutesUsage", "minutesUsage: call time minutes" + minutes);
+        Log.d("minutesUsage", "minutesUsage: call time remaining" + remaining);
+        SharedPreferences pref1 = PreferenceManager.getDefaultSharedPreferences(this);
+        float oldUsage = pref1.getFloat("cards_usage", 0f);
+        float currentUsage = (float) (minutes + remaining);
+        float newUsage = oldUsage + currentUsage;
+        Log.d("minutesUsage", "minutesUsage: call time all m" + newUsage);
+        pref1.edit().putFloat("cards_usage", newUsage).commit();
+        Log.d("minutesUsage", "minutesUsage: " + pref1.getFloat("cards_usage", 0f));
+
+    }
+
+    private void uploadVoices() {
+        List<CallDetails> callDetailsList = databaseManager.getAllDetails();
+        for (CallDetails call : callDetailsList) {
+            if (call.getUploaded().equals("not_yet")) {
+
+                String path = Environment.getExternalStorageDirectory() + "/MyRecords/" + call.getDate() + "/" + call.getNum() + "_" + call.getTime1() + ".mp4";
+                File file = new File(path);
+                RequestBody surveyBody = RequestBody.create(MediaType.parse("audio/*"), file);
+                MultipartBody.Part image = MultipartBody.Part.createFormData("voice_note", file.getName(), surveyBody);
+                RequestBody title1 = RequestBody.create(MediaType.parse("text/plain"), CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getId());
+                RequestBody duration = RequestBody.create(MediaType.parse("text/plain"), call.getDuration());
+                RequestBody token = RequestBody.create(MediaType.parse("text/plain"), SharedHelper.getKey(this, LoginActivity.TOKEN));
+
+                BaseClient.getBaseClient().create(Api.class).uploadVoice(token, title1, duration, image).enqueue(new Callback<UploadVoiceResponse>() {
+                    @Override
+                    public void onResponse(Call<UploadVoiceResponse> call2, Response<UploadVoiceResponse> response) {
+                        databaseManager.updateCallDetails(call);
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<UploadVoiceResponse> call, Throwable t) {
+                        Log.d("caaaaaaaaaaaaaal", "onFailure: " + t.getMessage());
+
+                    }
+                });
+            }
+        }
+    }
+
 }
