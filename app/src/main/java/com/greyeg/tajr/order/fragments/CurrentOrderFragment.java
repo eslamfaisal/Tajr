@@ -344,9 +344,7 @@ public class CurrentOrderFragment extends Fragment {
                     @Override
                     public void onResponse(Call<UpdateOrederNewResponse> call, Response<UpdateOrederNewResponse> response) {
                         progressDialog.dismiss();
-                        if (response.body().getResponse().equals("Success")) {
-                            getCurrentOrder();
-                        }
+                        getCurrentOrder();
                         Log.d(TAG, "onResponse: " + response.toString());
                     }
 
@@ -592,7 +590,10 @@ public class CurrentOrderFragment extends Fragment {
         client_order_phone1.setText(order.getPhone1());
         order_id.setText(order.getId());
         item_cost.setText(order.getItemCost());
+        if (!order.getItemsNo().equals("0"))
         item_no.setText(order.getItemsNo());
+        else
+            item_no.setText("1");
         order_total_cost.setText(order.getTotalOrderCost());
         sender_name.setText(order.getSenderName());
         order_type.setText(order.getOrderType());

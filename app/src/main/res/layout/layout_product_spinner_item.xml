@@ -8,7 +8,9 @@
 
     <com.facebook.drawee.view.SimpleDraweeView
         android:id="@+id/product_image"
-
+        xmlns:fresco="http://schemas.android.com/apk/res-auto"
+        fresco:progressBarAutoRotateInterval="1000"
+        fresco:progressBarImage="@drawable/ic_refresh_black_24dp"
         android:layout_width="50dp"
         android:layout_height="50dp" />
     <TextView
