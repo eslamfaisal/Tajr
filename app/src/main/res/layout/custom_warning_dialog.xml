@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/main_color_600"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="16dp" >
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_warning_black_24dp"/>
+
+            <com.greyeg.tajr.helper.font.RobotoTextView
+                android:id="@+id/dialog_warning_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/main_color_300"
+                android:textSize="24sp"
+                app:typeface="robotoBlack" />
+        </LinearLayout>
+        <com.greyeg.tajr.helper.font.RobotoTextView
+            android:id="@+id/dialog_warning_msg"
+            android:padding="16dp"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/main_color_300"
+            android:textSize="16sp"
+            app:typeface="robotoBlack" />
+        <View
+            android:layout_margin="@dimen/_8sdp"
+            android:background="@color/yellow"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <com.greyeg.tajr.helper.font.RobotoTextView
+                    android:id="@+id/positive"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:background="@drawable/selector_dialog_warning"
+                    android:gravity="center"
+                    android:minWidth="64dp"
+                    android:padding="8dp"
+                    android:textColor="@color/main_color_600"
+                    android:textSize="18sp"
+                    app:typeface="robotoMedium" />
+                <View
+                    android:id="@+id/divider"
+                    android:layout_margin="@dimen/_8sdp"
+                    android:background="@color/yellow"
+                    android:layout_width="2dp"
+                    android:layout_height="match_parent"/>
+                <com.greyeg.tajr.helper.font.RobotoTextView
+                    android:id="@+id/negative"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:background="@drawable/selector_dialog_warning"
+                    android:gravity="center"
+                    android:minWidth="64dp"
+                    android:padding="8dp"
+                    android:textColor="@color/main_color_600"
+                    android:textSize="18sp"
+                    app:typeface="robotoMedium" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </LinearLayout>
+
+</RelativeLayout>

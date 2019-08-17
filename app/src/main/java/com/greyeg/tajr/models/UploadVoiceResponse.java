@@ -60,4 +60,12 @@ public class UploadVoiceResponse {
         }
     }
 
+    @Override
+    public String toString() {
+        return "UploadVoiceResponse{" +
+                "code='" + code + '\'' +
+                ", info='" + info + '\'' +
+                ", response='" + response + '\'' +
+                '}';
+    }
 }

@@ -252,10 +252,12 @@ public class SearchOrderPhoneFragment extends Fragment {
                     progressDialog.dismiss();
                     if (askToFinishWork) {
                         finishTheWorkNow();
-                    } else
-                        onButtonPressed();
+                    } else{
+                        //  onButtonPressed();
+
+                    }
                 } else {
-                    onButtonPressed();
+                   // onButtonPressed();
                 }
 
             }
@@ -368,35 +370,35 @@ public class SearchOrderPhoneFragment extends Fragment {
         problemDialog.show();
 
     }
-
-    private OnFragmentInteractionListener mListener;
-
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction();
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed() {
-        if (mListener != null) {
-            mListener.onFragmentInteraction();
-        }
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
+//
+//    private OnFragmentInteractionListener mListener;
+//
+//    public interface OnFragmentInteractionListener {
+//        // TODO: Update argument type and name
+//        void onFragmentInteraction();
+//    }
+//
+//    // TODO: Rename method, update argument and hook method into UI event
+//    public void onButtonPressed() {
+//        if (mListener != null) {
+//            mListener.onFragmentInteraction();
+//        }
+//    }
+//
+//    @Override
+//    public void onAttach(Context context) {
+//        super.onAttach(context);
+//        if (context instanceof OnFragmentInteractionListener) {
+//            mListener = (OnFragmentInteractionListener) context;
+//        } else {
+//            throw new RuntimeException(context.toString()
+//                    + " must implement OnFragmentInteractionListener");
+//        }
+//    }
+//
+//    @Override
+//    public void onDetach() {
+//        super.onDetach();
+//        mListener = null;
+//    }
 }

@@ -40,4 +40,14 @@ public class UserWorkTimeResponse {
     public String getInfo() {
         return info;
     }
+
+    @Override
+    public String toString() {
+        return "UserWorkTimeResponse{" +
+                "Response='" + Response + '\'' +
+                ", data='" + data + '\'' +
+                ", code='" + code + '\'' +
+                ", info='" + info + '\'' +
+                '}';
+    }
 }

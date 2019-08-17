@@ -43,6 +43,16 @@ public class Cities {
     public Cities() {
     }
 
+    @Override
+    public String toString() {
+        return "Cities{" +
+                "code='" + code + '\'' +
+                ", info='" + info + '\'' +
+                ", shipping_cost=" + shipping_cost +
+                ", cities=" + cities +
+                '}';
+    }
+
     public class City{
 
         @SerializedName("city_id")
@@ -70,6 +80,15 @@ public class Cities {
 
         public String getShipping_cost() {
             return shipping_cost;
+        }
+
+        @Override
+        public String toString() {
+            return "City{" +
+                    "city_id='" + city_id + '\'' +
+                    ", city_name='" + city_name + '\'' +
+                    ", shipping_cost='" + shipping_cost + '\'' +
+                    '}';
         }
     }
 }

@@ -64,6 +64,7 @@ import com.greyeg.tajr.adapters.DrawerAdapter;
 import com.greyeg.tajr.helper.SharedHelper;
 import com.greyeg.tajr.helper.TimerTextView;
 import com.greyeg.tajr.helper.font.RobotoTextView;
+import com.greyeg.tajr.order.NewOrderActivity;
 import com.greyeg.tajr.records.RecordsActivity;
 import com.greyeg.tajr.server.Api;
 import com.greyeg.tajr.server.BaseClient;
@@ -154,9 +155,11 @@ public class MainActivity extends AppCompatActivity
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (
                     checkSelfPermission(Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED ||
+                    checkSelfPermission(Manifest.permission.ANSWER_PHONE_CALLS) != PackageManager.PERMISSION_GRANTED ||
                             checkSelfPermission(Manifest.permission.READ_CALL_LOG) != PackageManager.PERMISSION_GRANTED ||
                             checkSelfPermission(Manifest.permission.MODIFY_AUDIO_SETTINGS) != PackageManager.PERMISSION_GRANTED ||
                             checkSelfPermission(Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED ||
+                            checkSelfPermission(Manifest.permission.MODIFY_PHONE_STATE) != PackageManager.PERMISSION_GRANTED ||
                             checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED ||
                             checkSelfPermission(Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED ||
                             checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
@@ -170,10 +173,12 @@ public class MainActivity extends AppCompatActivity
                 ActivityCompat.requestPermissions(this,
                         new String[]{
                                 Manifest.permission.READ_PHONE_STATE,
+                                Manifest.permission.MODIFY_PHONE_STATE,
                                 Manifest.permission.READ_CALL_LOG,
                                 Manifest.permission.MODIFY_AUDIO_SETTINGS,
                                 Manifest.permission.CALL_PHONE,
                                 Manifest.permission.RECORD_AUDIO,
+                                Manifest.permission.ANSWER_PHONE_CALLS,
                                 Manifest.permission.READ_PHONE_STATE,
                                 Manifest.permission.READ_EXTERNAL_STORAGE,
                                 Manifest.permission.WRITE_EXTERNAL_STORAGE,
@@ -195,7 +200,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onStateChange(boolean active) {
                 if (active) {
-                    Intent intent = new Intent(getApplicationContext(), OrderActivity.class);
+                    Intent intent = new Intent(getApplicationContext(), NewOrderActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
 
@@ -564,7 +569,7 @@ public class MainActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            finish();
         }
     }
 
@@ -943,6 +948,7 @@ public class MainActivity extends AppCompatActivity
         }
 
     }
+
 
 
 }

@@ -69,4 +69,15 @@ public class AllProducts {
     public void setProducts_count(int products_count) {
         this.products_count = products_count;
     }
+
+    @Override
+    public String toString() {
+        return "AllProducts{" +
+                "code='" + code + '\'' +
+                ", response='" + response + '\'' +
+                ", info='" + info + '\'' +
+                ", products_count=" + products_count +
+                ", products=" + products +
+                '}';
+    }
 }

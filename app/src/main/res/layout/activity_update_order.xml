@@ -1157,7 +1157,6 @@
                 fab:fab_label="@string/delay_order"
                 fab:fab_size="mini" />
 
-
             <com.github.clans.fab.FloatingActionButton
                 android:id="@+id/problem2"
                 android:layout_width="wrap_content"
@@ -1171,7 +1170,6 @@
 
         <android.support.design.widget.BottomNavigationView
             android:id="@+id/navigation"
-
             android:layout_width="match_parent"
             android:layout_height="55dp"
             android:layout_alignParentBottom="true"

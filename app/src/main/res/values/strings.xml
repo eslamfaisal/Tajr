@@ -254,5 +254,8 @@
     <string name="some_thing_went_wrong">Some thing went wrong</string>
     <string name="invalid_ph_num">The Mobile number you Entered is Invalid</string>
     <string name="added_success">Added successfully</string>
+    <string name="fetching_th_order">Fetching the order</string>
+    <string name="no_more_orders">No more orders</string>
+    <string name="retry">Retry</string>
 
 </resources>

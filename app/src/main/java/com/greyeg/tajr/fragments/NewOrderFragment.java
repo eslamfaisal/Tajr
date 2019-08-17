@@ -2,7 +2,6 @@ package com.greyeg.tajr.fragments;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -223,7 +222,8 @@ public class NewOrderFragment extends Fragment {
                     CITY_ID,
                     client_area.getText().toString(),
                     client_address.getText().toString(),
-                    item_no.getText().toString()
+                    item_no.getText().toString(),
+                    "0"
             ).enqueue(new Callback<NewOrderResponse>() {
                 @Override
                 public void onResponse(Call<NewOrderResponse> call, Response<NewOrderResponse> response) {
@@ -233,7 +233,7 @@ public class NewOrderFragment extends Fragment {
                         showDialog(getString(R.string.invalid_ph_num));
                     }else if (response.body().getCode().equals("1200")){
                         Toast.makeText(getActivity(), getString(R.string.added_success), Toast.LENGTH_SHORT).show();
-                        onButtonPressed();
+                   //     onButtonPressed();
                     }else {
                         showDialog(response.body().getDetails());
                     }
@@ -264,36 +264,36 @@ public class NewOrderFragment extends Fragment {
         });
         builder.show();
     }
-
-    private SendOrderListener mListener;
-
-    public interface SendOrderListener {
-        // TODO: Update argument type and name
-        void orderSentGetNewOrder();
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed() {
-        if (mListener != null) {
-            mListener.orderSentGetNewOrder();
-        }
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof SendOrderListener) {
-            mListener = (SendOrderListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    };
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
+//
+//    private SendOrderListener mListener;
+//
+//    public interface SendOrderListener {
+//        // TODO: Update argument type and name
+//        void orderSentGetNewOrder();
+//    }
+//
+//    // TODO: Rename method, update argument and hook method into UI event
+//    public void onButtonPressed() {
+//        if (mListener != null) {
+//            mListener.orderSentGetNewOrder();
+//        }
+//    }
+//
+//    @Override
+//    public void onAttach(Context context) {
+//        super.onAttach(context);
+//        if (context instanceof SendOrderListener) {
+//            mListener = (SendOrderListener) context;
+//        } else {
+//            throw new RuntimeException(context.toString()
+//                    + " must implement OnFragmentInteractionListener");
+//        }
+//    };
+//
+//    @Override
+//    public void onDetach() {
+//        super.onDetach();
+//        mListener = null;
+//    }
 
 }

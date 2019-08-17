@@ -55,4 +55,14 @@ public class RemainingOrdersResponse {
     public void setData(int data) {
         this.data = data;
     }
+
+    @Override
+    public String toString() {
+        return "RemainingOrdersResponse{" +
+                "code='" + code + '\'' +
+                ", info='" + info + '\'' +
+                ", response='" + response + '\'' +
+                ", data=" + data +
+                '}';
+    }
 }

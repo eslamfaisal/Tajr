@@ -1,13 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".order.fragments.CurrentOrderFragment">
 
+    <RelativeLayout
+        android:id="@+id/work_progress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ProgressBar
+            android:id="@+id/ProgressBar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="@dimen/_26sdp"
+            android:indeterminate="false"
+            android:maxHeight="10dip"
+            android:minHeight="10dip"
+            android:progress="0"
+            android:progressDrawable="@drawable/ic_greenprogress" />
+
+        <TextView
+            android:id="@+id/present"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:textColor="@color/white" />
+    </RelativeLayout>
+
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_below="@id/work_progress">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -36,16 +62,7 @@
 
                         <EditText
                             android:id="@+id/order_id"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:layout_marginEnd="26dp"
-                            android:background="@color/gray"
-                            android:editable="false"
-                            android:gravity="center"
-                            android:inputType="text"
-                            android:paddingStart="16dp"
-                            android:tag="client_name_label" />
+                            style="@style/oder_item_edit_text_style" />
                     </FrameLayout>
 
 
@@ -66,16 +83,8 @@
 
                         <EditText
                             android:id="@+id/client_name"
-                            android:editable="false"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:layout_marginEnd="26dp"
-                            android:gravity="center"
-                            android:paddingStart="16dp"
-                            android:tag="client_name_label"
-                            android:textColor="@color/black_text_color"
-                            android:textSize="@dimen/_14ssp" />
+                            style="@style/oder_item_edit_text_style_editable" />
+
 
                     </FrameLayout>
 
@@ -97,15 +106,7 @@
 
                         <EditText
                             android:id="@+id/sender_name"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:layout_marginEnd="26dp"
-                            android:background="@color/gray"
-                            android:editable="false"
-                            android:gravity="center"
-                            android:paddingStart="16dp"
-                            android:tag="client_name_label" />
+                            style="@style/oder_item_edit_text_style" />
                     </FrameLayout>
                 </LinearLayout>
 
@@ -123,7 +124,7 @@
                         style="@style/oder_item_frame_style">
 
                         <Spinner
-                            android:id="@+id/product"
+                            android:id="@+id/single_order_product_spinner"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
@@ -193,18 +194,9 @@
                         android:id="@+id/status2"
                         style="@style/oder_item_frame_style">
 
-                        <TextView
+                        <EditText
                             android:id="@+id/status"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:layout_marginEnd="26dp"
-                            android:background="@color/gray"
-                            android:editable="false"
-                            android:gravity="center"
-                            android:inputType="text"
-                            android:paddingStart="16dp"
-                            android:tag="client_name_label" />
+                            style="@style/oder_item_edit_text_style" />
                     </FrameLayout>
                 </LinearLayout>
 
@@ -221,17 +213,9 @@
                         android:id="@+id/shipping_status2"
                         style="@style/oder_item_frame_style">
 
-                        <TextView
+                        <EditText
                             android:id="@+id/shipping_status"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:layout_marginEnd="26dp"
-                            android:background="@color/gray"
-                            android:editable="false"
-                            android:gravity="center"
-                            android:paddingStart="16dp"
-                            android:tag="client_name_label" />
+                            style="@style/oder_item_edit_text_style" />
                     </FrameLayout>
                 </LinearLayout>
 
@@ -250,15 +234,180 @@
 
                         <EditText
                             android:id="@+id/client_order_phone1"
-                            android:layout_width="match_parent"
+                            style="@style/oder_item_edit_text_style" />
+                    </FrameLayout>
+
+                </LinearLayout>
+
+                <!--address-->
+                <LinearLayout
+                    android:id="@+id/ddtregdsf"
+                    style="@style/linear_order_item_style">
+
+                    <TextView
+                        android:id="@+id/client_address_label"
+                        style="@style/oder_item_label_style"
+                        android:text="@string/client_address" />
+
+                    <FrameLayout
+                        android:id="@+id/client_address2"
+                        style="@style/oder_item_frame_style">
+
+                        <EditText
+                            android:id="@+id/client_address"
+                            style="@style/oder_item_edit_text_style" />
+                    </FrameLayout>
+                </LinearLayout>
+
+                <!--area-->
+                <LinearLayout
+                    android:id="@+id/ddfbdf"
+                    style="@style/linear_order_item_style">
+
+                    <TextView
+                        android:id="@+id/client_area_label"
+                        style="@style/oder_item_label_style"
+                        android:text="@string/client_area" />
+
+                    <FrameLayout
+                        android:id="@+id/client_area2"
+                        style="@style/oder_item_frame_style">
+
+                        <EditText
+                            android:id="@+id/client_area"
+                            style="@style/oder_item_edit_text_style_editable" />
+                    </FrameLayout>
+
+                </LinearLayout>
+
+                <!--city-->
+                <LinearLayout
+                    android:id="@+id/derwxddf"
+                    style="@style/linear_order_item_style">
+
+                    <TextView
+                        android:id="@+id/client_city_label"
+                        style="@style/oder_item_label_style"
+                        android:text="@string/client_city" />
+
+                    <FrameLayout
+                        android:id="@+id/client_city2"
+                        style="@style/oder_item_frame_style">
+
+                        <Spinner
+                            android:id="@+id/client_city"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
+                            android:layout_gravity="center"
                             android:layout_marginEnd="26dp"
                             android:background="@color/gray"
-                            android:editable="false"
                             android:gravity="center"
                             android:paddingStart="16dp"
                             android:tag="client_name_label" />
+
+                    </FrameLayout>
+
+                </LinearLayout>
+
+                <!--shipping cost-->
+                <LinearLayout
+                    android:id="@+id/fdlj"
+                    style="@style/linear_order_item_style">
+
+                    <TextView
+                        android:id="@+id/shipping_cost_label"
+                        style="@style/oder_item_label_style"
+                        android:text="@string/shipping_cost" />
+
+                    <FrameLayout
+                        android:id="@+id/shipping_cost2"
+                        style="@style/oder_item_frame_style">
+
+                        <EditText
+                            android:id="@+id/shipping_cost"
+                            style="@style/oder_item_edit_text_style" />
+                    </FrameLayout>
+                </LinearLayout>
+
+                <!--item cost-->
+                <LinearLayout
+                    android:id="@+id/dplkjdf"
+                    style="@style/linear_order_item_style">
+
+                    <TextView
+                        android:id="@+id/item_cost_label"
+                        style="@style/oder_item_label_style"
+                        android:text="@string/item_cost" />
+
+                    <FrameLayout
+                        android:id="@+id/item_cost2"
+                        style="@style/oder_item_frame_style">
+
+                        <EditText
+                            android:id="@+id/item_cost"
+                            style="@style/oder_item_edit_text_style" />
+                    </FrameLayout>
+
+                </LinearLayout>
+
+                <!--item no-->
+                <LinearLayout
+                    android:id="@+id/ddmnbvf"
+                    style="@style/linear_order_item_style">
+
+                    <TextView
+                        android:id="@+id/item_no_label"
+                        style="@style/oder_item_label_style"
+                        android:text="@string/item_no" />
+
+                    <FrameLayout
+                        android:id="@+id/item_no2"
+                        style="@style/oder_item_frame_style">
+
+                        <EditText
+                            android:id="@+id/item_no"
+                            style="@style/oder_item_edit_text_style_editable" />
+                    </FrameLayout>
+
+                </LinearLayout>
+
+                <!--discount-->
+                <LinearLayout
+                    android:id="@+id/ddfltf"
+                    style="@style/linear_order_item_style">
+
+                    <TextView
+                        android:id="@+id/discount_label"
+                        style="@style/oder_item_label_style"
+                        android:text="@string/discount" />
+
+                    <FrameLayout
+                        android:id="@+id/discount2"
+                        style="@style/oder_item_frame_style">
+
+                        <EditText
+                            android:id="@+id/discount"
+                            style="@style/oder_item_edit_text_style_editable" />
+                    </FrameLayout>
+                </LinearLayout>
+
+                <!--total cost-->
+                <LinearLayout
+                    android:id="@+id/ddsdchgfdsghjf"
+                    style="@style/linear_order_item_style">
+
+                    <TextView
+                        android:id="@+id/order_total_cost_label"
+                        style="@style/oder_item_label_style"
+                        android:text="@string/order_total_cost" />
+
+                    <FrameLayout
+                        android:id="@+id/order_total_cost2"
+                        style="@style/oder_item_frame_style">
+
+                        <EditText
+                            android:id="@+id/order_total_cost"
+                            style="@style/oder_item_edit_text_style" />
                     </FrameLayout>
 
                 </LinearLayout>
@@ -278,15 +427,27 @@
 
                         <EditText
                             android:id="@+id/order_type"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:layout_marginEnd="26dp"
-                            android:background="@color/gray"
-                            android:editable="false"
-                            android:gravity="center"
-                            android:paddingStart="16dp"
-                            android:tag="client_name_label" />
+                            style="@style/oder_item_edit_text_style" />
+                    </FrameLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ddfmn"
+                    style="@style/linear_order_item_style">
+
+                    <TextView
+                        android:id="@+id/ntes_label"
+                        style="@style/oder_item_label_style"
+                        android:text="@string/notes" />
+
+                    <FrameLayout
+                        android:id="@+id/ntes2"
+                        style="@style/oder_item_frame_style">
+
+                        <EditText
+                            android:id="@+id/ntes"
+                            style="@style/oder_item_edit_text_style_editable" />
+
                     </FrameLayout>
                 </LinearLayout>
 
@@ -305,15 +466,7 @@
 
                         <EditText
                             android:id="@+id/real_shipping_return_cost"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:layout_marginEnd="26dp"
-                            android:background="@color/gray"
-                            android:editable="false"
-                            android:gravity="center"
-                            android:paddingStart="16dp"
-                            android:tag="client_name_label" />
+                            style="@style/oder_item_edit_text_style" />
                     </FrameLayout>
 
                 </LinearLayout>
@@ -333,279 +486,14 @@
 
                         <EditText
                             android:id="@+id/client_feedback"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:layout_marginEnd="26dp"
-                            android:background="@color/gray"
-                            android:editable="false"
-                            android:gravity="center"
-                            android:paddingStart="16dp"
-                            android:tag="client_name_label" />
+                            style="@style/oder_item_edit_text_style" />
                     </FrameLayout>
 
-                </LinearLayout>
-
-                <!--address-->
-                <LinearLayout
-                    android:id="@+id/ddtregdsf"
-                    style="@style/linear_order_item_style">
-
-                    <TextView
-                        android:id="@+id/client_address_label"
-                        android:text="@string/client_address"
-                        style="@style/oder_item_label_style"/>
-
-                    <FrameLayout
-                        android:id="@+id/client_address2"
-                        style="@style/oder_item_frame_style">
-
-                        <EditText
-                            android:id="@+id/client_address"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginEnd="26dp"
-                            android:gravity="center"
-                            android:paddingStart="8dp"
-                            android:paddingEnd="8dp"
-                            android:tag="client_name_label"
-                            android:textColor="@color/black_text_color"
-                            android:textSize="@dimen/_14ssp" />
-                    </FrameLayout>
-                </LinearLayout>
-
-                <!--area-->
-                <LinearLayout
-                    android:id="@+id/ddfbdf"
-                    style="@style/linear_order_item_style">
-
-                    <TextView
-                        android:id="@+id/client_area_label"
-                        android:text="@string/client_area"
-                        style="@style/oder_item_label_style"/>
-
-                    <FrameLayout
-                        android:id="@+id/client_area2"
-                        style="@style/oder_item_frame_style">
-
-                        <EditText
-                            android:id="@+id/client_area"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:layout_marginEnd="26dp"
-                            android:gravity="center"
-                            android:inputType="text"
-                            android:paddingStart="16dp"
-                            android:tag="client_name_label"
-                            android:textColor="@color/black_text_color"
-                            android:textSize="@dimen/_14ssp" />
-                    </FrameLayout>
-
-                </LinearLayout>
-
-                <!--city-->
-                <LinearLayout
-                    android:id="@+id/derwxddf"
-                    style="@style/linear_order_item_style">
-
-                    <TextView
-                        android:id="@+id/client_city_label"
-                        android:text="@string/client_city"
-                        style="@style/oder_item_label_style"/>
-
-                    <FrameLayout
-                        android:id="@+id/client_city2"
-                        style="@style/oder_item_frame_style">
-
-                        <Spinner
-                            android:id="@+id/client_city"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:layout_marginEnd="26dp"
-                            android:background="@color/gray"
-                            android:paddingStart="16dp"
-                            android:tag="client_name_label" />
-
-                    </FrameLayout>
-
-                </LinearLayout>
-
-                <!--shipping cost-->
-                <LinearLayout
-                    android:id="@+id/fdlj"
-                    style="@style/linear_order_item_style">
-
-                    <TextView
-                        android:id="@+id/shipping_cost_label"
-                        android:text="@string/shipping_cost"
-                        style="@style/oder_item_label_style"/>
-
-                    <FrameLayout
-                        android:id="@+id/shipping_cost2"
-                        style="@style/oder_item_frame_style">
-                        <EditText
-                            android:id="@+id/shipping_cost"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:layout_marginEnd="26dp"
-                            android:background="@color/gray"
-                            android:editable="false"
-                            android:enabled="false"
-                            android:gravity="center"
-                            android:inputType="text"
-                            android:paddingStart="16dp"
-                            android:tag="client_name_label" />
-                    </FrameLayout>
-                </LinearLayout>
-
-                <!--item cost-->
-                <LinearLayout
-                    android:id="@+id/dplkjdf"
-                    style="@style/linear_order_item_style">
-
-                    <TextView
-                        android:id="@+id/item_cost_label"
-                        android:text="@string/item_cost"
-                        style="@style/oder_item_label_style"/>
-
-                    <FrameLayout
-                        android:id="@+id/item_cost2"
-                        style="@style/oder_item_frame_style">
-
-                        <EditText
-                            android:id="@+id/item_cost"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:layout_marginEnd="26dp"
-                            android:background="@color/gray"
-                            android:editable="false"
-                            android:gravity="center"
-                            android:paddingStart="16dp"
-                            android:tag="client_name_label" />
-                    </FrameLayout>
-
-                </LinearLayout>
-
-                <!--item no-->
-                <LinearLayout
-                    android:id="@+id/ddmnbvf"
-                    style="@style/linear_order_item_style">
-
-                    <TextView
-                        android:id="@+id/item_no_label"
-                        android:text="@string/item_no"
-                        style="@style/oder_item_label_style"/>
-
-                    <FrameLayout
-                        android:id="@+id/item_no2"
-                        style="@style/oder_item_frame_style">
-
-                        <TextView
-                            android:id="@+id/item_no"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:layout_marginEnd="26dp"
-                            android:gravity="center"
-                            android:paddingStart="16dp"
-                            android:tag="client_name_label"
-                            android:textColor="@color/black_text_color"
-                            android:textSize="@dimen/_16ssp" />
-                    </FrameLayout>
-
-                </LinearLayout>
-
-                <!--discount-->
-                <LinearLayout
-                    android:id="@+id/ddfltf"
-                    style="@style/linear_order_item_style">
-
-                    <TextView
-                        android:id="@+id/discount_label"
-                        android:text="@string/discount"
-                        style="@style/oder_item_label_style"/>
-
-                    <FrameLayout
-                        android:id="@+id/discount2"
-                        style="@style/oder_item_frame_style">
-
-                        <TextView
-                            android:id="@+id/discount"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:layout_marginEnd="26dp"
-                            android:gravity="center"
-                            android:paddingStart="16dp"
-                            android:tag="client_name_label"
-                            android:textColor="@color/black_text_color"
-                            android:textSize="@dimen/_16ssp" />
-                    </FrameLayout>
-                </LinearLayout>
-
-                <!--total cost-->
-                <LinearLayout
-                    android:id="@+id/ddsdchgfdsghjf"
-                    style="@style/linear_order_item_style">
-
-                    <TextView
-                        android:id="@+id/order_total_cost_label"
-                        android:text="@string/order_total_cost"
-                        style="@style/oder_item_label_style"/>
-
-                    <FrameLayout
-                        android:id="@+id/order_total_cost2"
-                        style="@style/oder_item_frame_style">
-
-                        <EditText
-                            android:id="@+id/order_total_cost"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:layout_marginEnd="26dp"
-                            android:background="@color/gray"
-                            android:editable="false"
-                            android:gravity="center"
-                            android:paddingStart="16dp"
-                            android:tag="client_name_label" />
-                    </FrameLayout>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/ddfmn"
-                    style="@style/linear_order_item_style">
-
-                    <TextView
-                        android:id="@+id/ntes_label"
-                        android:text="@string/notes"
-                        style="@style/oder_item_label_style"/>
-
-                    <FrameLayout
-                        android:id="@+id/ntes2"
-                        style="@style/oder_item_frame_style">
-
-                        <TextView
-                            android:id="@+id/ntes"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginEnd="26dp"
-                            android:gravity="center"
-                            android:hint="@string/notes"
-                            android:paddingStart="8dp"
-                            android:paddingEnd="8dp"
-                            android:textSize="@dimen/_16ssp" />
-
-                    </FrameLayout>
                 </LinearLayout>
 
             </LinearLayout>
 
-            <LinearLayout
+            <Space
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_50sdp"
                 android:layout_marginTop="@dimen/_16sdp"
@@ -614,9 +502,136 @@
                 android:orientation="vertical"
                 android:visibility="invisible">
 
-            </LinearLayout>
+            </Space>
 
         </LinearLayout>
 
     </android.support.v4.widget.NestedScrollView>
+
+    <View
+        android:id="@+id/back_drop"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#4D000000"
+        android:clickable="true"
+        android:fitsSystemWindows="true"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:gravity="start"
+        android:orientation="vertical">
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/normal_order_data_confirmed"
+            style="@style/fab_buttons_CardView_Style"
+            app:cardBackgroundColor="@color/colorPrimary"
+            app:cardCornerRadius="3dp"
+            app:cardElevation="2dp"
+            app:contentPadding="@dimen/spacing_medium">
+
+            <TextView
+                style="@style/fab_buttons_TextView_Style"
+                android:text="Confirm Order Data" />
+
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/normal_client_phone_error"
+            style="@style/fab_buttons_CardView_Style"
+            app:cardBackgroundColor="@color/colorPrimary"
+            app:cardCornerRadius="3dp"
+            app:cardElevation="2dp"
+            app:contentPadding="@dimen/spacing_medium">
+
+            <TextView
+                style="@style/fab_buttons_TextView_Style"
+                android:text="@string/client_phone_error" />
+
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/normal_no_answer"
+            style="@style/fab_buttons_CardView_Style"
+            app:cardBackgroundColor="@color/colorPrimary"
+            app:cardCornerRadius="3dp"
+            app:cardElevation="2dp"
+            app:contentPadding="@dimen/spacing_medium">
+
+            <TextView
+                style="@style/fab_buttons_TextView_Style"
+                android:text="@string/client_noanswer" />
+
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/normal_delay"
+            style="@style/fab_buttons_CardView_Style"
+            app:cardBackgroundColor="@color/colorPrimary"
+            app:cardCornerRadius="3dp"
+            app:cardElevation="2dp"
+            app:contentPadding="@dimen/spacing_medium">
+
+            <TextView
+                style="@style/fab_buttons_TextView_Style"
+                android:text="@string/delay_order" />
+
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/normal_client_cancel"
+            style="@style/fab_buttons_CardView_Style"
+            app:cardBackgroundColor="@color/colorPrimary"
+            app:cardCornerRadius="3dp"
+            app:cardElevation="2dp"
+            app:contentPadding="@dimen/spacing_medium">
+
+            <TextView
+                style="@style/fab_buttons_TextView_Style"
+                android:text="Cancel Order" />
+
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/normal_busy"
+            style="@style/fab_buttons_CardView_Style"
+            app:cardBackgroundColor="@color/colorPrimary"
+            app:cardCornerRadius="3dp"
+            app:cardElevation="2dp"
+            app:contentPadding="@dimen/spacing_medium">
+
+            <TextView
+                style="@style/fab_buttons_TextView_Style"
+                android:text="@string/client_busy" />
+
+        </android.support.v7.widget.CardView>
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/normalUpdateButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/_16sdp"
+            android:clickable="true"
+            android:tint="@android:color/white"
+            app:backgroundTint="@color/colorPrimary"
+            app:fabSize="normal"
+            app:rippleColor="@android:color/white"
+            app:srcCompat="@drawable/fab_add" />
+    </LinearLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/save_edit"
+        android:layout_margin="@dimen/_16sdp"
+        android:layout_width="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:tint="@color/green"
+        app:backgroundTint="@color/colorPrimary"
+        app:fabSize="normal"
+        app:rippleColor="@android:color/white"
+        app:srcCompat="@drawable/ic_save_edite" />
 </RelativeLayout>

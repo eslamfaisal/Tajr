@@ -13,9 +13,6 @@ import android.util.Log;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.greyeg.tajr.activities.ChatActivity;
 import com.greyeg.tajr.helper.SharedHelper;
-import com.greyeg.tajr.over.theming.Bus;
-import com.greyeg.tajr.over.theming.HoverTheme;
-import com.greyeg.tajr.over.theming.HoverThemeManager;
 import com.onesignal.OSNotification;
 import com.onesignal.OSNotificationAction;
 import com.onesignal.OSNotificationOpenResult;
@@ -77,15 +74,6 @@ public class App extends Application {
 
         }
 
-        setupTheme();
-
-    }
-
-    private void setupTheme() {
-        HoverTheme defaultTheme = new HoverTheme(
-                ContextCompat.getColor(this, R.color.gray),
-                ContextCompat.getColor(this, R.color.white));
-        HoverThemeManager.init(Bus.getInstance(), defaultTheme);
     }
 
     public void setLocale(String lang) {

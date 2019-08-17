@@ -55,4 +55,14 @@ public class UploadPhoneResponse {
     public void setResponse(String response) {
         this.response = response;
     }
+
+    @Override
+    public String toString() {
+        return "UploadPhoneResponse{" +
+                "code='" + code + '\'' +
+                ", info='" + info + '\'' +
+                ", data='" + data + '\'' +
+                ", response='" + response + '\'' +
+                '}';
+    }
 }

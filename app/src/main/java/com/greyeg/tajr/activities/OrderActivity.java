@@ -140,10 +140,7 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 import static com.greyeg.tajr.activities.LoginActivity.IS_LOGIN;
 
 public class OrderActivity extends AppCompatActivity
-        implements CurrentCallListener,
-        SearchOrderPhoneFragment.OnFragmentInteractionListener,
-        NewOrderFragment.SendOrderListener,
-        CalcDialog.CalcDialogCallback {
+        implements CurrentCallListener{
 
     public static final String client_busy = "client_busy";
     public static final String client_cancel = "client_cancel";
@@ -1138,21 +1135,6 @@ public class OrderActivity extends AppCompatActivity
             }
         });
 
-//        builder.setPositiveButton(R.string.finish_work, new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialog, int which) {
-//                askToFinishWork = true;
-//                invalidateOptionsMenu();
-//            }
-//        });
-//
-//        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialog, int which) {
-//                dialog.dismiss();
-//            }
-//        });
-
         builder.show();
     }
 
@@ -1279,7 +1261,7 @@ public class OrderActivity extends AppCompatActivity
                         if (callDetails.getType().equals("MISSED") || callDetails.getType().equals("REJECTED")) {
                             if (callDetails.getActiveId().equals(SharedHelper.getKey(getApplicationContext(),
                                     "activated_sub_id"))) {
-                                BaseClient.getBaseClient().create(Api.class).uploadPhone(SharedHelper.getKey(getApplicationContext(), LoginActivity.TOKEN), callDetails.getPhone())
+                                BaseClient.getBaseClient().create(Api.class).missedCall(SharedHelper.getKey(getApplicationContext(), LoginActivity.TOKEN), callDetails.getPhone())
                                         .enqueue(new Callback<UploadPhoneResponse>() {
                                             @Override
                                             public void onResponse(Call<UploadPhoneResponse> call, Response<UploadPhoneResponse> response) {
@@ -1412,17 +1394,17 @@ public class OrderActivity extends AppCompatActivity
         }
     }
 
-    @Override
-    public void onFragmentInteraction() {
-        Toast.makeText(this, "تم ارسال الطلب", Toast.LENGTH_SHORT).show();
-        getFirstOrder();
-    }
+//    @Override
+//    public void onFragmentInteraction() {
+//        Toast.makeText(this, "تم ارسال الطلب", Toast.LENGTH_SHORT).show();
+//        getFirstOrder();
+//    }
 
-    @Override
-    public void orderSentGetNewOrder() {
-        Toast.makeText(this, "تم ارسال الطلب", Toast.LENGTH_SHORT).show();
-        getFirstOrder();
-    }
+//    @Override
+//    public void orderSentGetNewOrder() {
+//        Toast.makeText(this, "تم ارسال الطلب", Toast.LENGTH_SHORT).show();
+//        getFirstOrder();
+//    }
 
     public void onConnectionLost() {
         Intent intent = new Intent(getApplicationContext(), NoInternetActivity.class);
@@ -1576,20 +1558,7 @@ public class OrderActivity extends AppCompatActivity
         if (value != null) {
             state.putString("value", value.toString());
         }
-    }
-
-    @Override
-    public void onValueEntered(int requestCode, BigDecimal value) {
-        // if (requestCode == DIALOG_REQUEST_CODE) {}  <-- If there's many dialogs
-
-        this.value = value;
-
-        if (value != null) {
-            valueTxv.setText(value.toPlainString());
-            signChk.setEnabled(value.compareTo(BigDecimal.ZERO) != 0);
-        }
-
-    }
+   }
 
     void setUpProgressBar() {
         int[] colors = new int[4];
@@ -1716,7 +1685,7 @@ public class OrderActivity extends AppCompatActivity
                         order_ud,
                         productId,
                         simpleOrderResponse.getUser_id(),
-                        Integer.parseInt(productNo.getText().toString().trim())
+                        productNo.getText().toString().trim()
                 ).enqueue(new Callback<DeleteAddProductResponse>() {
                     @Override
                     public void onResponse(Call<DeleteAddProductResponse> call, Response<DeleteAddProductResponse> response) {
@@ -1791,7 +1760,7 @@ public class OrderActivity extends AppCompatActivity
     }
 
     private void updateProgress(){
-        api.getRemainigOrders(SharedHelper.getKey(this,LoginActivity.TOKEN)).enqueue(new Callback<RemainingOrdersResponse>() {
+        api.getRemainingOrders(SharedHelper.getKey(this, LoginActivity.TOKEN)).enqueue(new Callback<RemainingOrdersResponse>() {
             @Override
             public void onResponse(Call<RemainingOrdersResponse> call, Response<RemainingOrdersResponse> response) {
                 if (response.body()!=null){

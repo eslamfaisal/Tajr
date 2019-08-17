@@ -10,7 +10,6 @@ public class UpdateOrederNewResponse {
     @Expose
     private String data;
 
-
     @SerializedName("Details")
     @Expose
     private String Details;
@@ -68,5 +67,16 @@ public class UpdateOrederNewResponse {
 
     public void setResponse(String response) {
         this.response = response;
+    }
+
+    @Override
+    public String toString() {
+        return "UpdateOrederNewResponse{" +
+                "data='" + data + '\'' +
+                ", Details='" + Details + '\'' +
+                ", code='" + code + '\'' +
+                ", info='" + info + '\'' +
+                ", response='" + response + '\'' +
+                '}';
     }
 }

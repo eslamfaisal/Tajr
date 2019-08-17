@@ -177,7 +177,8 @@ public class ChatActivity extends AppCompatActivity implements AudioRecordView.R
         });
 
         audioRecordView.getMessageView().setHint(R.string.wrong_message);
-        audioRecordView.getAttachmentView().setOnClickListener(v -> FishBun.with(ChatActivity.this)
+        audioRecordView.getAttachmentView().setOnClickListener(v ->
+                FishBun.with(ChatActivity.this)
                 .setImageAdapter(new GlideAdapter())
                 .startAlbum());
 
@@ -692,6 +693,28 @@ public class ChatActivity extends AppCompatActivity implements AudioRecordView.R
 //
 //    }
 
+
+//
+//    private void CropImage(Image image, Uri res_url) {
+//        UCrop.of(res_url, Uri.fromFile(new File(getCacheDir(), image.getName())))
+//                .withOptions(options)
+//                .start(ChatActivity.this);
+//    }
+//
+//    private void bitmapCompress(Uri resultUri) {
+//        final File thumbFilepathUri = new File(resultUri.getPath());
+//
+//        try {
+//            thumbBitmap = new Compressor(this)
+//                    .setQuality(50)
+//                    .compressToBitmap(thumbFilepathUri);
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
+
+
     //upload thumb image
     private void uploadThumbImage(byte[] thumbByte) {
         final StorageReference thumbFilePathRef = FirebaseStorage.getInstance().getReference().
@@ -737,26 +760,6 @@ public class ChatActivity extends AppCompatActivity implements AudioRecordView.R
                 });
 
     }
-
-//
-//    private void CropImage(Image image, Uri res_url) {
-//        UCrop.of(res_url, Uri.fromFile(new File(getCacheDir(), image.getName())))
-//                .withOptions(options)
-//                .start(ChatActivity.this);
-//    }
-//
-//    private void bitmapCompress(Uri resultUri) {
-//        final File thumbFilepathUri = new File(resultUri.getPath());
-//
-//        try {
-//            thumbBitmap = new Compressor(this)
-//                    .setQuality(50)
-//                    .compressToBitmap(thumbFilepathUri);
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
 
     public void closeMentionView(View view) {
         hideUsersToMention();

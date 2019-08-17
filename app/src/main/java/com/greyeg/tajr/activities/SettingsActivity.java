@@ -36,39 +36,40 @@ import butterknife.OnClick;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class SettingsActivity extends AppCompatActivity {
-    private String carrierName;
-
-    @Override
-    protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
-    }
-
     @BindView(R.id.sim_view)
     DrawMeRelativeLayout simView;
-
     @BindView(R.id.sim_num)
     TextView simNum;
-
     @BindView(R.id.lang_view)
     DrawMeRelativeLayout langView;
-
     @BindView(R.id.lang_name)
     TextView langName;
-
-    private String TAG = "ttttttttttt";
-
-
     TextView autoNotifictionTv;
-//
-
     RadioGroup radioGroup;
     RobotoTextView ok;
     View view;
+//
     String newStatus;
     String newStatusTag;
     RadioButton sim1;
     RadioButton sim2;
     Dialog dialog;
+    RadioGroup radioGrouplang;
+    RobotoTextView okLang;
+    View viewLang;
+    String newStatusLAng;
+    String newStatusTagLang;
+    RadioButton arabic;
+    RadioButton english;
+    Dialog dialogLang;
+    TextView autoUpdateTv;
+    private String carrierName;
+    private String TAG = "ttttttttttt";
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
 
     @OnClick(R.id.sim_view)
     public void shooseSimNumber() {
@@ -149,16 +150,6 @@ public class SettingsActivity extends AppCompatActivity {
         dialog.show();
     }
 
-
-    RadioGroup radioGrouplang;
-    RobotoTextView okLang;
-    View viewLang;
-    String newStatusLAng;
-    String newStatusTagLang;
-    RadioButton arabic;
-    RadioButton english;
-    Dialog dialogLang;
-
     @OnClick(R.id.lang_view)
     public void shooseLang() {
         dialogLang = new Dialog(this);
@@ -167,9 +158,9 @@ public class SettingsActivity extends AppCompatActivity {
         radioGrouplang = dialogLang.findViewById(R.id.radio_group);
         arabic = dialogLang.findViewById(R.id.arabic);
         english = dialogLang.findViewById(R.id.english);
-        if (SharedHelper.getKey(getApplicationContext(), "lang").equals("ar")) {
+        if ( Locale.getDefault().getLanguage().equals("ar")) {
             arabic.setChecked(true);
-        } else if (SharedHelper.getKey(getApplicationContext(), "lang").equals("en")) {
+        } else if ( Locale.getDefault().getLanguage().equals("en")) {
             english.setChecked(true);
         }
         okLang = dialogLang.findViewById(R.id.ok);
@@ -228,8 +219,6 @@ public class SettingsActivity extends AppCompatActivity {
         SharedPreferences auto = PreferenceManager.getDefaultSharedPreferences(this);
         return auto.getBoolean("autoUpdate", false);
     }
-
-    TextView autoUpdateTv;
 
     void setAutoUpdate() {
         autoUpdateTv = findViewById(R.id.calls_option);
