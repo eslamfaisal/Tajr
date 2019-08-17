@@ -1,16 +1,14 @@
 package com.greyeg.tajr.activities;
 
 import android.content.Context;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
+import androidx.viewpager.widget.ViewPager;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.greyeg.tajr.R;
 import com.greyeg.tajr.fragments.HoursFragment;
 import com.greyeg.tajr.fragments.MoneyFragment;
-import com.greyeg.tajr.fragments.NewOrderFragment;
 import com.greyeg.tajr.fragments.PointsFragment;
-import com.greyeg.tajr.fragments.SearchOrderPhoneFragment;
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;

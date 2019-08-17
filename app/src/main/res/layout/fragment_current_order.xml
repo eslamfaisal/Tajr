@@ -40,7 +40,7 @@
             app:srcCompat="@drawable/ic_expand_arrow" />
     </RelativeLayout>
 
-    <android.support.v4.widget.NestedScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/work_progress">
@@ -177,7 +177,7 @@
                                 android:paddingTop="@dimen/_4sdp"
                                 android:src="@drawable/ic_add_circle_black_24dp" />
 
-                            <android.support.v7.widget.RecyclerView
+                            <androidx.recyclerview.widget.RecyclerView
                                 android:id="@+id/products_recycler_view"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -516,7 +516,7 @@
 
         </LinearLayout>
 
-    </android.support.v4.widget.NestedScrollView>
+    </androidx.core.widget.NestedScrollView>
 
     <View
         android:id="@+id/back_drop"
@@ -534,7 +534,7 @@
         android:gravity="start"
         android:orientation="vertical">
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:id="@+id/normal_order_data_confirmed"
             style="@style/fab_buttons_CardView_Style"
             app:cardBackgroundColor="@color/colorPrimary"
@@ -546,9 +546,9 @@
                 style="@style/fab_buttons_TextView_Style"
                 android:text="Confirm Order Data" />
 
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:id="@+id/normal_client_phone_error"
             style="@style/fab_buttons_CardView_Style"
             app:cardBackgroundColor="@color/colorPrimary"
@@ -560,9 +560,9 @@
                 style="@style/fab_buttons_TextView_Style"
                 android:text="@string/client_phone_error" />
 
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:id="@+id/normal_no_answer"
             style="@style/fab_buttons_CardView_Style"
             app:cardBackgroundColor="@color/colorPrimary"
@@ -574,9 +574,9 @@
                 style="@style/fab_buttons_TextView_Style"
                 android:text="@string/client_noanswer" />
 
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:id="@+id/normal_delay"
             style="@style/fab_buttons_CardView_Style"
             app:cardBackgroundColor="@color/colorPrimary"
@@ -588,9 +588,9 @@
                 style="@style/fab_buttons_TextView_Style"
                 android:text="@string/delay_order" />
 
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:id="@+id/normal_client_cancel"
             style="@style/fab_buttons_CardView_Style"
             app:cardBackgroundColor="@color/colorPrimary"
@@ -602,9 +602,9 @@
                 style="@style/fab_buttons_TextView_Style"
                 android:text="Cancel Order" />
 
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:id="@+id/normal_busy"
             style="@style/fab_buttons_CardView_Style"
             app:cardBackgroundColor="@color/colorPrimary"
@@ -616,9 +616,9 @@
                 style="@style/fab_buttons_TextView_Style"
                 android:text="@string/client_busy" />
 
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
-        <android.support.design.widget.FloatingActionButton
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/normalUpdateButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -631,7 +631,7 @@
             app:srcCompat="@drawable/fab_add" />
     </LinearLayout>
 
-    <android.support.design.widget.FloatingActionButton
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/save_edit"
         android:layout_margin="@dimen/_16sdp"
         android:layout_width="wrap_content"

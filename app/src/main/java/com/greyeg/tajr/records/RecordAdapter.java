@@ -5,32 +5,19 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Environment;
 import android.preference.PreferenceManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.greyeg.tajr.R;
-import com.greyeg.tajr.activities.LoginActivity;
-import com.greyeg.tajr.helper.SharedHelper;
-import com.greyeg.tajr.models.UploadVoiceResponse;
-import com.greyeg.tajr.server.Api;
-import com.greyeg.tajr.server.BaseClient;
 
 import java.io.File;
 import java.util.List;
 
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
-import static android.support.v4.content.FileProvider.getUriForFile;
+import static androidx.core.content.FileProvider.getUriForFile;
 
 /**
  * Created by VS00481543 on 03-11-2017.

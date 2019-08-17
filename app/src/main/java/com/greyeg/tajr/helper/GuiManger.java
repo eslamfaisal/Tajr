@@ -1,10 +1,9 @@
 package com.greyeg.tajr.helper;
 
 import android.app.Activity;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
-import com.greyeg.tajr.MainActivity;
 import com.greyeg.tajr.order.NewOrderActivity;
 
 public class GuiManger {

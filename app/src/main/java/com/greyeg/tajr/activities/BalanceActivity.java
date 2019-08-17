@@ -2,13 +2,12 @@ package com.greyeg.tajr.activities;
 
 import android.app.Activity;
 import android.content.Context;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
+import androidx.viewpager.widget.ViewPager;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.greyeg.tajr.R;
 import com.greyeg.tajr.fragments.RequestBalanceFragment;
-import com.greyeg.tajr.fragments.AvailableBalanceFragment;
 import com.greyeg.tajr.fragments.BalanceRequestHistoryFragment;
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter;

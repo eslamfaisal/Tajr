@@ -11,7 +11,7 @@ import android.graphics.drawable.StateListDrawable;
 import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.v4.content.ContextCompat;
+import androidx.core.content.ContextCompat;
 import android.util.AttributeSet;
 import android.util.StateSet;
 
@@ -19,7 +19,7 @@ import com.greyeg.tajr.R;
 import com.greyeg.tajr.helper.font.RobotoTextView;
 
 
-public class CircularProgressButton extends android.support.v7.widget.AppCompatButton {
+public class CircularProgressButton extends androidx.appcompat.widget.AppCompatButton {
 
     public static final int IDLE_STATE_PROGRESS = 0;
     public static final int ERROR_STATE_PROGRESS = -1;

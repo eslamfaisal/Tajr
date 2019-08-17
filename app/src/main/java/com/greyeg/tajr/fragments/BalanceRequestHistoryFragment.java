@@ -2,27 +2,23 @@ package com.greyeg.tajr.fragments;
 
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ExpandableListAdapter;
 
 import com.greyeg.tajr.R;
 import com.greyeg.tajr.activities.LoginActivity;
 import com.greyeg.tajr.adapters.CashHistoryAdapter;
 import com.greyeg.tajr.helper.SharedHelper;
 import com.greyeg.tajr.models.CashRequestHistory;
-import com.greyeg.tajr.models.MoneyHistory;
 import com.greyeg.tajr.server.Api;
 import com.greyeg.tajr.server.BaseClient;
-
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

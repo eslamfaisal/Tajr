@@ -2,7 +2,7 @@ package com.greyeg.tajr.over;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.view.ContextThemeWrapper;
 
 import com.greyeg.tajr.R;

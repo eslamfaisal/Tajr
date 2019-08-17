@@ -1,7 +1,7 @@
 package com.greyeg.tajr;
 
 import android.content.Context;
-import android.support.test.InstrumentationRegistry;
+import androidx.test.InstrumentationRegistry;
 import android.util.Log;
 
 import com.greyeg.tajr.models.AllProducts;
