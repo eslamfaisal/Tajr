@@ -4,33 +4,30 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.greyeg.tajr.R;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
 
 public class RecordsActivity extends AppCompatActivity {
 
-    DatabaseHandler db = new DatabaseHandler(this);
     final static String TAGMA = "Main Activity";
+    DatabaseHandler db = new DatabaseHandler(this);
     RecordAdapter rAdapter;
     RecyclerView recycler;
     List<CallDetails> callDetailsList;
@@ -82,7 +79,7 @@ public class RecordsActivity extends AppCompatActivity {
     }
 
     public void setUi() {
-        recycler = (RecyclerView) findViewById(R.id.recyclerView);
+        recycler = findViewById(R.id.recyclerView);
         callDetailsList = databaseManager.getAllDetails();
 
         for (CallDetails cd : callDetailsList) {
@@ -143,7 +140,7 @@ public class RecordsActivity extends AppCompatActivity {
     }
 
 
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch (requestCode) {
             case 1:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
