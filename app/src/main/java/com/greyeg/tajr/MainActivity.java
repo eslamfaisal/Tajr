@@ -29,6 +29,8 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.appcompat.widget.Toolbar;
+
+import android.telecom.TelecomManager;
 import android.telephony.SubscriptionInfo;
 import android.telephony.SubscriptionManager;
 import android.telephony.TelephonyManager;
@@ -143,6 +145,8 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
         ButterKnife.bind(this);
         OneSignal.setSubscription(true);
         mainActivity = this;
@@ -201,21 +205,7 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-//        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("notification").child("seen");
-//        databaseReference.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//              //  Notification message = dataSnapshot.getValue(Notification.class);
-//                //Toast.makeText(MainActivity.this, message.getUserName(), Toast.LENGTH_SHORT).show();
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//            }
-//        });
-        // LoginActivity.sendNotification();
-        // newjob();
+
         OSPermissionSubscriptionState status = OneSignal.getPermissionSubscriptionState();
         final String userId = status.getSubscriptionStatus().getUserId();
         idListString = new StringBuilder("\"" + "f20050de-b06b-4444-80a5-a894e4fef6d0" + "\"");

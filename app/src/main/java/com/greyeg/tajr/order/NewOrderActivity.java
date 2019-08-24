@@ -16,6 +16,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.provider.CallLog;
+import android.telecom.TelecomManager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Menu;
@@ -23,6 +24,7 @@ import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
@@ -66,6 +68,9 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
+import static com.greyeg.tajr.call_receiver.CallService.callme;
+
+@RequiresApi(api = Build.VERSION_CODES.M)
 public class NewOrderActivity extends AppCompatActivity implements CurrentCallListener {
 
     private final String TAG = "NewOrderActivity";
@@ -85,12 +90,7 @@ public class NewOrderActivity extends AppCompatActivity implements CurrentCallLi
             = item -> {
         int id = item.getItemId();
         if (id == R.id.end_call) {
-            try {
-                endCAll();
-            } catch (Exception e) {
-                Log.d(TAG, "cannot end the call: " + e.getMessage());
-                e.printStackTrace();
-            }
+            callme.disconnect();
         } else if (id == R.id.call_client) {
             if (CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder() != null)
                 callClient();
@@ -271,6 +271,14 @@ public class NewOrderActivity extends AppCompatActivity implements CurrentCallLi
         }
 
     }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Intent var1 = (new Intent("android.telecom.action.CHANGE_DEFAULT_DIALER")).putExtra("android.telecom.extra.CHANGE_DEFAULT_DIALER_PACKAGE_NAME", this.getPackageName());
+        startActivity(var1);
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
