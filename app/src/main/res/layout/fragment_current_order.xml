@@ -265,7 +265,7 @@
 
                         <EditText
                             android:id="@+id/client_address"
-                            style="@style/oder_item_edit_text_style" />
+                            style="@style/oder_item_edit_text_style_editable" />
                     </FrameLayout>
                 </LinearLayout>
 
