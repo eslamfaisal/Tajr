@@ -17,7 +17,7 @@ android {
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.greyeg.tajr"
-        minSdkVersion 21
+        minSdkVersion 23
         targetSdkVersion 28
         versionCode 3
         versionName "1.2"
@@ -120,5 +120,7 @@ dependencies {
     implementation 'com.github.clans:fab:1.6.4'
     implementation 'com.github.esafirm.android-image-picker:imagepicker:2.1.0'
     implementation 'com.squareup.picasso:picasso:2.71828'
+    implementation 'com.skyfishjy.ripplebackground:library:1.0.1'
+
 }
 apply plugin: 'com.google.gms.google-services'

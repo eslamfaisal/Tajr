@@ -3,8 +3,10 @@ package com.greyeg.tajr.order;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.NotificationManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -16,7 +18,6 @@ import android.os.Environment;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.provider.CallLog;
-import android.telecom.TelecomManager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Menu;
@@ -38,6 +39,7 @@ import com.greyeg.tajr.helper.CurrentCallListener;
 import com.greyeg.tajr.helper.GuiManger;
 import com.greyeg.tajr.helper.SharedHelper;
 import com.greyeg.tajr.models.LastCallDetails;
+import com.greyeg.tajr.models.OutgoingCallData;
 import com.greyeg.tajr.models.UploadPhoneResponse;
 import com.greyeg.tajr.models.UploadVoiceResponse;
 import com.greyeg.tajr.models.UserWorkTimeResponse;
@@ -84,6 +86,7 @@ public class NewOrderActivity extends AppCompatActivity implements CurrentCallLi
     @BindView(R.id.timer)
     TextView timerTv;
     CurrentOrderFragment currentOrderFragment;
+    CallDataReceiver receiver;
     private Menu callControllerMenu;
     private MenuItem micMode;
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -126,6 +129,8 @@ public class NewOrderActivity extends AppCompatActivity implements CurrentCallLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_order);
         ButterKnife.bind(this);
+        receiver = new CallDataReceiver();
+        registerReceiver(receiver, new IntentFilter("CallService"));  //<----Register
         CallsReceiver.setCurrentCallListener(this);
         databaseManager = new DatabaseManager(this);
         openRecords();
@@ -279,7 +284,6 @@ public class NewOrderActivity extends AppCompatActivity implements CurrentCallLi
         startActivity(var1);
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.order_menu, menu);
@@ -376,7 +380,6 @@ public class NewOrderActivity extends AppCompatActivity implements CurrentCallLi
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancel(5);
     }
-
 
     private LastCallDetails getLastCallDetails() {
         StringBuffer sb = new StringBuffer();
@@ -490,7 +493,6 @@ public class NewOrderActivity extends AppCompatActivity implements CurrentCallLi
         uploadVoices();
     }
 
-
     private boolean getAutoValue() {
         SharedPreferences auto = PreferenceManager.getDefaultSharedPreferences(this);
         return auto.getBoolean("autoUpdate", false);
@@ -545,6 +547,20 @@ public class NewOrderActivity extends AppCompatActivity implements CurrentCallLi
                 });
             }
         }
+    }
+
+    public class CallDataReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            if (intent.getAction().equals("CallService")) {
+                OutgoingCallData outgoingCallData = (OutgoingCallData) intent.getSerializableExtra("outgoingCallData");
+                Toast.makeText(context, outgoingCallData.getNumber(), Toast.LENGTH_SHORT).show();
+                // Show it in GraphView
+            }
+        }
+
     }
 
 }
