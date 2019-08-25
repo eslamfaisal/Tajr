@@ -17,6 +17,7 @@ import com.greyeg.tajr.activities.OrderActivity;
 import com.greyeg.tajr.helper.CurrentCallListener;
 import com.greyeg.tajr.helper.SharedHelper;
 import com.greyeg.tajr.models.SimpleOrderResponse;
+import com.greyeg.tajr.order.CurrentOrderData;
 import com.greyeg.tajr.over.MissedCallNoOrderService;
 import com.greyeg.tajr.over.MissedCallOrderService;
 import com.greyeg.tajr.server.Api;
@@ -63,7 +64,7 @@ public class CallsReceiver extends BroadcastReceiver {
                         public void run() {
                             context.startActivity(intent2);
                         }
-                    }, 100);
+                    }, 2000);
 
                 } else {
                 }
@@ -75,14 +76,6 @@ public class CallsReceiver extends BroadcastReceiver {
                 String state = extras.getString(TelephonyManager.EXTRA_STATE);
                 Log.d(TAG, " onReceive: " + state);
                 //   Toast.makeText(context, "Call detected(Incoming/Outgoing) " + state, Toast.LENGTH_SHORT).show();
-                final Intent intent2 = new Intent(context, EmptyCallActivity.class);
-                intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        context.startActivity(intent2);
-                    }
-                }, 1000);
 
                 if (extras != null) {
                     if (state.equals(TelephonyManager.EXTRA_STATE_RINGING)) {
@@ -128,7 +121,7 @@ public class CallsReceiver extends BroadcastReceiver {
                         Log.d(TAG1, " recordStarted in offhook: " + recordStarted);
                         Log.d(TAG1, " Inside " + state);
 
-                        phoneNumber = intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER);
+                        phoneNumber = CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getPhone1();
 
                         Log.d(TAG1, " Phone Number in receiver " + phoneNumber);
 
@@ -156,13 +149,6 @@ public class CallsReceiver extends BroadcastReceiver {
 
                         pref.edit().putBoolean("recordStarted", false).apply();
                         int serialNumber = pref.getInt("serialNumData", 1);
-//                            new DatabaseManager(context).addCallDetails(new CallDetails(serialNumber, phoneNumber, new CommonMethods().getTIme(), new CommonMethods().getDate(), "not_yet"));
-
-//                            List<CallDetails> list = new DatabaseManager(context).getAllDetails();
-//                            for (CallDetails cd : list) {
-//                                String log = "Serial Number : " + cd.getSerial() + " | Phone num : " + cd.getNum() + " | Time : " + cd.getTime1() + " | Date : " + cd.getDate1();
-//                                Log.d("Database ", log);
-//                            }
 
                         //recordStarted=true;
                         pref.edit().putInt("serialNumData", ++serialNumber).apply();

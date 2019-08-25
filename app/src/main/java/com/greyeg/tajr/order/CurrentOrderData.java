@@ -6,7 +6,7 @@ import com.greyeg.tajr.order.models.SingleOrderProductsResponse;
 public class CurrentOrderData {
 
     public static CurrentOrderData currentOrderData;
-
+    private String callTime;
     private CurrentOrderResponse currentOrderResponse;
     private SingleOrderProductsResponse singleOrderProductsResponse;
 
@@ -17,6 +17,14 @@ public class CurrentOrderData {
             currentOrderData = new CurrentOrderData();
             return currentOrderData;
         }
+    }
+
+    public String getCallTime() {
+        return callTime;
+    }
+
+    public void setCallTime(String callTime) {
+        this.callTime = callTime;
     }
 
     public CurrentOrderResponse getCurrentOrderResponse() {

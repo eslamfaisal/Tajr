@@ -1298,8 +1298,8 @@ public class OrderActivity extends AppCompatActivity
 
                                 } else {
                                     Log.d(TAG, "run: add call to database");
-                                    new DatabaseManager(getApplicationContext()).addCallDetails(new CallDetails(serialNumber,
-                                            phoneNumber, new CommonMethods().getTIme(), new CommonMethods().getDate(), "not_yet", callDetails.getDuration()));
+//                                    new DatabaseManager(getApplicationContext()).addCallDetails(new CallDetails(serialNumber,
+//                                            phoneNumber, new CommonMethods().getTIme(), new CommonMethods().getDate(), "not_yet", callDetails.getDuration()));
 
                                     minutesUsage(callDetails.getDuration());
                                     updateOrderTimer();

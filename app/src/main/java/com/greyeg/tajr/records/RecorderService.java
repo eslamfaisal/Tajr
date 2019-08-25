@@ -7,6 +7,8 @@ import android.os.IBinder;
 import androidx.annotation.Nullable;
 import android.util.Log;
 
+import com.greyeg.tajr.order.CurrentOrderData;
+
 import java.io.IOException;
 
 /**
@@ -16,7 +18,7 @@ import java.io.IOException;
 public class RecorderService extends Service {
 
     MediaRecorder recorder;
-    static final String TAGS = " Inside Service";
+
 
     public static String rec;
 
@@ -30,11 +32,10 @@ public class RecorderService extends Service {
         recorder = new MediaRecorder();
         recorder.reset();
 
-        String phoneNumber = intent.getStringExtra("number");
-        Log.d(TAGS, "Phone number in service: " + phoneNumber);
+        String phoneNumber = CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getPhone1();
 
         String time = new CommonMethods().getTIme();
-
+        CurrentOrderData.getInstance().setCallTime(time);
         String path = new CommonMethods().getPath();
 
         rec = path + "/" + phoneNumber + "_" + time + ".mp4";
@@ -52,8 +53,6 @@ public class RecorderService extends Service {
         }
         recorder.start();
 
-        Log.d(TAGS, "onStartCommand: " + "Recording started");
-
         return START_NOT_STICKY;
     }
 
@@ -64,8 +63,5 @@ public class RecorderService extends Service {
         recorder.reset();
         recorder.release();
         recorder = null;
-
-        Log.d(TAGS, "onDestroy: " + "Recording stopped");
-
     }
 }

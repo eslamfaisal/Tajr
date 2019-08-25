@@ -64,7 +64,9 @@ public class DatabaseManager {
                 callDetails.setUploaded(cursor.getString(3));
                 callDetails.setDate1(cursor.getString(4));
 
-                recordList.add(callDetails);
+                if (!recordList.contains(callDetails)){
+                    recordList.add(callDetails);
+                }
             } while (cursor.moveToNext());
         }
 

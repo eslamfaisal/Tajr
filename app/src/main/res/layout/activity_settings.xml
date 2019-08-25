@@ -79,6 +79,7 @@
     </com.rafakob.drawme.DrawMeRelativeLayout>
 
     <com.rafakob.drawme.DrawMeRelativeLayout
+        android:visibility="gone"
         android:id="@+id/calls_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -463,11 +463,12 @@ public class NewOrderActivity extends AppCompatActivity implements CurrentCallLi
 
                         } else if (callDetails.getType().equals("OUTGOING")) {
 
-                            if (callDetails.getDuration().equals("0")) {
-                                Log.d(TAG, "run: add call to database");
+                            if (!callDetails.getDuration().equals("0")) {
+                                Log.d("eslamfaisalalire", "run: add call to database");
                                 new DatabaseManager(getApplicationContext()).addCallDetails(new CallDetails(serialNumber,
-                                        phoneNumber, new CommonMethods().getTIme(), new CommonMethods().getDate(), "not_yet", callDetails.getDuration()));
-
+                                        CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getPhone1(),
+                                        CurrentOrderData.getInstance().getCallTime(), new CommonMethods().getDate(),
+                                        "not_yet",callDetails.getDuration()));
                                 minutesUsage(callDetails.getDuration());
                             }
                         }

@@ -34,7 +34,6 @@ public class CommonMethods {
     public String getTIme()
     {
         String am_pm="";
-        int sec=cal.get(Calendar.SECOND);
         int min=cal.get(Calendar.MINUTE);
         int hr=cal.get(Calendar.HOUR);
         int amPm=cal.get(Calendar.AM_PM);
@@ -43,7 +42,7 @@ public class CommonMethods {
         else if(amPm==0)
             am_pm="AM";
 
-        String time=String.valueOf(hr)+":"+String.valueOf(min)+":"+String.valueOf(sec)+" "+am_pm;
+        String time=String.valueOf(hr)+":"+String.valueOf(min)+" "+am_pm;
 
         Log.d(TAGCM, "Date "+time);
         return time;
