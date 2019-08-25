@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +46,7 @@ public class DatabaseManager {
         values.put(DatabaseHandler.DATE, callDetails.getDate1());
         values.put(DatabaseHandler.DURATION, callDetails.getDuration());
         sqLiteDatabase.update(DatabaseHandler.TABLE_RECORD, values, SERIAL_NUMBER+"="+callDetails.getSerial(), null);
-
+        Log.d("eslamfaisal", "updateCallDetails: uploaded");
     }
 
 

@@ -28,6 +28,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentManager;
 
+import com.android.internal.telephony.ITelephony;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.greyeg.tajr.R;
 import com.greyeg.tajr.activities.LoginActivity;
@@ -49,6 +50,7 @@ import com.greyeg.tajr.server.Api;
 import com.greyeg.tajr.server.BaseClient;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Locale;
@@ -218,17 +220,33 @@ public class NewOrderActivity extends AppCompatActivity implements CurrentCallLi
             super.onBackPressed();
     }
 
-    private void endCAll() throws Exception {
-        TelephonyManager tm = (TelephonyManager) this
-                .getSystemService(Context.TELEPHONY_SERVICE);
-        Class c = Class.forName(tm.getClass().getName());
-        Method m = c.getDeclaredMethod("getITelephony");
-        m.setAccessible(true);
-        Object telephonyService = m.invoke(tm); // Get the internal ITelephony object
-        c = Class.forName(telephonyService.getClass().getName()); // Get its class
-        m = c.getDeclaredMethod("endCall"); // Get the "endCall()" method
-        m.setAccessible(true); // Make it accessible
-        m.invoke(telephonyService); // invoke endCall()
+    void endCAll() {
+        //stopService(new Intent(this, FloatLayout.class));
+
+        TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+        Class clazz = null;
+        try {
+            clazz = Class.forName(telephonyManager.getClass().getName());
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        Method method = null;
+        try {
+            method = clazz.getDeclaredMethod("getITelephony");
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        }
+        method.setAccessible(true);
+        ITelephony telephonyService = null;
+        try {
+            telephonyService = (ITelephony) method.invoke(telephonyManager);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+        telephonyService.endCall();
+
     }
 
     private void modifyMic() {
@@ -464,13 +482,13 @@ public class NewOrderActivity extends AppCompatActivity implements CurrentCallLi
                         } else if (callDetails.getType().equals("OUTGOING")) {
 
                             if (!callDetails.getDuration().equals("0")) {
-                                if (! CurrentOrderData.getInstance().getCallTime().equals("Saved")){
+                                if (!CurrentOrderData.getInstance().getCallTime().equals("Saved")) {
 
                                     Log.d("eslamfaisalalire", "run: add call to database");
                                     new DatabaseManager(getApplicationContext()).addCallDetails(new CallDetails(serialNumber,
                                             CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getPhone1(),
                                             CurrentOrderData.getInstance().getCallTime(), new CommonMethods().getDate(),
-                                            "not_yet",callDetails.getDuration()));
+                                            "not_yet", callDetails.getDuration()));
                                     CurrentOrderData.getInstance().setCallTime("Saved");
                                     minutesUsage(callDetails.getDuration());
                                 }

@@ -153,6 +153,7 @@ public class MainActivity extends AppCompatActivity
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (
+                    checkSelfPermission(Manifest.permission.MODIFY_PHONE_STATE) != PackageManager.PERMISSION_GRANTED ||
                     checkSelfPermission(Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED ||
                             checkSelfPermission(Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED ||
                             checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
@@ -166,6 +167,7 @@ public class MainActivity extends AppCompatActivity
                 // Permission has not been granted, therefore prompt the user to grant permission
                 ActivityCompat.requestPermissions(this,
                         new String[]{
+                                Manifest.permission.MODIFY_PHONE_STATE,
                                 Manifest.permission.CALL_PHONE,
                                 Manifest.permission.READ_PHONE_STATE,
                                 Manifest.permission.WRITE_EXTERNAL_STORAGE,

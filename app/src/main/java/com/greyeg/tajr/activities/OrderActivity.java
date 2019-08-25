@@ -74,7 +74,6 @@ import com.greyeg.tajr.adapters.ProductSpinnerAdapter;
 import com.greyeg.tajr.adapters.ProductsAdapter;
 import com.greyeg.tajr.adapters.StatusHistoryAdapter;
 import com.greyeg.tajr.calc.CalcDialog;
-import com.greyeg.tajr.call_receiver.PhoneCallReceiver;
 import com.greyeg.tajr.fragments.NewOrderFragment;
 import com.greyeg.tajr.fragments.SearchOrderPhoneFragment;
 import com.greyeg.tajr.helper.CurrentCallListener;
@@ -1086,7 +1085,6 @@ public class OrderActivity extends AppCompatActivity
     void endCAll() {
         //stopService(new Intent(this, FloatLayout.class));
 
-        PhoneCallReceiver.enCallFromMe = true;
         TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
         Class clazz = null;
         try {
