@@ -29,8 +29,10 @@ import com.greyeg.tajr.models.ProductForSpinner;
 import com.greyeg.tajr.server.Api;
 import com.greyeg.tajr.server.BaseClient;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -123,7 +125,8 @@ public class NewOrderFragment extends Fragment {
 
                         citiesBody = response.body().getCities();
                         for (Cities.City city : citiesBody) {
-                            cities.add(city.getCity_name());
+                            cities.add(city.getCity_name()+" >> "+
+                                    NumberFormat.getNumberInstance(Locale.getDefault()).format(Integer.valueOf(city.getShipping_cost()))+getActivity().getString(R.string.le)+" "+getString(R.string.for_shipping));
                             citiesId.add(city.getCity_id());
                         }
                         ArrayAdapter adapter = new ArrayAdapter(getActivity(), R.layout.layout_cities_spinner_item, cities);

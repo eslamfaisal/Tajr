@@ -216,5 +216,7 @@
     <string name="no_more_orders">لا يوجد المزيد من الطلبات</string>
     <string name="retry">اعادة المحاولة</string>
     <string name="product_details">تفاصيل الطلب</string>
+    <string name="le">جنية</string>
+    <string name="for_shipping">للشحن</string>
 
 </resources>

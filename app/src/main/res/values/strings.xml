@@ -258,5 +258,7 @@
     <string name="no_more_orders">No more orders</string>
     <string name="retry">Retry</string>
     <string name="product_details">Product details</string>
+    <string name="le">LE</string>
+    <string name="for_shipping">For shipping</string>
 
 </resources>

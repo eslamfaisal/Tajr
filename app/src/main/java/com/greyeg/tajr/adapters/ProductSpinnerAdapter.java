@@ -13,7 +13,9 @@ import com.facebook.drawee.view.SimpleDraweeView;
 import com.greyeg.tajr.R;
 import com.greyeg.tajr.models.ProductForSpinner;
 
+import java.text.NumberFormat;
 import java.util.List;
+import java.util.Locale;
 
 public class ProductSpinnerAdapter extends ArrayAdapter<String > {
 
@@ -47,6 +49,7 @@ public class ProductSpinnerAdapter extends ArrayAdapter<String > {
             convertView = mInflater.inflate(R.layout.layout_product_spinner_item, parent, false);
             mViewHolder.mFlag =  convertView.findViewById(R.id.product_image);
             mViewHolder.mName = (TextView) convertView.findViewById(R.id.product_name);
+            mViewHolder.price = (TextView) convertView.findViewById(R.id.price);
 
             convertView.setTag(mViewHolder);
         } else {
@@ -54,6 +57,8 @@ public class ProductSpinnerAdapter extends ArrayAdapter<String > {
         }
         mViewHolder.mFlag.setImageURI(products.get(position).getImage());
         mViewHolder.mName.setText(products.get(position).getName());
+        mViewHolder.price.setVisibility(View.VISIBLE);
+        mViewHolder.price.setText(  NumberFormat.getNumberInstance(Locale.getDefault()).format(Integer.valueOf(products.get(position).getItemCost()))+mContext.getString(R.string.le));
 
 
         return convertView;
@@ -62,6 +67,7 @@ public class ProductSpinnerAdapter extends ArrayAdapter<String > {
     private static class ViewHolder {
         SimpleDraweeView mFlag;
         TextView mName;
+        TextView price;
 
     }
 }
