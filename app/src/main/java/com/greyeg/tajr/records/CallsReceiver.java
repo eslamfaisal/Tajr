@@ -33,8 +33,6 @@ import retrofit2.Response;
 
 public class CallsReceiver extends BroadcastReceiver {
 
-    static final String TAG = "State";
-    static final String TAG1 = " Inside State";
     public static String phoneNumber;
     public static String name;
     public static CurrentCallListener currentCallListener;
@@ -74,7 +72,7 @@ public class CallsReceiver extends BroadcastReceiver {
 //            boolean callWait=pref.getBoolean("recordStarted",false);
                 Bundle extras = intent.getExtras();
                 String state = extras.getString(TelephonyManager.EXTRA_STATE);
-                Log.d(TAG, " onReceive: " + state);
+
                 //   Toast.makeText(context, "Call detected(Incoming/Outgoing) " + state, Toast.LENGTH_SHORT).show();
 
                 if (extras != null) {
@@ -105,10 +103,6 @@ public class CallsReceiver extends BroadcastReceiver {
                             }
                         });
 
-                        Log.d(TAG, "incomingNumber: " + incomingNumber);
-                        Log.d(TAG, "EXTRA_SUBSCRIPTION_ID: " + intent.getStringExtra("android.intent.extra.EXTRA_SUBSCRIPTION_ID"));
-
-                        Log.d(TAG1, " Inside " + state);
                     /*int j=pref.getInt("numOfCalls",0);
                     pref.edit().putInt("numOfCalls",++j).apply();
                     Log.d(TAG, "onReceive: num of calls "+ pref.getInt("numOfCalls",0));*/
@@ -116,14 +110,8 @@ public class CallsReceiver extends BroadcastReceiver {
 
                         int j = pref.getInt("numOfCalls", 0);
                         pref.edit().putInt("numOfCalls", ++j).apply();
-                        Log.d(TAG, "onReceive: num of calls " + pref.getInt("numOfCalls", 0));
-
-                        Log.d(TAG1, " recordStarted in offhook: " + recordStarted);
-                        Log.d(TAG1, " Inside " + state);
 
                         phoneNumber = CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getPhone1();
-
-                        Log.d(TAG1, " Phone Number in receiver " + phoneNumber);
 
                         if (pref.getInt("numOfCalls", 1) == 1) {
                             Intent reivToServ = new Intent(context, RecorderService.class);
@@ -131,19 +119,13 @@ public class CallsReceiver extends BroadcastReceiver {
                             context.startService(reivToServ);
                             inCall = true;
                             //name=new CommonMethods().getContactName(phoneNumber,context);
-
-
                         }
 
                     } else if (state.equals(TelephonyManager.EXTRA_STATE_IDLE)) {
                         int k = pref.getInt("numOfCalls", 1);
                         pref.edit().putInt("numOfCalls", --k).apply();
                         int l = pref.getInt("numOfCalls", 0);
-                        Log.d(TAG1, " Inside " + state);
                         recordStarted = pref.getBoolean("recordStarted", false);
-                        Log.d(TAG1, " recordStarted in idle :" + recordStarted);
-                        Log.d(TAG1, " Inside to stop recorder " + state);
-
                         context.stopService(new Intent(context, RecorderService.class));
                         inCall = false;
 
