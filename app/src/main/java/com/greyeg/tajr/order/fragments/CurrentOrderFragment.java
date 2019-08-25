@@ -401,9 +401,7 @@ public class CurrentOrderFragment extends Fragment {
                         @Override
                         public void onResponse(@NotNull Call<UpdateOrederNewResponse> call, @NotNull Response<UpdateOrederNewResponse> response) {
                             progressDialog.dismiss();
-                            if (response.body().getResponse().equals("Success")) {
-                                getCurrentOrder();
-                            }
+                            getCurrentOrder();
                             Log.d(TAG, "onResponse: " + response.toString());
                         }
 
