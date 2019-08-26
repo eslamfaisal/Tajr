@@ -28,7 +28,7 @@
 
                 <TextView
                     style="@style/fab_buttons_TextView_Style"
-                    android:text="Confirm Order Data" />
+                    android:text="@string/order_data_confirmed" />
 
             </androidx.cardview.widget.CardView>
 
