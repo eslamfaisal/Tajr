@@ -276,7 +276,7 @@ public interface Api {
 
     // log in user client
     @FormUrlEncoded
-    @POST("send_test/get_phone")
+    @POST("send_test/phone_search")
     Call<SimpleOrderResponse> getPhoneData(@Field("token") String token,
                                            @Field("user_id") String user_id,
                                            @Field("phone") String phone);

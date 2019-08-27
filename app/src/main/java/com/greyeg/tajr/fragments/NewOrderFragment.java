@@ -26,6 +26,7 @@ import com.greyeg.tajr.models.Cities;
 import com.greyeg.tajr.models.NewOrderResponse;
 import com.greyeg.tajr.models.ProductData;
 import com.greyeg.tajr.models.ProductForSpinner;
+import com.greyeg.tajr.order.CurrentOrderData;
 import com.greyeg.tajr.server.Api;
 import com.greyeg.tajr.server.BaseClient;
 
@@ -160,7 +161,7 @@ public class NewOrderFragment extends Fragment {
 
     private void getProducts(Api api) {
         api.getProducts(SharedHelper.getKey(getActivity(), LoginActivity.TOKEN),
-                currentClientID
+                CurrentOrderData.getInstance().getCurrentOrderResponse().getUserId()
         ).enqueue(new Callback<AllProducts>() {
             @Override
             public void onResponse(Call<AllProducts> call, final Response<AllProducts> response) {

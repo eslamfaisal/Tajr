@@ -96,6 +96,18 @@ public class Order implements Serializable {
     @Expose
     private List<MultiOrderProducts> multiOrders = null;
 
+    @SerializedName("check_type")
+    @Expose
+    private String checkType;
+
+    public String getCheckType() {
+        return checkType;
+    }
+
+    public void setCheckType(String checkType) {
+        this.checkType = checkType;
+    }
+
     public String getId() {
         return id;
     }

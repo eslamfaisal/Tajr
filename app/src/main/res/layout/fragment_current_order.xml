@@ -248,6 +248,25 @@
                     </FrameLayout>
 
                 </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/dhdtxjhdsdf"
+                    style="@style/linear_order_item_style">
+
+                    <TextView
+                        android:id="@+id/client_order_phone1_label_boot"
+                        style="@style/oder_item_label_style"
+                        android:text="@string/phone_boot" />
+
+                    <FrameLayout
+                        android:id="@+id/client_order_phone12_boot"
+                        style="@style/oder_item_frame_style">
+
+                        <EditText
+                            android:id="@+id/client_order_phone1_boot"
+                            style="@style/oder_item_edit_text_style" />
+                    </FrameLayout>
+
+                </LinearLayout>
 
                 <!--address-->
                 <LinearLayout
@@ -423,6 +442,7 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:visibility="gone"
                     android:id="@+id/order_type_state"
                     style="@style/linear_order_item_style">
 
@@ -462,6 +482,7 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:visibility="gone"
                     android:id="@+id/dpolkjhbvcdf"
                     style="@style/linear_order_item_style">
 
@@ -482,6 +503,7 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:visibility="gone"
                     android:id="@+id/tgjklkmjnhbddf"
                     style="@style/linear_order_item_style">
 
@@ -528,6 +550,7 @@
         android:visibility="gone" />
 
     <LinearLayout
+        android:id="@+id/normal_update_actions"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -620,6 +643,69 @@
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/normalUpdateButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/_16sdp"
+            android:clickable="true"
+            android:tint="@android:color/white"
+            app:backgroundTint="@color/colorPrimary"
+            app:fabSize="normal"
+            app:rippleColor="@android:color/white"
+            app:srcCompat="@drawable/fab_add" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/shipper_update_actions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:gravity="start"
+        android:orientation="vertical">
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/deliver"
+            style="@style/fab_buttons_CardView_Style"
+            app:cardBackgroundColor="@color/colorPrimary"
+            app:cardCornerRadius="3dp"
+            app:cardElevation="2dp"
+            app:contentPadding="@dimen/spacing_medium">
+
+            <TextView
+                style="@style/fab_buttons_TextView_Style"
+                android:text="@string/deliver" />
+
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/return_order"
+            style="@style/fab_buttons_CardView_Style"
+            app:cardBackgroundColor="@color/colorPrimary"
+            app:cardCornerRadius="3dp"
+            app:cardElevation="2dp"
+            app:contentPadding="@dimen/spacing_medium">
+
+            <TextView
+                style="@style/fab_buttons_TextView_Style"
+                android:text="@string/Return" />
+
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/shipping_no_answer"
+            style="@style/fab_buttons_CardView_Style"
+            app:cardBackgroundColor="@color/colorPrimary"
+            app:cardCornerRadius="3dp"
+            app:cardElevation="2dp"
+            app:contentPadding="@dimen/spacing_medium">
+
+            <TextView
+                style="@style/fab_buttons_TextView_Style"
+                android:text="@string/client_noanswer" />
+
+        </androidx.cardview.widget.CardView>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/normalUpdateButtonShipping"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/_16sdp"

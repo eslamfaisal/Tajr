@@ -54,7 +54,7 @@
     <string name="client_busy">العميل مشغول</string>
     <string name="client_delay">العميل تاخر</string>
     <string name="client_cancel">تم الالغاء من العميل</string>
-    <string name="client_noanswer">العميل لم يرد</string>
+    <string name="client_noanswer"> لم يرد</string>
     <string name="order_data_confirmed"> تاكيد بيانات الطلب</string>
     <string name="client_phone_error">رقم الهاتف غير صحيح</string>
     <string name="submit_order">تاكيد الطلب</string>
@@ -206,7 +206,7 @@
     <string name="source">المصدر</string>
     <string name="order_status_history">حالات الطلب القديمة</string>
     <string name="shipping_status_history">حالات شحن الطلب</string>
-    <string name="deliver">توصيل الطلب</string>
+    <string name="deliver">وصل</string>
     <string name="return_order">ارجاع الطلب</string>
     <string name="notallowed">غير مسموح لك هنا</string>
     <string name="some_thing_went_wrong">حدث خطأ ما</string>
@@ -218,5 +218,7 @@
     <string name="product_details">تفاصيل الطلب</string>
     <string name="le">جنية</string>
     <string name="for_shipping">للشحن</string>
+    <string name="phone_boot">Phone bot</string>
+    <string name="Return">رجع</string>
 
 </resources>

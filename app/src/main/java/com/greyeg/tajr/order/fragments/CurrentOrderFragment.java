@@ -12,12 +12,15 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import androidx.fragment.app.Fragment;
 import androidx.core.app.NotificationCompat;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -146,8 +149,20 @@ public class CurrentOrderFragment extends Fragment {
     CardView normal_client_cancel;
     @BindView(R.id.normal_busy)
     CardView normal_busy;
+
     @BindView(R.id.normalUpdateButton)
     FloatingActionButton normalUpdateButton;
+
+    @BindView(R.id.normalUpdateButtonShipping)
+    FloatingActionButton normalUpdateButtonShipping;
+
+    @BindView(R.id.normal_update_actions)
+    View normal_update_actions;
+
+    @BindView(R.id.shipper_update_actions)
+    View shipper_update_actions;
+
+
     @BindView(R.id.save_edit)
     FloatingActionButton save_edit;
 
@@ -159,6 +174,7 @@ public class CurrentOrderFragment extends Fragment {
     private int firstRemaining;
     private Dialog errorGetCurrentOrderDialog;
     private boolean rotate = false;
+    private boolean rotateshipper = false;
     private boolean productExbandable = false;
 
 
@@ -197,6 +213,12 @@ public class CurrentOrderFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 toggleFabMode(normalUpdateButton);
+            }
+        });
+        normalUpdateButtonShipping.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toggleFabModeShipper(normalUpdateButtonShipping);
             }
         });
 
@@ -254,9 +276,60 @@ public class CurrentOrderFragment extends Fragment {
             }
         });
 
+        deliver.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toggleFabModeShipper(normalUpdateButtonShipping);
+                updateShippingOrder("deliver");
+            }
+        });
+
+        return_order.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toggleFabModeShipper(normalUpdateButtonShipping);
+                updateShippingOrder("return");
+            }
+        });
+
+
+        shipping_no_answer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toggleFabModeShipper(normalUpdateButtonShipping);
+                updateShippingOrder("client_noanswer");
+            }
+        });
+
     }
+
+    private void updateShippingOrder(String action) {
+        ProgressDialog progressDialog = showProgressDialog(getActivity(), getString(R.string.fetching_th_order));
+        Api api = BaseClient.getBaseClient().create(Api.class);
+        api.updateShippingOrders(
+                SharedHelper.getKey(getActivity(), LoginActivity.TOKEN),
+                CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getId(),
+                action,
+                CurrentOrderData.getInstance().getCurrentOrderResponse().getUserId()
+        ).enqueue(new Callback<UpdateOrederNewResponse>() {
+            @Override
+            public void onResponse(@NotNull Call<UpdateOrederNewResponse> call, @NotNull Response<UpdateOrederNewResponse> response) {
+                progressDialog.dismiss();
+                getCurrentOrder();
+                Log.d(TAG, "onResponse: " + response.toString());
+            }
+
+            @Override
+            public void onFailure(Call<UpdateOrederNewResponse> call, Throwable t) {
+                progressDialog.dismiss();
+                getCurrentOrder();
+                Log.d(TAG, "onResponse: " + t.getMessage().toString());
+            }
+        });
+    }
+
     @OnClick(R.id.bt_expand)
-    void showCurrentProductDetails(){
+    void showCurrentProductDetails() {
         if (!productExbandable)
             return;
         FragmentBottomSheetDialogFull fragment = new FragmentBottomSheetDialogFull();
@@ -464,7 +537,31 @@ public class CurrentOrderFragment extends Fragment {
             ViewAnimation.showOut(normal_order_data_confirmed);
             back_drop.setVisibility(View.GONE);
         }
+    }  private void toggleFabModeShipper(View v) {
+        rotateshipper = ViewAnimation.rotateFab(v, !rotateshipper);
+        if (rotateshipper) {
+            ViewAnimation.showIn(return_order);
+            ViewAnimation.showIn(shipping_no_answer);
+            ViewAnimation.showIn(deliver);
+            back_drop.setVisibility(View.VISIBLE);
+        } else {
+            ViewAnimation.showOut(return_order);
+            ViewAnimation.showOut(shipping_no_answer);
+            ViewAnimation.showOut(deliver);
+            back_drop.setVisibility(View.GONE);
+        }
     }
+
+    @BindView(R.id.deliver)
+    CardView deliver;
+
+    @BindView(R.id.shipping_no_answer)
+    CardView shipping_no_answer;
+
+
+    @BindView(R.id.return_order)
+    CardView return_order;
+
 
     private void addProductToMultiOrder(int number, int index) {
         ProgressDialog progressDialog = showProgressDialog(getActivity(), getString(R.string.add_product));
@@ -527,6 +624,7 @@ public class CurrentOrderFragment extends Fragment {
 
     }
 
+
     private void getCurrentOrder() {
 
         ProgressDialog progressDialog = showProgressDialog(getActivity(), getString(R.string.fetching_th_order));
@@ -539,9 +637,34 @@ public class CurrentOrderFragment extends Fragment {
                         if (response.body() != null) {
                             if (response.body().getCode().equals(ResponseCodeEnums.code_1200.getCode())) {
                                 CurrentOrderData.getInstance().setCurrentOrderResponse(response.body());
-                                fillFieldsWithOrderData(response.body());
-                                updateProgress();
-                                productExbandable= true;
+
+                                try {
+                                    if (CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getCheckType().equals("normal_order")) {
+                                        fillFieldsWithOrderData(response.body());
+                                        updateProgress();
+                                        productExbandable = true;
+                                        normal_update_actions.setVisibility(View.VISIBLE);
+                                        shipper_update_actions.setVisibility(View.GONE);
+                                    } else {
+                                        fillFieldsWithOrderData(response.body());
+                                        updateProgress();
+                                        productExbandable = true;
+                                        normal_update_actions.setVisibility(View.GONE);
+                                        shipper_update_actions.setVisibility(View.VISIBLE);
+
+                                    }
+                                }catch (Exception e){
+                                    Log.e("eslamfaissal", "onResponse: ",e );
+                                    Log.d("eslamfaissal", "onResponse: "+response.body().toString());
+                                    CurrentOrderData.getInstance().setCurrentOrderResponse(response.body());
+                                    fillFieldsWithOrderData(response.body());
+                                    updateProgress();
+                                    productExbandable = true;
+                                    normal_update_actions.setVisibility(View.VISIBLE);
+                                    shipper_update_actions.setVisibility(View.GONE);
+                                }
+
+
 
                             } else if (response.body().getCode().equals(ResponseCodeEnums.code_1300.getCode())) {
                                 // no new orders all handled
@@ -610,7 +733,7 @@ public class CurrentOrderFragment extends Fragment {
         order_id.setText(order.getId());
         item_cost.setText(order.getItemCost());
         if (!order.getItemsNo().equals("0"))
-        item_no.setText(order.getItemsNo());
+            item_no.setText(order.getItemsNo());
         else
             item_no.setText("1");
         order_total_cost.setText(order.getTotalOrderCost());

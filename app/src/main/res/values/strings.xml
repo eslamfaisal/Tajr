@@ -104,7 +104,7 @@
     <string name="wrong_number">Wrong number</string>
     <string name="pause_work_message">Do you want do finish th work</string>
     <string name="ask_finish_work">Ask to finish work</string>
-
+    <string name="Return">Return</string>
     <string name="move">Move To update</string>
     <string name="settings">SETTINGS</string>
     <string name="mb_move_direction">mb_move_direction</string>
@@ -260,5 +260,6 @@
     <string name="product_details">Product details</string>
     <string name="le">LE</string>
     <string name="for_shipping">For shipping</string>
+    <string name="phone_boot">Phone bot</string>
 
 </resources>
