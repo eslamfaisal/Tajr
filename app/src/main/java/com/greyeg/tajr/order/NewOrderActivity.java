@@ -491,6 +491,7 @@ public class NewOrderActivity extends AppCompatActivity implements CurrentCallLi
                                             "not_yet", callDetails.getDuration()));
                                     CurrentOrderData.getInstance().setCallTime("Saved");
                                     minutesUsage(callDetails.getDuration());
+                                    uploadVoices();
                                 }
 
                             }
@@ -503,7 +504,6 @@ public class NewOrderActivity extends AppCompatActivity implements CurrentCallLi
             }
         }, 1000);
 
-        uploadVoices();
     }
 
 

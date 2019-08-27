@@ -64,6 +64,7 @@ public class DatabaseManager {
                 callDetails.setTime1(cursor.getString(2));
                 callDetails.setUploaded(cursor.getString(3));
                 callDetails.setDate1(cursor.getString(4));
+                callDetails.setDuration(cursor.getString(5));
 
                 if (!recordList.contains(callDetails)){
                     recordList.add(callDetails);
