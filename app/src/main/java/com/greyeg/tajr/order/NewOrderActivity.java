@@ -538,7 +538,7 @@ public class NewOrderActivity extends AppCompatActivity implements CurrentCallLi
         for (CallDetails call : callDetailsList) {
             if (call.getUploaded().equals("not_yet")) {
 
-                String path = Environment.getExternalStorageDirectory() + "/MyRecords/" + call.getDate() + "/" + call.getNum() + "_" + call.getTime1() + ".mp4";
+                String path = Environment.getExternalStorageDirectory() + "/MyRecords/" + call.getDate() + "/" + call.getNum() + "_" + call.getTime1() + ".amr";
                 File file = new File(path);
                 RequestBody surveyBody = RequestBody.create(MediaType.parse("audio/*"), file);
                 MultipartBody.Part image = MultipartBody.Part.createFormData("voice_note", file.getName(), surveyBody);

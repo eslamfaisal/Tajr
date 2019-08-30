@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.media.MediaRecorder;
 import android.os.IBinder;
 import androidx.annotation.Nullable;
-import android.util.Log;
 
 import com.greyeg.tajr.order.CurrentOrderData;
 
@@ -18,8 +17,6 @@ import java.io.IOException;
 public class RecorderService extends Service {
 
     MediaRecorder recorder;
-
-
     public static String rec;
 
     @Nullable
@@ -38,11 +35,11 @@ public class RecorderService extends Service {
         CurrentOrderData.getInstance().setCallTime(time);
         String path = new CommonMethods().getPath();
 
-        rec = path + "/" + phoneNumber + "_" + time + ".mp4";
+        rec = path + "/" + phoneNumber + "_" + time + ".amr";
 
-        recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+        recorder.setAudioSource(MediaRecorder.AudioSource.VOICE_COMMUNICATION);
+        recorder.setOutputFormat(MediaRecorder.OutputFormat.AMR_NB);
+        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
 
         recorder.setOutputFile(rec);
 

@@ -13,12 +13,15 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.CAPTURE_AUDIO_OUTPUT" />
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
 
     <application
-        android:name=".App"
+        android:name=".callrecorder.app.CallApplication"
         android:allowBackup="true"
         android:icon="@drawable/ic_logo"
         android:label="@string/app_name"
@@ -68,10 +71,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".call_receiver.MyCustomDialog"
-            android:noHistory="true"
-            android:theme="@android:style/Theme.Dialog" /> <!-- <receiver android:name=".receiver.AssistantReceiver" > -->
+        <!-- <receiver android:name=".receiver.AssistantReceiver" > -->
         <!-- <intent-filter> -->
         <!-- <action android:name="android.net.conn.CONNECTIVITY_CHANGE" /> -->
         <!-- </intent-filter> -->
@@ -184,6 +184,71 @@
             android:exported="false" />
         <service android:name=".over.MissedCallNoOrderService" />
         <service android:name=".over.MissedCallOrderService" />
+
+        <service android:name=".callrecorder.services.RecordingService" />
+        <service
+            android:name=".callrecorder.services.TileService"
+            android:icon="@drawable/ic_call_black_24dp"
+            android:label="@string/recording_enabled"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+
+        <receiver android:name=".callrecorder.services.OnBootReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+                <action android:name="com.htc.intent.action.QUICKBOOT_POWERON" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name=".callrecorder.services.OnUpgradeReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.PACKAGE_REPLACED" />
+
+                <data android:scheme="package" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name=".callrecorder.services.OnExternalReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.EXTERNAL_APPLICATIONS_AVAILABLE" />
+            </intent-filter>
+        </receiver>
+
+        <activity
+            android:name=".callrecorder.activities.SettingsActivity"
+            android:label="@string/app_name" />
+        <activity
+            android:name=".callrecorder.activities.MainActivityRecording"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/app_name"
+            android:launchMode="singleInstance"
+            android:theme="@style/RecThemeLight.NoActionBar">
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".callrecorder.activities.RecentCallActivity"
+            android:excludeFromRecents="true"
+            android:label="@string/app_name"
+            android:launchMode="singleInstance"
+            android:noHistory="true"
+            android:taskAffinity="com.github.axet.callrecorder.hide"
+            android:theme="@style/NoDisplay"/>
+
+        <provider
+            android:name="com.github.axet.androidlibrary.services.StorageProvider"
+            android:authorities="com.greyeg.tajr"
+            android:exported="false"
+            android:grantUriPermissions="true"/>
+
     </application>
 
 </manifest>
