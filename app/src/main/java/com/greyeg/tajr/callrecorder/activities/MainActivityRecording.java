@@ -415,7 +415,7 @@ public class MainActivityRecording extends AppCompatThemeActivity implements Sha
                 recordings.onSortOptionSelected(this, item.getItemId());
                 return true;
             case R.id.action_settings:
-                startActivity(new Intent(this, SettingsActivity.class));
+//                startActivity(new Intent(this, SettingsActivity.class));
                 return true;
             case R.id.action_call:
                 item.setChecked(!item.isChecked());

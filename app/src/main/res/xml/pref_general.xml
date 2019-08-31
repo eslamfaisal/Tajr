@@ -48,7 +48,7 @@
             android:summary="@string/pref_mode_summary"
             android:title="@string/pref_mode_title" />
 
-        <com.greyeg.tajr.callrecorder.widgets.MixerPathsPreferenceCompat
+        <com.github.axet.callrecorder.widgets.NameFormatPreferenceCompat
             android:defaultValue="%s"
             android:entries="@array/format_text"
             android:entryValues="@array/format_values"

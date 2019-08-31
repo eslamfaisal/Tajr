@@ -182,12 +182,11 @@ public class Storage extends com.github.axet.audiolibrary.app.Storage {
     }
 
     public Uri getNewFile(long now, String phone, String contact, String call) {
-        SharedPreferences shared = PreferenceManager.getDefaultSharedPreferences(context);
-        String ext = shared.getString(com.github.axet.audiolibrary.app.MainApplication.PREFERENCE_ENCODING, "");
+
+        String ext = "ogg";
         ext = filterMediaRecorder(ext);
 
         String format = "%s";
-        format = shared.getString(CallApplication.PREFERENCE_FORMAT, format);
 
         format = getFormatted(format, now, phone, contact, call);
 

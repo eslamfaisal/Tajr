@@ -251,8 +251,8 @@ public class SettingsActivity extends AppCompatSettingsThemeActivity implements 
             super.onResume();
             OptimizationPreferenceCompat optimization = (OptimizationPreferenceCompat) findPreference(CallApplication.PREFERENCE_OPTIMIZATION);
             optimization.onResume();
-            MixerPathsPreferenceCompat mix = (MixerPathsPreferenceCompat) findPreference(CallApplication.PREFERENCE_MIXERPATHS);
-            mix.onResume();
+//            MixerPathsPreferenceCompat mix = (MixerPathsPreferenceCompat) findPreference(CallApplication.PREFERENCE_MIXERPATHS);
+//            mix.onResume();
         }
 
         @Override

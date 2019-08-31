@@ -51,6 +51,7 @@ import com.greyeg.tajr.callrecorder.activities.RecentCallActivity;
 import com.greyeg.tajr.callrecorder.activities.SettingsActivity;
 import com.greyeg.tajr.callrecorder.app.CallApplication;
 import com.greyeg.tajr.callrecorder.app.Storage;
+import com.greyeg.tajr.order.NewOrderActivity;
 
 import java.io.File;
 import java.io.FileDescriptor;
@@ -70,7 +71,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * <p/>
  * Maybe later this class will be converted for fully feature recording service with recording thread.
  */
-public class RecordingService extends PersistentService implements SharedPreferences.OnSharedPreferenceChangeListener {
+public class RecordingService extends PersistentService {
     public static final String TAG = RecordingService.class.getSimpleName();
 
     public static final int NOTIFICATION_PERSISTENT_ICON = 1;
@@ -376,9 +377,6 @@ public class RecordingService extends PersistentService implements SharedPrefere
 
         sampleRate = Sound.getSampleRate(this);
 
-        SharedPreferences shared = PreferenceManager.getDefaultSharedPreferences(this);
-        shared.registerOnSharedPreferenceChangeListener(this);
-
         try {
             encodingNext();
         } catch (RuntimeException e) {
@@ -401,8 +399,8 @@ public class RecordingService extends PersistentService implements SharedPrefere
     }
 
     void deleteOld() {
-        SharedPreferences shared = PreferenceManager.getDefaultSharedPreferences(this);
-        String d = shared.getString(CallApplication.PREFERENCE_DELETE, getString(R.string.delete_off));
+
+        String d =  getString(R.string.delete_off);
         if (d.equals(getString(R.string.delete_off)))
             return;
 
@@ -469,8 +467,15 @@ public class RecordingService extends PersistentService implements SharedPrefere
             stopButton(this);
         } else if (a.equals(SHOW_ACTIVITY)) {
             ProximityShader.closeSystemDialogs(this);
-            MainActivityRecording.startActivity(this);
+            startActivity(this);
         }
+    }
+
+    public static void startActivity(Context context) {
+        Intent i = new Intent(context, NewOrderActivity.class);
+        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        i.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        context.startActivity(i);
     }
 
     @Nullable
@@ -486,9 +491,6 @@ public class RecordingService extends PersistentService implements SharedPrefere
         handle.removeCallbacks(encodingNext);
 
         stopRecording();
-
-        SharedPreferences shared = PreferenceManager.getDefaultSharedPreferences(this);
-        shared.unregisterOnSharedPreferenceChangeListener(this);
 
         if (receiver != null) {
             receiver.unregister(this);
@@ -551,7 +553,7 @@ public class RecordingService extends PersistentService implements SharedPrefere
         title = encoding != null ? getString(R.string.encoding_title) : (getString(R.string.recording_title) + " " + getSourceText());
         text = ".../" + Storage.getName(this, targetUri);
         builder.setViewVisibility(R.id.notification_pause, View.VISIBLE);
-        builder.setImageViewResource(R.id.notification_pause, recording ? R.drawable.ic_stop_black_24dp : R.drawable.ic_play_arrow_black_24dp);
+//        builder.setImageViewResource(R.id.notification_pause, recording ? R.drawable.ic_stop_black_24dp : R.drawable.ic_play_arrow_black_24dp);
 
         title = title.trim();
 
@@ -605,9 +607,8 @@ public class RecordingService extends PersistentService implements SharedPrefere
     }
 
     public void showDone(Uri targetUri) {
-        final SharedPreferences shared = PreferenceManager.getDefaultSharedPreferences(this);
-        if (!shared.getBoolean(CallApplication.PREFERENCE_DONE_NOTIFICATION, false))
-            return;
+
+        Log.d(TAG, "showDone: "+targetUri.getPath());
         RecentCallActivity.startActivity(this, targetUri, true);
     }
 
@@ -624,22 +625,16 @@ public class RecordingService extends PersistentService implements SharedPrefere
                 MediaRecorder.AudioSource.UNPROCESSED,
         };
         int i;
-        int s = Integer.valueOf(shared.getString(CallApplication.PREFERENCE_SOURCE, "-1"));
-        if (s == -1) {
-            i = 0;
-        } else {
-            i = Sound.indexOf(ss, s);
-            if (i == -1) { // missing source, add as first
-                ss = concat(new int[]{s}, ss);
-                i = 0;
-            }
-        }
+        int s = -1;
+        i = 0;
 
         String ext = shared.getString(CallApplication.PREFERENCE_ENCODING, "");
-        if (Storage.isMediaRecorder(ext))
+        if (Storage.isMediaRecorder(ext)) {
             startMediaRecorder(ext, ss, i);
-        else
+            Log.d("eslamfaisal", "startRecording:1 " + ext + " - " + ss + " - " + i);
+        } else
             startAudioRecorder(ss, i);
+        Log.d("eslamfaisal", "startRecording:2 " + ext + " - " + i);
 
         updateIcon(true);
     }
@@ -1083,11 +1078,4 @@ public class RecordingService extends PersistentService implements SharedPrefere
         });
     }
 
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equals(CallApplication.PREFERENCE_DELETE))
-            deleteOld();
-        if (key.equals(CallApplication.PREFERENCE_STORAGE))
-            encodingNext();
-    }
 }
