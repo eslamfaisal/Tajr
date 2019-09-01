@@ -46,12 +46,13 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.github.axet.androidlibrary.activities.AppCompatThemeActivity;
 import com.github.axet.androidlibrary.app.SuperUser;
+import com.github.axet.androidlibrary.preferences.AboutPreferenceCompat;
+import com.github.axet.androidlibrary.preferences.OptimizationPreferenceCompat;
 import com.github.axet.androidlibrary.services.StorageProvider;
-import com.github.axet.androidlibrary.widgets.AboutPreferenceCompat;
-import com.github.axet.androidlibrary.widgets.AppCompatThemeActivity;
 import com.github.axet.androidlibrary.widgets.ErrorDialog;
-import com.github.axet.androidlibrary.widgets.OptimizationPreferenceCompat;
+
 import com.github.axet.audiolibrary.encoders.Format3GP;
 import com.github.axet.audiolibrary.encoders.FormatFLAC;
 import com.github.axet.audiolibrary.encoders.FormatM4A;
@@ -253,89 +254,90 @@ public class MainActivityRecording extends AppCompatThemeActivity implements Sha
         recordings.setToolbar((ViewGroup) findViewById(R.id.recording_toolbar));
 
         final SharedPreferences shared = PreferenceManager.getDefaultSharedPreferences(this);
-        if (shared.getBoolean("warning", true)) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setView(R.layout.warning);
-            builder.setCancelable(false);
-            builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    SharedPreferences.Editor edit = shared.edit();
-                    edit.putBoolean("warning", false);
-                    edit.commit();
-                }
-            });
-            final AlertDialog d = builder.create();
-            d.setOnShowListener(new DialogInterface.OnShowListener() {
-                Button b;
-                SwitchCompat sw1, sw2, sw3, sw4;
 
-                @Override
-                public void onShow(DialogInterface dialog) {
-                    b = d.getButton(DialogInterface.BUTTON_POSITIVE);
-                    b.setEnabled(false);
-                    Window w = d.getWindow();
-                    sw1 = (SwitchCompat) w.findViewById(R.id.recording);
-                    sw1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                        @Override
-                        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                            if (isChecked)
-                                sw1.setClickable(false);
-                            update();
-                        }
-                    });
-                    sw2 = (SwitchCompat) w.findViewById(R.id.quality);
-                    sw2.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                        @Override
-                        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                            if (isChecked)
-                                sw2.setClickable(false);
-                            update();
-                        }
-                    });
-                    sw3 = (SwitchCompat) w.findViewById(R.id.taskmanagers);
-                    sw3.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                        @Override
-                        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                            if (isChecked) {
-                                sw3.setClickable(false);
-                            }
-                            update();
-                        }
-                    });
-                    sw4 = (SwitchCompat) w.findViewById(R.id.mixedpaths_switch);
-                    final MixerPaths m = new MixerPaths();
-                    if (!m.isCompatible() || m.isEnabled()) {
-                        View v = w.findViewById(R.id.mixedpaths);
-                        v.setVisibility(View.GONE);
-                        sw4.setChecked(true);
-                    } else {
-                        sw4.setChecked(m.isEnabled());
-                        sw4.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                            @Override
-                            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                                if (isChecked)
-                                    sw4.setClickable(false);
-                                m.load();
-                                if (isChecked && !m.isEnabled())
-                                    MixerPathsPreferenceCompat.show(MainActivityRecording.this);
-                                update();
-                            }
-                        });
-                    }
-                }
-
-                void update() {
-                    b.setEnabled(sw1.isChecked() && sw2.isChecked() && sw3.isChecked() && sw4.isChecked());
-                }
-            });
-            d.show();
-        }
+//        if (shared.getBoolean("warning", true)) {
+//            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//            builder.setView(R.layout.warning);
+//            builder.setCancelable(false);
+//            builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+//                @Override
+//                public void onClick(DialogInterface dialog, int which) {
+//                    SharedPreferences.Editor edit = shared.edit();
+//                    edit.putBoolean("warning", false);
+//                    edit.commit();
+//                }
+//            });
+//            final AlertDialog d = builder.create();
+//            d.setOnShowListener(new DialogInterface.OnShowListener() {
+//                Button b;
+//                SwitchCompat sw1, sw2, sw3, sw4;
+//
+//                @Override
+//                public void onShow(DialogInterface dialog) {
+//                    b = d.getButton(DialogInterface.BUTTON_POSITIVE);
+//                    b.setEnabled(false);
+//                    Window w = d.getWindow();
+//                    sw1 = (SwitchCompat) w.findViewById(R.id.recording);
+//                    sw1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//                        @Override
+//                        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//                            if (isChecked)
+//                                sw1.setClickable(false);
+//                            update();
+//                        }
+//                    });
+//                    sw2 = (SwitchCompat) w.findViewById(R.id.quality);
+//                    sw2.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//                        @Override
+//                        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//                            if (isChecked)
+//                                sw2.setClickable(false);
+//                            update();
+//                        }
+//                    });
+//                    sw3 = (SwitchCompat) w.findViewById(R.id.taskmanagers);
+//                    sw3.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//                        @Override
+//                        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//                            if (isChecked) {
+//                                sw3.setClickable(false);
+//                            }
+//                            update();
+//                        }
+//                    });
+//                    sw4 = (SwitchCompat) w.findViewById(R.id.mixedpaths_switch);
+//                    final MixerPaths m = new MixerPaths();
+//                    if (!m.isCompatible() || m.isEnabled()) {
+//                        View v = w.findViewById(R.id.mixedpaths);
+//                        v.setVisibility(View.GONE);
+//                        sw4.setChecked(true);
+//                    } else {
+//                        sw4.setChecked(m.isEnabled());
+//                        sw4.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//                            @Override
+//                            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//                                if (isChecked)
+//                                    sw4.setClickable(false);
+//                                m.load();
+//                                if (isChecked && !m.isEnabled())
+//                                    MixerPathsPreferenceCompat.show(MainActivityRecording.this);
+//                                update();
+//                            }
+//                        });
+//                    }
+//                }
+//
+//                void update() {
+//                    b.setEnabled(sw1.isChecked() && sw2.isChecked() && sw3.isChecked() && sw4.isChecked());
+//                }
+//            });
+//            d.show();
+//        }
 
         if (OptimizationPreferenceCompat.needKillWarning(this, CallApplication.PREFERENCE_NEXT))
             OptimizationPreferenceCompat.buildKilledWarning(this, true, CallApplication.PREFERENCE_OPTIMIZATION, RecordingService.class).show();
         else if (OptimizationPreferenceCompat.needBootWarning(this, CallApplication.PREFERENCE_BOOT, CallApplication.PREFERENCE_INSTALL))
-            OptimizationPreferenceCompat.buildBootWarning(this).show();
+            OptimizationPreferenceCompat.buildBootWarning(this,"eslam").show();
 
         RecordingService.startIfEnabled(this);
 
@@ -698,6 +700,7 @@ public class MainActivityRecording extends AppCompatThemeActivity implements Sha
         super.onStop();
     }
 
+    @SuppressLint("RestrictedApi")
     void updatePanel() {
         fab_panel.setVisibility(show ? View.VISIBLE : View.GONE);
         if (encoding >= 0) {

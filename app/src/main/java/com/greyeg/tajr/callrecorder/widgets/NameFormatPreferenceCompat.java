@@ -9,7 +9,7 @@ import com.greyeg.tajr.callrecorder.app.CallApplication;
 import com.greyeg.tajr.callrecorder.app.Storage;
 
 
-public class NameFormatPreferenceCompat extends com.github.axet.androidlibrary.widgets.NameFormatPreferenceCompat {
+public class NameFormatPreferenceCompat extends com.github.axet.androidlibrary.preferences.NameFormatPreferenceCompat{
     public NameFormatPreferenceCompat(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }

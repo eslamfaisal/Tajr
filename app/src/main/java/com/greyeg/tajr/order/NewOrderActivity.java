@@ -33,6 +33,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.greyeg.tajr.R;
 import com.greyeg.tajr.activities.LoginActivity;
 import com.greyeg.tajr.calc.CalcDialog;
+import com.greyeg.tajr.callrecorder.services.RecordingService;
 import com.greyeg.tajr.helper.CurrentCallListener;
 import com.greyeg.tajr.helper.GuiManger;
 import com.greyeg.tajr.helper.SharedHelper;
@@ -128,7 +129,8 @@ public class NewOrderActivity extends AppCompatActivity implements CurrentCallLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_order);
         ButterKnife.bind(this);
-        CallsReceiver.setCurrentCallListener(this);
+//        CallsReceiver.setCurrentCallListener(this);
+        RecordingService.setEnabled(this,true);
         databaseManager = new DatabaseManager(this);
         openRecords();
         initToolBar();
@@ -377,6 +379,7 @@ public class NewOrderActivity extends AppCompatActivity implements CurrentCallLi
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        RecordingService.setEnabled(this,false);
         cancelNotification();
         closeRecords();
         saveWorkTime();

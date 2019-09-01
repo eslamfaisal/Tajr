@@ -14,8 +14,9 @@ import androidx.preference.PreferenceManager;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.github.axet.androidlibrary.app.NotificationManagerCompat;
+import com.github.axet.androidlibrary.preferences.OptimizationPreferenceCompat;
 import com.github.axet.androidlibrary.widgets.NotificationChannelCompat;
-import com.github.axet.androidlibrary.widgets.OptimizationPreferenceCompat;
+
 import com.greyeg.tajr.R;
 import com.onesignal.OneSignal;
 

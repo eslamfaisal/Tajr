@@ -1,5 +1,6 @@
 package com.greyeg.tajr.callrecorder.services;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -9,17 +10,20 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.ParcelFileDescriptor;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
+import android.provider.CallLog;
 import android.provider.ContactsContract;
 import android.telephony.PhoneNumberUtils;
 import android.telephony.PhoneStateListener;
@@ -28,12 +32,14 @@ import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 
 import com.github.axet.androidlibrary.app.AlarmManager;
 import com.github.axet.androidlibrary.app.ProximityShader;
+import com.github.axet.androidlibrary.preferences.OptimizationPreferenceCompat;
 import com.github.axet.androidlibrary.services.PersistentService;
 import com.github.axet.androidlibrary.widgets.ErrorDialog;
-import com.github.axet.androidlibrary.widgets.OptimizationPreferenceCompat;
+
 import com.github.axet.androidlibrary.widgets.RemoteNotificationCompat;
 import com.github.axet.androidlibrary.widgets.Toast;
 import com.github.axet.audiolibrary.app.RawSamples;
@@ -46,12 +52,21 @@ import com.github.axet.audiolibrary.filters.SkipSilenceFilter;
 import com.github.axet.audiolibrary.filters.VoiceFilter;
 import com.greyeg.tajr.BuildConfig;
 import com.greyeg.tajr.R;
+import com.greyeg.tajr.activities.EmptyCallActivity;
+import com.greyeg.tajr.activities.LoginActivity;
 import com.greyeg.tajr.callrecorder.activities.MainActivityRecording;
 import com.greyeg.tajr.callrecorder.activities.RecentCallActivity;
 import com.greyeg.tajr.callrecorder.activities.SettingsActivity;
 import com.greyeg.tajr.callrecorder.app.CallApplication;
 import com.greyeg.tajr.callrecorder.app.Storage;
+import com.greyeg.tajr.helper.SharedHelper;
+import com.greyeg.tajr.models.LastCallDetails;
+import com.greyeg.tajr.models.UploadVoiceResponse;
+import com.greyeg.tajr.order.CurrentOrderData;
 import com.greyeg.tajr.order.NewOrderActivity;
+import com.greyeg.tajr.records.CallDetails;
+import com.greyeg.tajr.server.Api;
+import com.greyeg.tajr.server.BaseClient;
 
 import java.io.File;
 import java.io.FileDescriptor;
@@ -62,6 +77,13 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * RecordingActivity more likly to be removed from memory when paused then service. Notification button
@@ -258,6 +280,15 @@ public class RecordingService extends PersistentService {
 
         @Override
         public void onReceive(Context context, Intent intent) {
+            final Intent intent2 = new Intent(context, EmptyCallActivity.class);
+            intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    context.startActivity(intent2);
+                }
+            }, 2000);
+
             String a = intent.getAction();
             if (a.equals(TelephonyManager.ACTION_PHONE_STATE_CHANGED))
                 setPhone(intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER), call);
@@ -367,8 +398,6 @@ public class RecordingService extends PersistentService {
 
         storage = new Storage(this);
 
-        deleteOld();
-
         pscl = new PhoneStateChangeListener();
         pscl.register();
 
@@ -396,64 +425,6 @@ public class RecordingService extends PersistentService {
             }
         };
         optimization.create();
-    }
-
-    void deleteOld() {
-
-        String d =  getString(R.string.delete_off);
-        if (d.equals(getString(R.string.delete_off)))
-            return;
-
-        try {
-            final String[] ee = Storage.getEncodingValues(this);
-            Uri path = storage.getStoragePath();
-
-            List<Storage.Node> nn = Storage.list(this, path, new Storage.NodeFilter() {
-                @Override
-                public boolean accept(Storage.Node n) {
-                    for (String e : ee) {
-                        e = e.toLowerCase();
-                        if (n.name.endsWith(e))
-                            return true;
-                    }
-                    return false;
-                }
-            });
-
-            for (Storage.Node n : nn) {
-                Calendar c = Calendar.getInstance();
-                c.setTimeInMillis(n.last);
-                Calendar cur = c;
-
-                if (d.equals(getString(R.string.delete_1day))) {
-                    cur = Calendar.getInstance();
-                    c.add(Calendar.DAY_OF_YEAR, 1);
-                }
-                if (d.equals(getString(R.string.delete_1week))) {
-                    cur = Calendar.getInstance();
-                    c.add(Calendar.WEEK_OF_YEAR, 1);
-                }
-                if (d.equals(getString(R.string.delete_1month))) {
-                    cur = Calendar.getInstance();
-                    c.add(Calendar.MONTH, 1);
-                }
-                if (d.equals(getString(R.string.delete_3month))) {
-                    cur = Calendar.getInstance();
-                    c.add(Calendar.MONTH, 3);
-                }
-                if (d.equals(getString(R.string.delete_6month))) {
-                    cur = Calendar.getInstance();
-                    c.add(Calendar.MONTH, 6);
-                }
-
-                if (c.before(cur)) {
-                    if (!CallApplication.getStar(this, n.uri)) // do not delete favorite recorings
-                        Storage.delete(this, n.uri);
-                }
-            }
-        } catch (RuntimeException e) {
-            Log.d(TAG, "unable to delete old", e); // hide all deleteOld IO errors
-        }
     }
 
     @Override
@@ -607,9 +578,91 @@ public class RecordingService extends PersistentService {
     }
 
     public void showDone(Uri targetUri) {
-
+        uploadVoices(targetUri.getPath());
         Log.d(TAG, "showDone: "+targetUri.getPath());
-        RecentCallActivity.startActivity(this, targetUri, true);
+//        RecentCallActivity.startActivity(this, targetUri, true);
+    }
+
+
+    private LastCallDetails getLastCallDetails() {
+        StringBuffer sb = new StringBuffer();
+        Uri contacts = CallLog.Calls.CONTENT_URI;
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CALL_LOG) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+        }
+        Cursor managedCursor = getContentResolver().query(contacts, null,
+                null, null, null);
+        int number = managedCursor.getColumnIndex(CallLog.Calls.NUMBER);
+        int type = managedCursor.getColumnIndex(CallLog.Calls.TYPE);
+        int duration = managedCursor.getColumnIndex(CallLog.Calls.DURATION);
+        int activeID = managedCursor.getColumnIndex(CallLog.Calls.PHONE_ACCOUNT_ID);
+
+        sb.append("Call Details :");
+        String phoneNumber = null;
+        String callDuration2 = null;
+        String activatedNum = null;
+        String calType = null;
+        while (managedCursor.moveToNext()) {
+            phoneNumber = managedCursor.getString(number);
+            String callType = managedCursor.getString(type);
+            callDuration2 = managedCursor.getString(duration);
+            activatedNum = managedCursor.getString(activeID);
+            String dir = null;
+            int dircode = Integer.parseInt(callType);
+            switch (dircode) {
+                case CallLog.Calls.OUTGOING_TYPE:
+                    dir = "OUTGOING";
+                    break;
+
+                case CallLog.Calls.INCOMING_TYPE:
+                    dir = "INCOMING";
+                    break;
+
+                case CallLog.Calls.MISSED_TYPE:
+                    dir = "MISSED";
+                    break;
+                case CallLog.Calls.REJECTED_TYPE:
+                    dir = "REJECTED";
+                    break;
+            }
+
+            calType = dir;
+
+        }
+
+        managedCursor.close();
+        return new LastCallDetails(phoneNumber, callDuration2, activatedNum, calType);
+
+    }
+
+
+    private void uploadVoices(String path) {
+        File file = new File(path);
+        RequestBody surveyBody = RequestBody.create(MediaType.parse("audio/*"), file);
+        MultipartBody.Part image = MultipartBody.Part.createFormData("voice_note", file.getName(), surveyBody);
+        RequestBody title1 = RequestBody.create(MediaType.parse("text/plain"), CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getId());
+        RequestBody duration = RequestBody.create(MediaType.parse("text/plain"), getLastCallDetails().getDuration());
+        RequestBody token = RequestBody.create(MediaType.parse("text/plain"), SharedHelper.getKey(this, LoginActivity.TOKEN));
+
+        BaseClient.getBaseClient().create(Api.class).uploadVoice(token, title1, duration, image).enqueue(new Callback<UploadVoiceResponse>() {
+            @Override
+            public void onResponse(Call<UploadVoiceResponse> call2, Response<UploadVoiceResponse> response) {
+
+                Log.d("eslamfaisal", "onResponse: "+response.body().toString());
+            }
+
+            @Override
+            public void onFailure(Call<UploadVoiceResponse> call, Throwable t) {
+                Log.d("eslamfaisal", "onFailure: " + t.getMessage());
+
+            }
+        });
     }
 
     void startRecording() {
@@ -675,7 +728,6 @@ public class RecordingService extends PersistentService {
                 Runnable done = new Runnable() {
                     @Override
                     public void run() {
-                        deleteOld();
                         stopRecording();
                         updateIcon(false);
                     }
@@ -855,7 +907,6 @@ public class RecordingService extends PersistentService {
                     Runnable done = new Runnable() {
                         @Override
                         public void run() {
-                            deleteOld();
                             stopRecording();
                             updateIcon(false);
                         }
@@ -1024,7 +1075,6 @@ public class RecordingService extends PersistentService {
             else
                 encoder.resume();
         } else { // if encoding failed, we will get no output file, hide notifications
-            deleteOld();
             updateIcon(false);
         }
     }
@@ -1058,7 +1108,7 @@ public class RecordingService extends PersistentService {
         encoding = new Runnable() { //  allways called when done
             @Override
             public void run() {
-                deleteOld();
+
                 updateIcon(false);
                 encoding = null;
                 encoder = null;

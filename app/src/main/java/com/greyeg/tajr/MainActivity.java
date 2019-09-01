@@ -6,6 +6,8 @@ import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.admin.DevicePolicyManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -60,6 +62,7 @@ import com.greyeg.tajr.activities.OrderActivity;
 import com.greyeg.tajr.activities.SettingsActivity;
 import com.greyeg.tajr.activities.WorkHistoryActivity;
 import com.greyeg.tajr.adapters.DrawerAdapter;
+import com.greyeg.tajr.callrecorder.activities.MainActivityRecording;
 import com.greyeg.tajr.helper.SharedHelper;
 import com.greyeg.tajr.helper.TimerTextView;
 import com.greyeg.tajr.helper.font.RobotoTextView;
@@ -137,6 +140,9 @@ public class MainActivity extends AppCompatActivity
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
     SwipeButton enableButton;
+    private static final int REQUEST_CODE = 0;
+    private DevicePolicyManager mDPM;
+    private ComponentName mAdminName;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -778,7 +784,7 @@ public class MainActivity extends AppCompatActivity
             } else if (position == 5) {
                 intent = new Intent(getApplicationContext(), ChatActivity.class);
             } else if (position == 6) {
-                intent = new Intent(getApplicationContext(), RecordsActivity.class);
+                intent = new Intent(getApplicationContext(), MainActivityRecording.class);
             }
             if (intent != null) {
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

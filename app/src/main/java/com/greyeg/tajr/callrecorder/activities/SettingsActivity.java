@@ -20,11 +20,11 @@ import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 
-import com.github.axet.androidlibrary.widgets.AppCompatSettingsThemeActivity;
-import com.github.axet.androidlibrary.widgets.NameFormatPreferenceCompat;
-import com.github.axet.androidlibrary.widgets.OptimizationPreferenceCompat;
-import com.github.axet.androidlibrary.widgets.SeekBarPreference;
-import com.github.axet.androidlibrary.widgets.StoragePathPreferenceCompat;
+import com.github.axet.androidlibrary.activities.AppCompatSettingsThemeActivity;
+import com.github.axet.androidlibrary.preferences.NameFormatPreferenceCompat;
+import com.github.axet.androidlibrary.preferences.OptimizationPreferenceCompat;
+import com.github.axet.androidlibrary.preferences.SeekBarPreference;
+import com.github.axet.androidlibrary.preferences.StoragePathPreferenceCompat;
 import com.github.axet.androidlibrary.widgets.Toast;
 import com.github.axet.audiolibrary.app.Sound;
 import com.github.axet.audiolibrary.widgets.RecordingVolumePreference;
