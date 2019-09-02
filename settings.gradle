@@ -1,1 +1,1 @@
-include ':app'
+include ':app', ':android-audio-library', ':android-library', ':jebml', ':android-vorbis', ':android-vorbis:libvorbis', ':android-vorbis:libogg', ':recoder_lib'
