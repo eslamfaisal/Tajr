@@ -6,6 +6,7 @@ import android.graphics.PixelFormat;
 import android.os.IBinder;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import androidx.annotation.Nullable;
@@ -53,7 +54,40 @@ public class BubbleService extends Service {
         mWindowManager.addView(bubbleView, params);
 
 
+        bubbleView.setOnTouchListener(new View.OnTouchListener() {
+            private int initialX;
+            private int initialY;
+            private float initialTouchX;
+            private float initialTouchY;
+            @Override
+            public boolean onTouch(View view, MotionEvent event) {
+
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+
+                        initialX = params.x;
+                        initialY = params.y;
+
+                        initialTouchX = event.getRawX();
+                        initialTouchY = event.getRawY();
+                        return true;
+                    case MotionEvent.ACTION_MOVE:
+                        params.x = initialX + (int) (event.getRawX() - initialTouchX);
+                        params.y = initialY + (int) (event.getRawY() - initialTouchY);
+
+
+                        mWindowManager.updateViewLayout(bubbleView, params);
+                        return true;
+                }
+                return false;
+
+            }
+        });
+
     }
+
+
+
 
 
     @Override
