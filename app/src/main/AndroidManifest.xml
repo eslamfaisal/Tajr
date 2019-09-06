@@ -200,6 +200,11 @@
                 android:resource="@xml/serviceconfig" />
         </service>
 
+        <service
+            android:name=".services.BubbleService"
+            android:enabled="true"
+            android:exported="false"/>
+
     </application>
 
 </manifest>
