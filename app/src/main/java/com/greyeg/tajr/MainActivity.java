@@ -29,6 +29,8 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.appcompat.widget.Toolbar;
+
+import android.provider.Settings;
 import android.telephony.SubscriptionInfo;
 import android.telephony.SubscriptionManager;
 import android.telephony.TelephonyManager;
@@ -67,6 +69,7 @@ import com.greyeg.tajr.order.NewOrderActivity;
 import com.greyeg.tajr.records.RecordsActivity;
 import com.greyeg.tajr.server.Api;
 import com.greyeg.tajr.server.BaseClient;
+import com.greyeg.tajr.services.BubbleService;
 import com.greyeg.tajr.view.kbv.KenBurnsView;
 import com.onesignal.OSPermissionSubscriptionState;
 import com.onesignal.OneSignal;
@@ -89,6 +92,8 @@ import static com.greyeg.tajr.activities.LoginActivity.idListString;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+    private final static int CODE_DRAW_OVER_OTHER_APP_PERMISSION=115;
+
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
@@ -150,6 +155,7 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         initDrawer();
+        //startService(new Intent(this, BubbleService.class));
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (
@@ -183,6 +189,16 @@ public class MainActivity extends AppCompatActivity
             } else {
                 checkDauleSim();
             }
+
+            // grant permission for drawing bubble over screen
+            if (!Settings.canDrawOverlays(this)){
+                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                        Uri.parse("package:" + getPackageName()));
+                startActivityForResult(intent, CODE_DRAW_OVER_OTHER_APP_PERMISSION);
+            } else {
+                showBubble();
+            }
+
         }
 
         setAnimation(SPLASH_SCREEN_OPTION_3);
@@ -518,6 +534,29 @@ public class MainActivity extends AppCompatActivity
                 checkDauleSim();
             }
         }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == CODE_DRAW_OVER_OTHER_APP_PERMISSION) {
+            if (resultCode == RESULT_OK) {
+                showBubble();
+            } else {
+                Toast.makeText(this,
+                        "you must give permission foe drawing on screen :(",
+                        Toast.LENGTH_SHORT).show();
+
+                finish();
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+    void showBubble(){
+        startService(new Intent(this, BubbleService.class));
+
     }
 
     @SuppressLint("NewApi")
