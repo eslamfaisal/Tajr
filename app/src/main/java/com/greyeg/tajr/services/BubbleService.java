@@ -25,6 +25,7 @@ public class BubbleService extends Service {
     private static final int CLICK_ACTION_THRESHOLD = 2;
     private float startX;
     private float startY;
+    public static boolean isRunning=false;
 
     @Nullable
     @Override
@@ -35,6 +36,7 @@ public class BubbleService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        isRunning=true;
 
         bubbleView = LayoutInflater.from(this).inflate(R.layout.bubble, null,false);
         View collapsedView=bubbleView.findViewById(R.id.collapsed_bubble);
@@ -67,7 +69,7 @@ public class BubbleService extends Service {
 
 
         collapsedView.setOnTouchListener(onTouchListener);
-        //expandedView.setOnTouchListener(onTouchListener);
+        expandedView.setOnTouchListener(onTouchListener);
 
         collapsedView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -130,14 +132,12 @@ public class BubbleService extends Service {
         }
     };
 
-    private boolean isViewCollapsed() {
-        return  bubbleView.findViewById(R.id.expanded_bubble).getVisibility() == View.GONE;
-    }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         if (bubbleView != null) mWindowManager.removeView(bubbleView);
+        isRunning=false;
     }
 
     private boolean isAClick(float startX, float endX, float startY, float endY) {

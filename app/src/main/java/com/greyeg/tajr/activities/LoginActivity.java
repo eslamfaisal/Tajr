@@ -100,6 +100,9 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
         Log.d("sssssssssssssss", "onCreate: ");
+
+        Log.d("OVERLAYYY", "login activity: ");
+
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage(getString(R.string.wati_to_log_in));
         api = BaseClient.getBaseClient().create(Api.class);
@@ -258,6 +261,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        Log.d("OVERLAYYY", " login onDestroy: ");
 
     }
 

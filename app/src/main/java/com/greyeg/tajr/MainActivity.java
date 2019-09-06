@@ -190,16 +190,17 @@ public class MainActivity extends AppCompatActivity
                 checkDauleSim();
             }
 
-            // grant permission for drawing bubble over screen
+            Log.d("OVERLAYYY", "onCreate: ");
+             //grant permission for drawing bubble over screen
             if (!Settings.canDrawOverlays(this)){
                 Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                         Uri.parse("package:" + getPackageName()));
                 startActivityForResult(intent, CODE_DRAW_OVER_OTHER_APP_PERMISSION);
-            } else {
-                showBubble();
             }
 
         }
+
+
 
         setAnimation(SPLASH_SCREEN_OPTION_3);
         api = BaseClient.getBaseClient().create(Api.class);
@@ -270,6 +271,8 @@ public class MainActivity extends AppCompatActivity
         });
 
     }
+
+
 
     public static void sendNotification(final String message) {
 
@@ -539,16 +542,17 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         if (requestCode == CODE_DRAW_OVER_OTHER_APP_PERMISSION) {
+            Log.d("OVERLAYYY", "onActivityResult: result code "+resultCode);
+
             if (resultCode == RESULT_OK) {
-                showBubble();
+                //showBubble();
             } else {
-                Toast.makeText(this,
-                        "you must give permission foe drawing on screen :(",
+                //Log.d("OVERLAYYY", "onActivityResult: permission denies");
+                Toast.makeText(MainActivity.this,
+                        "you must give permission foe drawing on screen",
                         Toast.LENGTH_SHORT).show();
 
-                finish();
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);
@@ -658,6 +662,7 @@ public class MainActivity extends AppCompatActivity
     protected void onDestroy() {
         SharedHelper.putKey(getApplicationContext(), "state", "off");
         super.onDestroy();
+        Log.d(TAG, "onDestroy: ");
     }
 
     String idid;
@@ -978,6 +983,7 @@ public class MainActivity extends AppCompatActivity
         }
 
     }
+
 
 
 

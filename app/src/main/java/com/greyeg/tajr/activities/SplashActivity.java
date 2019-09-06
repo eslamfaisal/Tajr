@@ -6,6 +6,7 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import android.util.DisplayMetrics;
+import android.util.Log;
 
 import com.greyeg.tajr.MainActivity;
 import com.greyeg.tajr.R;
@@ -31,6 +32,7 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
         ReminderUtilities.scheduleOrderReminder(getApplicationContext());
+        Log.d("OVERLAYYY", "splash onCreate: ");
 //        startService(new Intent(this, FloatLayout.class));
 
 //        Intent startHoverIntent = new Intent(SplashActivity.this, MissedCallNoOrderService.class);
@@ -38,11 +40,11 @@ public class SplashActivity extends AppCompatActivity {
         // On Android M and above we need to ask the user for permission to display the Hover
         // menu within the "alert window" layer.  Use OverlayPermission to check for the permission
         // and to request it.
-        if (!mPermissionsRequested && !OverlayPermission.hasRuntimePermissionToDrawOverlay(this)) {
-            @SuppressWarnings("NewApi")
-            Intent myIntent = OverlayPermission.createIntentToRequestOverlayPermission(this);
-            startActivityForResult(myIntent, REQUEST_CODE_HOVER_PERMISSION);
-        }
+//        if (!mPermissionsRequested && !OverlayPermission.hasRuntimePermissionToDrawOverlay(this)) {
+//            @SuppressWarnings("NewApi")
+//            Intent myIntent = OverlayPermission.createIntentToRequestOverlayPermission(this);
+//            startActivityForResult(myIntent, REQUEST_CODE_HOVER_PERMISSION);
+//        }
 
 
         if (SharedHelper.getKey(this,LoginActivity.IS_LOGIN).equals("yes")){
