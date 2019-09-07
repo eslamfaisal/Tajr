@@ -24,6 +24,7 @@ public class BubbleService extends Service {
     private View deleteView;
     WindowManager.LayoutParams params;
     View expandedView;
+    public static String userName=null;
     private static final int CLICK_ACTION_THRESHOLD = 2;
     private float startX;
     private float startY;
@@ -93,6 +94,8 @@ public class BubbleService extends Service {
                     }
                 });
 
+
+
     }
 
     View.OnTouchListener onTouchListener=new View.OnTouchListener() {
@@ -121,6 +124,15 @@ public class BubbleService extends Service {
                     float endX = event.getX();
                     float endY = event.getY();
                     if (isAClick(startX, endX, startY, endY)) {
+                        if (userName==null){
+                            bubbleView.findViewById(R.id.gotUserName)
+                                    .setBackgroundResource(R.drawable.circle_gray);
+                            return true;
+                        }
+                        else{
+                            bubbleView.findViewById(R.id.gotUserName)
+                                    .setBackgroundResource(R.drawable.circle_green);
+                        }
                         if (expandedView.getVisibility()==View.GONE)
                         expandedView.setVisibility(View.VISIBLE);
                             else

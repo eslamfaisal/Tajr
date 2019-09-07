@@ -24,8 +24,7 @@ public class AccessibilityService extends android.accessibilityservice.Accessibi
         {
             checkOverlayPermission();
             String userName=getUserName();
-            if (userName!=null)
-            Toast.makeText(this, "user "+userName, Toast.LENGTH_SHORT).show();
+                BubbleService.userName=userName;
         }
 
 
@@ -51,7 +50,7 @@ public class AccessibilityService extends android.accessibilityservice.Accessibi
                 startActivity(intent);
 
             } else {
-                //showBubble();
+                showBubble();
             }
 
 
