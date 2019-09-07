@@ -119,8 +119,8 @@ public class BubbleService extends Service {
 
                     // bubble is in the bottom and delete bubble must be shown
                     if (event.getRawY()/MainActivity.screenHeight>.75){
+                        Log.d("DELETEE", "is delete added "+deleteViewAdded);
 
-                        Log.d("DELETEE", "must delete: ");
                         if (!deleteViewAdded){
                             mWindowManager.addView(deleteView,getDeleteViewParams());
                             deleteViewAdded=true;
@@ -130,7 +130,25 @@ public class BubbleService extends Service {
                         mWindowManager.removeView(deleteView);
                         deleteViewAdded=false;
                         }
-                        Log.d("DELETEE", "before delete: "+event.getRawY()+" "+MainActivity.screenHeight) ;
+                        //Log.d("DELETEE", "before delete: "+event.getRawY()+" "+MainActivity.screenHeight) ;
+
+                    }
+
+
+                    if (event.getRawY()>MainActivity.screenHeight-80
+                            &&event.getRawX()>MainActivity.screenWidth/2-20
+                            &&event.getRawX()<MainActivity.screenWidth/2+80
+                            )
+                    {
+                        Log.d("DELETEE", "must delete: "+MainActivity.screenHeight);
+                        if (deleteViewAdded){
+                            mWindowManager.removeView(bubbleView);
+                            mWindowManager.removeView(deleteView);
+                        deleteViewAdded=false;
+                        }
+                        stopSelf();
+                        isRunning=false;
+
 
                     }
 
