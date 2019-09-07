@@ -21,6 +21,8 @@ import android.provider.CallLog;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+
+import com.github.axet.callrecorder.activities.RecorderMainActivity;
 import com.google.android.material.navigation.NavigationView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
@@ -831,7 +833,7 @@ public class MainActivity extends AppCompatActivity
             } else if (position == 5) {
                 intent = new Intent(getApplicationContext(), ChatActivity.class);
             } else if (position == 6) {
-                intent = new Intent(getApplicationContext(), RecordsActivity.class);
+                intent = new Intent(getApplicationContext(), RecorderMainActivity.class);
             }
             if (intent != null) {
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

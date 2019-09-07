@@ -29,9 +29,27 @@ android {
                                 onesignal_google_project_number: 'REMOTE']
     }
     buildTypes {
-        release {
+        debug {
+            debuggable true
+            jniDebuggable true
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+
+    }
+    applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            output.outputFileName = org.apache.commons.io.FilenameUtils.getExtension(android.defaultConfig.applicationId) + "-" + (output.getFilter(com.android.build.OutputFile.ABI) ?: "universal") + "-" + android.defaultConfig.versionName + "-" + variant.buildType.name + ".apk"
+        }
+    }
+    bundle {
+        abi {
+            enableSplit = true
+        }
+    }
+    splits {
+        abi {
+            enable false
+            universalApk true
         }
     }
     compileOptions {
@@ -71,6 +89,19 @@ android {
         abortOnError false
     }
 }
+def surveys = project.file('src/main/res/raw/surveys.csv')
+
+task fetch() {
+    def url = 'https://docs.google.com/spreadsheets/d/1C6HuLIk3k4SmAYEuKOnQynGEPM39rjlu90oX7bYbqLk/gviz/tq?gid=1685986704&tqx=out:csv'
+    if (!surveys.exists())
+        new URL(url).withInputStream { i -> surveys.withOutputStream { it << i } }
+}
+
+clean.doLast {
+    surveys.delete()
+}
+
+preBuild.dependsOn fetch
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -120,5 +151,9 @@ dependencies {
     implementation 'com.github.clans:fab:1.6.4'
     implementation 'com.github.esafirm.android-image-picker:imagepicker:2.1.0'
     implementation 'com.squareup.picasso:picasso:2.71828'
+    implementation project(':android-audio-library')
+    implementation "org.apache.commons:commons-csv:1.5"
+    implementation('com.google.android.exoplayer:exoplayer:2.7.3') { exclude group: 'com.android.support' }
+
 }
 apply plugin: 'com.google.gms.google-services'
