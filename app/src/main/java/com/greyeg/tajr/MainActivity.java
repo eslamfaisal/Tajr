@@ -34,6 +34,7 @@ import android.provider.Settings;
 import android.telephony.SubscriptionInfo;
 import android.telephony.SubscriptionManager;
 import android.telephony.TelephonyManager;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -93,6 +94,8 @@ import static com.greyeg.tajr.activities.LoginActivity.idListString;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     private final static int CODE_DRAW_OVER_OTHER_APP_PERMISSION=115;
+    public static int screenWidth=-1;
+    public static int screenHeight=-1;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -199,6 +202,12 @@ public class MainActivity extends AppCompatActivity
             }
 
         }
+
+
+        DisplayMetrics displaymetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+        screenWidth = displaymetrics.widthPixels;
+        screenHeight = displaymetrics.heightPixels;
 
 
 

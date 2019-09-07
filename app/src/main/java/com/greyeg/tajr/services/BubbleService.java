@@ -10,22 +10,24 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.ImageView;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+
+import com.greyeg.tajr.MainActivity;
 import com.greyeg.tajr.R;
 
 public class BubbleService extends Service {
 
     private WindowManager mWindowManager;
     private View bubbleView;
+    private View deleteView;
     WindowManager.LayoutParams params;
     View expandedView;
     private static final int CLICK_ACTION_THRESHOLD = 2;
     private float startX;
     private float startY;
     public static boolean isRunning=false;
+    private   boolean deleteViewAdded=false;
 
     @Nullable
     @Override
@@ -39,6 +41,7 @@ public class BubbleService extends Service {
         isRunning=true;
 
         bubbleView = LayoutInflater.from(this).inflate(R.layout.bubble, null,false);
+        deleteView = LayoutInflater.from(this).inflate(R.layout.bubble_delete, null,false);
         View collapsedView=bubbleView.findViewById(R.id.collapsed_bubble);
         expandedView=bubbleView.findViewById(R.id.expanded_bubble);
 
@@ -71,14 +74,7 @@ public class BubbleService extends Service {
         collapsedView.setOnTouchListener(onTouchListener);
         expandedView.setOnTouchListener(onTouchListener);
 
-        collapsedView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                Toast.makeText(BubbleService.this, "hey", Toast.LENGTH_SHORT).show();
-                //expandedView.setVisibility(View.VISIBLE);
-            }
-        });
+        Log.d("SCREEEN", "width: "+ MainActivity.screenWidth+"     "+MainActivity.screenHeight);
 
     }
 
@@ -108,14 +104,11 @@ public class BubbleService extends Service {
                     float endX = event.getX();
                     float endY = event.getY();
                     if (isAClick(startX, endX, startY, endY)) {
-                        Log.d("TOUCHHH", "onTouch: ");
                         if (expandedView.getVisibility()==View.GONE)
                         expandedView.setVisibility(View.VISIBLE);
                             else
                                 expandedView.setVisibility(View.GONE);
                     }
-
-
 
 
                     return true;
@@ -124,6 +117,22 @@ public class BubbleService extends Service {
                     params.x = initialX + (int) (event.getRawX() - initialTouchX);
                     params.y = initialY + (int) (event.getRawY() - initialTouchY);
 
+                    // bubble is in the bottom and delete bubble must be shown
+                    if (event.getRawY()/MainActivity.screenHeight>.75){
+
+                        Log.d("DELETEE", "must delete: ");
+                        if (!deleteViewAdded){
+                            mWindowManager.addView(deleteView,getDeleteViewParams());
+                            deleteViewAdded=true;
+                        }
+                    }else{
+                        if (deleteViewAdded){
+                        mWindowManager.removeView(deleteView);
+                        deleteViewAdded=false;
+                        }
+                        Log.d("DELETEE", "before delete: "+event.getRawY()+" "+MainActivity.screenHeight) ;
+
+                    }
 
                     mWindowManager.updateViewLayout(bubbleView, params);
                     return true;
@@ -145,4 +154,30 @@ public class BubbleService extends Service {
         float differenceY = Math.abs(startY - endY);
         return !(differenceX > CLICK_ACTION_THRESHOLD/* =5 */ || differenceY > CLICK_ACTION_THRESHOLD);
     }
+
+    private WindowManager.LayoutParams getDeleteViewParams(){
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            params = new WindowManager.LayoutParams(
+                    WindowManager.LayoutParams.WRAP_CONTENT,
+                    WindowManager.LayoutParams.WRAP_CONTENT,
+                    WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+                    PixelFormat.TRANSLUCENT);
+        }else{
+            params = new WindowManager.LayoutParams(
+                    WindowManager.LayoutParams.WRAP_CONTENT,
+                    WindowManager.LayoutParams.WRAP_CONTENT,
+                    WindowManager.LayoutParams.TYPE_PHONE,
+                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+                    PixelFormat.TRANSLUCENT);
+        }
+
+        params.gravity = Gravity.TOP | Gravity.START;
+        params.x = MainActivity.screenWidth/2-60;
+        params.y = MainActivity.screenHeight-50;
+
+        return params;
+    }
+
+
 }
