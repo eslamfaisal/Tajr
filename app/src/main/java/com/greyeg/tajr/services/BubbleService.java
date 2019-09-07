@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
@@ -75,6 +76,22 @@ public class BubbleService extends Service {
         expandedView.setOnTouchListener(onTouchListener);
 
         Log.d("SCREEEN", "width: "+ MainActivity.screenWidth+"     "+MainActivity.screenHeight);
+
+        bubbleView.findViewById(R.id.send_broadcast)
+                .setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Toast.makeText(BubbleService.this, "send broadcast", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+        bubbleView.findViewById(R.id.register_user)
+                .setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Toast.makeText(BubbleService.this, "register user", Toast.LENGTH_SHORT).show();
+                    }
+                });
 
     }
 
