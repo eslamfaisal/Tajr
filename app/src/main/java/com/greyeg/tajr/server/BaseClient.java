@@ -33,4 +33,8 @@ public class BaseClient {
         return retrofit;
     }
 
+    public static Api getService(){
+        return getBaseClient().create(Api.class);
+    }
+
 }

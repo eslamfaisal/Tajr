@@ -16,6 +16,7 @@ import com.greyeg.tajr.models.PointsHistory;
 import com.greyeg.tajr.models.RemainingOrdersResponse;
 import com.greyeg.tajr.models.SimpleOrderResponse;
 import com.greyeg.tajr.models.SimpleResponse;
+import com.greyeg.tajr.models.SubscriberInfo;
 import com.greyeg.tajr.models.ToalAvailableBalance;
 import com.greyeg.tajr.models.UpdateOrderResponse;
 import com.greyeg.tajr.models.UpdateOrederNewResponse;
@@ -382,6 +383,9 @@ public interface Api {
     @POST("send/all_records")
     Call<AdminRecordsResponse> getRecords(@Field("token") String token);
 
+    @FormUrlEncoded
+    @POST("send_test/get_subscriber_info")
+    Call<SubscriberInfo> getSubscriberInfo(@Field("token") String token,@Field("sender_name") String sender_name);
 
 
 

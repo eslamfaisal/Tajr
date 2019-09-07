@@ -16,6 +16,18 @@ import androidx.annotation.Nullable;
 
 import com.greyeg.tajr.MainActivity;
 import com.greyeg.tajr.R;
+import com.greyeg.tajr.activities.LoginActivity;
+import com.greyeg.tajr.helper.SharedHelper;
+import com.greyeg.tajr.models.Subscriber;
+import com.greyeg.tajr.models.SubscriberInfo;
+import com.greyeg.tajr.server.BaseClient;
+
+import java.io.IOException;
+import java.util.ArrayList;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class BubbleService extends Service {
 
@@ -25,6 +37,7 @@ public class BubbleService extends Service {
     WindowManager.LayoutParams params;
     View expandedView;
     public static String userName=null;
+    public  String userID=null;
     private static final int CLICK_ACTION_THRESHOLD = 2;
     private float startX;
     private float startY;
@@ -94,6 +107,7 @@ public class BubbleService extends Service {
                     }
                 });
 
+        getUserId("Ahmed Khaled");
 
 
     }
@@ -124,7 +138,7 @@ public class BubbleService extends Service {
                     float endX = event.getX();
                     float endY = event.getY();
                     if (isAClick(startX, endX, startY, endY)) {
-                        if (userName==null){
+                        if (userName==null||userID==null){
                             bubbleView.findViewById(R.id.gotUserName)
                                     .setBackgroundResource(R.drawable.circle_gray);
                             return true;
@@ -226,5 +240,45 @@ public class BubbleService extends Service {
         return params;
     }
 
+    private void getUserId(String userName){
+        String token= SharedHelper.getKey(getApplicationContext(), LoginActivity.TOKEN);
+        Log.d("SUBSCRIPERR", "token: "+token);
+        BaseClient.getService()
+                .getSubscriberInfo(token,userName)
+                .enqueue(new Callback<SubscriberInfo>() {
+                    @Override
+                    public void onResponse(Call<SubscriberInfo> call, Response<SubscriberInfo> response) {
+                        SubscriberInfo subscriberInfo=response.body();
+                        if (response.isSuccessful()&&subscriberInfo!=null){
+                            Log.d("SUBSCRIPERR","subscriper "+response.body().getData());
+                            ArrayList<Subscriber> subscribersData =subscriberInfo.getSubscribers_data();
+                            if(subscribersData==null||subscribersData.isEmpty()){
+                                Toast.makeText(BubbleService.this,
+                                        "there is a problem fetching user data"
+                                        , Toast.LENGTH_SHORT).show();
+                            }else if (subscribersData.size()==1){
+
+                            }else {
+
+
+                            }
+
+                        }
+                        else {
+                            try {
+                                Log.d("SUBSCRIPERR","code "+response.code()+" error "+response.errorBody().string());
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                                Log.d("SUBSCRIPERR","error");
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<SubscriberInfo> call, Throwable t) {
+                        Log.d("SUBSCRIPERR", "onFailure: "+t.getMessage());
+                    }
+                });
+    }
 
 }
