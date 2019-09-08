@@ -187,7 +187,7 @@ public class BubbleService extends Service {
 
                         if (!deleteViewAdded){
                             mWindowManager.addView(deleteView
-                                    ,getDeleteViewParams(
+                                    ,getViewParams(
                                             width/2-60
                                             ,height-50
                                     ,-1,-1));
@@ -331,14 +331,8 @@ public class BubbleService extends Service {
                     public void onResponse(Call<BotBlocksResponse> call, Response<BotBlocksResponse> response) {
                         BotBlocksResponse botBlocksResponse=response.body();
                         if (response.isSuccessful()&&botBlocksResponse!=null){
-                             botBlocksDialog=LayoutInflater.from(getApplicationContext())
-                                    .inflate(R.layout.bot_blocks_dialog,null);
-                            mWindowManager.addView(botBlocksDialog,getDeleteViewParams(100,200,600,600));
-                            showBotBlocks(botBlocksResponse.getBlocks().getDefault()
-                                    ,botBlocksDialog.findViewById(R.id.default_blocks_recycler));
-                            showBotBlocks(botBlocksResponse.getBlocks().getNormal()
-                                    ,botBlocksDialog.findViewById(R.id.normal_blocks_recycler));
-                            botBlocksDialog.findViewById(R.id.root).setOnTouchListener(dialogTouchListener);
+                            setupBotBlocksDialog(botBlocksResponse);
+
 
                             //Log.d("BOTBLOKSS", "onResponse: "+botBlocksResponse.getBlocks().getDefault().get(0).getName());
                         }else{
@@ -370,9 +364,31 @@ public class BubbleService extends Service {
         recyclerView.addItemDecoration(dividerItemDecoration);
     }
 
-    private WindowManager.LayoutParams getDeleteViewParams(int x,int y,int width,int height){
+    private void setupBotBlocksDialog(BotBlocksResponse botBlocksResponse){
+        botBlocksDialog=LayoutInflater.from(getApplicationContext())
+                .inflate(R.layout.bot_blocks_dialog,null);
+        mWindowManager.addView(botBlocksDialog, getViewParams(100,200,600,600));
+        showBotBlocks(botBlocksResponse.getBlocks().getDefault()
+                ,botBlocksDialog.findViewById(R.id.default_blocks_recycler));
+        showBotBlocks(botBlocksResponse.getBlocks().getNormal()
+                ,botBlocksDialog.findViewById(R.id.normal_blocks_recycler));
+        botBlocksDialog.findViewById(R.id.root).setOnTouchListener(dialogTouchListener);
+
+        botBlocksDialog.findViewById(R.id.close)
+                .setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        //mWindowManager.updateViewLayout(botBlocksDialog,getViewParams(0,0,0,0));
+                        mWindowManager.removeView(botBlocksDialog);
+                    }
+                });
+    }
+
+    private WindowManager.LayoutParams getViewParams(int x, int y, int width, int height){
+
+        WindowManager.LayoutParams params;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            params = new WindowManager.LayoutParams(
+             params = new WindowManager.LayoutParams(
                     WindowManager.LayoutParams.WRAP_CONTENT,
                     WindowManager.LayoutParams.WRAP_CONTENT,
                     WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
