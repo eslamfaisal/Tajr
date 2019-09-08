@@ -155,25 +155,23 @@ public class BubbleService extends Service implements BotBlocksAdapter.OnBlockSe
                     float endX = event.getX();
                     float endY = event.getY();
                     if (isAClick(startX, endX, startY, endY)) {
-                        if (userName==null){
+                        if (userName==null&&userID==null){
                             bubbleView.findViewById(R.id.gotUserName)
                                     .setBackgroundResource(R.drawable.circle_gray);
                             bubbleView.findViewById(R.id.gotUserId)
                                     .setBackgroundResource(R.drawable.circle_gray);
+                            expandedView.setVisibility(View.GONE);
                             return true;
                         }
-                        else{
+                        if (userName!=null&&userID==null){
                             bubbleView.findViewById(R.id.gotUserName)
                                     .setBackgroundResource(R.drawable.circle_green);
-                            if (userID==null){
                                 getUserId("Ahmed Khaled");
-                            }else {
-                                if (expandedView.getVisibility()==View.GONE)
-                                    expandedView.setVisibility(View.VISIBLE);
-                                else
-                                    expandedView.setVisibility(View.GONE);
-                            }
-
+                        }else {
+                            if (expandedView.getVisibility()==View.GONE)
+                                expandedView.setVisibility(View.VISIBLE);
+                            else
+                                expandedView.setVisibility(View.GONE);
                         }
 
                     }
