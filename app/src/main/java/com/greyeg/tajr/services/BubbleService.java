@@ -44,6 +44,7 @@ public class BubbleService extends Service implements BotBlocksAdapter.OnBlockSe
     private View bubbleView;
     private View deleteView;
     WindowManager.LayoutParams params;
+    WindowManager.LayoutParams dialogParams;
     View expandedView;
     View botBlocksDialog;
     public  static String  userName=null;
@@ -243,8 +244,8 @@ public class BubbleService extends Service implements BotBlocksAdapter.OnBlockSe
 
 
                     //remember the initial position.
-                    initialX = params.x;
-                    initialY = params.y;
+                    initialX = dialogParams.x;
+                    initialY = dialogParams.y;
 
 
                     //get the touch location
@@ -253,12 +254,12 @@ public class BubbleService extends Service implements BotBlocksAdapter.OnBlockSe
                     return true;
                 case MotionEvent.ACTION_MOVE:
                     //Calculate the X and Y coordinates of the view.
-                    params.x = initialX + (int) (event.getRawX() - initialTouchX);
-                    params.y = initialY + (int) (event.getRawY() - initialTouchY);
+                    dialogParams.x = initialX + (int) (event.getRawX() - initialTouchX);
+                    dialogParams.y = initialY + (int) (event.getRawY() - initialTouchY);
 
 
                     //Update the layout with new X & Y coordinate
-                    mWindowManager.updateViewLayout(botBlocksDialog, params);
+                    mWindowManager.updateViewLayout(botBlocksDialog, dialogParams);
                     return true;
             }
             return false;
@@ -394,16 +395,16 @@ public class BubbleService extends Service implements BotBlocksAdapter.OnBlockSe
 
     private WindowManager.LayoutParams getViewParams(int x, int y, int width, int height){
 
-        WindowManager.LayoutParams params;
+
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-             params = new WindowManager.LayoutParams(
+             dialogParams = new WindowManager.LayoutParams(
                     WindowManager.LayoutParams.WRAP_CONTENT,
                     WindowManager.LayoutParams.WRAP_CONTENT,
                     WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
                     WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
                     PixelFormat.TRANSLUCENT);
         }else{
-            params = new WindowManager.LayoutParams(
+            dialogParams = new WindowManager.LayoutParams(
                     WindowManager.LayoutParams.WRAP_CONTENT,
                     WindowManager.LayoutParams.WRAP_CONTENT,
                     WindowManager.LayoutParams.TYPE_PHONE,
@@ -411,17 +412,17 @@ public class BubbleService extends Service implements BotBlocksAdapter.OnBlockSe
                     PixelFormat.TRANSLUCENT);
         }
 
-        params.gravity = Gravity.TOP | Gravity.START;
-        params.x = x;
-        params.y = y;
+        dialogParams.gravity = Gravity.TOP | Gravity.START;
+        dialogParams.x = x;
+        dialogParams.y = y;
 
         if (width!=-1)
-            params.width=width;
+            dialogParams.width=width;
         if (height!=-1)
-            params.height=height;
+            dialogParams.height=height;
 
 
-        return params;
+        return dialogParams;
     }
 
 
