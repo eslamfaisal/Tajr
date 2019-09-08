@@ -4,6 +4,7 @@ import com.greyeg.tajr.models.ActivityHistory;
 import com.greyeg.tajr.models.AdminRecordsResponse;
 import com.greyeg.tajr.models.AllProducts;
 import com.greyeg.tajr.models.BotBlocksResponse;
+import com.greyeg.tajr.models.Broadcast;
 import com.greyeg.tajr.models.CardsResponse;
 import com.greyeg.tajr.models.CartResponse;
 import com.greyeg.tajr.models.CashRequestHistory;
@@ -394,8 +395,8 @@ public interface Api {
 
     @FormUrlEncoded
     @POST("send_test/broadcast")
-    Call<BotBlocksResponse> sendBroadcast(@Field("token") String token,@Field("subscriber") String subscriber
-            ,@Field("page") String page,@Field("block") String block);
+    Call<Broadcast> sendBroadcast(@Field("token") String token, @Field("subscriber") String subscriber
+            , @Field("page") String page, @Field("block") String block);
 
 
 }

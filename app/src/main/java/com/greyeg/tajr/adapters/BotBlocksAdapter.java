@@ -1,25 +1,28 @@
 package com.greyeg.tajr.adapters;
 
 import android.view.LayoutInflater;
-import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.greyeg.tajr.R;
 import com.greyeg.tajr.models.BotBlock;
-
 import java.util.ArrayList;
 
 public class BotBlocksAdapter extends RecyclerView.Adapter<BotBlocksAdapter.BotBlocksHolder> {
 
     private ArrayList<BotBlock> botBlocks;
+    private OnBlockSelected onBlockSelected;
+
 
     public BotBlocksAdapter(ArrayList<BotBlock> botBlocks) {
         this.botBlocks = botBlocks;
+    }
+
+    public BotBlocksAdapter(ArrayList<BotBlock> botBlocks, OnBlockSelected onBlockSelected) {
+        this.botBlocks = botBlocks;
+        this.onBlockSelected = onBlockSelected;
     }
 
     @NonNull
@@ -46,6 +49,19 @@ public class BotBlocksAdapter extends RecyclerView.Adapter<BotBlocksAdapter.BotB
         BotBlocksHolder(@NonNull View itemView) {
             super(itemView);
             blockName=itemView.findViewById(R.id.bot_block_name);
+
+
+            blockName.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onBlockSelected.onBlockSelected(botBlocks.get(getAdapterPosition()).getId());
+                }
+            });
         }
+
+    }
+
+    public interface OnBlockSelected{
+        void onBlockSelected(String blockId);
     }
 }

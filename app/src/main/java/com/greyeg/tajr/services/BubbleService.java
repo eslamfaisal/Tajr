@@ -26,6 +26,7 @@ import com.greyeg.tajr.helper.ScreenHelper;
 import com.greyeg.tajr.helper.SharedHelper;
 import com.greyeg.tajr.models.BotBlock;
 import com.greyeg.tajr.models.BotBlocksResponse;
+import com.greyeg.tajr.models.Broadcast;
 import com.greyeg.tajr.models.Subscriber;
 import com.greyeg.tajr.models.SubscriberInfo;
 import com.greyeg.tajr.server.BaseClient;
@@ -37,7 +38,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class BubbleService extends Service {
+public class BubbleService extends Service implements BotBlocksAdapter.OnBlockSelected {
 
     private WindowManager mWindowManager;
     private View bubbleView;
@@ -45,8 +46,10 @@ public class BubbleService extends Service {
     WindowManager.LayoutParams params;
     View expandedView;
     View botBlocksDialog;
-    public static String userName=null;
+    public  static String  userName=null;
     public  String userID=null;
+    public  String page=null;
+    public  String blockId=null;
     private static final int CLICK_ACTION_THRESHOLD = 0;
     private float startX;
     private float startY;
@@ -298,9 +301,10 @@ public class BubbleService extends Service {
                                         , Toast.LENGTH_SHORT).show();
                             }else if (subscribersData.size()==1){
                                 userID=subscribersData.get(0).getPsid();
+                                page=subscribersData.get(0).getPage();
                             }else {
 
-
+                                // TODO: handle more than one one subscriber
                             }
 
                         }
@@ -356,7 +360,7 @@ public class BubbleService extends Service {
 
 
     private void showBotBlocks(ArrayList<BotBlock> botBlocks, RecyclerView recyclerView){
-        BotBlocksAdapter botBlocksAdapter=new BotBlocksAdapter(botBlocks);
+        BotBlocksAdapter botBlocksAdapter=new BotBlocksAdapter(botBlocks,this);
         recyclerView.setAdapter(botBlocksAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         DividerItemDecoration dividerItemDecoration=new DividerItemDecoration(getApplicationContext()
@@ -382,6 +386,10 @@ public class BubbleService extends Service {
                         mWindowManager.removeView(botBlocksDialog);
                     }
                 });
+
+
+
+
     }
 
     private WindowManager.LayoutParams getViewParams(int x, int y, int width, int height){
@@ -450,5 +458,28 @@ public class BubbleService extends Service {
     }
 
 
+    @Override
+    public void onBlockSelected(String blockId) {
+        mWindowManager.removeView(botBlocksDialog);
+        String token=SharedHelper.getKey(getApplicationContext(),LoginActivity.TOKEN);
+        BaseClient.getService()
+                .sendBroadcast(token,userID,page,blockId)
+                .enqueue(new Callback<Broadcast>() {
+                    @Override
+                    public void onResponse(Call<Broadcast> call, Response<Broadcast> response) {
+                        Broadcast broadcast=response.body();
+                        if (broadcast!=null){
+                            Toast.makeText(BubbleService.this, broadcast.getData(), Toast.LENGTH_SHORT).show();
+                        }else{
+                            Toast.makeText(BubbleService.this, "Error sending Broadcast ", Toast.LENGTH_SHORT).show();
+                        }
+                    }
 
+                    @Override
+                    public void onFailure(Call<Broadcast> call, Throwable t) {
+                        Log.d("BROADCASTTT", "onFailure: "+t.getMessage());
+                        Toast.makeText(BubbleService.this, "Error sending Broadcast", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
+}
