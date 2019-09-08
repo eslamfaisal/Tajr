@@ -210,9 +210,9 @@ public class BubbleService extends Service implements BotBlocksAdapter.OnBlockSe
                     }
 
 
-                    if (event.getRawY()>height-80
-                            &&event.getRawX()>width/2-20
-                            &&event.getRawX()<width/2+80
+                    if (event.getRawY()>height-100  //80
+                            &&event.getRawX()>width/2-40  //20
+                            &&event.getRawX()<width/2+100  //80
                             )
                     {
                         Log.d("DELETEE", "must delete: h"+height);
