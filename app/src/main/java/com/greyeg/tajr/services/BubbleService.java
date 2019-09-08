@@ -326,6 +326,7 @@ public class BubbleService extends Service implements BotBlocksAdapter.OnBlockSe
     }
 
     private void getBotBlocks(){
+        setBroadCastLoading(View.VISIBLE);
         String token=SharedHelper.getKey(getApplicationContext(),LoginActivity.TOKEN);
         BaseClient.getService()
                 .getBotBlocks(token)
@@ -343,6 +344,8 @@ public class BubbleService extends Service implements BotBlocksAdapter.OnBlockSe
                                     "Error getting Bot Blocks \n response code "+response.code()
                                     , Toast.LENGTH_SHORT).show();
                         }
+                        setBroadCastLoading(View.GONE);
+
                     }
 
                     @Override
@@ -351,6 +354,7 @@ public class BubbleService extends Service implements BotBlocksAdapter.OnBlockSe
                         Toast.makeText(BubbleService.this,
                                 "failed to get Blocks \n "+t.getMessage()
                                 , Toast.LENGTH_SHORT).show();
+                        setBroadCastLoading(View.GONE);
 
                     }
                 });
@@ -456,9 +460,14 @@ public class BubbleService extends Service implements BotBlocksAdapter.OnBlockSe
                 .setBackgroundResource(R.drawable.circle_green);
     }
 
+    private void setBroadCastLoading(int visibility){
+        bubbleView.findViewById(R.id.broadcast_progressBar)
+                .setVisibility(visibility);
+    }
 
     @Override
     public void onBlockSelected(String blockId) {
+        setBroadCastLoading(View.VISIBLE);
         mWindowManager.removeView(botBlocksDialog);
         String token=SharedHelper.getKey(getApplicationContext(),LoginActivity.TOKEN);
         BaseClient.getService()
@@ -472,12 +481,16 @@ public class BubbleService extends Service implements BotBlocksAdapter.OnBlockSe
                         }else{
                             Toast.makeText(BubbleService.this, "Error sending Broadcast ", Toast.LENGTH_SHORT).show();
                         }
+                        setBroadCastLoading(View.GONE);
+
                     }
 
                     @Override
                     public void onFailure(Call<Broadcast> call, Throwable t) {
                         Log.d("BROADCASTTT", "onFailure: "+t.getMessage());
                         Toast.makeText(BubbleService.this, "Error sending Broadcast", Toast.LENGTH_SHORT).show();
+                        setBroadCastLoading(View.GONE);
+
                     }
                 });
     }

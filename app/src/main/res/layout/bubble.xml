@@ -41,6 +41,19 @@
             android:layout_marginEnd="5sp"
             />
 
+
+            <ProgressBar
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:id="@+id/broadcast_progressBar"
+                android:visibility="gone"
+                android:indeterminateTint="@color/white"
+                app:layout_constraintTop_toTopOf="@id/send_broadcast"
+                app:layout_constraintBottom_toBottomOf="@id/send_broadcast"
+                app:layout_constraintStart_toStartOf="@id/send_broadcast"
+                app:layout_constraintEnd_toEndOf="@id/send_broadcast"
+                />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
