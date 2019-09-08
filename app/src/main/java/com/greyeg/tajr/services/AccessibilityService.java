@@ -44,12 +44,14 @@ public class AccessibilityService extends android.accessibilityservice.Accessibi
     }
 
     private void checkOverlayPermission(){
+        Log.d(TAG, "checkOverlayPermission: ");
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M&&!Settings.canDrawOverlays(getApplicationContext())){
                 Intent intent=new Intent(this, MainActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
 
             } else {
+                Log.d(TAG, "show bubble from accessibility:" );
                 showBubble();
             }
 

@@ -143,6 +143,8 @@ public class BubbleService extends Service {
                         if (userName==null){
                             bubbleView.findViewById(R.id.gotUserName)
                                     .setBackgroundResource(R.drawable.circle_gray);
+                            bubbleView.findViewById(R.id.gotUserId)
+                                    .setBackgroundResource(R.drawable.circle_gray);
                             return true;
                         }
                         else{
