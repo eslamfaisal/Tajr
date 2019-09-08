@@ -22,7 +22,7 @@
         <ImageView
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:id="@+id/register_user"
+            android:id="@+id/register_order"
             android:background="@drawable/button_background"
             android:src="@drawable/ic_add_shopping_cart_black_24dp"
             android:scaleType="center"
@@ -37,7 +37,7 @@
             android:src="@drawable/broadcast_black_24dp"
             android:scaleType="center"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/register_user"
+            app:layout_constraintEnd_toStartOf="@id/register_order"
             android:layout_marginEnd="5sp"
             />
 

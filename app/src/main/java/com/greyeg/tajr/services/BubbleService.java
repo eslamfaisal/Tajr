@@ -19,6 +19,7 @@ import com.greyeg.tajr.MainActivity;
 import com.greyeg.tajr.R;
 import com.greyeg.tajr.activities.LoginActivity;
 import com.greyeg.tajr.helper.SharedHelper;
+import com.greyeg.tajr.models.BotBlocksResponse;
 import com.greyeg.tajr.models.Subscriber;
 import com.greyeg.tajr.models.SubscriberInfo;
 import com.greyeg.tajr.server.BaseClient;
@@ -39,7 +40,7 @@ public class BubbleService extends Service {
     View expandedView;
     public static String userName=null;
     public  String userID=null;
-    private static final int CLICK_ACTION_THRESHOLD = 2;
+    private static final int CLICK_ACTION_THRESHOLD = 0;
     private float startX;
     private float startY;
     public static boolean isRunning=false;
@@ -90,7 +91,6 @@ public class BubbleService extends Service {
 
 
         collapsedView.setOnTouchListener(onTouchListener);
-        expandedView.setOnTouchListener(onTouchListener);
 
         Log.d("SCREEEN", "width: "+ MainActivity.screenWidth+"     "+MainActivity.screenHeight);
 
@@ -98,17 +98,19 @@ public class BubbleService extends Service {
                 .setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        getBotBlocks();
                         Toast.makeText(BubbleService.this, "send broadcast", Toast.LENGTH_SHORT).show();
                     }
                 });
 
-        bubbleView.findViewById(R.id.register_user)
+        bubbleView.findViewById(R.id.register_order)
                 .setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         Toast.makeText(BubbleService.this, "register user", Toast.LENGTH_SHORT).show();
                     }
                 });
+
 
 
 
@@ -290,6 +292,31 @@ public class BubbleService extends Service {
                     public void onFailure(Call<SubscriberInfo> call, Throwable t) {
                         stopFlasher();
                         Log.d("SUBSCRIPERR", "onFailure: "+t.getMessage());
+                    }
+                });
+    }
+
+    private void getBotBlocks(){
+        String token=SharedHelper.getKey(getApplicationContext(),LoginActivity.TOKEN);
+        BaseClient.getService()
+                .getBotBlocks(token)
+                .enqueue(new Callback<BotBlocksResponse>() {
+                    @Override
+                    public void onResponse(Call<BotBlocksResponse> call, Response<BotBlocksResponse> response) {
+                        BotBlocksResponse botBlocksResponse=response.body();
+                        if (response.isSuccessful()&&botBlocksResponse!=null){
+                            Log.d("BOTBLOKSS", "onResponse: "+botBlocksResponse.getBlocks().getDefault().get(0).getName());
+                        }else{
+                            Toast.makeText(BubbleService.this,
+                                    "Error getting Bot Blocks \n response code "+response.code()
+                                    , Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<BotBlocksResponse> call, Throwable t) {
+                        Log.d("BOTBLOKSS", "onFailure: "+t.getMessage());
+
                     }
                 });
     }

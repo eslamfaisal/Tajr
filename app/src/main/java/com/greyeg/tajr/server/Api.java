@@ -3,6 +3,7 @@ package com.greyeg.tajr.server;
 import com.greyeg.tajr.models.ActivityHistory;
 import com.greyeg.tajr.models.AdminRecordsResponse;
 import com.greyeg.tajr.models.AllProducts;
+import com.greyeg.tajr.models.BotBlocksResponse;
 import com.greyeg.tajr.models.CardsResponse;
 import com.greyeg.tajr.models.CartResponse;
 import com.greyeg.tajr.models.CashRequestHistory;
@@ -386,6 +387,10 @@ public interface Api {
     @FormUrlEncoded
     @POST("send_test/get_subscriber_info")
     Call<SubscriberInfo> getSubscriberInfo(@Field("token") String token,@Field("sender_name") String sender_name);
+
+    @FormUrlEncoded
+    @POST("send_test/get_bot_blocks")
+    Call<BotBlocksResponse> getBotBlocks(@Field("token") String token);
 
 
 
