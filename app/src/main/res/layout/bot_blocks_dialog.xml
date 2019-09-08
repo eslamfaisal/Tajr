@@ -8,9 +8,28 @@
     app:cardElevation="5dp"
     app:cardCornerRadius="15dp">
 
-    <ScrollView
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:id="@+id/root"
+        >
+
+    <com.greyeg.tajr.helper.font.RobotoTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        android:id="@+id/title"
+        android:padding="5dp"
+        android:textSize="20sp"
+        android:background="@color/gray"
+        android:textColor="@color/black_text_color"
+        android:text="Choose Block to send"/>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/title"
+
         android:scrollbars="none">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -58,7 +77,8 @@
             app:layout_constraintTop_toBottomOf="@+id/normal_header"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>
 
 

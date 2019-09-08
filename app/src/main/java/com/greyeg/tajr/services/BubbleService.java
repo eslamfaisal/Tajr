@@ -43,6 +43,7 @@ public class BubbleService extends Service {
     private View deleteView;
     WindowManager.LayoutParams params;
     View expandedView;
+    View botBlocksDialog;
     public static String userName=null;
     public  String userID=null;
     private static final int CLICK_ACTION_THRESHOLD = 0;
@@ -223,6 +224,41 @@ public class BubbleService extends Service {
         }
     };
 
+    View.OnTouchListener dialogTouchListener =new View.OnTouchListener() {
+        private int initialX;
+        private int initialY;
+        private float initialTouchX;
+        private float initialTouchY;
+        @Override
+        public boolean onTouch(View view, MotionEvent event) {
+
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+
+
+                    //remember the initial position.
+                    initialX = params.x;
+                    initialY = params.y;
+
+
+                    //get the touch location
+                    initialTouchX = event.getRawX();
+                    initialTouchY = event.getRawY();
+                    return true;
+                case MotionEvent.ACTION_MOVE:
+                    //Calculate the X and Y coordinates of the view.
+                    params.x = initialX + (int) (event.getRawX() - initialTouchX);
+                    params.y = initialY + (int) (event.getRawY() - initialTouchY);
+
+
+                    //Update the layout with new X & Y coordinate
+                    mWindowManager.updateViewLayout(botBlocksDialog, params);
+                    return true;
+            }
+            return false;
+        }
+    };
+
 
     @Override
     public void onDestroy() {
@@ -292,14 +328,14 @@ public class BubbleService extends Service {
                     public void onResponse(Call<BotBlocksResponse> call, Response<BotBlocksResponse> response) {
                         BotBlocksResponse botBlocksResponse=response.body();
                         if (response.isSuccessful()&&botBlocksResponse!=null){
-                            View botBlocksDialog=LayoutInflater.from(getApplicationContext())
+                             botBlocksDialog=LayoutInflater.from(getApplicationContext())
                                     .inflate(R.layout.bot_blocks_dialog,null);
                             mWindowManager.addView(botBlocksDialog,getDeleteViewParams(100,200,600,600));
                             showBotBlocks(botBlocksResponse.getBlocks().getDefault()
                                     ,botBlocksDialog.findViewById(R.id.default_blocks_recycler));
                             showBotBlocks(botBlocksResponse.getBlocks().getNormal()
                                     ,botBlocksDialog.findViewById(R.id.normal_blocks_recycler));
-
+                            botBlocksDialog.findViewById(R.id.root).setOnTouchListener(dialogTouchListener);
 
                             //Log.d("BOTBLOKSS", "onResponse: "+botBlocksResponse.getBlocks().getDefault().get(0).getName());
                         }else{
