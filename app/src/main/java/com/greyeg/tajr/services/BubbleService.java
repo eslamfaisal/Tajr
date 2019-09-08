@@ -24,12 +24,16 @@ import com.greyeg.tajr.activities.LoginActivity;
 import com.greyeg.tajr.adapters.BotBlocksAdapter;
 import com.greyeg.tajr.helper.ScreenHelper;
 import com.greyeg.tajr.helper.SharedHelper;
+import com.greyeg.tajr.helper.UserNameEvent;
 import com.greyeg.tajr.models.BotBlock;
 import com.greyeg.tajr.models.BotBlocksResponse;
 import com.greyeg.tajr.models.Broadcast;
 import com.greyeg.tajr.models.Subscriber;
 import com.greyeg.tajr.models.SubscriberInfo;
 import com.greyeg.tajr.server.BaseClient;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -47,7 +51,7 @@ public class BubbleService extends Service implements BotBlocksAdapter.OnBlockSe
     WindowManager.LayoutParams dialogParams;
     View expandedView;
     View botBlocksDialog;
-    public  static String  userName=null;
+    public  String  userName=null;
     public  String userID=null;
     public  String page=null;
     public  String blockId=null;
@@ -68,6 +72,7 @@ public class BubbleService extends Service implements BotBlocksAdapter.OnBlockSe
     public void onCreate() {
         super.onCreate();
         isRunning=true;
+        EventBus.getDefault().register(this);
 
         bubbleView = LayoutInflater.from(this).inflate(R.layout.bubble, null,false);
         deleteView = LayoutInflater.from(this).inflate(R.layout.bubble_delete, null,false);
@@ -163,11 +168,12 @@ public class BubbleService extends Service implements BotBlocksAdapter.OnBlockSe
                             expandedView.setVisibility(View.GONE);
                             return true;
                         }
-                        if (userName!=null&&userID==null){
+                        if (userName!=null){
                             bubbleView.findViewById(R.id.gotUserName)
                                     .setBackgroundResource(R.drawable.circle_green);
                                 getUserId("Ahmed Khaled");
-                        }else {
+                        }
+                        if (userID!=null){
                             if (expandedView.getVisibility()==View.GONE)
                                 expandedView.setVisibility(View.VISIBLE);
                             else
@@ -271,14 +277,28 @@ public class BubbleService extends Service implements BotBlocksAdapter.OnBlockSe
         super.onDestroy();
         if (bubbleView != null) mWindowManager.removeView(bubbleView);
         isRunning=false;
+        EventBus.getDefault().unregister(this);
     }
 
+    @Subscribe()
+    public void onMessageEvent(UserNameEvent event) {
+        Log.d("EVENTTT", "onMessageEvent: "+event.getUserNmae());
+        if (event.getUserNmae()!=null)
+        this.userName=event.getUserNmae();
+        if (bubbleView==null)
+            return;
+
+        if (event.getUserNmae()!=null)
+            bubbleView.findViewById(R.id.gotUserName)
+            .setBackgroundResource(R.drawable.circle_green);
+        else
+            bubbleView.findViewById(R.id.gotUserName)
+                    .setBackgroundResource(R.drawable.circle_gray);
+
+    };
+
+
     // method for detecting click in touch listener
-    private boolean isAClick(float startX, float endX, float startY, float endY) {
-        float differenceX = Math.abs(startX - endX);
-        float differenceY = Math.abs(startY - endY);
-        return !(differenceX > CLICK_ACTION_THRESHOLD/* =5 */ || differenceY > CLICK_ACTION_THRESHOLD);
-    }
 
 
     private void getUserId(String userName){
@@ -454,18 +474,6 @@ public class BubbleService extends Service implements BotBlocksAdapter.OnBlockSe
 //                .setBackgroundResource(R.drawable.circle_green);
     }
 
-    private void stopFlasher(){
-        handler.removeCallbacksAndMessages(null);
-        //handler.removeCallbacks(runnable);
-        bubbleView.findViewById(R.id.gotUserId)
-                .setBackgroundResource(R.drawable.circle_green);
-    }
-
-    private void setBroadCastLoading(int visibility){
-        bubbleView.findViewById(R.id.broadcast_progressBar)
-                .setVisibility(visibility);
-    }
-
     @Override
     public void onBlockSelected(String blockId) {
         setBroadCastLoading(View.VISIBLE);
@@ -495,4 +503,23 @@ public class BubbleService extends Service implements BotBlocksAdapter.OnBlockSe
                     }
                 });
     }
+
+    private void stopFlasher(){
+        handler.removeCallbacksAndMessages(null);
+        //handler.removeCallbacks(runnable);
+        bubbleView.findViewById(R.id.gotUserId)
+                .setBackgroundResource(R.drawable.circle_green);
+    }
+
+    private void setBroadCastLoading(int visibility){
+        bubbleView.findViewById(R.id.broadcast_progressBar)
+                .setVisibility(visibility);
+    }
+    private boolean isAClick(float startX, float endX, float startY, float endY) {
+        float differenceX = Math.abs(startX - endX);
+        float differenceY = Math.abs(startY - endY);
+        return !(differenceX > CLICK_ACTION_THRESHOLD/* =5 */ || differenceY > CLICK_ACTION_THRESHOLD);
+    }
+
+
 }

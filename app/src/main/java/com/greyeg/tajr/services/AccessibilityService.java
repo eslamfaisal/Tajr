@@ -10,6 +10,9 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.Toast;
 
 import com.greyeg.tajr.MainActivity;
+import com.greyeg.tajr.helper.UserNameEvent;
+
+import org.greenrobot.eventbus.EventBus;
 
 public class AccessibilityService extends android.accessibilityservice.AccessibilityService {
 
@@ -17,7 +20,7 @@ public class AccessibilityService extends android.accessibilityservice.Accessibi
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent accessibilityEvent) {
-        Log.d(TAG, "onAccessibilityEvent: "+accessibilityEvent.toString());
+        //Log.d(TAG, "onAccessibilityEvent: "+accessibilityEvent.toString());
 
         if (accessibilityEvent.getEventType()==AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED
         &&accessibilityEvent.getPackageName().equals("com.facebook.pages.app"))
@@ -26,7 +29,8 @@ public class AccessibilityService extends android.accessibilityservice.Accessibi
 
             checkOverlayPermission();
             String userName=getUserName();
-                BubbleService.userName=userName;
+            if (userName!=null)
+            EventBus.getDefault().post(new UserNameEvent(userName));
         }
 
 
@@ -38,6 +42,7 @@ public class AccessibilityService extends android.accessibilityservice.Accessibi
     public void onInterrupt() {
 
     }
+
 
     @Override
     protected void onServiceConnected() {
