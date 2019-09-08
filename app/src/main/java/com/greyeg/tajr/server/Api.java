@@ -392,6 +392,10 @@ public interface Api {
     @POST("send_test/get_bot_blocks")
     Call<BotBlocksResponse> getBotBlocks(@Field("token") String token);
 
+    @FormUrlEncoded
+    @POST("send_test/broadcast")
+    Call<BotBlocksResponse> sendBroadcast(@Field("token") String token,@Field("subscriber") String subscriber
+            ,@Field("page") String page,@Field("block") String block);
 
 
 }
