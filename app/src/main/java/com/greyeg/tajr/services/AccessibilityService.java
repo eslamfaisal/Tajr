@@ -17,11 +17,13 @@ public class AccessibilityService extends android.accessibilityservice.Accessibi
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent accessibilityEvent) {
-        //Log.d(TAG, "onAccessibilityEvent: "+accessibilityEvent.toString());
+        Log.d(TAG, "onAccessibilityEvent: "+accessibilityEvent.toString());
 
-        if (accessibilityEvent.getEventType()==AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED
+        if (accessibilityEvent.getEventType()==AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED
         &&accessibilityEvent.getPackageName().equals("com.facebook.pages.app"))
         {
+            //Log.d(TAG, "onAccessibilityEvent: "+"TYPE_WINDOW_STATE_CHANGED");
+
             checkOverlayPermission();
             String userName=getUserName();
                 BubbleService.userName=userName;

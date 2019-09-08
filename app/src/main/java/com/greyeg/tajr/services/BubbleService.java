@@ -222,6 +222,7 @@ public class BubbleService extends Service implements BotBlocksAdapter.OnBlockSe
 
                     }
 
+                    if (bubbleView!=null)
                     mWindowManager.updateViewLayout(bubbleView, params);
                     return true;
             }
