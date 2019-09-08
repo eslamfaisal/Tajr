@@ -22,6 +22,7 @@ import com.greyeg.tajr.MainActivity;
 import com.greyeg.tajr.R;
 import com.greyeg.tajr.activities.LoginActivity;
 import com.greyeg.tajr.adapters.BotBlocksAdapter;
+import com.greyeg.tajr.helper.ScreenHelper;
 import com.greyeg.tajr.helper.SharedHelper;
 import com.greyeg.tajr.models.BotBlock;
 import com.greyeg.tajr.models.BotBlocksResponse;
@@ -52,8 +53,7 @@ public class BubbleService extends Service {
     public static boolean isRunning=false;
     private   boolean deleteViewAdded=false;
     private Handler handler;
-    private Runnable runnable;
-
+    private int width,height;
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -70,7 +70,10 @@ public class BubbleService extends Service {
         View collapsedView=bubbleView.findViewById(R.id.collapsed_bubble);
         expandedView=bubbleView.findViewById(R.id.expanded_bubble);
 
+        width= ScreenHelper.getScreenDimensions(getApplicationContext())[0];
+        height= ScreenHelper.getScreenDimensions(getApplicationContext())[1];
 
+        Log.d("SCREEEEEENw", "onCreate: "+width);
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             params = new WindowManager.LayoutParams(
@@ -98,7 +101,7 @@ public class BubbleService extends Service {
 
         collapsedView.setOnTouchListener(onTouchListener);
 
-        Log.d("SCREEEN", "width: "+ MainActivity.screenWidth+"     "+MainActivity.screenHeight);
+        Log.d("SCREEEN", "width: "+ width+"     "+height);
 
         bubbleView.findViewById(R.id.send_broadcast)
                 .setOnClickListener(new View.OnClickListener() {
@@ -179,14 +182,14 @@ public class BubbleService extends Service {
                     params.y = initialY + (int) (event.getRawY() - initialTouchY);
 
                     // bubble is in the bottom and delete bubble must be shown
-                    if (event.getRawY()/MainActivity.screenHeight>.75){
+                    if (event.getRawY()/height>.75){
                         Log.d("DELETEE", "is delete added "+deleteViewAdded);
 
                         if (!deleteViewAdded){
                             mWindowManager.addView(deleteView
                                     ,getDeleteViewParams(
-                                            MainActivity.screenWidth/2-60
-                                            ,MainActivity.screenHeight-50
+                                            width/2-60
+                                            ,height-50
                                     ,-1,-1));
                             deleteViewAdded=true;
                         }
@@ -195,21 +198,21 @@ public class BubbleService extends Service {
                         mWindowManager.removeView(deleteView);
                         deleteViewAdded=false;
                         }
-                        //Log.d("DELETEE", "before delete: "+event.getRawY()+" "+MainActivity.screenHeight) ;
 
                     }
 
 
-                    if (event.getRawY()>MainActivity.screenHeight-80
-                            &&event.getRawX()>MainActivity.screenWidth/2-20
-                            &&event.getRawX()<MainActivity.screenWidth/2+80
+                    if (event.getRawY()>height-80
+                            &&event.getRawX()>width/2-20
+                            &&event.getRawX()<width/2+80
                             )
                     {
-                        Log.d("DELETEE", "must delete: "+MainActivity.screenHeight);
+                        Log.d("DELETEE", "must delete: h"+height);
                         if (deleteViewAdded){
                             mWindowManager.removeView(bubbleView);
                             mWindowManager.removeView(deleteView);
                         deleteViewAdded=false;
+                        bubbleView=null;
                         }
                         stopSelf();
                         isRunning=false;

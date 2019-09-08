@@ -63,6 +63,7 @@ import com.greyeg.tajr.activities.OrderActivity;
 import com.greyeg.tajr.activities.SettingsActivity;
 import com.greyeg.tajr.activities.WorkHistoryActivity;
 import com.greyeg.tajr.adapters.DrawerAdapter;
+import com.greyeg.tajr.helper.ScreenHelper;
 import com.greyeg.tajr.helper.SharedHelper;
 import com.greyeg.tajr.helper.TimerTextView;
 import com.greyeg.tajr.helper.font.RobotoTextView;
@@ -158,6 +159,8 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         initDrawer();
+        // get dimensions of screen
+        ScreenHelper.saveScreenDimensions(this,this);
         //startService(new Intent(this, BubbleService.class));
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -204,10 +207,7 @@ public class MainActivity extends AppCompatActivity
         }
 
 
-        DisplayMetrics displaymetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
-        screenWidth = displaymetrics.widthPixels;
-        screenHeight = displaymetrics.heightPixels;
+
 
 
 
