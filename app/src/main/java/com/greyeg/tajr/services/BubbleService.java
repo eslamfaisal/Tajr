@@ -14,11 +14,16 @@ import android.view.WindowManager;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.greyeg.tajr.MainActivity;
 import com.greyeg.tajr.R;
 import com.greyeg.tajr.activities.LoginActivity;
+import com.greyeg.tajr.adapters.BotBlocksAdapter;
 import com.greyeg.tajr.helper.SharedHelper;
+import com.greyeg.tajr.models.BotBlock;
 import com.greyeg.tajr.models.BotBlocksResponse;
 import com.greyeg.tajr.models.Subscriber;
 import com.greyeg.tajr.models.SubscriberInfo;
@@ -177,7 +182,11 @@ public class BubbleService extends Service {
                         Log.d("DELETEE", "is delete added "+deleteViewAdded);
 
                         if (!deleteViewAdded){
-                            mWindowManager.addView(deleteView,getDeleteViewParams());
+                            mWindowManager.addView(deleteView
+                                    ,getDeleteViewParams(
+                                            MainActivity.screenWidth/2-60
+                                            ,MainActivity.screenHeight-50
+                                    ,-1,-1));
                             deleteViewAdded=true;
                         }
                     }else{
@@ -222,35 +231,13 @@ public class BubbleService extends Service {
         isRunning=false;
     }
 
+    // method for detecting click in touch listener
     private boolean isAClick(float startX, float endX, float startY, float endY) {
         float differenceX = Math.abs(startX - endX);
         float differenceY = Math.abs(startY - endY);
         return !(differenceX > CLICK_ACTION_THRESHOLD/* =5 */ || differenceY > CLICK_ACTION_THRESHOLD);
     }
 
-    private WindowManager.LayoutParams getDeleteViewParams(){
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            params = new WindowManager.LayoutParams(
-                    WindowManager.LayoutParams.WRAP_CONTENT,
-                    WindowManager.LayoutParams.WRAP_CONTENT,
-                    WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-                    PixelFormat.TRANSLUCENT);
-        }else{
-            params = new WindowManager.LayoutParams(
-                    WindowManager.LayoutParams.WRAP_CONTENT,
-                    WindowManager.LayoutParams.WRAP_CONTENT,
-                    WindowManager.LayoutParams.TYPE_PHONE,
-                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-                    PixelFormat.TRANSLUCENT);
-        }
-
-        params.gravity = Gravity.TOP | Gravity.START;
-        params.x = MainActivity.screenWidth/2-60;
-        params.y = MainActivity.screenHeight-50;
-
-        return params;
-    }
 
     private void getUserId(String userName){
         String token= SharedHelper.getKey(getApplicationContext(), LoginActivity.TOKEN);
@@ -305,7 +292,16 @@ public class BubbleService extends Service {
                     public void onResponse(Call<BotBlocksResponse> call, Response<BotBlocksResponse> response) {
                         BotBlocksResponse botBlocksResponse=response.body();
                         if (response.isSuccessful()&&botBlocksResponse!=null){
-                            Log.d("BOTBLOKSS", "onResponse: "+botBlocksResponse.getBlocks().getDefault().get(0).getName());
+                            View botBlocksDialog=LayoutInflater.from(getApplicationContext())
+                                    .inflate(R.layout.bot_blocks_dialog,null);
+                            mWindowManager.addView(botBlocksDialog,getDeleteViewParams(100,200,600,600));
+                            showBotBlocks(botBlocksResponse.getBlocks().getDefault()
+                                    ,botBlocksDialog.findViewById(R.id.default_blocks_recycler));
+                            showBotBlocks(botBlocksResponse.getBlocks().getNormal()
+                                    ,botBlocksDialog.findViewById(R.id.normal_blocks_recycler));
+
+
+                            //Log.d("BOTBLOKSS", "onResponse: "+botBlocksResponse.getBlocks().getDefault().get(0).getName());
                         }else{
                             Toast.makeText(BubbleService.this,
                                     "Error getting Bot Blocks \n response code "+response.code()
@@ -316,11 +312,57 @@ public class BubbleService extends Service {
                     @Override
                     public void onFailure(Call<BotBlocksResponse> call, Throwable t) {
                         Log.d("BOTBLOKSS", "onFailure: "+t.getMessage());
+                        Toast.makeText(BubbleService.this,
+                                "failed to get Blocks \n "+t.getMessage()
+                                , Toast.LENGTH_SHORT).show();
 
                     }
                 });
     }
 
+
+
+    private void showBotBlocks(ArrayList<BotBlock> botBlocks, RecyclerView recyclerView){
+        BotBlocksAdapter botBlocksAdapter=new BotBlocksAdapter(botBlocks);
+        recyclerView.setAdapter(botBlocksAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        DividerItemDecoration dividerItemDecoration=new DividerItemDecoration(getApplicationContext()
+                ,DividerItemDecoration.VERTICAL);
+        recyclerView.addItemDecoration(dividerItemDecoration);
+    }
+
+    private WindowManager.LayoutParams getDeleteViewParams(int x,int y,int width,int height){
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            params = new WindowManager.LayoutParams(
+                    WindowManager.LayoutParams.WRAP_CONTENT,
+                    WindowManager.LayoutParams.WRAP_CONTENT,
+                    WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+                    PixelFormat.TRANSLUCENT);
+        }else{
+            params = new WindowManager.LayoutParams(
+                    WindowManager.LayoutParams.WRAP_CONTENT,
+                    WindowManager.LayoutParams.WRAP_CONTENT,
+                    WindowManager.LayoutParams.TYPE_PHONE,
+                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+                    PixelFormat.TRANSLUCENT);
+        }
+
+        params.gravity = Gravity.TOP | Gravity.START;
+        params.x = x;
+        params.y = y;
+
+        if (width!=-1)
+            params.width=width;
+        if (height!=-1)
+            params.height=height;
+
+
+        return params;
+    }
+
+
+    // method for making flasher to indicate getting user id from user name
     boolean run=false;
     private void startFlasher(){
 

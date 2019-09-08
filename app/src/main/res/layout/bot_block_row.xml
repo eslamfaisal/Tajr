@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:id="@+id/block_icon"
+        android:layout_marginTop="5dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+
+        android:src="@drawable/ic_view_headline_black_24dp"/>
+
+    <com.greyeg.tajr.helper.font.RobotoTextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/bot_block_name"
+        android:padding="5dp"
+        android:textSize="20sp"
+        android:clickable="true"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@id/block_icon"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:background="@drawable/textview_selector"
+        tools:text="Send Wlcome Mesage"
+        android:textColor="@color/black_text_color"
+        />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
