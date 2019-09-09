@@ -22,6 +22,7 @@ import com.greyeg.tajr.MainActivity;
 import com.greyeg.tajr.R;
 import com.greyeg.tajr.activities.LoginActivity;
 import com.greyeg.tajr.adapters.BotBlocksAdapter;
+import com.greyeg.tajr.adapters.SubscribersAdapter;
 import com.greyeg.tajr.helper.ScreenHelper;
 import com.greyeg.tajr.helper.SharedHelper;
 import com.greyeg.tajr.helper.UserNameEvent;
@@ -42,7 +43,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class BubbleService extends Service implements BotBlocksAdapter.OnBlockSelected {
+public class BubbleService extends Service
+        implements BotBlocksAdapter.OnBlockSelected
+            , SubscribersAdapter.OnSubscriberSelected {
 
     private WindowManager mWindowManager;
     private View bubbleView;
@@ -51,6 +54,7 @@ public class BubbleService extends Service implements BotBlocksAdapter.OnBlockSe
     WindowManager.LayoutParams dialogParams;
     View expandedView;
     View botBlocksDialog;
+    View subscribersDialog;
     public  String  userName=null;
     public  String userID=null;
     public  String page=null;
@@ -171,7 +175,7 @@ public class BubbleService extends Service implements BotBlocksAdapter.OnBlockSe
                         if (userName!=null){
                             bubbleView.findViewById(R.id.gotUserName)
                                     .setBackgroundResource(R.drawable.circle_green);
-                                getUserId("Ahmed Khaled");
+                                getUserId("Mohamed");
                         }
                         if (userID!=null){
                             if (expandedView.getVisibility()==View.GONE)
@@ -283,8 +287,11 @@ public class BubbleService extends Service implements BotBlocksAdapter.OnBlockSe
     @Subscribe()
     public void onMessageEvent(UserNameEvent event) {
         Log.d("EVENTTT", "onMessageEvent: "+event.getUserNmae());
-        if (event.getUserNmae()!=null)
-        this.userName=event.getUserNmae();
+        if (event.getUserNmae()!=null){
+            this.userName=event.getUserNmae();
+            userID=null;
+
+        }
         if (bubbleView==null)
             return;
 
@@ -323,8 +330,8 @@ public class BubbleService extends Service implements BotBlocksAdapter.OnBlockSe
                                 userID=subscribersData.get(0).getPsid();
                                 page=subscribersData.get(0).getPage();
                             }else {
-
-                                // TODO: handle more than one one subscriber
+                                if (userID==null)
+                                setupSubscribersDialog(subscribersData);
                             }
 
                         }
@@ -392,6 +399,32 @@ public class BubbleService extends Service implements BotBlocksAdapter.OnBlockSe
         recyclerView.addItemDecoration(dividerItemDecoration);
     }
 
+    private void setupSubscribersDialog(ArrayList<Subscriber> subscribers){
+        subscribersDialog=LayoutInflater.from(getApplicationContext())
+                .inflate(R.layout.subscripers_dialog,null);
+        mWindowManager.addView(subscribersDialog, getViewParams(100,200,600,600));
+
+        RecyclerView recyclerView=subscribersDialog.findViewById(R.id.subscribers_recycler);
+        SubscribersAdapter adapter=new SubscribersAdapter(
+                getApplicationContext(),subscribers,this);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        recyclerView.addItemDecoration(new DividerItemDecoration(getApplicationContext(),DividerItemDecoration.VERTICAL));
+
+
+
+
+        subscribersDialog.findViewById(R.id.delete)
+                .setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        mWindowManager.removeView(subscribersDialog);
+                    }
+                });
+
+
+    }
+
     private void setupBotBlocksDialog(BotBlocksResponse botBlocksResponse){
         botBlocksDialog=LayoutInflater.from(getApplicationContext())
                 .inflate(R.layout.bot_blocks_dialog,null);
@@ -410,9 +443,6 @@ public class BubbleService extends Service implements BotBlocksAdapter.OnBlockSe
                         mWindowManager.removeView(botBlocksDialog);
                     }
                 });
-
-
-
 
     }
 
@@ -522,4 +552,9 @@ public class BubbleService extends Service implements BotBlocksAdapter.OnBlockSe
     }
 
 
+    @Override
+    public void onSubscriberSelected(String userId) {
+        this.userID=userId;
+        mWindowManager.removeView(subscribersDialog);
+    }
 }

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/_5sdp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+
+
+    <com.github.abdularis.civ.CircleImageView
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:id="@+id/subscriberImg"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        tools:src="@color/black_text_color"
+
+        />
+
+
+    <com.greyeg.tajr.helper.font.RobotoTextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/subscriberName"
+        app:layout_constraintStart_toEndOf="@id/subscriberImg"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Ahmed Khaled"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginStart="5dp"
+        />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
