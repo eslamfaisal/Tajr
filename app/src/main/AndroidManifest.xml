@@ -80,16 +80,7 @@
             android:name=".activities.OrderActivity"
             android:launchMode="singleTask"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".activities.UpdateOrderActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
 
-        <service
-            android:name=".services.TimerServices"
-            android:enabled="true"
-            android:exported="false" />
-
-        <activity android:name=".activities.WorkTimeTodayActivity" />
         <activity
             android:name=".activities.EmptyCallActivity"
             android:theme="@style/AppTheme.NoActionBar" />
