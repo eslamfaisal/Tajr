@@ -52,6 +52,7 @@ public class BubbleService extends Service
     private View deleteView;
     WindowManager.LayoutParams params;
     WindowManager.LayoutParams dialogParams;
+    WindowManager.LayoutParams subscribersDialogParams;
     View expandedView;
     View botBlocksDialog;
     View subscribersDialog;
@@ -202,7 +203,7 @@ public class BubbleService extends Service
                                     ,getViewParams(
                                             width/2-60
                                             ,height-50
-                                    ,-1,-1));
+                                    ,-1,-1,dialogParams));
                             deleteViewAdded=true;
                         }
                     }else{
@@ -269,6 +270,46 @@ public class BubbleService extends Service
 
                     //Update the layout with new X & Y coordinate
                     mWindowManager.updateViewLayout(botBlocksDialog, dialogParams);
+                    return true;
+            }
+            return false;
+        }
+    };
+
+    View.OnTouchListener subscribersdialogTouchListener =new View.OnTouchListener() {
+        private int initialX;
+        private int initialY;
+        private float initialTouchX;
+        private float initialTouchY;
+        @Override
+        public boolean onTouch(View view, MotionEvent event) {
+
+            if (subscribersDialogParams==null){
+                Log.d("subscribersDialogParams", "onTouch: null subscribersDialogParams");
+                return true;
+            }
+
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+
+
+                    //remember the initial position.
+                    initialX = subscribersDialogParams.x;
+                    initialY = subscribersDialogParams.y;
+
+
+                    //get the touch location
+                    initialTouchX = event.getRawX();
+                    initialTouchY = event.getRawY();
+                    return true;
+                case MotionEvent.ACTION_MOVE:
+                    //Calculate the X and Y coordinates of the view.
+                    subscribersDialogParams.x = initialX + (int) (event.getRawX() - initialTouchX);
+                    subscribersDialogParams.y = initialY + (int) (event.getRawY() - initialTouchY);
+
+
+                    //Update the layout with new X & Y coordinate
+                    mWindowManager.updateViewLayout(subscribersDialog, subscribersDialogParams);
                     return true;
             }
             return false;
@@ -402,7 +443,9 @@ public class BubbleService extends Service
     private void setupSubscribersDialog(ArrayList<Subscriber> subscribers){
         subscribersDialog=LayoutInflater.from(getApplicationContext())
                 .inflate(R.layout.subscripers_dialog,null);
-        mWindowManager.addView(subscribersDialog, getViewParams(100,200,600,600));
+        subscribersDialogParams=getViewParams(100,200,600,600,subscribersDialogParams);
+        mWindowManager.addView(subscribersDialog,subscribersDialogParams
+                );
 
         RecyclerView recyclerView=subscribersDialog.findViewById(R.id.subscribers_recycler);
         SubscribersAdapter adapter=new SubscribersAdapter(
@@ -422,13 +465,15 @@ public class BubbleService extends Service
                     }
                 });
 
+        subscribersDialog.setOnTouchListener(subscribersdialogTouchListener);
 
     }
 
     private void setupBotBlocksDialog(BotBlocksResponse botBlocksResponse){
         botBlocksDialog=LayoutInflater.from(getApplicationContext())
                 .inflate(R.layout.bot_blocks_dialog,null);
-        mWindowManager.addView(botBlocksDialog, getViewParams(100,200,600,600));
+        dialogParams=getViewParams(100,200,600,600,dialogParams);
+        mWindowManager.addView(botBlocksDialog,dialogParams);
         showBotBlocks(botBlocksResponse.getBlocks().getDefault()
                 ,botBlocksDialog.findViewById(R.id.default_blocks_recycler));
         showBotBlocks(botBlocksResponse.getBlocks().getNormal()
@@ -446,18 +491,18 @@ public class BubbleService extends Service
 
     }
 
-    private WindowManager.LayoutParams getViewParams(int x, int y, int width, int height){
+    private WindowManager.LayoutParams getViewParams(int x, int y, int width, int height,WindowManager.LayoutParams layoutParams){
 
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-             dialogParams = new WindowManager.LayoutParams(
+             layoutParams = new WindowManager.LayoutParams(
                     WindowManager.LayoutParams.WRAP_CONTENT,
                     WindowManager.LayoutParams.WRAP_CONTENT,
                     WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
                     WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
                     PixelFormat.TRANSLUCENT);
         }else{
-            dialogParams = new WindowManager.LayoutParams(
+            layoutParams = new WindowManager.LayoutParams(
                     WindowManager.LayoutParams.WRAP_CONTENT,
                     WindowManager.LayoutParams.WRAP_CONTENT,
                     WindowManager.LayoutParams.TYPE_PHONE,
@@ -465,17 +510,18 @@ public class BubbleService extends Service
                     PixelFormat.TRANSLUCENT);
         }
 
-        dialogParams.gravity = Gravity.TOP | Gravity.START;
-        dialogParams.x = x;
-        dialogParams.y = y;
+        layoutParams.gravity = Gravity.TOP | Gravity.START;
+        layoutParams.x = x;
+        layoutParams.y = y;
 
         if (width!=-1)
-            dialogParams.width=width;
+            layoutParams.width=width;
         if (height!=-1)
-            dialogParams.height=height;
+            layoutParams.height=height;
 
 
-        return dialogParams;
+
+        return layoutParams;
     }
 
 
@@ -556,5 +602,6 @@ public class BubbleService extends Service
     public void onSubscriberSelected(String userId) {
         this.userID=userId;
         mWindowManager.removeView(subscribersDialog);
+
     }
 }
