@@ -370,6 +370,8 @@ public class BubbleService extends Service
                             }else if (subscribersData.size()==1){
                                 userID=subscribersData.get(0).getPsid();
                                 page=subscribersData.get(0).getPage();
+                                bubbleView.findViewById(R.id.expanded_bubble).setVisibility(View.VISIBLE);
+
                             }else {
                                 if (userID==null)
                                 setupSubscribersDialog(subscribersData);
@@ -602,6 +604,6 @@ public class BubbleService extends Service
     public void onSubscriberSelected(String userId) {
         this.userID=userId;
         mWindowManager.removeView(subscribersDialog);
-
+        bubbleView.findViewById(R.id.expanded_bubble).setVisibility(View.VISIBLE);
     }
 }
