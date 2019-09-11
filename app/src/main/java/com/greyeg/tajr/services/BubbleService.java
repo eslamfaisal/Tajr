@@ -3,26 +3,21 @@ package com.greyeg.tajr.services;
 import android.app.Service;
 import android.content.ClipData;
 import android.content.ClipboardManager;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -48,7 +43,6 @@ import com.greyeg.tajr.models.ProductData;
 import com.greyeg.tajr.models.ProductForSpinner;
 import com.greyeg.tajr.models.Subscriber;
 import com.greyeg.tajr.models.SubscriberInfo;
-import com.greyeg.tajr.server.Api;
 import com.greyeg.tajr.server.BaseClient;
 import com.rafakob.drawme.DrawMeButton;
 
@@ -311,6 +305,8 @@ public class BubbleService extends Service
         ImageView client_order_phone1_paste=newOrderDialog.findViewById(R.id.client_order_phone1_paste);
         ImageView item_no_paste=newOrderDialog.findViewById(R.id.item_no_paste);
 
+
+        newOrderDialog.setOnTouchListener(setOnTOuchListener(newOrderDialogParams));
 
         send_order.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -735,6 +731,51 @@ public class BubbleService extends Service
         }
     };
 
+    private View.OnTouchListener setOnTOuchListener(WindowManager.LayoutParams viewparams){
+        View.OnTouchListener viewTouchListener =new View.OnTouchListener() {
+            private int initialX;
+            private int initialY;
+            private float initialTouchX;
+            private float initialTouchY;
+            @Override
+            public boolean onTouch(View view, MotionEvent event) {
+
+                if (viewparams==null){
+                    Log.d("subscribersDialogParams", "onTouch: null subscribersDialogParams");
+                    return true;
+                }
+
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+
+
+                        //remember the initial position.
+                        initialX = viewparams.x;
+                        initialY = viewparams.y;
+
+
+                        //get the touch location
+                        initialTouchX = event.getRawX();
+                        initialTouchY = event.getRawY();
+                        return true;
+                    case MotionEvent.ACTION_MOVE:
+                        //Calculate the X and Y coordinates of the view.
+                        viewparams.x = initialX + (int) (event.getRawX() - initialTouchX);
+                        viewparams.y = initialY + (int) (event.getRawY() - initialTouchY);
+
+
+                        //Update the layout with new X & Y coordinate
+                        mWindowManager.updateViewLayout(newOrderDialog, viewparams);
+                        return true;
+                }
+                return false;
+            }
+        };
+
+        return viewTouchListener;
+
+    }
+
 
     private void getProducts() {
         // TODO: 9/11/2019 check userId issue
@@ -834,13 +875,6 @@ public class BubbleService extends Service
         });
     }
 
-    private void openSoftKeyboard(EditText... editTexts){
-
-        for (EditText editText: editTexts) {
-
-        }
-
-    }
 
 
 
