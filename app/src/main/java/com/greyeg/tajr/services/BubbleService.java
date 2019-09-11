@@ -1,19 +1,28 @@
 package com.greyeg.tajr.services;
 
 import android.app.Service;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -34,12 +43,14 @@ import com.greyeg.tajr.models.BotBlock;
 import com.greyeg.tajr.models.BotBlocksResponse;
 import com.greyeg.tajr.models.Broadcast;
 import com.greyeg.tajr.models.Cities;
+import com.greyeg.tajr.models.NewOrderResponse;
 import com.greyeg.tajr.models.ProductData;
 import com.greyeg.tajr.models.ProductForSpinner;
 import com.greyeg.tajr.models.Subscriber;
 import com.greyeg.tajr.models.SubscriberInfo;
 import com.greyeg.tajr.server.Api;
 import com.greyeg.tajr.server.BaseClient;
+import com.rafakob.drawme.DrawMeButton;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -151,12 +162,11 @@ public class BubbleService extends Service
                 .setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Toast.makeText(BubbleService.this,
-                                "making new Order",
-                                Toast.LENGTH_SHORT).show();
                         setupNewOrderDialog();
                     }
                 });
+
+
 
     }
 
@@ -184,6 +194,7 @@ public class BubbleService extends Service
 
 
     private void getUserId(String userName){
+        // TODO: 9/11/2019 handle expand
         String token= SharedHelper.getKey(getApplicationContext(), LoginActivity.TOKEN);
         Log.d("SUBSCRIPERR", "token: "+token);
         startFlasher();
@@ -284,7 +295,84 @@ public class BubbleService extends Service
 
         getProducts();
         getCities();
+
+        Spinner product=newOrderDialog.findViewById(R.id.product);
+        Spinner city=newOrderDialog.findViewById(R.id.client_city);
+        EditText client_name=newOrderDialog.findViewById(R.id.client_name);
+        EditText client_address=newOrderDialog.findViewById(R.id.client_address);
+        EditText client_area=newOrderDialog.findViewById(R.id.client_area);
+        EditText client_order_phone1=newOrderDialog.findViewById(R.id.client_order_phone1);
+        EditText item_no=newOrderDialog.findViewById(R.id.item_no);
+        DrawMeButton send_order=newOrderDialog.findViewById(R.id.send_order);
+
+        ImageView client_name_Paste=newOrderDialog.findViewById(R.id.client_name_paste);
+        ImageView client_address_paste=newOrderDialog.findViewById(R.id.client_address_paste);
+        ImageView client_area_paste=newOrderDialog.findViewById(R.id.client_area_paste);
+        ImageView client_order_phone1_paste=newOrderDialog.findViewById(R.id.client_order_phone1_paste);
+        ImageView item_no_paste=newOrderDialog.findViewById(R.id.item_no_paste);
+
+
+        send_order.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                MakeNewOrder(
+                        client_name.getText().toString(),
+                        client_order_phone1.getText().toString(),
+                        client_area.getText().toString(),
+                        client_address.getText().toString(),
+                        item_no.getText().toString()
+
+                        );
+            }
+        });
+
+
+
+
+
+        pasteData(client_name_Paste,client_name);
+        pasteData(client_address_paste,client_address);
+        pasteData(client_area_paste,client_area);
+        pasteData(client_order_phone1_paste,client_order_phone1);
+        pasteData(item_no_paste,item_no);
+
+
     }
+
+    private void pasteData(ImageView pasteButton,EditText editText){
+        pasteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+                ClipData clipData =clipboard.getPrimaryClip();
+                if (clipData!=null&&clipData.getItemCount()>0)
+                    editText.setText(clipboard.getPrimaryClip().getItemAt(0).getText());
+                else
+                    Toast.makeText(BubbleService.this, "no text copied", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void MakeNewOrder(String client_name, String client_order_phone1
+            , String client_area, String client_address, String item_no){
+        BaseClient.getService()
+                .recordNewOrder(SharedHelper.getKey(getApplicationContext(),LoginActivity.TOKEN),
+                        userId,productId,client_name,client_order_phone1,CITY_ID,client_area,client_address
+                ,item_no,null)
+                .enqueue(new Callback<NewOrderResponse>() {
+                    @Override
+                    public void onResponse(Call<NewOrderResponse> call, Response<NewOrderResponse> response) {
+                        Log.d("ORDERRRR", "onresponse: "+response.code() +"\n" +response.body().getDetails());
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<NewOrderResponse> call, Throwable t) {
+                        Log.d("ORDERRRR", "onFailure: "+t.getMessage());
+                    }
+                });
+    }
+
 
     private void setupSubscribersDialog(ArrayList<Subscriber> subscribers){
         subscribersDialog=LayoutInflater.from(getApplicationContext())
@@ -293,6 +381,7 @@ public class BubbleService extends Service
         mWindowManager.addView(subscribersDialog,subscribersDialogParams
                 );
 
+        // TODO: 9/11/2019 show susbscriber image
         RecyclerView recyclerView=subscribersDialog.findViewById(R.id.subscribers_recycler);
         SubscribersAdapter adapter=new SubscribersAdapter(
                 getApplicationContext(),subscribers,this);
@@ -444,14 +533,14 @@ public class BubbleService extends Service
                     WindowManager.LayoutParams.WRAP_CONTENT,
                     WindowManager.LayoutParams.WRAP_CONTENT,
                     WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
                     PixelFormat.TRANSLUCENT);
         }else{
             layoutParams = new WindowManager.LayoutParams(
                     WindowManager.LayoutParams.WRAP_CONTENT,
                     WindowManager.LayoutParams.WRAP_CONTENT,
                     WindowManager.LayoutParams.TYPE_PHONE,
-                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
                     PixelFormat.TRANSLUCENT);
         }
 
@@ -674,7 +763,6 @@ public class BubbleService extends Service
                         @Override
                         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                             productId = response.body().getProducts().get(position).getProduct_id();
-                            Toast.makeText(getApplicationContext(), "id is "+productId, Toast.LENGTH_SHORT).show();
                         }
 
                         @Override
@@ -745,6 +833,15 @@ public class BubbleService extends Service
             }
         });
     }
+
+    private void openSoftKeyboard(EditText... editTexts){
+
+        for (EditText editText: editTexts) {
+
+        }
+
+    }
+
 
 
 }

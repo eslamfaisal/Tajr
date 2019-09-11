@@ -92,13 +92,28 @@
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
                 <EditText
                     android:id="@+id/client_name"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:layout_height="45dp"
                     android:background="@drawable/ic_background_gray_new_order"
                     android:paddingStart="8dp"
-                    android:paddingEnd="8dp" />
+                    android:paddingEnd="8dp"
+                    />
+
+                    <ImageView
+                        android:layout_width="45dp"
+                        android:layout_height="45dp"
+                        android:id="@+id/client_name_paste"
+                        android:src="@drawable/ic_content_paste_black_24dp"/>
+
+                </LinearLayout>
 
 
             </LinearLayout>
@@ -119,14 +134,27 @@
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
                 <EditText
                     android:id="@+id/client_address"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:background="@drawable/ic_background_gray_new_order"
                     android:paddingStart="8dp"
                     android:paddingEnd="8dp" />
 
+                    <ImageView
+                        android:layout_width="45dp"
+                        android:layout_height="45dp"
+                        android:id="@+id/client_address_paste"
+                        android:src="@drawable/ic_content_paste_black_24dp"/>
+
+                </LinearLayout>
             </LinearLayout>
 
             <LinearLayout
@@ -145,13 +173,26 @@
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
                 <EditText
                     android:id="@+id/client_area"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:layout_height="45dp"
                     android:background="@drawable/ic_background_gray_new_order"
                     android:paddingStart="8dp"
                     android:paddingEnd="8dp" />
+
+                    <ImageView
+                        android:layout_width="45dp"
+                        android:layout_height="45dp"
+                        android:id="@+id/client_area_paste"
+                        android:src="@drawable/ic_content_paste_black_24dp"/>
+
+                </LinearLayout>
 
             </LinearLayout>
 
@@ -198,14 +239,27 @@
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
                 <EditText
                     android:id="@+id/client_order_phone1"
                     android:inputType="phone"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:layout_height="45dp"
                     android:background="@drawable/ic_background_gray_new_order"
                     android:paddingStart="8dp"
                     android:paddingEnd="8dp" />
+
+                <ImageView
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
+                    android:id="@+id/client_order_phone1_paste"
+                    android:src="@drawable/ic_content_paste_black_24dp"/>
+
+                </LinearLayout>
 
 
             </LinearLayout>
@@ -257,14 +311,30 @@
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
                 <EditText
                     android:inputType="number"
                     android:id="@+id/item_no"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:layout_height="45dp"
                     android:background="@drawable/ic_background_gray_new_order"
                     android:paddingStart="8dp"
                     android:paddingEnd="8dp" />
+
+
+                    <ImageView
+                        android:layout_width="45dp"
+                        android:layout_height="45dp"
+                        android:id="@+id/item_no_paste"
+                        android:src="@drawable/ic_content_paste_black_24dp"/>
+
+                </LinearLayout>
 
 
             </LinearLayout>
