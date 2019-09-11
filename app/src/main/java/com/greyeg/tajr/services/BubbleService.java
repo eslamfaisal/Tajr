@@ -358,7 +358,11 @@ public class BubbleService extends Service
                 .enqueue(new Callback<NewOrderResponse>() {
                     @Override
                     public void onResponse(Call<NewOrderResponse> call, Response<NewOrderResponse> response) {
-                        Log.d("ORDERRRR", "onresponse: "+response.code() +"\n" +response.body().getDetails());
+                        NewOrderResponse newOrderResponse=response.body();
+                        if (newOrderResponse!=null)
+                        Log.d("ORDERRRR", "onresponse: "+newOrderResponse.getInfo());
+                        else
+                        Log.d("ORDERRRR", "onresponse: "+response.code());
 
                     }
 
@@ -591,7 +595,7 @@ public class BubbleService extends Service
                         if (userName!=null){
                             bubbleView.findViewById(R.id.gotUserName)
                                     .setBackgroundResource(R.drawable.circle_green);
-                            getUserId("Mohamed Gamal");
+                            getUserId("Mohamed");
                         }
                         if (psid !=null){
                             if (expandedView.getVisibility()==View.GONE)
@@ -765,6 +769,7 @@ public class BubbleService extends Service
 
 
                         //Update the layout with new X & Y coordinate
+                        if (newOrderDialog!=null)
                         mWindowManager.updateViewLayout(newOrderDialog, viewparams);
                         return true;
                 }
