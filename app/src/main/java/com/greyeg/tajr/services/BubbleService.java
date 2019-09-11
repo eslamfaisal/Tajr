@@ -33,18 +33,22 @@ import com.greyeg.tajr.models.AllProducts;
 import com.greyeg.tajr.models.BotBlock;
 import com.greyeg.tajr.models.BotBlocksResponse;
 import com.greyeg.tajr.models.Broadcast;
+import com.greyeg.tajr.models.Cities;
 import com.greyeg.tajr.models.ProductData;
 import com.greyeg.tajr.models.ProductForSpinner;
 import com.greyeg.tajr.models.Subscriber;
 import com.greyeg.tajr.models.SubscriberInfo;
+import com.greyeg.tajr.server.Api;
 import com.greyeg.tajr.server.BaseClient;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.io.IOException;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -78,6 +82,11 @@ public class BubbleService extends Service
     private Handler handler;
     private int width,height;
     String productId;
+    List<String> cities = new ArrayList<>();
+    public static String CITY_ID;
+    List<String> citiesId = new ArrayList<>();
+    private List<Cities.City> citiesBody;
+
 
     @Nullable
     @Override
@@ -196,7 +205,7 @@ public class BubbleService extends Service
                                 psid =subscribersData.get(0).getPsid();
                                 page=subscribersData.get(0).getPage();
                                 userId=subscribersData.get(0).getId();
-                                bubbleView.findViewById(R.id.expanded_bubble).setVisibility(View.VISIBLE);
+                                    bubbleView.findViewById(R.id.expanded_bubble).setVisibility(View.VISIBLE);
 
                             }else {
                                 if (psid ==null)
@@ -274,6 +283,7 @@ public class BubbleService extends Service
                 });
 
         getProducts();
+        getCities();
     }
 
     private void setupSubscribersDialog(ArrayList<Subscriber> subscribers){
@@ -682,5 +692,59 @@ public class BubbleService extends Service
         });
 
     }
+
+    private void getCities() {
+        Spinner client_city=newOrderDialog.findViewById(R.id.client_city);
+        if (cities != null && cities.size() > 1) {
+            cities.clear();
+        }
+        Call<Cities> getCiriesCall = BaseClient.getService().getCities(
+                SharedHelper.getKey(getApplicationContext(), LoginActivity.TOKEN),
+                SharedHelper.getKey(getApplicationContext(), LoginActivity.PARENT_ID)
+        );
+
+        getCiriesCall.enqueue(new Callback<Cities>() {
+            @Override
+            public void onResponse(Call<Cities> call, Response<Cities> response) {
+                if (response.body().getCities() != null) {
+                    if (response.body().getCities().size() > 0) {
+
+                        citiesBody = response.body().getCities();
+                        for (Cities.City city : citiesBody) {
+                            cities.add(city.getCity_name()+" >> "+
+                                    NumberFormat.getNumberInstance(Locale.getDefault()).format(
+                                            Integer.valueOf(city.getShipping_cost()))+
+                                    getString(R.string.le)+" "
+                                    +getString(R.string.for_shipping));
+                            citiesId.add(city.getCity_id());
+                        }
+                        ArrayAdapter adapter = new ArrayAdapter(getApplicationContext()
+                                , R.layout.layout_cities_spinner_item, cities);
+
+                        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                        client_city.setAdapter(adapter);
+                        client_city.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                            @Override
+                            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                                CITY_ID = String.valueOf(citiesBody.get(position).getCity_id());
+                            }
+
+                            @Override
+                            public void onNothingSelected(AdapterView<?> parent) {
+
+                            }
+                        });
+                    }
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<Cities> call, Throwable t) {
+
+            }
+        });
+    }
+
 
 }
