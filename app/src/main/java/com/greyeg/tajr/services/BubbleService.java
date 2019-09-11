@@ -11,6 +11,9 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -18,17 +21,20 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.greyeg.tajr.MainActivity;
 import com.greyeg.tajr.R;
 import com.greyeg.tajr.activities.LoginActivity;
 import com.greyeg.tajr.adapters.BotBlocksAdapter;
+import com.greyeg.tajr.adapters.ProductSpinnerAdapter;
 import com.greyeg.tajr.adapters.SubscribersAdapter;
 import com.greyeg.tajr.helper.ScreenHelper;
 import com.greyeg.tajr.helper.SharedHelper;
 import com.greyeg.tajr.helper.UserNameEvent;
+import com.greyeg.tajr.models.AllProducts;
 import com.greyeg.tajr.models.BotBlock;
 import com.greyeg.tajr.models.BotBlocksResponse;
 import com.greyeg.tajr.models.Broadcast;
+import com.greyeg.tajr.models.ProductData;
+import com.greyeg.tajr.models.ProductForSpinner;
 import com.greyeg.tajr.models.Subscriber;
 import com.greyeg.tajr.models.SubscriberInfo;
 import com.greyeg.tajr.server.BaseClient;
@@ -38,6 +44,7 @@ import org.greenrobot.eventbus.Subscribe;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -50,15 +57,18 @@ public class BubbleService extends Service
     private WindowManager mWindowManager;
     private View bubbleView;
     private View deleteView;
-    WindowManager.LayoutParams params;
-    WindowManager.LayoutParams dialogParams;
-    WindowManager.LayoutParams subscribersDialogParams;
     View expandedView;
     View botBlocksDialog;
     View subscribersDialog;
+    View newOrderDialog;
+    WindowManager.LayoutParams params;
+    WindowManager.LayoutParams dialogParams;
+    WindowManager.LayoutParams subscribersDialogParams;
+    WindowManager.LayoutParams newOrderDialogParams;
     public  String  userName=null;
-    public  String userID=null;
+    public  String psid =null;
     public  String page=null;
+    private String userId;
     public  String blockId=null;
     private static final int CLICK_ACTION_THRESHOLD = 0;
     private float startX;
@@ -67,6 +77,8 @@ public class BubbleService extends Service
     private   boolean deleteViewAdded=false;
     private Handler handler;
     private int width,height;
+    String productId;
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -122,7 +134,7 @@ public class BubbleService extends Service
                     @Override
                     public void onClick(View view) {
                         getBotBlocks();
-                        Toast.makeText(BubbleService.this, "send broadcast", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(BubbleService.this, "sending broadcast", Toast.LENGTH_SHORT).show();
                     }
                 });
 
@@ -130,13 +142,321 @@ public class BubbleService extends Service
                 .setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Toast.makeText(BubbleService.this, "register user", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(BubbleService.this,
+                                "making new Order",
+                                Toast.LENGTH_SHORT).show();
+                        setupNewOrderDialog();
                     }
                 });
 
+    }
 
 
 
+    @Subscribe()
+    public void onMessageEvent(UserNameEvent event) {
+        Log.d("EVENTTT", "onMessageEvent: "+event.getUserNmae());
+        if (event.getUserNmae()!=null){
+            this.userName=event.getUserNmae();
+            psid =null;
+
+        }
+        if (bubbleView==null)
+            return;
+
+        if (event.getUserNmae()!=null)
+            bubbleView.findViewById(R.id.gotUserName)
+            .setBackgroundResource(R.drawable.circle_green);
+        else
+            bubbleView.findViewById(R.id.gotUserName)
+                    .setBackgroundResource(R.drawable.circle_gray);
+
+    };
+
+
+    private void getUserId(String userName){
+        String token= SharedHelper.getKey(getApplicationContext(), LoginActivity.TOKEN);
+        Log.d("SUBSCRIPERR", "token: "+token);
+        startFlasher();
+        BaseClient.getService()
+                .getSubscriberInfo(token,userName)
+                .enqueue(new Callback<SubscriberInfo>() {
+                    @Override
+                    public void onResponse(Call<SubscriberInfo> call, Response<SubscriberInfo> response) {
+                        stopFlasher();
+                        SubscriberInfo subscriberInfo=response.body();
+                        if (response.isSuccessful()&&subscriberInfo!=null){
+                            Log.d("SUBSCRIPERR","subscriper "+response.body().getData());
+                            ArrayList<Subscriber> subscribersData =subscriberInfo.getSubscribers_data();
+                            if(subscribersData==null||subscribersData.isEmpty()){
+                                Toast.makeText(BubbleService.this,
+                                        "there is a problem fetching user data"
+                                        , Toast.LENGTH_SHORT).show();
+                            }else if (subscribersData.size()==1){
+                                psid =subscribersData.get(0).getPsid();
+                                page=subscribersData.get(0).getPage();
+                                userId=subscribersData.get(0).getId();
+                                bubbleView.findViewById(R.id.expanded_bubble).setVisibility(View.VISIBLE);
+
+                            }else {
+                                if (psid ==null)
+                                setupSubscribersDialog(subscribersData);
+                            }
+
+                        }
+                        else {
+                            try {
+                                Log.d("SUBSCRIPERR","code "+response.code()+" error "+response.errorBody().string());
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                                Log.d("SUBSCRIPERR","error");
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<SubscriberInfo> call, Throwable t) {
+                        stopFlasher();
+                        Log.d("SUBSCRIPERR", "onFailure: "+t.getMessage());
+                    }
+                });
+    }
+
+    private void getBotBlocks(){
+        setBroadCastLoading(View.VISIBLE);
+        String token=SharedHelper.getKey(getApplicationContext(),LoginActivity.TOKEN);
+        BaseClient.getService()
+                .getBotBlocks(token)
+                .enqueue(new Callback<BotBlocksResponse>() {
+                    @Override
+                    public void onResponse(Call<BotBlocksResponse> call, Response<BotBlocksResponse> response) {
+                        BotBlocksResponse botBlocksResponse=response.body();
+                        if (response.isSuccessful()&&botBlocksResponse!=null){
+                            setupBotBlocksDialog(botBlocksResponse);
+
+
+                            //Log.d("BOTBLOKSS", "onResponse: "+botBlocksResponse.getBlocks().getDefault().get(0).getName());
+                        }else{
+                            Toast.makeText(BubbleService.this,
+                                    "Error getting Bot Blocks \n response code "+response.code()
+                                    , Toast.LENGTH_SHORT).show();
+                        }
+                        setBroadCastLoading(View.GONE);
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<BotBlocksResponse> call, Throwable t) {
+                        Log.d("BOTBLOKSS", "onFailure: "+t.getMessage());
+                        Toast.makeText(BubbleService.this,
+                                "failed to get Blocks \n "+t.getMessage()
+                                , Toast.LENGTH_SHORT).show();
+                        setBroadCastLoading(View.GONE);
+
+                    }
+                });
+    }
+
+
+    private void setupNewOrderDialog(){
+        newOrderDialog=LayoutInflater.from(getApplicationContext())
+                .inflate(R.layout.new_order_dialog,null);
+        newOrderDialogParams=getViewParams(100,100,600,600,newOrderDialogParams);
+        mWindowManager.addView(newOrderDialog,newOrderDialogParams);
+
+
+        newOrderDialog.findViewById(R.id.close)
+                .setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        mWindowManager.removeView(newOrderDialog);
+                    }
+                });
+
+        getProducts();
+    }
+
+    private void setupSubscribersDialog(ArrayList<Subscriber> subscribers){
+        subscribersDialog=LayoutInflater.from(getApplicationContext())
+                .inflate(R.layout.subscripers_dialog,null);
+        subscribersDialogParams=getViewParams(100,200,600,600,subscribersDialogParams);
+        mWindowManager.addView(subscribersDialog,subscribersDialogParams
+                );
+
+        RecyclerView recyclerView=subscribersDialog.findViewById(R.id.subscribers_recycler);
+        SubscribersAdapter adapter=new SubscribersAdapter(
+                getApplicationContext(),subscribers,this);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        recyclerView.addItemDecoration(new DividerItemDecoration(getApplicationContext(),DividerItemDecoration.VERTICAL));
+
+
+
+
+        subscribersDialog.findViewById(R.id.delete)
+                .setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        mWindowManager.removeView(subscribersDialog);
+                    }
+                });
+
+        subscribersDialog.setOnTouchListener(subscribersdialogTouchListener);
+
+    }
+
+    private void setupBotBlocksDialog(BotBlocksResponse botBlocksResponse){
+        botBlocksDialog=LayoutInflater.from(getApplicationContext())
+                .inflate(R.layout.bot_blocks_dialog,null);
+        dialogParams=getViewParams(100,200,600,600,dialogParams);
+        mWindowManager.addView(botBlocksDialog,dialogParams);
+        showBotBlocks(botBlocksResponse.getBlocks().getDefault()
+                ,botBlocksDialog.findViewById(R.id.default_blocks_recycler));
+        showBotBlocks(botBlocksResponse.getBlocks().getNormal()
+                ,botBlocksDialog.findViewById(R.id.normal_blocks_recycler));
+        botBlocksDialog.findViewById(R.id.root).setOnTouchListener(dialogTouchListener);
+
+        botBlocksDialog.findViewById(R.id.close)
+                .setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        //mWindowManager.updateViewLayout(botBlocksDialog,getViewParams(0,0,0,0));
+                        mWindowManager.removeView(botBlocksDialog);
+                    }
+                });
+
+    }
+
+    private void showBotBlocks(ArrayList<BotBlock> botBlocks, RecyclerView recyclerView){
+        BotBlocksAdapter botBlocksAdapter=new BotBlocksAdapter(botBlocks,this);
+        recyclerView.setAdapter(botBlocksAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        DividerItemDecoration dividerItemDecoration=new DividerItemDecoration(getApplicationContext()
+                ,DividerItemDecoration.VERTICAL);
+        recyclerView.addItemDecoration(dividerItemDecoration);
+    }
+
+
+    @Override
+    public void onBlockSelected(String blockId) {
+        setBroadCastLoading(View.VISIBLE);
+        mWindowManager.removeView(botBlocksDialog);
+        String token=SharedHelper.getKey(getApplicationContext(),LoginActivity.TOKEN);
+        BaseClient.getService()
+                .sendBroadcast(token, psid,page,blockId)
+                .enqueue(new Callback<Broadcast>() {
+                    @Override
+                    public void onResponse(Call<Broadcast> call, Response<Broadcast> response) {
+                        Broadcast broadcast=response.body();
+                        if (broadcast!=null){
+                            Toast.makeText(BubbleService.this, broadcast.getData(), Toast.LENGTH_SHORT).show();
+                        }else{
+                            Toast.makeText(BubbleService.this, "Error sending Broadcast ", Toast.LENGTH_SHORT).show();
+                        }
+                        setBroadCastLoading(View.GONE);
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<Broadcast> call, Throwable t) {
+                        Log.d("BROADCASTTT", "onFailure: "+t.getMessage());
+                        Toast.makeText(BubbleService.this, "Error sending Broadcast", Toast.LENGTH_SHORT).show();
+                        setBroadCastLoading(View.GONE);
+
+                    }
+                });
+    }
+
+    @Override
+    public void onSubscriberSelected(String psid,String userId) {
+        this.psid =psid;
+        this.userId=userId;
+        mWindowManager.removeView(subscribersDialog);
+        bubbleView.findViewById(R.id.expanded_bubble).setVisibility(View.VISIBLE);
+    }
+
+    private void stopFlasher(){
+        handler.removeCallbacksAndMessages(null);
+        //handler.removeCallbacks(runnable);
+        bubbleView.findViewById(R.id.gotUserId)
+                .setBackgroundResource(R.drawable.circle_green);
+    }
+
+    private void setBroadCastLoading(int visibility){
+        bubbleView.findViewById(R.id.broadcast_progressBar)
+                .setVisibility(visibility);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (bubbleView != null) mWindowManager.removeView(bubbleView);
+        isRunning=false;
+        EventBus.getDefault().unregister(this);
+    }
+
+    // method for making flasher to indicate getting user id from user name
+    boolean run=false;
+    private void startFlasher(){
+
+        handler=new Handler();
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                Log.d("SUBSCRIPERR","run ");
+                if (run)
+                    bubbleView.findViewById(R.id.gotUserId)
+                            .setBackgroundResource(R.drawable.circle_green);
+                else
+                    bubbleView.findViewById(R.id.gotUserId)
+                            .setBackgroundResource(R.drawable.circle_gray);
+
+                handler.postDelayed(this,300);
+                run=!run;
+            }
+        });
+
+//        bubbleView.findViewById(R.id.gotUserId)
+//                .setBackgroundResource(R.drawable.circle_green);
+    }
+
+    private boolean isAClick(float startX, float endX, float startY, float endY) {
+        float differenceX = Math.abs(startX - endX);
+        float differenceY = Math.abs(startY - endY);
+        return !(differenceX > CLICK_ACTION_THRESHOLD/* =5 */ || differenceY > CLICK_ACTION_THRESHOLD);
+    }
+
+    private WindowManager.LayoutParams getViewParams(int x, int y, int width, int height,WindowManager.LayoutParams layoutParams){
+
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            layoutParams = new WindowManager.LayoutParams(
+                    WindowManager.LayoutParams.WRAP_CONTENT,
+                    WindowManager.LayoutParams.WRAP_CONTENT,
+                    WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+                    PixelFormat.TRANSLUCENT);
+        }else{
+            layoutParams = new WindowManager.LayoutParams(
+                    WindowManager.LayoutParams.WRAP_CONTENT,
+                    WindowManager.LayoutParams.WRAP_CONTENT,
+                    WindowManager.LayoutParams.TYPE_PHONE,
+                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+                    PixelFormat.TRANSLUCENT);
+        }
+
+        layoutParams.gravity = Gravity.TOP | Gravity.START;
+        layoutParams.x = x;
+        layoutParams.y = y;
+
+        if (width!=-1)
+            layoutParams.width=width;
+        if (height!=-1)
+            layoutParams.height=height;
+
+
+
+        return layoutParams;
     }
 
     View.OnTouchListener onTouchListener=new View.OnTouchListener() {
@@ -165,7 +485,7 @@ public class BubbleService extends Service
                     float endX = event.getX();
                     float endY = event.getY();
                     if (isAClick(startX, endX, startY, endY)) {
-                        if (userName==null&&userID==null){
+                        if (userName==null&& psid ==null){
                             bubbleView.findViewById(R.id.gotUserName)
                                     .setBackgroundResource(R.drawable.circle_gray);
                             bubbleView.findViewById(R.id.gotUserId)
@@ -176,9 +496,9 @@ public class BubbleService extends Service
                         if (userName!=null){
                             bubbleView.findViewById(R.id.gotUserName)
                                     .setBackgroundResource(R.drawable.circle_green);
-                                getUserId("Mohamed");
+                            getUserId("Mohamed Gamal");
                         }
-                        if (userID!=null){
+                        if (psid !=null){
                             if (expandedView.getVisibility()==View.GONE)
                                 expandedView.setVisibility(View.VISIBLE);
                             else
@@ -203,13 +523,13 @@ public class BubbleService extends Service
                                     ,getViewParams(
                                             width/2-60
                                             ,height-50
-                                    ,-1,-1,dialogParams));
+                                            ,-1,-1,dialogParams));
                             deleteViewAdded=true;
                         }
                     }else{
                         if (deleteViewAdded){
-                        mWindowManager.removeView(deleteView);
-                        deleteViewAdded=false;
+                            mWindowManager.removeView(deleteView);
+                            deleteViewAdded=false;
                         }
 
                     }
@@ -218,14 +538,14 @@ public class BubbleService extends Service
                     if (event.getRawY()>height-100  //80
                             &&event.getRawX()>width/2-40  //20
                             &&event.getRawX()<width/2+100  //80
-                            )
+                    )
                     {
                         Log.d("DELETEE", "must delete: h"+height);
                         if (deleteViewAdded){
                             mWindowManager.removeView(bubbleView);
                             mWindowManager.removeView(deleteView);
-                        deleteViewAdded=false;
-                        bubbleView=null;
+                            deleteViewAdded=false;
+                            bubbleView=null;
                         }
                         stopSelf();
                         isRunning=false;
@@ -234,7 +554,7 @@ public class BubbleService extends Service
                     }
 
                     if (bubbleView!=null)
-                    mWindowManager.updateViewLayout(bubbleView, params);
+                        mWindowManager.updateViewLayout(bubbleView, params);
                     return true;
             }
             return false;
@@ -317,293 +637,50 @@ public class BubbleService extends Service
     };
 
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (bubbleView != null) mWindowManager.removeView(bubbleView);
-        isRunning=false;
-        EventBus.getDefault().unregister(this);
-    }
+    private void getProducts() {
+        // TODO: 9/11/2019 check userId issue
 
-    @Subscribe()
-    public void onMessageEvent(UserNameEvent event) {
-        Log.d("EVENTTT", "onMessageEvent: "+event.getUserNmae());
-        if (event.getUserNmae()!=null){
-            this.userName=event.getUserNmae();
-            userID=null;
+        Spinner product=newOrderDialog.findViewById(R.id.product);
 
-        }
-        if (bubbleView==null)
-            return;
-
-        if (event.getUserNmae()!=null)
-            bubbleView.findViewById(R.id.gotUserName)
-            .setBackgroundResource(R.drawable.circle_green);
-        else
-            bubbleView.findViewById(R.id.gotUserName)
-                    .setBackgroundResource(R.drawable.circle_gray);
-
-    };
-
-
-    // method for detecting click in touch listener
-
-
-    private void getUserId(String userName){
-        String token= SharedHelper.getKey(getApplicationContext(), LoginActivity.TOKEN);
-        Log.d("SUBSCRIPERR", "token: "+token);
-        startFlasher();
-        BaseClient.getService()
-                .getSubscriberInfo(token,userName)
-                .enqueue(new Callback<SubscriberInfo>() {
-                    @Override
-                    public void onResponse(Call<SubscriberInfo> call, Response<SubscriberInfo> response) {
-                        stopFlasher();
-                        SubscriberInfo subscriberInfo=response.body();
-                        if (response.isSuccessful()&&subscriberInfo!=null){
-                            Log.d("SUBSCRIPERR","subscriper "+response.body().getData());
-                            ArrayList<Subscriber> subscribersData =subscriberInfo.getSubscribers_data();
-                            if(subscribersData==null||subscribersData.isEmpty()){
-                                Toast.makeText(BubbleService.this,
-                                        "there is a problem fetching user data"
-                                        , Toast.LENGTH_SHORT).show();
-                            }else if (subscribersData.size()==1){
-                                userID=subscribersData.get(0).getPsid();
-                                page=subscribersData.get(0).getPage();
-                                bubbleView.findViewById(R.id.expanded_bubble).setVisibility(View.VISIBLE);
-
-                            }else {
-                                if (userID==null)
-                                setupSubscribersDialog(subscribersData);
-                            }
-
-                        }
-                        else {
-                            try {
-                                Log.d("SUBSCRIPERR","code "+response.code()+" error "+response.errorBody().string());
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                                Log.d("SUBSCRIPERR","error");
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<SubscriberInfo> call, Throwable t) {
-                        stopFlasher();
-                        Log.d("SUBSCRIPERR", "onFailure: "+t.getMessage());
-                    }
-                });
-    }
-
-    private void getBotBlocks(){
-        setBroadCastLoading(View.VISIBLE);
-        String token=SharedHelper.getKey(getApplicationContext(),LoginActivity.TOKEN);
-        BaseClient.getService()
-                .getBotBlocks(token)
-                .enqueue(new Callback<BotBlocksResponse>() {
-                    @Override
-                    public void onResponse(Call<BotBlocksResponse> call, Response<BotBlocksResponse> response) {
-                        BotBlocksResponse botBlocksResponse=response.body();
-                        if (response.isSuccessful()&&botBlocksResponse!=null){
-                            setupBotBlocksDialog(botBlocksResponse);
-
-
-                            //Log.d("BOTBLOKSS", "onResponse: "+botBlocksResponse.getBlocks().getDefault().get(0).getName());
-                        }else{
-                            Toast.makeText(BubbleService.this,
-                                    "Error getting Bot Blocks \n response code "+response.code()
-                                    , Toast.LENGTH_SHORT).show();
-                        }
-                        setBroadCastLoading(View.GONE);
-
-                    }
-
-                    @Override
-                    public void onFailure(Call<BotBlocksResponse> call, Throwable t) {
-                        Log.d("BOTBLOKSS", "onFailure: "+t.getMessage());
-                        Toast.makeText(BubbleService.this,
-                                "failed to get Blocks \n "+t.getMessage()
-                                , Toast.LENGTH_SHORT).show();
-                        setBroadCastLoading(View.GONE);
-
-                    }
-                });
-    }
-
-
-
-    private void showBotBlocks(ArrayList<BotBlock> botBlocks, RecyclerView recyclerView){
-        BotBlocksAdapter botBlocksAdapter=new BotBlocksAdapter(botBlocks,this);
-        recyclerView.setAdapter(botBlocksAdapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-        DividerItemDecoration dividerItemDecoration=new DividerItemDecoration(getApplicationContext()
-                ,DividerItemDecoration.VERTICAL);
-        recyclerView.addItemDecoration(dividerItemDecoration);
-    }
-
-    private void setupSubscribersDialog(ArrayList<Subscriber> subscribers){
-        subscribersDialog=LayoutInflater.from(getApplicationContext())
-                .inflate(R.layout.subscripers_dialog,null);
-        subscribersDialogParams=getViewParams(100,200,600,600,subscribersDialogParams);
-        mWindowManager.addView(subscribersDialog,subscribersDialogParams
-                );
-
-        RecyclerView recyclerView=subscribersDialog.findViewById(R.id.subscribers_recycler);
-        SubscribersAdapter adapter=new SubscribersAdapter(
-                getApplicationContext(),subscribers,this);
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-        recyclerView.addItemDecoration(new DividerItemDecoration(getApplicationContext(),DividerItemDecoration.VERTICAL));
-
-
-
-
-        subscribersDialog.findViewById(R.id.delete)
-                .setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        mWindowManager.removeView(subscribersDialog);
-                    }
-                });
-
-        subscribersDialog.setOnTouchListener(subscribersdialogTouchListener);
-
-    }
-
-    private void setupBotBlocksDialog(BotBlocksResponse botBlocksResponse){
-        botBlocksDialog=LayoutInflater.from(getApplicationContext())
-                .inflate(R.layout.bot_blocks_dialog,null);
-        dialogParams=getViewParams(100,200,600,600,dialogParams);
-        mWindowManager.addView(botBlocksDialog,dialogParams);
-        showBotBlocks(botBlocksResponse.getBlocks().getDefault()
-                ,botBlocksDialog.findViewById(R.id.default_blocks_recycler));
-        showBotBlocks(botBlocksResponse.getBlocks().getNormal()
-                ,botBlocksDialog.findViewById(R.id.normal_blocks_recycler));
-        botBlocksDialog.findViewById(R.id.root).setOnTouchListener(dialogTouchListener);
-
-        botBlocksDialog.findViewById(R.id.close)
-                .setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        //mWindowManager.updateViewLayout(botBlocksDialog,getViewParams(0,0,0,0));
-                        mWindowManager.removeView(botBlocksDialog);
-                    }
-                });
-
-    }
-
-    private WindowManager.LayoutParams getViewParams(int x, int y, int width, int height,WindowManager.LayoutParams layoutParams){
-
-
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-             layoutParams = new WindowManager.LayoutParams(
-                    WindowManager.LayoutParams.WRAP_CONTENT,
-                    WindowManager.LayoutParams.WRAP_CONTENT,
-                    WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-                    PixelFormat.TRANSLUCENT);
-        }else{
-            layoutParams = new WindowManager.LayoutParams(
-                    WindowManager.LayoutParams.WRAP_CONTENT,
-                    WindowManager.LayoutParams.WRAP_CONTENT,
-                    WindowManager.LayoutParams.TYPE_PHONE,
-                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-                    PixelFormat.TRANSLUCENT);
-        }
-
-        layoutParams.gravity = Gravity.TOP | Gravity.START;
-        layoutParams.x = x;
-        layoutParams.y = y;
-
-        if (width!=-1)
-            layoutParams.width=width;
-        if (height!=-1)
-            layoutParams.height=height;
-
-
-
-        return layoutParams;
-    }
-
-
-    // method for making flasher to indicate getting user id from user name
-    boolean run=false;
-    private void startFlasher(){
-
-        handler=new Handler();
-        handler.post(new Runnable() {
+        BaseClient.getService().getProducts(SharedHelper.getKey(getApplicationContext(), LoginActivity.TOKEN), null)
+                .enqueue(new Callback<AllProducts>() {
             @Override
-            public void run() {
-                Log.d("SUBSCRIPERR","run ");
-                if (run)
-                    bubbleView.findViewById(R.id.gotUserId)
-                            .setBackgroundResource(R.drawable.circle_green);
-                else
-                    bubbleView.findViewById(R.id.gotUserId)
-                            .setBackgroundResource(R.drawable.circle_gray);
+            public void onResponse(Call<AllProducts> call, final Response<AllProducts> response) {
+                Log.d("eeeeeeeeeeeeeee", "response: " + response.body().getProducts_count());
+                if (response.body() != null&&response.body().getProducts()!=null) {
+                    if (response.body().getProducts().size() > 0) {
+                        productId = response.body().getProducts().get(0).getProduct_id();
 
-                handler.postDelayed(this,300);
-                run=!run;
+                    }
+                    List<ProductForSpinner> products = new ArrayList<>();
+                    for (ProductData product : response.body().getProducts()) {
+                        products.add(new ProductForSpinner(product.getProduct_name(), product.getProduct_image(), product.getProduct_id(),product.getProduct_real_price()));
+                    }
+                    ArrayAdapter<String> myAdapter = new ProductSpinnerAdapter(
+                            getApplicationContext(), products);
+                    product.setAdapter(myAdapter);
+
+                    product.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                            productId = response.body().getProducts().get(position).getProduct_id();
+                            Toast.makeText(getApplicationContext(), "id is "+productId, Toast.LENGTH_SHORT).show();
+                        }
+
+                        @Override
+                        public void onNothingSelected(AdapterView<?> parent) {
+
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onFailure(Call<AllProducts> call, Throwable t) {
+                Log.d("eeeeeeeeeeeeeee", "onFailure: " + t.getMessage());
             }
         });
 
-//        bubbleView.findViewById(R.id.gotUserId)
-//                .setBackgroundResource(R.drawable.circle_green);
     }
 
-    @Override
-    public void onBlockSelected(String blockId) {
-        setBroadCastLoading(View.VISIBLE);
-        mWindowManager.removeView(botBlocksDialog);
-        String token=SharedHelper.getKey(getApplicationContext(),LoginActivity.TOKEN);
-        BaseClient.getService()
-                .sendBroadcast(token,userID,page,blockId)
-                .enqueue(new Callback<Broadcast>() {
-                    @Override
-                    public void onResponse(Call<Broadcast> call, Response<Broadcast> response) {
-                        Broadcast broadcast=response.body();
-                        if (broadcast!=null){
-                            Toast.makeText(BubbleService.this, broadcast.getData(), Toast.LENGTH_SHORT).show();
-                        }else{
-                            Toast.makeText(BubbleService.this, "Error sending Broadcast ", Toast.LENGTH_SHORT).show();
-                        }
-                        setBroadCastLoading(View.GONE);
-
-                    }
-
-                    @Override
-                    public void onFailure(Call<Broadcast> call, Throwable t) {
-                        Log.d("BROADCASTTT", "onFailure: "+t.getMessage());
-                        Toast.makeText(BubbleService.this, "Error sending Broadcast", Toast.LENGTH_SHORT).show();
-                        setBroadCastLoading(View.GONE);
-
-                    }
-                });
-    }
-
-    private void stopFlasher(){
-        handler.removeCallbacksAndMessages(null);
-        //handler.removeCallbacks(runnable);
-        bubbleView.findViewById(R.id.gotUserId)
-                .setBackgroundResource(R.drawable.circle_green);
-    }
-
-    private void setBroadCastLoading(int visibility){
-        bubbleView.findViewById(R.id.broadcast_progressBar)
-                .setVisibility(visibility);
-    }
-    private boolean isAClick(float startX, float endX, float startY, float endY) {
-        float differenceX = Math.abs(startX - endX);
-        float differenceY = Math.abs(startY - endY);
-        return !(differenceX > CLICK_ACTION_THRESHOLD/* =5 */ || differenceY > CLICK_ACTION_THRESHOLD);
-    }
-
-
-    @Override
-    public void onSubscriberSelected(String userId) {
-        this.userID=userId;
-        mWindowManager.removeView(subscribersDialog);
-        bubbleView.findViewById(R.id.expanded_bubble).setVisibility(View.VISIBLE);
-    }
 }

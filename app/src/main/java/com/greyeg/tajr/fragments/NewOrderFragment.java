@@ -105,6 +105,7 @@ public class NewOrderFragment extends Fragment {
         Api api = BaseClient.getBaseClient().create(Api.class);
 
         getProducts(api);
+
         getcities(api);
 
     }

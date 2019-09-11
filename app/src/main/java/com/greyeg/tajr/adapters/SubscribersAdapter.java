@@ -59,14 +59,15 @@ public class SubscribersAdapter extends RecyclerView.Adapter<SubscribersAdapter.
                 @Override
                 public void onClick(View view) {
                     onSubscriberSelected.onSubscriberSelected(
-                            subscribers.get(getAdapterPosition())
-                    .getPsid());
+                            subscribers.get(getAdapterPosition()).getPsid()
+                    ,subscribers.get(getAdapterPosition())
+                                    .getId());
                 }
             });
         }
     }
 
     public interface OnSubscriberSelected{
-        void onSubscriberSelected(String userId);
+        void onSubscriberSelected(String psid,String userId);
     }
 }
