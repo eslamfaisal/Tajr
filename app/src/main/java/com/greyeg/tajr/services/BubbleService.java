@@ -168,10 +168,15 @@ public class BubbleService extends Service
 
     @Subscribe()
     public void onMessageEvent(UserNameEvent event) {
-        Log.d("EVENTTT", "onMessageEvent: "+event.getUserNmae());
         if (event.getUserNmae()!=null){
-            this.userName=event.getUserNmae();
+            Log.d("EVENTTT", event.getUserNmae()+" -------> : "+userName);
             psid =null;
+            if (userName==null)
+                //Log.d("EVENTTT","getting userName");
+                getUserId("Mohamed Gamal");
+
+            userName=event.getUserNmae();
+            Log.d("EVENTTT","set userName "+userName);
 
         }
         if (bubbleView==null)
@@ -210,7 +215,6 @@ public class BubbleService extends Service
                                 psid =subscribersData.get(0).getPsid();
                                 page=subscribersData.get(0).getPage();
                                 userId=subscribersData.get(0).getId();
-                                    bubbleView.findViewById(R.id.expanded_bubble).setVisibility(View.VISIBLE);
 
                             }else {
                                 if (psid ==null)
@@ -595,7 +599,6 @@ public class BubbleService extends Service
                         if (userName!=null){
                             bubbleView.findViewById(R.id.gotUserName)
                                     .setBackgroundResource(R.drawable.circle_green);
-                            getUserId("Mohamed");
                         }
                         if (psid !=null){
                             if (expandedView.getVisibility()==View.GONE)
