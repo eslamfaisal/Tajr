@@ -447,66 +447,70 @@ public class NewOrderActivity extends AppCompatActivity implements CurrentCallLi
 
     @Override
     public void callEnded(int serialNumber, String phoneNumber) {
-        Log.d("callEndedcallEnded", "callEnded: ");
+        try {
+            Log.d("callEndedcallEnded", "callEnded: ");
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
 
-                        LastCallDetails callDetails = getLastCallDetails();
+                            LastCallDetails callDetails = getLastCallDetails();
 
-                        Log.d("callDetails", "callDetails: " + callDetails.getType());
-                        if (callDetails.getType().equals("MISSED") || callDetails.getType().equals("REJECTED")) {
-                            if (callDetails.getActiveId().equals(SharedHelper.getKey(getApplicationContext(),
-                                    "activated_sub_id"))) {
-                                BaseClient.getBaseClient().create(Api.class).missedCall(SharedHelper.getKey(getApplicationContext(), LoginActivity.TOKEN), callDetails.getPhone())
-                                        .enqueue(new Callback<UploadPhoneResponse>() {
-                                            @Override
-                                            public void onResponse(Call<UploadPhoneResponse> call, Response<UploadPhoneResponse> response) {
-                                                if (response.body().getResponse().equals("Success")) {
-                                                    Toast.makeText(NewOrderActivity.this, "تم ارسال رقم  " + callDetails.getPhone() + " المكالمة الفائتة الى السيرفر", Toast.LENGTH_SHORT).show();
+                            Log.d("callDetails", "callDetails: " + callDetails.getType());
+                            if (callDetails.getType().equals("MISSED") || callDetails.getType().equals("REJECTED")) {
+                                if (callDetails.getActiveId().equals(SharedHelper.getKey(getApplicationContext(),
+                                        "activated_sub_id"))) {
+                                    BaseClient.getBaseClient().create(Api.class).missedCall(SharedHelper.getKey(getApplicationContext(), LoginActivity.TOKEN), callDetails.getPhone())
+                                            .enqueue(new Callback<UploadPhoneResponse>() {
+                                                @Override
+                                                public void onResponse(Call<UploadPhoneResponse> call, Response<UploadPhoneResponse> response) {
+                                                    if (response.body().getResponse().equals("Success")) {
+                                                        Toast.makeText(NewOrderActivity.this, "تم ارسال رقم  " + callDetails.getPhone() + " المكالمة الفائتة الى السيرفر", Toast.LENGTH_SHORT).show();
+                                                    }
                                                 }
-                                            }
 
-                                            @Override
-                                            public void onFailure(Call<UploadPhoneResponse> call, Throwable t) {
+                                                @Override
+                                                public void onFailure(Call<UploadPhoneResponse> call, Throwable t) {
 
-                                            }
-                                        });
+                                                }
+                                            });
 
-                            }
-
-                        } else if (callDetails.getType().equals("OUTGOING")) {
-
-                            if (!callDetails.getDuration().equals("0")) {
-                                if (!CurrentOrderData.getInstance().getCallTime().equals("Saved")) {
-
-                                    Log.d("eslamfaisalalire", "run: add call to database");
-                                    new DatabaseManager(getApplicationContext()).addCallDetails(new CallDetails(serialNumber,
-                                            CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getPhone1(),
-                                            CurrentOrderData.getInstance().getCallTime(), new CommonMethods().getDate(),
-                                            "not_yet", callDetails.getDuration()));
-                                    CurrentOrderData.getInstance().setCallTime("Saved");
-                                    minutesUsage(callDetails.getDuration());
-                                    uploadVoices();
                                 }
 
+                            } else if (callDetails.getType().equals("OUTGOING")) {
+
+                                if (!callDetails.getDuration().equals("0")) {
+                                    if (!CurrentOrderData.getInstance().getCallTime().equals("Saved")) {
+
+                                        Log.d("eslamfaisalalire", "run: add call to database");
+                                        new DatabaseManager(getApplicationContext()).addCallDetails(new CallDetails(serialNumber,
+                                                CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getPhone1(),
+                                                CurrentOrderData.getInstance().getCallTime(), new CommonMethods().getDate(),
+                                                "not_yet", callDetails.getDuration()));
+                                        CurrentOrderData.getInstance().setCallTime("Saved");
+                                        minutesUsage(callDetails.getDuration());
+                                        uploadVoices();
+                                    }
+
+                                }
                             }
+
+
                         }
+                    });
 
+                }
+            }, 1000);
+        }catch (Exception e){
+            Log.d("eslamfaisal", "callEnded: "+e.getMessage());
+        }
 
-                    }
-                });
-
-            }
-        }, 1000);
 
     }
-
-
+    
     private boolean getAutoValue() {
         SharedPreferences auto = PreferenceManager.getDefaultSharedPreferences(this);
         return auto.getBoolean("autoUpdate", false);
