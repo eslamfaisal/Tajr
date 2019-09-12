@@ -59,7 +59,6 @@ import com.greyeg.tajr.activities.BalanceActivity;
 import com.greyeg.tajr.activities.CartsActivity;
 import com.greyeg.tajr.activities.ChatActivity;
 import com.greyeg.tajr.activities.LoginActivity;
-import com.greyeg.tajr.activities.OrderActivity;
 import com.greyeg.tajr.activities.SettingsActivity;
 import com.greyeg.tajr.activities.WorkHistoryActivity;
 import com.greyeg.tajr.adapters.DrawerAdapter;
@@ -597,15 +596,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     boolean working = false;
-
-    @OnClick({R.id.start_Timer})
-    void stomTimer() {
-        Intent intent = new Intent(this, OrderActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        startActivity(intent);
-
-    }
 
     @Override
     public void onBackPressed() {

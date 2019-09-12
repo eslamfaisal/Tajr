@@ -42,7 +42,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static com.greyeg.tajr.activities.OrderActivity.currentClientID;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -219,7 +219,7 @@ public class NewOrderFragment extends Fragment {
             Api api = BaseClient.getBaseClient().create(Api.class);
             api.recordNewOrder(
                     SharedHelper.getKey(getActivity(),LoginActivity.TOKEN),
-                    currentClientID,
+                    CurrentOrderData.getInstance().getCurrentOrderResponse().getUserId(),
                     productId,
                     client_name.getText().toString(),
                     client_order_phone1.getText().toString(),

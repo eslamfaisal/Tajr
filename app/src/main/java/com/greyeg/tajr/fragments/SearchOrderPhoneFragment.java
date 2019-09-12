@@ -35,9 +35,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static com.greyeg.tajr.activities.OrderActivity.askToFinishWork;
-import static com.greyeg.tajr.activities.OrderActivity.finishTheWorkNow;
-import static com.greyeg.tajr.activities.OrderActivity.order_data_confirmed;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -249,12 +246,7 @@ public class SearchOrderPhoneFragment extends Fragment {
                 if (response.body().getCode().equals("1200") || response.body().getCode().equals("1202")) {
                     Log.d("eeeeeeeeeeeeee", "onResponse: updateOrder" + response.body().getCode());
                     progressDialog.dismiss();
-                    if (askToFinishWork) {
-                        finishTheWorkNow();
-                    } else{
-                        //  onButtonPressed();
 
-                    }
                 } else {
                    // onButtonPressed();
                 }
@@ -270,134 +262,6 @@ public class SearchOrderPhoneFragment extends Fragment {
             }
         });
     }
-//
-//    void showProblemNoteDialog() {
-//        AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
-//        alertDialog.setTitle("مشكلة");
-//        //  alertDialog.setMessage("اكتب المشكلة");
-//
-//        final EditText input = new EditText(getActivity());
-//        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-//                LinearLayout.LayoutParams.MATCH_PARENT,
-//                LinearLayout.LayoutParams.MATCH_PARENT);
-//        input.setLayoutParams(lp);
-//        input.setHint("اكتب المشكلة");
-//        alertDialog.setView(input);
-//
-//        alertDialog.setPositiveButton("ارسال",
-//                new DialogInterface.OnClickListener() {
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        progressDialog.show();
-//                        if (!input.getText().toString().equals("")) {
-//                            api.sendProblem(SharedHelper.getKey(getActivity(), LoginActivity.TOKEN),
-//                                    Integer.parseInt(SharedHelper.getKey(getActivity(), LoginActivity.USER_ID)),
-//                                    Integer.parseInt(order.getId()),
-//                                    input.getText().toString()).enqueue(new Callback<UpdateOrderResponse>() {
-//                                @Override
-//                                public void onResponse(Call<UpdateOrderResponse> call, Response<UpdateOrderResponse> response) {
-//                                    if (response.body() != null) {
-//                                        if (response.body().getCode().equals("1200")) {
-//
-//                                            progressDialog.dismiss();
-//                                            updateOrder(order_data_confirmed);
-//                                        }
-//                                    }
-//                                }
-//
-//                                @Override
-//                                public void onFailure(Call<UpdateOrderResponse> call, Throwable t) {
-//
-//                                }
-//                            });
-//                        } else {
-//                            Toast.makeText(getActivity(), "برجاء ادخال المشكلة", Toast.LENGTH_SHORT).show();
-//                        }
-//                    }
-//                });
-//
-//        alertDialog.setNegativeButton("الغاء",
-//                new DialogInterface.OnClickListener() {
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        dialog.cancel();
-//                    }
-//                });
-//        alertDialog.show();
-//    }
 
-    Dialog problemDialog;
-    RobotoTextView sendProblemBtn;
-    EditText problemEdt;
-    void showProblemNoteDialog() {
 
-        problemDialog = new Dialog(getActivity());
-        problemDialog.setContentView(R.layout.dialog_send_problem);
-        sendProblemBtn = problemDialog.findViewById(R.id.send);
-        problemEdt = problemDialog.findViewById(R.id.problem_Edt);
-        sendProblemBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                progressDialog = new ProgressDialog(getActivity());
-                progressDialog.setMessage("جار ارسال المشكلة");
-                progressDialog.show();
-                if (!problemEdt.getText().toString().equals("")) {
-                    api.sendProblem(SharedHelper.getKey(getActivity(), LoginActivity.TOKEN),
-                            Integer.parseInt(SharedHelper.getKey(getActivity(), LoginActivity.USER_ID)),
-                            Integer.parseInt(order.getId()),
-                            problemEdt.getText().toString()).enqueue(new Callback<UpdateOrderResponse>() {
-                        @Override
-                        public void onResponse(Call<UpdateOrderResponse> call, Response<UpdateOrderResponse> response) {
-                            if (response.body() != null) {
-                                if (response.body().getCode().equals("1200")) {
-                                    Toast.makeText(getActivity(), "تم ارسال المشكلة", Toast.LENGTH_SHORT).show();
-                                    problemDialog.dismiss();
-                                    progressDialog.dismiss();
-                                    updateOrder(order_data_confirmed);
-                                }
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Call<UpdateOrderResponse> call, Throwable t) {
-
-                        }
-                    });
-                } else {
-                    Toast.makeText(getActivity(), "برجاء ادخال المشكلة", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-        problemDialog.show();
-
-    }
-//
-//    private OnFragmentInteractionListener mListener;
-//
-//    public interface OnFragmentInteractionListener {
-//        // TODO: Update argument type and name
-//        void onFragmentInteraction();
-//    }
-//
-//    // TODO: Rename method, update argument and hook method into UI event
-//    public void onButtonPressed() {
-//        if (mListener != null) {
-//            mListener.onFragmentInteraction();
-//        }
-//    }
-//
-//    @Override
-//    public void onAttach(Context context) {
-//        super.onAttach(context);
-//        if (context instanceof OnFragmentInteractionListener) {
-//            mListener = (OnFragmentInteractionListener) context;
-//        } else {
-//            throw new RuntimeException(context.toString()
-//                    + " must implement OnFragmentInteractionListener");
-//        }
-//    }
-//
-//    @Override
-//    public void onDetach() {
-//        super.onDetach();
-//        mListener = null;
-//    }
 }

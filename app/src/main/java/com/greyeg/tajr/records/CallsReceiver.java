@@ -8,16 +8,15 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.telephony.TelephonyManager;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.greyeg.tajr.activities.EmptyCallActivity;
 import com.greyeg.tajr.activities.LoginActivity;
-import com.greyeg.tajr.activities.OrderActivity;
 import com.greyeg.tajr.helper.CurrentCallListener;
 import com.greyeg.tajr.helper.SharedHelper;
 import com.greyeg.tajr.models.SimpleOrderResponse;
 import com.greyeg.tajr.order.CurrentOrderData;
+import com.greyeg.tajr.order.NewOrderActivity;
 import com.greyeg.tajr.over.MissedCallNoOrderService;
 import com.greyeg.tajr.over.MissedCallOrderService;
 import com.greyeg.tajr.server.Api;
@@ -67,11 +66,9 @@ public class CallsReceiver extends BroadcastReceiver {
 
             System.out.println("Receiver Start");
 
-//            boolean callWait=pref.getBoolean("recordStarted",false);
             Bundle extras = intent.getExtras();
             String state = extras.getString(TelephonyManager.EXTRA_STATE);
 
-            //   Toast.makeText(context, "Call detected(Incoming/Outgoing) " + state, Toast.LENGTH_SHORT).show();
 
             if (state.equals(TelephonyManager.EXTRA_STATE_RINGING)) {
 
@@ -89,7 +86,6 @@ public class CallsReceiver extends BroadcastReceiver {
                             Intent startHoverIntent = new Intent(context, MissedCallNoOrderService.class);
                             context.startService(startHoverIntent);
                         } else if (response.body().getCode().equals("1200")) {
-                            OrderActivity.order = response.body().getOrder();
                             MissedCallOrderService.showFloatingMenu(context);
                         }
                     }

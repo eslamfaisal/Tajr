@@ -37,26 +37,6 @@
             android:text="@string/welcome_in_tajr"
             android:textColor="@color/colorPrimary" />
 
-        <com.greyeg.tajr.view.MaterialRippleLayout
-            style="@style/RippleStyle"
-            android:visibility="gone"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="3dp"
-            app:rippleColor="@color/main_color_grey_400" >
-
-            <com.greyeg.tajr.helper.font.RobotoTextView
-                android:id="@+id/start_Timer"
-                style="@style/ButtonStyle.RaisedEmpty"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="0dp"
-                android:background="@color/main_color_500"
-                android:minWidth="112dp"
-                android:text="@string/start_work"
-                android:textColor="#fff" />
-        </com.greyeg.tajr.view.MaterialRippleLayout>
-
         <com.ebanx.swipebtn.SwipeButton
             android:id="@+id/swipe_btn"
             android:layout_width="match_parent"

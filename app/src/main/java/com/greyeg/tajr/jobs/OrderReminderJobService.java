@@ -15,9 +15,9 @@ import com.firebase.jobdispatcher.JobParameters;
 import com.firebase.jobdispatcher.JobService;
 import com.greyeg.tajr.R;
 import com.greyeg.tajr.activities.LoginActivity;
-import com.greyeg.tajr.activities.OrderActivity;
 import com.greyeg.tajr.helper.SharedHelper;
 import com.greyeg.tajr.models.SimpleOrderResponse;
+import com.greyeg.tajr.order.NewOrderActivity;
 import com.greyeg.tajr.server.Api;
 import com.greyeg.tajr.server.BaseClient;
 
@@ -89,7 +89,7 @@ public class OrderReminderJobService extends JobService {
                     .setColor(Color.RED)
                     .addAction(R.drawable.ic_call_end_red, getResources().getString(R.string.start_work),
                             PendingIntent.getActivity(this, 0, new Intent(this,
-                                    OrderActivity.class).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP
+                                    NewOrderActivity.class).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP
                                     | Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT
                                     | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT), 0))
                     .setContentText(getString(R.string.remaining) + " " + first + " " + getString(R.string.order))
@@ -106,7 +106,7 @@ public class OrderReminderJobService extends JobService {
                     .setColor(Color.RED)
                     .addAction(R.drawable.ic_call_end_red, getResources().getString(R.string.start_work),
                             PendingIntent.getActivity(this, 0, new Intent(this,
-                                    OrderActivity.class).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP
+                                    NewOrderActivity.class).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP
                                     | Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT
                                     | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT), 0))
                     .setContentText(getString(R.string.remaining) + " " + first + " " + getString(R.string.order))

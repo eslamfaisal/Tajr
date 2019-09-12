@@ -68,18 +68,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".call_receiver.MyCustomDialog"
-            android:noHistory="true"
-            android:theme="@android:style/Theme.Dialog" /> <!-- <receiver android:name=".receiver.AssistantReceiver" > -->
-        <!-- <intent-filter> -->
-        <!-- <action android:name="android.net.conn.CONNECTIVITY_CHANGE" /> -->
-        <!-- </intent-filter> -->
-        <!-- </receiver> -->
-        <activity
-            android:name=".activities.OrderActivity"
-            android:launchMode="singleTask"
-            android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
             android:name=".activities.EmptyCallActivity"
