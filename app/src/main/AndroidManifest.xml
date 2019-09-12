@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.greyeg.tajr">
     <uses-permission android:name="android.permission.CALL_PHONE" />
-    <uses-permission android:name="android.permission.MODIFY_PHONE_STATE" />
+    <uses-permission android:name="android.permission.MODIFY_PHONE_STATE"
+        tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
@@ -85,9 +86,6 @@
             android:name=".activities.NoInternetActivity"
             android:parentActivityName=".MainActivity" />
         <activity
-            android:name=".RequestMoneyActivity"
-            android:parentActivityName=".MainActivity" />
-        <activity
             android:name=".activities.BalanceActivity"
             android:label="@string/Balance"
             android:parentActivityName=".MainActivity" />
@@ -130,26 +128,7 @@
         <activity
             android:name=".records.RecordsActivity"
             android:parentActivityName=".MainActivity" /> <!-- <receiver -->
-        <!-- android:name=".notification.NotificationService" -->
-        <!-- android:label="NotificationService" -->
-        <!-- android:enabled="true"> -->
-        <!-- <intent-filter> -->
-        <!-- <action android:name="android.net.conn.CONNECTIVITY_CHANGE" /> -->
-        <!-- <action android:name="android.net.wifi.WIFI_STATE_CHANGED" /> -->
-        <!-- </intent-filter> -->
-        <!-- </receiver> -->
-        <!-- <receiver -->
-        <!-- android:name="NetworkChangeReceiver" -->
-        <!-- android:label="NetworkChangeReceiver" > -->
-        <!-- <intent-filter> -->
-        <!-- <action android:name="android.net.conn.CONNECTIVITY_CHANGE" /> -->
-        <!-- <action android:name="android.net.wifi.WIFI_STATE_CHANGED" /> -->
-        <!-- </intent-filter> -->
-        <!-- </receiver> -->
-        <!-- <service -->
-        <!-- android:name="com.evernote.android.job.gcm.PlatformGcmService" -->
-        <!-- android:enabled="true" -->
-        <!-- tools:replace="android:enabled"/> -->
+
         <service
             android:name=".jobs.OrderReminderJobService"
             android:permission="android.permission.BIND_JOB_SERVICE">
