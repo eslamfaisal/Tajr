@@ -173,43 +173,7 @@ public class SearchOrderPhoneFragment extends Fragment {
         ).enqueue(new Callback<SimpleOrderResponse>() {
             @Override
             public void onResponse(Call<SimpleOrderResponse> call, Response<SimpleOrderResponse> response) {
-                if (response.body() != null) {
-                    //   progressDialog.dismiss();
-                    if (response.body().getCode().equals("1202") || response.body().getCode().equals("1200")) {
-                        orderView.setVisibility(View.VISIBLE);
-                        noOrder.setVisibility(View.GONE);
-                        progressSearch.setVisibility(View.GONE);
-                        order = response.body().getOrder();
-                        // if (order != null) {
 
-                        order_ud = order.getId();
-
-                        product.setText(order.getProduct_name());
-                        status.setText(order.getOrder_status());
-                        client_name.setText(order.getClient_name());
-                        client_address.setText(order.getClient_address());
-                        client_area.setText(order.getClient_area());
-                        client_city.setText(order.getClient_city());
-                        phone = order.getPhone_1();
-                        client_order_phone1.setText(order.getPhone_1());
-                        client_order_phone2.setText(order.getPhone_2());
-                        item_cost.setText(order.getItem_cost());
-                        item_no.setText(order.getItems_no());
-                        shipping_retum_cost.setText(order.getShipping_cost());
-                        order_cost.setText(order.getOrder_cost());
-                        order_total_cost.setText(order.getTotal_order_cost());
-                        sender_name.setText(order.getSender_name());
-                        order_type.setText(order.getOrder_type());
-                        client_feedback.setText(order.getClient_feedback());
-
-                    } else {
-                        orderView.setVisibility(View.GONE);
-                        noOrder.setVisibility(View.VISIBLE);
-                        progressSearch.setVisibility(View.GONE);
-
-                    }
-                    Log.d("eeeeeeeeeeee", "onResponse: " + response.body().getInfo());
-                }
             }
 
             @Override

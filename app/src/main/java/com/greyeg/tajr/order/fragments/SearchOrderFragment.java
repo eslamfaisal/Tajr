@@ -12,23 +12,16 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-import androidx.fragment.app.Fragment;
-import androidx.core.app.NotificationCompat;
-import androidx.cardview.widget.CardView;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.text.InputType;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -40,6 +33,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.greyeg.tajr.R;
 import com.greyeg.tajr.activities.LoginActivity;
 import com.greyeg.tajr.helper.SharedHelper;
@@ -72,6 +66,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
 
+import androidx.cardview.widget.CardView;
+import androidx.core.app.NotificationCompat;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -83,7 +82,7 @@ import static android.content.Context.NOTIFICATION_SERVICE;
 import static com.greyeg.tajr.activities.LoginActivity.IS_LOGIN;
 import static com.greyeg.tajr.view.dialogs.Dialogs.showProgressDialog;
 
-public class CurrentOrderFragment extends Fragment {
+public class SearchOrderFragment extends Fragment {
 
     private final String TAG = "CurrentOrderFragment";
     @BindView(R.id.client_name)
@@ -124,11 +123,6 @@ public class CurrentOrderFragment extends Fragment {
     EditText order_type;
     @BindView(R.id.single_order_product_spinner)
     Spinner single_order_product_spinner;
-    @BindView(R.id.ProgressBar)
-    ProgressBar mProgressBar4;
-    @BindView(R.id.present)
-    TextView present;
-
 
     @BindView(R.id.back_drop)
     View back_drop;
@@ -164,7 +158,15 @@ public class CurrentOrderFragment extends Fragment {
 
     @BindView(R.id.save_edit)
     FloatingActionButton save_edit;
+    @BindView(R.id.deliver)
+    CardView deliver;
+    @BindView(R.id.shipping_no_answer)
+    CardView shipping_no_answer;
+    @BindView(R.id.return_order)
+    CardView return_order;
 
+    @BindView(R.id.phone_input)
+    EditText phoneInput;
     // main view of the CurrentOrderFragment
     private View mainView;
     private LinearLayoutManager multiOrderProductsLinearLayoutManager;
@@ -176,8 +178,7 @@ public class CurrentOrderFragment extends Fragment {
     private boolean rotateshipper = false;
     private boolean productExbandable = false;
 
-
-    public CurrentOrderFragment() {
+    public SearchOrderFragment() {
         // Required empty public constructor
     }
 
@@ -185,16 +186,31 @@ public class CurrentOrderFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        mainView = inflater.inflate(R.layout.fragment_current_order, container, false);
+        mainView = inflater.inflate(R.layout.fragment_search_order, container, false);
         ButterKnife.bind(this, mainView);
         initLabels();
 
-        getCurrentOrder();
         setListeners();
         return mainView;
     }
 
+    @OnClick(R.id.clear)
+    void clearSearch() {
+        phoneInput.setText("");
+    }
+
     private void setListeners() {
+        phoneInput.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                if (phoneInput.getText().toString().equals("")) {
+                    Toast.makeText(getActivity(), "برجاء ادخال رقم الهاتف", Toast.LENGTH_SHORT).show();
+                } else {
+                    getCurrentOrder();
+                }
+                return true;
+            }
+            return false;
+        });
         add_product.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -303,6 +319,12 @@ public class CurrentOrderFragment extends Fragment {
 
     }
 
+    @OnClick(R.id.search)
+    void searchNow() {
+      getCurrentOrder();
+    }
+
+
     private void updateShippingOrder(String action) {
         ProgressDialog progressDialog = showProgressDialog(getActivity(), getString(R.string.fetching_th_order));
         Api api = BaseClient.getBaseClient().create(Api.class);
@@ -315,7 +337,7 @@ public class CurrentOrderFragment extends Fragment {
             @Override
             public void onResponse(@NotNull Call<UpdateOrederNewResponse> call, @NotNull Response<UpdateOrederNewResponse> response) {
                 progressDialog.dismiss();
-                getCurrentOrder();
+                getActivity().onBackPressed();
                 Log.d(TAG, "onResponse: " + response.toString());
             }
 
@@ -323,18 +345,11 @@ public class CurrentOrderFragment extends Fragment {
             public void onFailure(Call<UpdateOrederNewResponse> call, Throwable t) {
                 progressDialog.dismiss();
                 getCurrentOrder();
-                Log.d(TAG, "onResponse: " + t.getMessage().toString());
+                Log.d(TAG, "onResponse: " + t.getMessage());
             }
         });
     }
 
-    @OnClick(R.id.bt_expand)
-    void showCurrentProductDetails() {
-        if (!productExbandable)
-            return;
-        FragmentBottomSheetDialogFull fragment = new FragmentBottomSheetDialogFull();
-        fragment.show(getChildFragmentManager(), fragment.getTag());
-    }
 
     public void updateClientData() {
         ProgressDialog progressDialog = showProgressDialog(getActivity(), getString(R.string.fetching_th_order));
@@ -378,7 +393,7 @@ public class CurrentOrderFragment extends Fragment {
             @Override
             public void onResponse(Call<CurrentOrderResponse> call, Response<CurrentOrderResponse> response) {
                 progressDialog.dismiss();
-                getCurrentOrder();
+                getActivity().onBackPressed();
                 Log.d(TAG, "onResponse: " + response.toString());
             }
 
@@ -409,7 +424,7 @@ public class CurrentOrderFragment extends Fragment {
             @Override
             public void onResponse(Call<CurrentOrderResponse> call, Response<CurrentOrderResponse> response) {
                 progressDialog.dismiss();
-                getCurrentOrder();
+                getActivity().onBackPressed();
                 Log.d(TAG, "onResponse: " + response.toString());
             }
 
@@ -436,7 +451,7 @@ public class CurrentOrderFragment extends Fragment {
                     @Override
                     public void onResponse(Call<UpdateOrederNewResponse> call, Response<UpdateOrederNewResponse> response) {
                         progressDialog.dismiss();
-                        getCurrentOrder();
+                        getActivity().onBackPressed();
                         Log.d(TAG, "onResponse: " + response.toString());
                     }
 
@@ -474,7 +489,7 @@ public class CurrentOrderFragment extends Fragment {
                         @Override
                         public void onResponse(@NotNull Call<UpdateOrederNewResponse> call, @NotNull Response<UpdateOrederNewResponse> response) {
                             progressDialog.dismiss();
-                            getCurrentOrder();
+                            getActivity().onBackPressed();
                             Log.d(TAG, "onResponse: " + response.toString());
                         }
 
@@ -537,7 +552,9 @@ public class CurrentOrderFragment extends Fragment {
             ViewAnimation.showOut(normal_order_data_confirmed);
             back_drop.setVisibility(View.GONE);
         }
-    }  private void toggleFabModeShipper(View v) {
+    }
+
+    private void toggleFabModeShipper(View v) {
         rotateshipper = ViewAnimation.rotateFab(v, !rotateshipper);
         if (rotateshipper) {
             ViewAnimation.showIn(return_order);
@@ -551,17 +568,6 @@ public class CurrentOrderFragment extends Fragment {
             back_drop.setVisibility(View.GONE);
         }
     }
-
-    @BindView(R.id.deliver)
-    CardView deliver;
-
-    @BindView(R.id.shipping_no_answer)
-    CardView shipping_no_answer;
-
-
-    @BindView(R.id.return_order)
-    CardView return_order;
-
 
     private void addProductToMultiOrder(int number, int index) {
         ProgressDialog progressDialog = showProgressDialog(getActivity(), getString(R.string.add_product));
@@ -606,7 +612,7 @@ public class CurrentOrderFragment extends Fragment {
                 progressDialog.dismiss();
                 Log.d("DeleteAddProduct", "onFailure: " + t.getMessage());
                 errorGetCurrentOrderDialog = Dialogs.showCustomDialog(getActivity(),
-                        t.getMessage().toString(), getString(R.string.order),
+                        t.getMessage(), getString(R.string.order),
                         getString(R.string.retry), getString(R.string.finish_work), new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -624,12 +630,16 @@ public class CurrentOrderFragment extends Fragment {
 
     }
 
-
     private void getCurrentOrder() {
 
         ProgressDialog progressDialog = showProgressDialog(getActivity(), getString(R.string.fetching_th_order));
-        BaseClient.getBaseClient().create(Api.class)
-                .getNewCurrentOrderResponce(SharedHelper.getKey(getActivity(), LoginActivity.TOKEN))
+        BaseClient.getBaseClient().create(Api.class).
+                getPhoneData2(
+                        SharedHelper.getKey(getActivity(), LoginActivity.TOKEN),
+                        SharedHelper.getKey(getActivity(), LoginActivity.USER_ID),
+                        phoneInput.getText().toString()
+
+                )
                 .enqueue(new Callback<CurrentOrderResponse>() {
                     @Override
                     public void onResponse(Call<CurrentOrderResponse> call, Response<CurrentOrderResponse> response) {
@@ -641,29 +651,28 @@ public class CurrentOrderFragment extends Fragment {
                                 try {
                                     if (CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getCheckType().equals("normal_order")) {
                                         fillFieldsWithOrderData(response.body());
-                                        updateProgress();
+
                                         productExbandable = true;
                                         normal_update_actions.setVisibility(View.VISIBLE);
                                         shipper_update_actions.setVisibility(View.GONE);
                                     } else {
                                         fillFieldsWithOrderData(response.body());
-                                        updateProgress();
+
                                         productExbandable = true;
                                         normal_update_actions.setVisibility(View.GONE);
                                         shipper_update_actions.setVisibility(View.VISIBLE);
 
                                     }
-                                }catch (Exception e){
-                                    Log.e("eslamfaissal", "onResponse: ",e );
-                                    Log.d("eslamfaissal", "onResponse: "+response.body().toString());
+                                } catch (Exception e) {
+                                    Log.e("eslamfaissal", "onResponse: ", e);
+                                    Log.d("eslamfaissal", "onResponse: " + response.body().toString());
                                     CurrentOrderData.getInstance().setCurrentOrderResponse(response.body());
                                     fillFieldsWithOrderData(response.body());
-                                    updateProgress();
+
                                     productExbandable = true;
                                     normal_update_actions.setVisibility(View.VISIBLE);
                                     shipper_update_actions.setVisibility(View.GONE);
                                 }
-
 
 
                             } else if (response.body().getCode().equals(ResponseCodeEnums.code_1300.getCode())) {
@@ -885,8 +894,8 @@ public class CurrentOrderFragment extends Fragment {
     // animation for show and hide fields labels
     private void runAnimation(int id1, int id2) {
 
-        TextView tv = (TextView) mainView.findViewById(id1);
-        FrameLayout bg = (FrameLayout) mainView.findViewById(id2);
+        TextView tv = mainView.findViewById(id1);
+        FrameLayout bg = mainView.findViewById(id2);
 
         if (tv.getVisibility() == View.VISIBLE) {
             Animation a = AnimationUtils.loadAnimation(getActivity(), R.anim.bottom_sheet_fad_out);
@@ -907,37 +916,6 @@ public class CurrentOrderFragment extends Fragment {
 
     }
 
-    private void updateProgress() {
-        BaseClient.getBaseClient().create(Api.class)
-                .getRemainingOrders(SharedHelper.getKey(getActivity(), LoginActivity.TOKEN))
-                .enqueue(new Callback<RemainingOrdersResponse>() {
-                    @Override
-                    public void onResponse(Call<RemainingOrdersResponse> call, Response<RemainingOrdersResponse> response) {
-                        if (response.body() != null) {
-
-                            if (!firstOrder) {
-                                firstOrder = true;
-                                firstRemaining = response.body().getData();
-                                mProgressBar4.setMax(firstRemaining);
-                            }
-
-                            int b = firstRemaining - response.body().getData();
-                            mProgressBar4.setProgress(b);
-                            String remaining = getString(R.string.remaining) + " ( " + NumberFormat.getNumberInstance(Locale.US).format(response.body().getData()) + " ) " + getString(R.string.order);
-                            present.setText(remaining);
-                            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-                            if (sharedPreferences.getBoolean("autoNotifiction", false))
-                                createNotification(String.valueOf(firstRemaining - b));
-
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<RemainingOrdersResponse> call, Throwable t) {
-                        Log.d(TAG, "onFailure: " + t.getMessage());
-                    }
-                });
-    }
 
     public void createNotification(String first) {
 

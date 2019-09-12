@@ -42,7 +42,7 @@ public class MissedCallFragment extends Fragment {
         FragmentPagerItemAdapter adapter = new FragmentPagerItemAdapter(
                 getChildFragmentManager(), FragmentPagerItems.with(getActivity())
                 .add(this.getString(R.string.new_order), NewOrderFragment.class)
-                .add(this.getString(R.string.search), SearchOrderPhoneFragment.class)
+                .add(this.getString(R.string.search), SearchOrderFragment.class)
                 .create());
 
         ViewPager viewPager = view.findViewById(R.id.viewpager);
