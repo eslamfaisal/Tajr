@@ -29,12 +29,15 @@
         tools:ignore="GoogleAppIndexingWarning"
         tools:replace="android:allowBackup">
 
-        <activity android:name=".order.NewOrderActivity"
-            android:launchMode="singleTask"
+        <activity
+            android:name=".order.NewOrderActivity"
             android:label=""
-            android:theme="@style/AppTheme.NoActionBar" >
+            android:launchMode="singleTask"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateAlwaysVisible|adjustResize">
 
         </activity>
+
         <activity
             android:name=".activities.AdminRecordsActivity"
             android:parentActivityName=".MainActivity" />
@@ -54,7 +57,28 @@
         <activity
             android:name=".MainActivity"
             android:label=""
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.DIAL" />
+                <action android:name="android.intent.action.CALL_BUTTON" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity-alias android:targetActivity=".MainActivity"
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.DIAL" />
+                <data android:scheme="tel" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+            </intent-filter>
+        </activity-alias>
+
         <activity
             android:name=".activities.LoginActivity"
             android:theme="@style/AppTheme.NoActionBar"/>
@@ -62,20 +86,14 @@
         <activity
             android:name=".activities.SplashActivity"
             android:theme="@style/AppTheme.NoActionBar">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".call_receiver.MyCustomDialog"
-            android:noHistory="true"
-            android:theme="@android:style/Theme.Dialog" /> <!-- <receiver android:name=".receiver.AssistantReceiver" > -->
-        <!-- <intent-filter> -->
-        <!-- <action android:name="android.net.conn.CONNECTIVITY_CHANGE" /> -->
-        <!-- </intent-filter> -->
-        <!-- </receiver> -->
+
         <activity
             android:name=".activities.OrderActivity"
             android:launchMode="singleTask"

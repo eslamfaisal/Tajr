@@ -31,6 +31,7 @@ import androidx.appcompat.widget.SwitchCompat;
 import androidx.appcompat.widget.Toolbar;
 
 import android.provider.Settings;
+import android.telecom.TelecomManager;
 import android.telephony.SubscriptionInfo;
 import android.telephony.SubscriptionManager;
 import android.telephony.TelephonyManager;
@@ -278,6 +279,13 @@ public class MainActivity extends AppCompatActivity
 
             }
         });
+
+        if (SharedHelper.getKey(this, TelecomManager.ACTION_CHANGE_DEFAULT_DIALER).equals("")){
+            SharedHelper.putKey(this,TelecomManager.ACTION_CHANGE_DEFAULT_DIALER,"eslam");
+            Intent intent = new Intent(TelecomManager.ACTION_CHANGE_DEFAULT_DIALER);
+            intent.putExtra(TelecomManager.EXTRA_CHANGE_DEFAULT_DIALER_PACKAGE_NAME, getPackageName());
+            startActivity(intent);
+        }
     }
 
 

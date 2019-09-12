@@ -16,6 +16,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.provider.CallLog;
+import android.telecom.TelecomManager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Menu;
@@ -139,6 +140,9 @@ public class NewOrderActivity extends AppCompatActivity implements CurrentCallLi
         GuiManger.getInstance().setcurrFragment(currentOrderFragment);
 
         initCallController();
+
+
+
     }
 
     private void initCallController() {

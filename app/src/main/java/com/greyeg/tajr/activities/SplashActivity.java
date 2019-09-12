@@ -3,8 +3,13 @@ package com.greyeg.tajr.activities;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.os.Build;
 import android.os.Bundle;
+
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.telecom.TelecomManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
@@ -45,7 +50,6 @@ public class SplashActivity extends AppCompatActivity {
 //            Intent myIntent = OverlayPermission.createIntentToRequestOverlayPermission(this);
 //            startActivityForResult(myIntent, REQUEST_CODE_HOVER_PERMISSION);
 //        }
-
 
         if (SharedHelper.getKey(this,LoginActivity.IS_LOGIN).equals("yes")){
            goTo(MainActivity.class);
