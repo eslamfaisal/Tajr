@@ -52,7 +52,7 @@ import com.greyeg.tajr.activities.SettingsActivity;
 import com.greyeg.tajr.activities.WorkHistoryActivity;
 import com.greyeg.tajr.adapters.DrawerAdapter;
 import com.greyeg.tajr.helper.SharedHelper;
-import com.greyeg.tajr.helper.TimerTextView;
+
 import com.greyeg.tajr.helper.font.RobotoTextView;
 import com.greyeg.tajr.order.NewOrderActivity;
 import com.greyeg.tajr.records.RecordsActivity;
@@ -124,7 +124,7 @@ public class MainActivity extends AppCompatActivity
     ImageView start;
     private boolean isCanceled = false;
     private android.os.Handler handleCheckStatus;
-    private TimerTextView timerText;
+
     private String TAG = "tttttttttt";
     private ListView mDrawerList;
     private DrawerLayout mDrawerLayout;

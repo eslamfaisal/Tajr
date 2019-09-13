@@ -12,8 +12,6 @@ import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import androidx.core.app.ActivityCompat;
-import androidx.appcompat.app.AppCompatActivity;
 import android.telephony.SubscriptionManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -30,6 +28,8 @@ import com.rafakob.drawme.DrawMeRelativeLayout;
 
 import java.util.Locale;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -48,7 +48,7 @@ public class SettingsActivity extends AppCompatActivity {
     RadioGroup radioGroup;
     RobotoTextView ok;
     View view;
-//
+    //
     String newStatus;
     String newStatusTag;
     RadioButton sim1;
@@ -112,7 +112,7 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                RadioButton selectedRadioButton = (RadioButton) dialog.findViewById(radioGroup.getCheckedRadioButtonId());
+                RadioButton selectedRadioButton = dialog.findViewById(radioGroup.getCheckedRadioButtonId());
                 newStatus = selectedRadioButton.getText().toString();
                 newStatusTag = (String) selectedRadioButton.getTag();
 
@@ -158,9 +158,9 @@ public class SettingsActivity extends AppCompatActivity {
         radioGrouplang = dialogLang.findViewById(R.id.radio_group);
         arabic = dialogLang.findViewById(R.id.arabic);
         english = dialogLang.findViewById(R.id.english);
-        if ( Locale.getDefault().getLanguage().equals("ar")) {
+        if (Locale.getDefault().getLanguage().equals("ar")) {
             arabic.setChecked(true);
-        } else if ( Locale.getDefault().getLanguage().equals("en")) {
+        } else if (Locale.getDefault().getLanguage().equals("en")) {
             english.setChecked(true);
         }
         okLang = dialogLang.findViewById(R.id.ok);
@@ -168,7 +168,7 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                RadioButton selectedRadioButton = (RadioButton) dialogLang.findViewById(radioGrouplang.getCheckedRadioButtonId());
+                RadioButton selectedRadioButton = dialogLang.findViewById(radioGrouplang.getCheckedRadioButtonId());
                 newStatusLAng = selectedRadioButton.getText().toString();
                 newStatusTagLang = (String) selectedRadioButton.getTag();
                 dialogLang.dismiss();
