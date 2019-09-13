@@ -5,6 +5,8 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,11 +34,11 @@ import static com.greyeg.tajr.view.dialogs.Dialogs.showProgressDialog;
 
 public class MultiOrderProductsAdapter extends RecyclerView.Adapter<MultiOrderProductsAdapter.Holder> {
 
-    private Activity context;
+    private Context context;
     private List<MultiOrderProducts> proDucts;
     private GetOrderInterface getOrderInterface;
 
-    public MultiOrderProductsAdapter(Activity context, List<MultiOrderProducts> proDucts, GetOrderInterface getOrderInterface) {
+    public MultiOrderProductsAdapter(Context context, List<MultiOrderProducts> proDucts, GetOrderInterface getOrderInterface) {
         this.context = context;
         this.proDucts = proDucts;
         this.getOrderInterface = getOrderInterface;

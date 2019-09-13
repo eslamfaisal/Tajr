@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.greyeg.tajr.activities.EmptyCallActivity;
@@ -17,6 +18,7 @@ import com.greyeg.tajr.helper.SharedHelper;
 import com.greyeg.tajr.models.SimpleOrderResponse;
 import com.greyeg.tajr.order.CurrentOrderData;
 import com.greyeg.tajr.order.NewOrderActivity;
+import com.greyeg.tajr.order.models.CurrentOrderResponse;
 import com.greyeg.tajr.over.MissedCallNoOrderService;
 import com.greyeg.tajr.over.MissedCallOrderService;
 import com.greyeg.tajr.server.Api;
@@ -50,6 +52,8 @@ public class CallsReceiver extends BroadcastReceiver {
 //        Toast.makeText(context, "تم بدء مكالمة", Toast.LENGTH_SHORT).show();
         boolean switchCheckOn = pref.getBoolean("switchOn", true);
         if (switchCheckOn) try {
+
+
             if (intent.getAction().equals("android.intent.action.NEW_OUTGOING_CALL")) {
                 savedNumber = intent.getExtras().getString("android.intent.extra.PHONE_NUMBER");
                 final Intent intent2 = new Intent(context, EmptyCallActivity.class);
@@ -70,28 +74,34 @@ public class CallsReceiver extends BroadcastReceiver {
             String state = extras.getString(TelephonyManager.EXTRA_STATE);
 
 
+
             if (state.equals(TelephonyManager.EXTRA_STATE_RINGING)) {
 
                 String incomingNumber = intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER);
                 Toast.makeText(context, "incoming call  " + incomingNumber, Toast.LENGTH_SHORT).show();
                 Api api = BaseClient.getBaseClient().create(Api.class);
-                api.getPhoneData(
+                api.getPhoneData2(
                         SharedHelper.getKey(context, LoginActivity.TOKEN),
                         SharedHelper.getKey(context, LoginActivity.USER_ID),
                         incomingNumber
-                ).enqueue(new Callback<SimpleOrderResponse>() {
+                ).enqueue(new Callback<CurrentOrderResponse>() {
                     @Override
-                    public void onResponse(Call<SimpleOrderResponse> call, Response<SimpleOrderResponse> response) {
-                        if (response.body().getCode().equals("1401")) {
-                            Intent startHoverIntent = new Intent(context, MissedCallNoOrderService.class);
-                            context.startService(startHoverIntent);
-                        } else if (response.body().getCode().equals("1200")) {
+                    public void onResponse(Call<CurrentOrderResponse> call, Response<CurrentOrderResponse> response) {
+                        Log.d("eslamfaisalmissedcall", response.body().getCode()+" onResponse: "+response.toString());
+//                        if (response.body().getCode().equals("1401")) {
+//                            Intent startHoverIntent = new Intent(context, MissedCallNoOrderService.class);
+//                            context.startService(startHoverIntent);
+//                        } else
+//
+                        if (response.body().getCode().equals("1200")) {
+                            CurrentOrderData.getInstance().setMissedCallOrderResponse(response.body());
                             MissedCallOrderService.showFloatingMenu(context);
                         }
+
                     }
 
                     @Override
-                    public void onFailure(Call<SimpleOrderResponse> call, Throwable t) {
+                    public void onFailure(Call<CurrentOrderResponse> call, Throwable t) {
 
                     }
                 });

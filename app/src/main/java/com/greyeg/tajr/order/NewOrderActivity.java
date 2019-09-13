@@ -135,6 +135,9 @@ public class NewOrderActivity extends AppCompatActivity implements CurrentCallLi
         GuiManger.getInstance().setFragmentManager(getSupportFragmentManager());
         currentOrderFragment = new CurrentOrderFragment();
         missedCallFragment = new MissedCallFragment();
+        if (getIntent()!=null){
+            Log.d(TAG, "onCreate: intents");
+        }
         GuiManger.getInstance().setcurrFragment(currentOrderFragment);
 
         initCallController();
@@ -275,7 +278,6 @@ public class NewOrderActivity extends AppCompatActivity implements CurrentCallLi
     }
 
     public void callClient() {
-        CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().setPhone1("01011838365");
         Intent callIntent = new Intent(Intent.ACTION_CALL);
         callIntent.setData(Uri.parse("tel:" + CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getPhone1()));
         if (ActivityCompat.checkSelfPermission(this,

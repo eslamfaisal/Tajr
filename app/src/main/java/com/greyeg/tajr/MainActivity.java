@@ -55,6 +55,7 @@ import com.greyeg.tajr.helper.SharedHelper;
 
 import com.greyeg.tajr.helper.font.RobotoTextView;
 import com.greyeg.tajr.order.NewOrderActivity;
+import com.greyeg.tajr.over.MissedCallOrderService;
 import com.greyeg.tajr.records.RecordsActivity;
 import com.greyeg.tajr.server.Api;
 import com.greyeg.tajr.server.BaseClient;
@@ -315,6 +316,7 @@ public class MainActivity extends AppCompatActivity
         initViews();
 
         firebaseInit();
+
     }
 
     private void initViews() {
