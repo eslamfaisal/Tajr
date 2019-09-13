@@ -667,6 +667,7 @@ public class SearchOrderFragment extends Fragment {
                                     Log.e("eslamfaissal", "onResponse: ", e);
                                     Log.d("eslamfaissal", "onResponse: " + response.body().toString());
                                     CurrentOrderData.getInstance().setCurrentOrderResponse(response.body());
+
                                     fillFieldsWithOrderData(response.body());
 
                                     productExbandable = true;

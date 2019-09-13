@@ -23,11 +23,6 @@ import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.FragmentManager;
-
 import com.android.internal.telephony.ITelephony;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.greyeg.tajr.R;
@@ -58,6 +53,10 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.FragmentManager;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import okhttp3.MediaType;
@@ -276,7 +275,7 @@ public class NewOrderActivity extends AppCompatActivity implements CurrentCallLi
     }
 
     public void callClient() {
-
+        CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().setPhone1("01011838365");
         Intent callIntent = new Intent(Intent.ACTION_CALL);
         callIntent.setData(Uri.parse("tel:" + CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getPhone1()));
         if (ActivityCompat.checkSelfPermission(this,
@@ -377,9 +376,14 @@ public class NewOrderActivity extends AppCompatActivity implements CurrentCallLi
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        cancelNotification();
-        closeRecords();
-        saveWorkTime();
+        try {
+            cancelNotification();
+            closeRecords();
+            saveWorkTime();
+        } catch (Exception e) {
+            Log.d(TAG, "onDestroy: ");
+        }
+
     }
 
     public void cancelNotification() {
@@ -447,16 +451,16 @@ public class NewOrderActivity extends AppCompatActivity implements CurrentCallLi
 
     @Override
     public void callEnded(int serialNumber, String phoneNumber) {
-        try {
-            Log.d("callEndedcallEnded", "callEnded: ");
 
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
+        Log.d("callEndedcallEnded", "callEnded: ");
 
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
                             LastCallDetails callDetails = getLastCallDetails();
 
                             Log.d("callDetails", "callDetails: " + callDetails.getType());
@@ -497,20 +501,19 @@ public class NewOrderActivity extends AppCompatActivity implements CurrentCallLi
 
                                 }
                             }
-
-
+                        } catch (Exception e) {
+                            Log.d("eslamfaisal", "callEnded: " + e.getMessage());
                         }
-                    });
 
-                }
-            }, 1000);
-        }catch (Exception e){
-            Log.d("eslamfaisal", "callEnded: "+e.getMessage());
-        }
+                    }
+                });
+
+            }
+        }, 1000);
 
 
     }
-    
+
     private boolean getAutoValue() {
         SharedPreferences auto = PreferenceManager.getDefaultSharedPreferences(this);
         return auto.getBoolean("autoUpdate", false);

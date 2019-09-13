@@ -6,7 +6,7 @@ import com.greyeg.tajr.order.models.SingleOrderProductsResponse;
 public class CurrentOrderData {
 
     public static CurrentOrderData currentOrderData;
-    private String callTime;
+    private String callTime = "NotYet";
     private CurrentOrderResponse currentOrderResponse;
     private SingleOrderProductsResponse singleOrderProductsResponse;
 

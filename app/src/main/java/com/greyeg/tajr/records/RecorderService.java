@@ -59,7 +59,7 @@ public class RecorderService extends Service {
         }catch (Exception e){
             Log.d(TAG, "onStartCommand: ");
         }
-       
+
 
         return START_NOT_STICKY;
     }
