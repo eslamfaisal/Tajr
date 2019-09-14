@@ -295,7 +295,6 @@ public class NewOrderActivity extends AppCompatActivity implements CurrentCallLi
 
     public void callClient() {
         Intent callIntent = new Intent(Intent.ACTION_CALL);
-        CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().setPhone1("888");
         callIntent.setData(Uri.parse("tel:" + CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getPhone1()));
         if (ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
