@@ -25,6 +25,7 @@ import android.widget.Toast;
 
 import com.android.internal.telephony.ITelephony;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.greyeg.tajr.MainActivity;
 import com.greyeg.tajr.R;
 import com.greyeg.tajr.activities.LoginActivity;
 import com.greyeg.tajr.calc.CalcDialog;
@@ -82,6 +83,7 @@ public class NewOrderActivity extends AppCompatActivity implements CurrentCallLi
     CurrentOrderFragment currentOrderFragment;
     private Menu callControllerMenu;
     private MenuItem micMode;
+
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = item -> {
         int id = item.getItemId();
@@ -100,11 +102,13 @@ public class NewOrderActivity extends AppCompatActivity implements CurrentCallLi
         }
         return false;
     };
+
     private Timer workTimer;
     private int DIALOG_REQUEST_CODE = 25;
     private CalcDialog calcDialog;
     private MissedCallFragment missedCallFragment;
     private DatabaseManager databaseManager;
+    private boolean fromBuble = false;
 
     //GUIManger Methods
     public static void update() {
@@ -131,16 +135,27 @@ public class NewOrderActivity extends AppCompatActivity implements CurrentCallLi
         databaseManager = new DatabaseManager(this);
         openRecords();
         initToolBar();
+        initCallController();
         GuiManger.getInstance().setActivity(this);
         GuiManger.getInstance().setFragmentManager(getSupportFragmentManager());
         currentOrderFragment = new CurrentOrderFragment();
         missedCallFragment = new MissedCallFragment();
-        if (getIntent()!=null){
-            Log.d(TAG, "onCreate: intents");
-        }
+        checkFromWhat();
         GuiManger.getInstance().setcurrFragment(currentOrderFragment);
 
-        initCallController();
+
+    }
+
+    private void checkFromWhat() {
+        if (getIntent().getStringExtra("fromBuble") != null) {
+            Log.d(TAG, "onCreate: intents");
+            if (getIntent().getStringExtra("fromBuble").equals("buble")) {
+                Bundle bundle = new Bundle();
+                bundle.putString("fromBuble", "buble");
+                currentOrderFragment.setArguments(bundle);
+                fromBuble = true;
+            } else fromBuble = false;
+        } else fromBuble = false;
     }
 
     private void initCallController() {
@@ -216,10 +231,11 @@ public class NewOrderActivity extends AppCompatActivity implements CurrentCallLi
 
     @Override
     public void onBackPressed() {
-        if (GuiManger.getInstance().getcurrFragment() instanceof CurrentOrderFragment) {
-            finish();
-        } else
-            super.onBackPressed();
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
     }
 
     void endCAll() {
@@ -279,6 +295,7 @@ public class NewOrderActivity extends AppCompatActivity implements CurrentCallLi
 
     public void callClient() {
         Intent callIntent = new Intent(Intent.ACTION_CALL);
+        CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().setPhone1("888");
         callIntent.setData(Uri.parse("tel:" + CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getPhone1()));
         if (ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {

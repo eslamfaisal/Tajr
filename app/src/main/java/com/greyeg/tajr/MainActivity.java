@@ -54,7 +54,9 @@ import com.greyeg.tajr.adapters.DrawerAdapter;
 import com.greyeg.tajr.helper.SharedHelper;
 
 import com.greyeg.tajr.helper.font.RobotoTextView;
+import com.greyeg.tajr.order.CurrentOrderData;
 import com.greyeg.tajr.order.NewOrderActivity;
+import com.greyeg.tajr.order.models.CurrentOrderResponse;
 import com.greyeg.tajr.over.MissedCallOrderService;
 import com.greyeg.tajr.records.RecordsActivity;
 import com.greyeg.tajr.server.Api;
@@ -85,6 +87,9 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 import static com.greyeg.tajr.activities.LoginActivity.idListString;
@@ -335,10 +340,10 @@ public class MainActivity extends AppCompatActivity
             public void onStateChange(boolean active) {
                 if (active) {
                     Intent intent = new Intent(getApplicationContext(), NewOrderActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
-
-
                 }
 
             }

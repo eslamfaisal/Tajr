@@ -12,15 +12,6 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-import androidx.fragment.app.Fragment;
-import androidx.core.app.NotificationCompat;
-import androidx.cardview.widget.CardView;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -40,6 +31,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.greyeg.tajr.R;
 import com.greyeg.tajr.activities.LoginActivity;
 import com.greyeg.tajr.helper.SharedHelper;
@@ -72,6 +64,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
 
+import androidx.cardview.widget.CardView;
+import androidx.core.app.NotificationCompat;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -164,7 +161,12 @@ public class CurrentOrderFragment extends Fragment {
 
     @BindView(R.id.save_edit)
     FloatingActionButton save_edit;
-
+    @BindView(R.id.deliver)
+    CardView deliver;
+    @BindView(R.id.shipping_no_answer)
+    CardView shipping_no_answer;
+    @BindView(R.id.return_order)
+    CardView return_order;
     // main view of the CurrentOrderFragment
     private View mainView;
     private LinearLayoutManager multiOrderProductsLinearLayoutManager;
@@ -175,7 +177,6 @@ public class CurrentOrderFragment extends Fragment {
     private boolean rotate = false;
     private boolean rotateshipper = false;
     private boolean productExbandable = false;
-
 
     public CurrentOrderFragment() {
         // Required empty public constructor
@@ -188,9 +189,17 @@ public class CurrentOrderFragment extends Fragment {
         mainView = inflater.inflate(R.layout.fragment_current_order, container, false);
         ButterKnife.bind(this, mainView);
         initLabels();
-
-        getCurrentOrder();
         setListeners();
+
+        Bundle bundle = getArguments();
+        if (bundle!=null){
+            if (bundle.getString("fromBuble")!=null){
+                if (bundle.getString("fromBuble").equals("buble")){
+                    getBubleOrder();
+                }else getCurrentOrder();
+            }else getCurrentOrder();
+        }else getCurrentOrder();
+
         return mainView;
     }
 
@@ -323,7 +332,7 @@ public class CurrentOrderFragment extends Fragment {
             public void onFailure(Call<UpdateOrederNewResponse> call, Throwable t) {
                 progressDialog.dismiss();
                 getCurrentOrder();
-                Log.d(TAG, "onResponse: " + t.getMessage().toString());
+                Log.d(TAG, "onResponse: " + t.getMessage());
             }
         });
     }
@@ -537,7 +546,9 @@ public class CurrentOrderFragment extends Fragment {
             ViewAnimation.showOut(normal_order_data_confirmed);
             back_drop.setVisibility(View.GONE);
         }
-    }  private void toggleFabModeShipper(View v) {
+    }
+
+    private void toggleFabModeShipper(View v) {
         rotateshipper = ViewAnimation.rotateFab(v, !rotateshipper);
         if (rotateshipper) {
             ViewAnimation.showIn(return_order);
@@ -551,17 +562,6 @@ public class CurrentOrderFragment extends Fragment {
             back_drop.setVisibility(View.GONE);
         }
     }
-
-    @BindView(R.id.deliver)
-    CardView deliver;
-
-    @BindView(R.id.shipping_no_answer)
-    CardView shipping_no_answer;
-
-
-    @BindView(R.id.return_order)
-    CardView return_order;
-
 
     private void addProductToMultiOrder(int number, int index) {
         ProgressDialog progressDialog = showProgressDialog(getActivity(), getString(R.string.add_product));
@@ -606,7 +606,7 @@ public class CurrentOrderFragment extends Fragment {
                 progressDialog.dismiss();
                 Log.d("DeleteAddProduct", "onFailure: " + t.getMessage());
                 errorGetCurrentOrderDialog = Dialogs.showCustomDialog(getActivity(),
-                        t.getMessage().toString(), getString(R.string.order),
+                        t.getMessage(), getString(R.string.order),
                         getString(R.string.retry), getString(R.string.finish_work), new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -624,6 +624,37 @@ public class CurrentOrderFragment extends Fragment {
 
     }
 
+    private void getBubleOrder() {
+        CurrentOrderData.getInstance().setCurrentOrderResponse(CurrentOrderData.getInstance().getMissedCallOrderResponse());
+
+        try {
+            if (CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getCheckType().equals("normal_order")) {
+                fillFieldsWithOrderData(CurrentOrderData.getInstance().getMissedCallOrderResponse());
+                updateProgress();
+                productExbandable = true;
+                normal_update_actions.setVisibility(View.VISIBLE);
+                shipper_update_actions.setVisibility(View.GONE);
+            } else {
+                fillFieldsWithOrderData(CurrentOrderData.getInstance().getMissedCallOrderResponse());
+                updateProgress();
+                productExbandable = true;
+                normal_update_actions.setVisibility(View.GONE);
+                shipper_update_actions.setVisibility(View.VISIBLE);
+
+            }
+        } catch (Exception e) {
+            Log.e("eslamfaissal", "onResponse: ", e);
+            Log.d("eslamfaissal", "onResponse: " + CurrentOrderData.getInstance().getMissedCallOrderResponse().toString());
+            CurrentOrderData.getInstance().setCurrentOrderResponse(CurrentOrderData.getInstance().getMissedCallOrderResponse());
+            fillFieldsWithOrderData(CurrentOrderData.getInstance().getMissedCallOrderResponse());
+            updateProgress();
+            productExbandable = true;
+            normal_update_actions.setVisibility(View.VISIBLE);
+            shipper_update_actions.setVisibility(View.GONE);
+        }
+
+
+    }
 
     private void getCurrentOrder() {
 
@@ -653,9 +684,9 @@ public class CurrentOrderFragment extends Fragment {
                                         shipper_update_actions.setVisibility(View.VISIBLE);
 
                                     }
-                                }catch (Exception e){
-                                    Log.e("eslamfaissal", "onResponse: ",e );
-                                    Log.d("eslamfaissal", "onResponse: "+response.body().toString());
+                                } catch (Exception e) {
+                                    Log.e("eslamfaissal", "onResponse: ", e);
+                                    Log.d("eslamfaissal", "onResponse: " + response.body().toString());
                                     CurrentOrderData.getInstance().setCurrentOrderResponse(response.body());
                                     fillFieldsWithOrderData(response.body());
                                     updateProgress();
@@ -663,7 +694,6 @@ public class CurrentOrderFragment extends Fragment {
                                     normal_update_actions.setVisibility(View.VISIBLE);
                                     shipper_update_actions.setVisibility(View.GONE);
                                 }
-
 
 
                             } else if (response.body().getCode().equals(ResponseCodeEnums.code_1300.getCode())) {
@@ -885,8 +915,8 @@ public class CurrentOrderFragment extends Fragment {
     // animation for show and hide fields labels
     private void runAnimation(int id1, int id2) {
 
-        TextView tv = (TextView) mainView.findViewById(id1);
-        FrameLayout bg = (FrameLayout) mainView.findViewById(id2);
+        TextView tv = mainView.findViewById(id1);
+        FrameLayout bg = mainView.findViewById(id2);
 
         if (tv.getVisibility() == View.VISIBLE) {
             Animation a = AnimationUtils.loadAnimation(getActivity(), R.anim.bottom_sheet_fad_out);
