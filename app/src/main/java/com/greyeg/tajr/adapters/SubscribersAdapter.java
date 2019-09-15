@@ -1,6 +1,9 @@
 package com.greyeg.tajr.adapters;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -51,7 +54,12 @@ public class SubscribersAdapter extends RecyclerView.Adapter<SubscribersAdapter.
     public void onBindViewHolder(@NonNull SubscriberHolder holder, int position) {
         Subscriber subscriber=subscribers.get(position);
         holder.name.setText(subscriber.getName());
-        getImageUrl(subscriber.getImg(),holder.image);
+
+        String image_base=subscriber.getImg_base();
+        //showImage(image_base,holder.image);
+        Log.d("IMGBASSEE", image_base.substring(22));
+        showImage(image_base.substring(22),holder.image);
+
 
 
     }
@@ -83,32 +91,10 @@ public class SubscribersAdapter extends RecyclerView.Adapter<SubscribersAdapter.
         }
     }
 
-    private void getImageUrl(String url,ImageView img){
-        BaseClient
-                .getService()
-                .getImageUrl(url).enqueue(new Callback<ResponseBody>() {
-                    @Override
-                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                        String content_type=response.headers().get("content-type");
-                        int i= content_type.indexOf('/');
-                        String extension=content_type.substring(i+1);
-                        if (i==-1)
-                            img.setImageResource(R.drawable.ic_error_black_24dp);
-
-                        String fullUrl=url+"."+extension;
-
-                        Picasso.get()
-                                .load(fullUrl)
-                                .error(R.drawable.ic_error_black_24dp)
-                                .into(img);
-                    }
-
-                    @Override
-                    public void onFailure(Call<ResponseBody> call, Throwable t) {
-                        Log.d("IMAGEEEEEE", "onFailure: "+t.getMessage());
-
-                    }
-                });
+    private void showImage(String img_base,ImageView img){
+        byte[] imageBytes=Base64.decode(img_base,Base64.DEFAULT);
+        Bitmap decodedImg= BitmapFactory.decodeByteArray(imageBytes,0,imageBytes.length);
+        img.setImageBitmap(decodedImg);
     }
 
     public interface OnSubscriberSelected{

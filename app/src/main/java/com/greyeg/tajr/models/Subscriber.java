@@ -5,6 +5,8 @@ public class Subscriber {
     private String id;
     private String name;
     private String img;
+    private String type;
+    private String img_base;
     private String page;
     private String psid;
 
@@ -26,6 +28,14 @@ public class Subscriber {
 
     public String getImg() {
         return img;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public String getImg_base() {
+        return img_base;
     }
 
     public String getPage() {

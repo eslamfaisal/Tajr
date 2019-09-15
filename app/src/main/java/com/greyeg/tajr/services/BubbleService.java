@@ -91,6 +91,7 @@ public class BubbleService extends Service
     public static String CITY_ID;
     List<String> citiesId = new ArrayList<>();
     private List<Cities.City> citiesBody;
+    ArrayList<Subscriber> subscribers=new ArrayList<>();
 
 
     @Nullable
@@ -170,10 +171,12 @@ public class BubbleService extends Service
     public void onMessageEvent(UserNameEvent event) {
         if (event.getUserNmae()!=null){
             Log.d("EVENTTT", event.getUserNmae()+" -------> : "+userName);
-            psid =null;
-            if (userName==null)
-                //Log.d("EVENTTT","getting userName");
-                getUserId("Mohamed Gamal");
+            if (userName == null || !userName.equals(event.getUserNmae())){
+                psid =null;
+                getUserId("Mohammed");
+                Log.d("EVENTTT","getting userName");
+
+            }
 
             userName=event.getUserNmae();
             Log.d("EVENTTT","set userName "+userName);
@@ -193,6 +196,7 @@ public class BubbleService extends Service
 
 
     private void getUserId(String userName){
+        subscribers.clear();
         // TODO: 9/11/2019 handle expand
         String token= SharedHelper.getKey(getApplicationContext(), LoginActivity.TOKEN);
         Log.d("SUBSCRIPERR", "token: "+token);
@@ -217,8 +221,7 @@ public class BubbleService extends Service
                                 userId=subscribersData.get(0).getId();
 
                             }else {
-                                if (psid ==null)
-                                setupSubscribersDialog(subscribersData);
+                                subscribers=subscribersData;
                             }
 
                         }
@@ -382,8 +385,7 @@ public class BubbleService extends Service
         subscribersDialog=LayoutInflater.from(getApplicationContext())
                 .inflate(R.layout.subscripers_dialog,null);
         subscribersDialogParams=getViewParams(100,200,600,600,subscribersDialogParams);
-        mWindowManager.addView(subscribersDialog,subscribersDialogParams
-                );
+        mWindowManager.addView(subscribersDialog,subscribersDialogParams);
 
         // TODO: 9/11/2019 show susbscriber image
         RecyclerView recyclerView=subscribersDialog.findViewById(R.id.subscribers_recycler);
@@ -600,12 +602,18 @@ public class BubbleService extends Service
                             bubbleView.findViewById(R.id.gotUserName)
                                     .setBackgroundResource(R.drawable.circle_green);
                         }
+                        if (subscribers!=null&&subscribers.size()>0&&psid==null){
+                            setupSubscribersDialog(subscribers);
+                            Log.d("SUBSCRIBERSS", " ");
+                        }
+
                         if (psid !=null){
                             if (expandedView.getVisibility()==View.GONE)
                                 expandedView.setVisibility(View.VISIBLE);
                             else
                                 expandedView.setVisibility(View.GONE);
                         }
+
 
                     }
 
