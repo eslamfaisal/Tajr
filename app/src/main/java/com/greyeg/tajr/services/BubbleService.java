@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.os.Handler;
 import android.os.IBinder;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -173,7 +174,7 @@ public class BubbleService extends Service
             Log.d("EVENTTT", event.getUserNmae()+" -------> : "+userName);
             if (userName == null || !userName.equals(event.getUserNmae())){
                 psid =null;
-                getUserId("Mohammed");
+                getUserId("Ahmed Khaled");
                 Log.d("EVENTTT","getting userName");
 
             }
@@ -280,6 +281,8 @@ public class BubbleService extends Service
 
 
     private void setupNewOrderDialog(){
+        // todo show mimimize button
+
         newOrderDialog=LayoutInflater.from(getApplicationContext())
                 .inflate(R.layout.new_order_dialog,null);
         newOrderDialogParams=getViewParams(100,100,600,600,newOrderDialogParams);
@@ -358,6 +361,16 @@ public class BubbleService extends Service
 
     private void MakeNewOrder(String client_name, String client_order_phone1
             , String client_area, String client_address, String item_no){
+
+        String[] params={client_name,client_order_phone1,client_area,client_address,item_no,CITY_ID,productId};
+        for (String param : params) {
+            if (TextUtils.isEmpty(param)) {
+                Toast.makeText(this, "complete all Fields", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+        }
+
         BaseClient.getService()
                 .recordNewOrder(SharedHelper.getKey(getApplicationContext(),LoginActivity.TOKEN),
                         userId,productId,client_name,client_order_phone1,CITY_ID,client_area,client_address
@@ -367,7 +380,7 @@ public class BubbleService extends Service
                     public void onResponse(Call<NewOrderResponse> call, Response<NewOrderResponse> response) {
                         NewOrderResponse newOrderResponse=response.body();
                         if (newOrderResponse!=null)
-                        Log.d("ORDERRRR", "onresponse: "+newOrderResponse.getInfo());
+                        Log.d("ORDERRRR", "onresponse: "+newOrderResponse.getData());
                         else
                         Log.d("ORDERRRR", "onresponse: "+response.code());
 
@@ -794,8 +807,7 @@ public class BubbleService extends Service
 
 
     private void getProducts() {
-        // TODO: 9/11/2019 check userId issue
-
+        ///todo change spinner layout
         Spinner product=newOrderDialog.findViewById(R.id.product);
 
         BaseClient.getService().getProducts(SharedHelper.getKey(getApplicationContext(), LoginActivity.TOKEN), null)
@@ -840,15 +852,16 @@ public class BubbleService extends Service
 
     private void getCities() {
         Spinner client_city=newOrderDialog.findViewById(R.id.client_city);
-        if (cities != null && cities.size() > 1) {
+        if (cities != null) {
             cities.clear();
+            Log.d("ORDERRRR", "clear Cities: ");
         }
-        Call<Cities> getCiriesCall = BaseClient.getService().getCities(
+        Call<Cities> getCitiesCall = BaseClient.getService().getCities(
                 SharedHelper.getKey(getApplicationContext(), LoginActivity.TOKEN),
                 SharedHelper.getKey(getApplicationContext(), LoginActivity.PARENT_ID)
         );
 
-        getCiriesCall.enqueue(new Callback<Cities>() {
+        getCitiesCall.enqueue(new Callback<Cities>() {
             @Override
             public void onResponse(Call<Cities> call, Response<Cities> response) {
                 if (response.body().getCities() != null) {
@@ -872,6 +885,7 @@ public class BubbleService extends Service
                             @Override
                             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                                 CITY_ID = String.valueOf(citiesBody.get(position).getCity_id());
+                                //Log.d("ORDERRRR", "onItemSelected: "+CITY_ID);
                             }
 
                             @Override

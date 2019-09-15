@@ -19,6 +19,8 @@ public class NewOrderResponse {
     private String Details;
 
 
+    private String data;
+
     public NewOrderResponse() {
     }
 
@@ -44,5 +46,9 @@ public class NewOrderResponse {
 
     public void setDetails(String details) {
         Details = details;
+    }
+
+    public String getData() {
+        return data;
     }
 }
