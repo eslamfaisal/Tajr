@@ -529,7 +529,7 @@ public class BubbleService extends Service
                     bubbleView.findViewById(R.id.gotUserId)
                             .setBackgroundResource(R.drawable.circle_gray);
 
-                handler.postDelayed(this,300);
+                handler.postDelayed(this,150);
                 run=!run;
             }
         });
@@ -815,9 +815,10 @@ public class BubbleService extends Service
             @Override
             public void onResponse(Call<AllProducts> call, final Response<AllProducts> response) {
                 Log.d("eeeeeeeeeeeeeee", "response: " + response.body().getProducts_count());
-                if (response.body() != null&&response.body().getProducts()!=null) {
-                    if (response.body().getProducts().size() > 0) {
-                        productId = response.body().getProducts().get(0).getProduct_id();
+                AllProducts allProducts=response.body();
+                if (allProducts!= null&&allProducts.getProducts()!=null) {
+                    if (allProducts.getProducts().size() > 0) {
+                        productId = allProducts.getProducts().get(0).getProduct_id();
 
                     }
                     List<ProductForSpinner> products = new ArrayList<>();
@@ -825,13 +826,13 @@ public class BubbleService extends Service
                         products.add(new ProductForSpinner(product.getProduct_name(), product.getProduct_image(), product.getProduct_id(),product.getProduct_real_price()));
                     }
                     ArrayAdapter<String> myAdapter = new ProductSpinnerAdapter(
-                            getApplicationContext(), products);
+                            getApplicationContext(), products,R.layout.layout_product_spinner_item2);
                     product.setAdapter(myAdapter);
 
                     product.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                         @Override
                         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                            productId = response.body().getProducts().get(position).getProduct_id();
+                            productId = allProducts.getProducts().get(position).getProduct_id();
                         }
 
                         @Override

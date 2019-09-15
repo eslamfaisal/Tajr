@@ -19,14 +19,22 @@ import java.util.Locale;
 
 public class ProductSpinnerAdapter extends ArrayAdapter<String > {
 
-    List<ProductForSpinner>products;
-
-    Context mContext;
+    private List<ProductForSpinner>products;
+    private Context mContext;
+    private int layout=-1;
 
     public ProductSpinnerAdapter(@NonNull Context context, List<ProductForSpinner>products) {
         super(context, R.layout.layout_product_spinner_item);
         this.products = products;
         this.mContext = context;
+    }
+
+    public ProductSpinnerAdapter(@NonNull Context context, List<ProductForSpinner>products,int layout) {
+        super(context,layout);
+        this.products = products;
+        this.mContext = context;
+        this.layout=layout;
+
     }
 
     @Override
@@ -46,10 +54,14 @@ public class ProductSpinnerAdapter extends ArrayAdapter<String > {
         if (convertView == null) {
             LayoutInflater mInflater = (LayoutInflater) mContext.
                     getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            if (layout==-1)
             convertView = mInflater.inflate(R.layout.layout_product_spinner_item, parent, false);
+            else
+                convertView = mInflater.inflate(layout, parent, false);
+
             mViewHolder.mFlag =  convertView.findViewById(R.id.product_image);
-            mViewHolder.mName = (TextView) convertView.findViewById(R.id.product_name);
-            mViewHolder.price = (TextView) convertView.findViewById(R.id.price);
+            mViewHolder.mName =  convertView.findViewById(R.id.product_name);
+            mViewHolder.price =  convertView.findViewById(R.id.price);
 
             convertView.setTag(mViewHolder);
         } else {

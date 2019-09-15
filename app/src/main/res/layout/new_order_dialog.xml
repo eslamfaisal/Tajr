@@ -17,7 +17,7 @@
         android:id="@+id/header"
         android:text="Make New Order"
         android:textColor="@color/black_text_color"
-        android:padding="7dp"
+        android:padding="10dp"
         android:background="@color/gray"
         app:layout_constraintTop_toTopOf="parent"
         />
@@ -30,7 +30,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/header"
         app:layout_constraintBottom_toBottomOf="@id/header"
-        android:layout_marginEnd="5dp"/>
+        android:layout_marginEnd="3dp"/>
 
     <ScrollView
         xmlns:tools="http://schemas.android.com/tools"
@@ -69,7 +69,6 @@
                     android:id="@+id/product"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="8dp"
                     android:background="@drawable/ic_background_gray_new_order"
                     android:paddingStart="8dp"
                     android:paddingEnd="8dp" />
