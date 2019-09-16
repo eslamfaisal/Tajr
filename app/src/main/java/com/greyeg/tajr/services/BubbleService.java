@@ -198,7 +198,6 @@ public class BubbleService extends Service
 
     private void getUserId(String userName){
         subscribers.clear();
-        // TODO: 9/11/2019 handle expand
         String token= SharedHelper.getKey(getApplicationContext(), LoginActivity.TOKEN);
         Log.d("SUBSCRIPERR", "token: "+token);
         startFlasher();
@@ -336,7 +335,6 @@ public class BubbleService extends Service
         subscribersDialogParams=getViewParams(100,200,600,600,subscribersDialogParams);
         mWindowManager.addView(subscribersDialog,subscribersDialogParams);
 
-        // TODO: 9/11/2019 show susbscriber image
         RecyclerView recyclerView=subscribersDialog.findViewById(R.id.subscribers_recycler);
         SubscribersAdapter adapter=new SubscribersAdapter(
                 getApplicationContext(),subscribers,this);
@@ -391,7 +389,6 @@ public class BubbleService extends Service
     }
 
     private void setupNewOrderDialog(){
-        // todo show mimimize button
 
         newOrderDialog=LayoutInflater.from(getApplicationContext())
                 .inflate(R.layout.new_order_dialog,null);
@@ -414,11 +411,14 @@ public class BubbleService extends Service
                         if (orderView.getVisibility()==View.VISIBLE){
                             orderView.setVisibility(View.GONE);
                             newOrderDialogParams.height=WindowManager.LayoutParams.WRAP_CONTENT;
+                            newOrderDialogParams.flags=WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
 
                         }
                         else{
                             orderView.setVisibility(View.VISIBLE);
                             newOrderDialogParams.height=600;
+                            newOrderDialogParams.flags=WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL;
+
                         }
 
 
@@ -830,7 +830,6 @@ public class BubbleService extends Service
 
 
     private void getProducts() {
-        ///todo change spinner layout
         Spinner product=newOrderDialog.findViewById(R.id.product);
 
         BaseClient.getService().getProducts(SharedHelper.getKey(getApplicationContext(), LoginActivity.TOKEN), null)
