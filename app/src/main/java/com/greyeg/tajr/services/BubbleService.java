@@ -159,6 +159,8 @@ public class BubbleService extends Service
                     @Override
                     public void onClick(View view) {
                         setupNewOrderDialog();
+                        bubbleView.setVisibility(View.GONE);
+
                     }
                 });
 
@@ -401,6 +403,7 @@ public class BubbleService extends Service
                     @Override
                     public void onClick(View view) {
                         mWindowManager.removeView(newOrderDialog);
+                        bubbleView.setVisibility(View.VISIBLE);
                     }
                 });
         newOrderDialog.findViewById(R.id.minimize)
