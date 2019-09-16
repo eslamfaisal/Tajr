@@ -32,6 +32,16 @@
         app:layout_constraintBottom_toBottomOf="@id/header"
         android:layout_marginEnd="3dp"/>
 
+    <ImageView
+        android:layout_width="40dp"
+        android:layout_height="0dp"
+        android:id="@+id/minimize"
+        android:src="@drawable/ic_remove_circle_outline_black_24dp"
+        app:layout_constraintEnd_toStartOf="@id/close"
+        app:layout_constraintTop_toTopOf="@id/header"
+        app:layout_constraintBottom_toBottomOf="@id/header"
+        android:layout_marginEnd="2dp"/>
+
     <ScrollView
         xmlns:tools="http://schemas.android.com/tools"
         tools:context=".fragments.NewOrderFragment"

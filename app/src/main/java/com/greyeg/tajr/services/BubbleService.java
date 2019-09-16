@@ -406,6 +406,27 @@ public class BubbleService extends Service
                         mWindowManager.removeView(newOrderDialog);
                     }
                 });
+        newOrderDialog.findViewById(R.id.minimize)
+                .setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        View orderView=newOrderDialog.findViewById(R.id.order_view);
+                        if (orderView.getVisibility()==View.VISIBLE){
+                            orderView.setVisibility(View.GONE);
+                            newOrderDialogParams.height=WindowManager.LayoutParams.WRAP_CONTENT;
+
+                        }
+                        else{
+                            orderView.setVisibility(View.VISIBLE);
+                            newOrderDialogParams.height=600;
+                        }
+
+
+                        newOrderDialog.setLayoutParams(newOrderDialogParams);
+                        mWindowManager.updateViewLayout(newOrderDialog,newOrderDialogParams);
+
+                    }
+                });
 
         getProducts();
         getCities();
