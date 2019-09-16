@@ -535,6 +535,9 @@ public class BubbleService extends Service
     public void onDestroy() {
         super.onDestroy();
         if (bubbleView != null) mWindowManager.removeView(bubbleView);
+        if (newOrderDialog != null) mWindowManager.removeView(newOrderDialog);
+        if (subscribersDialog != null) mWindowManager.removeView(subscribersDialog);
+        if (botBlocksDialog != null) mWindowManager.removeView(botBlocksDialog);
         isRunning=false;
         EventBus.getDefault().unregister(this);
     }
