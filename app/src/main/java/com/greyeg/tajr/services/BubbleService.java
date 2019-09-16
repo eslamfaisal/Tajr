@@ -308,6 +308,17 @@ public class BubbleService extends Service
 
         }
 
+
+        Log.d("ORDERRRR", "client_name: "+client_name);
+        Log.d("ORDERRRR", "client_order_phone1: "+client_order_phone1);
+        Log.d("ORDERRRR", "client_area: "+client_area);
+        Log.d("ORDERRRR", "client_address: "+client_address);
+        Log.d("ORDERRRR", "item_no: "+item_no);
+        Log.d("ORDERRRR", "CITY ID: "+CITY_ID);
+        Log.d("ORDERRRR", "product id: "+productId);
+
+
+
         BaseClient.getService()
                 .recordNewOrder(SharedHelper.getKey(getApplicationContext(),LoginActivity.TOKEN),
                         userId,productId,client_name,client_order_phone1,CITY_ID,client_area,client_address
@@ -861,6 +872,8 @@ public class BubbleService extends Service
                         @Override
                         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                             productId = allProducts.getProducts().get(position).getProduct_id();
+                            //Log.d("ORDERRRR", "product : "+productId);
+
                         }
 
                         @Override

@@ -63,6 +63,7 @@ import com.greyeg.tajr.activities.OrderActivity;
 import com.greyeg.tajr.activities.SettingsActivity;
 import com.greyeg.tajr.activities.WorkHistoryActivity;
 import com.greyeg.tajr.adapters.DrawerAdapter;
+import com.greyeg.tajr.helper.AccessibilityManager;
 import com.greyeg.tajr.helper.ScreenHelper;
 import com.greyeg.tajr.helper.SharedHelper;
 import com.greyeg.tajr.helper.TimerTextView;
@@ -161,7 +162,10 @@ public class MainActivity extends AppCompatActivity
         initDrawer();
         // get dimensions of screen
         ScreenHelper.saveScreenDimensions(this,this);
-        //startService(new Intent(this, BubbleService.class));
+
+        if (!AccessibilityManager.isAccessibilityEnabled(this)){
+            startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (
@@ -838,6 +842,7 @@ public class MainActivity extends AppCompatActivity
                 startActivity(intent);
             }
             if (position == 7) {
+                Log.d(TAG, "onItemClick: ");
                 SharedHelper.putKey(getApplicationContext(),LoginActivity.IS_LOGIN,"no");
                 intent = new Intent(getApplicationContext(), LoginActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
