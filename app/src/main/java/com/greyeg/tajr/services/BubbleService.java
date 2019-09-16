@@ -280,70 +280,6 @@ public class BubbleService extends Service
     }
 
 
-    private void setupNewOrderDialog(){
-        // todo show mimimize button
-
-        newOrderDialog=LayoutInflater.from(getApplicationContext())
-                .inflate(R.layout.new_order_dialog,null);
-        newOrderDialogParams=getViewParams(100,100,600,600,newOrderDialogParams);
-        mWindowManager.addView(newOrderDialog,newOrderDialogParams);
-
-
-        newOrderDialog.findViewById(R.id.close)
-                .setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        mWindowManager.removeView(newOrderDialog);
-                    }
-                });
-
-        getProducts();
-        getCities();
-
-        Spinner product=newOrderDialog.findViewById(R.id.product);
-        Spinner city=newOrderDialog.findViewById(R.id.client_city);
-        EditText client_name=newOrderDialog.findViewById(R.id.client_name);
-        EditText client_address=newOrderDialog.findViewById(R.id.client_address);
-        EditText client_area=newOrderDialog.findViewById(R.id.client_area);
-        EditText client_order_phone1=newOrderDialog.findViewById(R.id.client_order_phone1);
-        EditText item_no=newOrderDialog.findViewById(R.id.item_no);
-        DrawMeButton send_order=newOrderDialog.findViewById(R.id.send_order);
-
-        ImageView client_name_Paste=newOrderDialog.findViewById(R.id.client_name_paste);
-        ImageView client_address_paste=newOrderDialog.findViewById(R.id.client_address_paste);
-        ImageView client_area_paste=newOrderDialog.findViewById(R.id.client_area_paste);
-        ImageView client_order_phone1_paste=newOrderDialog.findViewById(R.id.client_order_phone1_paste);
-        ImageView item_no_paste=newOrderDialog.findViewById(R.id.item_no_paste);
-
-
-        newOrderDialog.setOnTouchListener(setOnTOuchListener(newOrderDialogParams));
-
-        send_order.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                MakeNewOrder(
-                        client_name.getText().toString(),
-                        client_order_phone1.getText().toString(),
-                        client_area.getText().toString(),
-                        client_address.getText().toString(),
-                        item_no.getText().toString()
-
-                        );
-            }
-        });
-
-
-
-
-
-        pasteData(client_name_Paste,client_name);
-        pasteData(client_address_paste,client_address);
-        pasteData(client_area_paste,client_area);
-        pasteData(client_order_phone1_paste,client_order_phone1);
-        pasteData(item_no_paste,item_no);
-
-
-    }
 
     private void pasteData(ImageView pasteButton,EditText editText){
         pasteButton.setOnClickListener(new View.OnClickListener() {
@@ -453,6 +389,72 @@ public class BubbleService extends Service
                 ,DividerItemDecoration.VERTICAL);
         recyclerView.addItemDecoration(dividerItemDecoration);
     }
+
+    private void setupNewOrderDialog(){
+        // todo show mimimize button
+
+        newOrderDialog=LayoutInflater.from(getApplicationContext())
+                .inflate(R.layout.new_order_dialog,null);
+        newOrderDialogParams=getViewParams(100,100,600,600,newOrderDialogParams);
+        mWindowManager.addView(newOrderDialog,newOrderDialogParams);
+
+
+        newOrderDialog.findViewById(R.id.close)
+                .setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        mWindowManager.removeView(newOrderDialog);
+                    }
+                });
+
+        getProducts();
+        getCities();
+
+        Spinner product=newOrderDialog.findViewById(R.id.product);
+        Spinner city=newOrderDialog.findViewById(R.id.client_city);
+        EditText client_name=newOrderDialog.findViewById(R.id.client_name);
+        EditText client_address=newOrderDialog.findViewById(R.id.client_address);
+        EditText client_area=newOrderDialog.findViewById(R.id.client_area);
+        EditText client_order_phone1=newOrderDialog.findViewById(R.id.client_order_phone1);
+        EditText item_no=newOrderDialog.findViewById(R.id.item_no);
+        DrawMeButton send_order=newOrderDialog.findViewById(R.id.send_order);
+
+        ImageView client_name_Paste=newOrderDialog.findViewById(R.id.client_name_paste);
+        ImageView client_address_paste=newOrderDialog.findViewById(R.id.client_address_paste);
+        ImageView client_area_paste=newOrderDialog.findViewById(R.id.client_area_paste);
+        ImageView client_order_phone1_paste=newOrderDialog.findViewById(R.id.client_order_phone1_paste);
+        ImageView item_no_paste=newOrderDialog.findViewById(R.id.item_no_paste);
+
+
+        newOrderDialog.setOnTouchListener(setOnTOuchListener(newOrderDialogParams));
+
+        send_order.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                MakeNewOrder(
+                        client_name.getText().toString(),
+                        client_order_phone1.getText().toString(),
+                        client_area.getText().toString(),
+                        client_address.getText().toString(),
+                        item_no.getText().toString()
+
+                );
+            }
+        });
+
+
+
+
+
+        pasteData(client_name_Paste,client_name);
+        pasteData(client_address_paste,client_address);
+        pasteData(client_area_paste,client_area);
+        pasteData(client_order_phone1_paste,client_order_phone1);
+        pasteData(item_no_paste,item_no);
+
+
+    }
+
 
 
     @Override

@@ -100,15 +100,16 @@
                     android:id="@+id/client_name"
                     android:layout_width="0dp"
                     android:layout_weight="1"
-                    android:layout_height="45dp"
+                    android:layout_height="40dp"
                     android:background="@drawable/ic_background_gray_new_order"
                     android:paddingStart="8dp"
                     android:paddingEnd="8dp"
                     />
 
                     <ImageView
-                        android:layout_width="45dp"
-                        android:layout_height="45dp"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center"
                         android:id="@+id/client_name_paste"
                         android:src="@drawable/ic_content_paste_black_24dp"/>
 
@@ -148,8 +149,9 @@
                     android:paddingEnd="8dp" />
 
                     <ImageView
-                        android:layout_width="45dp"
-                        android:layout_height="45dp"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center"
                         android:id="@+id/client_address_paste"
                         android:src="@drawable/ic_content_paste_black_24dp"/>
 
@@ -180,14 +182,15 @@
                     android:id="@+id/client_area"
                     android:layout_width="0dp"
                     android:layout_weight="1"
-                    android:layout_height="45dp"
+                    android:layout_height="40dp"
                     android:background="@drawable/ic_background_gray_new_order"
                     android:paddingStart="8dp"
                     android:paddingEnd="8dp" />
 
                     <ImageView
-                        android:layout_width="45dp"
-                        android:layout_height="45dp"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center"
                         android:id="@+id/client_area_paste"
                         android:src="@drawable/ic_content_paste_black_24dp"/>
 
@@ -247,14 +250,15 @@
                     android:inputType="phone"
                     android:layout_width="0dp"
                     android:layout_weight="1"
-                    android:layout_height="45dp"
+                    android:layout_height="40dp"
                     android:background="@drawable/ic_background_gray_new_order"
                     android:paddingStart="8dp"
                     android:paddingEnd="8dp" />
 
                 <ImageView
-                    android:layout_width="45dp"
-                    android:layout_height="45dp"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center"
                     android:id="@+id/client_order_phone1_paste"
                     android:src="@drawable/ic_content_paste_black_24dp"/>
 
@@ -285,7 +289,7 @@
                     android:id="@+id/client_order_phone2"
 
                     android:layout_width="match_parent"
-                    android:layout_height="45dp"
+                    android:layout_height="40dp"
                     android:background="@drawable/ic_background_gray_new_order"
                     android:editable="false"
                     android:paddingStart="8dp"
@@ -321,16 +325,17 @@
                     android:id="@+id/item_no"
                     android:layout_width="0dp"
                     android:layout_weight="1"
-                    android:layout_height="45dp"
+                    android:layout_height="40dp"
                     android:background="@drawable/ic_background_gray_new_order"
                     android:paddingStart="8dp"
                     android:paddingEnd="8dp" />
 
 
                     <ImageView
-                        android:layout_width="45dp"
-                        android:layout_height="45dp"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
                         android:id="@+id/item_no_paste"
+                        android:layout_gravity="center"
                         android:src="@drawable/ic_content_paste_black_24dp"/>
 
                 </LinearLayout>
