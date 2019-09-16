@@ -162,9 +162,8 @@ public class MainActivity extends AppCompatActivity
         initDrawer();
         // get dimensions of screen
         ScreenHelper.saveScreenDimensions(this,this);
-
         if (!AccessibilityManager.isAccessibilityEnabled(this)){
-            startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
+            //startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -200,7 +199,7 @@ public class MainActivity extends AppCompatActivity
                 checkDauleSim();
             }
 
-            Log.d("OVERLAYYY", "onCreate: ");
+            Log.d("OVERLAYYY", "mainactivity onCreate: ");
              //grant permission for drawing bubble over screen
             if (!Settings.canDrawOverlays(this)){
                 Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
@@ -559,7 +558,7 @@ public class MainActivity extends AppCompatActivity
             Log.d("OVERLAYYY", "onActivityResult: result code "+resultCode);
 
             if (resultCode == RESULT_OK) {
-                //showBubble();
+                Toast.makeText(mainActivity, "thanks :)", Toast.LENGTH_SHORT).show();
             } else {
                 //Log.d("OVERLAYYY", "onActivityResult: permission denies");
                 Toast.makeText(MainActivity.this,
@@ -618,7 +617,7 @@ public class MainActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            finish();
+            super.onBackPressed();
         }
     }
 
@@ -842,7 +841,7 @@ public class MainActivity extends AppCompatActivity
                 startActivity(intent);
             }
             if (position == 7) {
-                Log.d(TAG, "onItemClick: ");
+                Log.d(TAG, "onItemClick: position 7");
                 SharedHelper.putKey(getApplicationContext(),LoginActivity.IS_LOGIN,"no");
                 intent = new Intent(getApplicationContext(), LoginActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

@@ -62,6 +62,7 @@ public class SplashActivity extends AppCompatActivity {
             public void run() {
                 setLocale(SharedHelper.getKey(getApplicationContext(),"lang"));
                 Intent intent = new Intent(getApplicationContext(),tClass);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP| Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
                 overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
                 finish();
