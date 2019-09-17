@@ -6,6 +6,8 @@ import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -36,6 +38,7 @@ import android.telephony.SubscriptionManager;
 import android.telephony.TelephonyManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -163,8 +166,9 @@ public class MainActivity extends AppCompatActivity
         // get dimensions of screen
         ScreenHelper.saveScreenDimensions(this,this);
         if (!AccessibilityManager.isAccessibilityEnabled(this)){
-            //startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
+            showAccessibilityPermissionDialog();
         }
+
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (
@@ -199,17 +203,19 @@ public class MainActivity extends AppCompatActivity
                 checkDauleSim();
             }
 
-            Log.d("OVERLAYYY", "mainactivity onCreate: ");
-             //grant permission for drawing bubble over screen
-            if (!Settings.canDrawOverlays(this)){
-                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                        Uri.parse("package:" + getPackageName()));
-                startActivityForResult(intent, CODE_DRAW_OVER_OTHER_APP_PERMISSION);
-            }
+
 
         }
 
+//grant permission for drawing bubble over screen
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+                !Settings.canDrawOverlays(this)){
+            Log.d("OVERLAYYYY", "requisting permission ");
 
+            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                    Uri.parse("package:" + getPackageName()));
+            startActivityForResult(intent, CODE_DRAW_OVER_OTHER_APP_PERMISSION);
+        }
 
 
 
@@ -284,6 +290,34 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    void showAccessibilityPermissionDialog(){
+        AlertDialog alertDialog=new AlertDialog.Builder(this).create();
+        View dialogView= LayoutInflater.from(this)
+                .inflate(R.layout.accessibility_dialog,null);
+        alertDialog.setView(dialogView);
+        alertDialog.show();
+
+
+
+
+        dialogView.findViewById(R.id.enable)
+                .setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
+
+                    }
+                });
+
+        dialogView.findViewById(R.id.cancel)
+                .setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        alertDialog.dismiss();
+
+                    }
+                });
+    }
 
 
     public static void sendNotification(final String message) {
@@ -554,21 +588,21 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == CODE_DRAW_OVER_OTHER_APP_PERMISSION) {
-            Log.d("OVERLAYYY", "onActivityResult: result code "+resultCode);
-
-            if (resultCode == RESULT_OK) {
-                Toast.makeText(mainActivity, "thanks :)", Toast.LENGTH_SHORT).show();
-            } else {
-                //Log.d("OVERLAYYY", "onActivityResult: permission denies");
-                Toast.makeText(MainActivity.this,
-                        "you must give permission foe drawing on screen",
-                        Toast.LENGTH_SHORT).show();
-
-            }
-        } else {
-            super.onActivityResult(requestCode, resultCode, data);
-        }
+//        if (requestCode == CODE_DRAW_OVER_OTHER_APP_PERMISSION) {
+//            Log.d("OVERLAYYYY", "onActivityResult: result code "+resultCode);
+//
+//            if (resultCode == RESULT_OK) {
+//                Toast.makeText(mainActivity, "thanks :)", Toast.LENGTH_SHORT).show();
+//            } else {
+//                Log.d("OVERLAYYY", "onActivityResult: permission denies");
+//                Toast.makeText(MainActivity.this,
+//                        "you must give permission foe drawing on screen",
+//                        Toast.LENGTH_SHORT).show();
+//
+//            }
+//        } else {
+//            super.onActivityResult(requestCode, resultCode, data);
+//        }
     }
     void showBubble(){
         startService(new Intent(this, BubbleService.class));

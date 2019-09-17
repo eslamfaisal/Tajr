@@ -263,5 +263,6 @@
     <string name="phone_boot">Phone bot</string>
     <string name="tajr_bubble">tajr bubble</string>
     <string name="dummy_product">حذاء رياضي قماش شبكي برباط وبطانة مختلفة اللون للرجال من اوكس - رمادي</string>
+    <string name="accessibility_dialog_message">Accessibilit service is disabled \n  please go and enable tajr accessibility Service</string>
 
 </resources>

@@ -118,6 +118,22 @@ public interface Api {
             @Field("discount") String discount
     );
 
+
+    @FormUrlEncoded
+    @POST("send_test/new_order")
+    Call<ResponseBody> testNewOrder(
+            @Field("token") String token,
+            @Field("user_id") String user_id,
+            @Field("product_id") String product_id,
+            @Field("client_name") String client_name,
+            @Field("client_phone") String client_phone,
+            @Field("city_id") String city_id,
+            @Field("client_area") String client_area,
+            @Field("client_address") String client_address,
+            @Field("items") String items,
+            @Field("discount") String discount
+    );
+
     @FormUrlEncoded
     @POST("send_test/update_order")
     Call<UpdateOrederNewResponse> updateOrders(

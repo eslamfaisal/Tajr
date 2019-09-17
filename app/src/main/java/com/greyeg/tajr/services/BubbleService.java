@@ -56,6 +56,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -176,7 +177,7 @@ public class BubbleService extends Service
             Log.d("EVENTTT", event.getUserNmae()+" -------> : "+userName);
             if (userName == null || !userName.equals(event.getUserNmae())){
                 psid =null;
-                getUserId("Ahmed Khaled");
+                getUserId(event.getUserNmae());
                 Log.d("EVENTTT","getting userName");
 
             }
@@ -309,6 +310,7 @@ public class BubbleService extends Service
         }
 
 
+        Log.d("ORDERRRR", "token : "+SharedHelper.getKey(getApplicationContext(),LoginActivity.TOKEN));
         Log.d("ORDERRRR", "client_name: "+client_name);
         Log.d("ORDERRRR", "client_order_phone1: "+client_order_phone1);
         Log.d("ORDERRRR", "client_area: "+client_area);
@@ -318,27 +320,51 @@ public class BubbleService extends Service
         Log.d("ORDERRRR", "product id: "+productId);
 
 
-
         BaseClient.getService()
-                .recordNewOrder(SharedHelper.getKey(getApplicationContext(),LoginActivity.TOKEN),
-                        userId,productId,client_name,client_order_phone1,CITY_ID,client_area,client_address
-                ,item_no,null)
-                .enqueue(new Callback<NewOrderResponse>() {
+                .testNewOrder(SharedHelper.getKey(getApplicationContext(),LoginActivity.TOKEN),
+                        null,productId,client_name,client_order_phone1,CITY_ID,client_area,client_address
+                        ,item_no,null)
+                .enqueue(new Callback<ResponseBody>() {
                     @Override
-                    public void onResponse(Call<NewOrderResponse> call, Response<NewOrderResponse> response) {
-                        NewOrderResponse newOrderResponse=response.body();
-                        if (newOrderResponse!=null)
-                        Log.d("ORDERRRR", "onresponse: "+newOrderResponse.getData());
-                        else
-                        Log.d("ORDERRRR", "onresponse: "+response.code());
-
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        try {
+                            Log.d("ORDERRRR",response.body().string());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
 
                     @Override
-                    public void onFailure(Call<NewOrderResponse> call, Throwable t) {
-                        Log.d("ORDERRRR", "onFailure: "+t.getMessage());
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                        Log.d("ORDERRRR",t.getMessage());
+
                     }
                 });
+
+
+
+//        BaseClient.getService()
+//                .recordNewOrder(SharedHelper.getKey(getApplicationContext(),LoginActivity.TOKEN),
+//                        null,productId,client_name,client_order_phone1,CITY_ID,client_area,client_address
+//                ,item_no,null)
+//                .enqueue(new Callback<NewOrderResponse>() {
+//                    @Override
+//                    public void onResponse(Call<NewOrderResponse> call, Response<NewOrderResponse> response) {
+//                        NewOrderResponse newOrderResponse=response.body();
+//                        if (newOrderResponse!=null)
+//                        Log.d("ORDERRRR", "onresponse: "+newOrderResponse.getData());
+//                        else
+//                        Log.d("ORDERRRR", "onresponse: "+response.code());
+//
+//                    }
+//
+//                    @Override
+//                    public void onFailure(Call<NewOrderResponse> call, Throwable t) {
+//                        Log.d("ORDERRRR", "onFailure: "+t.toString());
+//                    }
+//                }
+//
+//                );
     }
 
 
