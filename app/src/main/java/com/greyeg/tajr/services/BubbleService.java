@@ -310,6 +310,8 @@ public class BubbleService extends Service
         }
 
 
+
+
         Log.d("ORDERRRR", "token : "+SharedHelper.getKey(getApplicationContext(),LoginActivity.TOKEN));
         Log.d("ORDERRRR", "client_name: "+client_name);
         Log.d("ORDERRRR", "client_order_phone1: "+client_order_phone1);
@@ -320,52 +322,58 @@ public class BubbleService extends Service
         Log.d("ORDERRRR", "product id: "+productId);
 
 
-        BaseClient.getService()
-                .testNewOrder(SharedHelper.getKey(getApplicationContext(),LoginActivity.TOKEN),
-                        null,productId,client_name,client_order_phone1,CITY_ID,client_area,client_address
-                        ,item_no,null)
-                .enqueue(new Callback<ResponseBody>() {
-                    @Override
-                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                        try {
-                            Log.d("ORDERRRR",response.body().string());
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<ResponseBody> call, Throwable t) {
-                        Log.d("ORDERRRR",t.getMessage());
-
-                    }
-                });
-
-
-
 //        BaseClient.getService()
-//                .recordNewOrder(SharedHelper.getKey(getApplicationContext(),LoginActivity.TOKEN),
+//                .testNewOrder(SharedHelper.getKey(getApplicationContext(),LoginActivity.TOKEN),
 //                        null,productId,client_name,client_order_phone1,CITY_ID,client_area,client_address
-//                ,item_no,null)
-//                .enqueue(new Callback<NewOrderResponse>() {
+//                        ,item_no,null)
+//                .enqueue(new Callback<ResponseBody>() {
 //                    @Override
-//                    public void onResponse(Call<NewOrderResponse> call, Response<NewOrderResponse> response) {
-//                        NewOrderResponse newOrderResponse=response.body();
-//                        if (newOrderResponse!=null)
-//                        Log.d("ORDERRRR", "onresponse: "+newOrderResponse.getData());
-//                        else
-//                        Log.d("ORDERRRR", "onresponse: "+response.code());
-//
+//                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+//                        try {
+//                            Log.d("ORDERRRR",response.body().string());
+//                        } catch (IOException e) {
+//                            e.printStackTrace();
+//                        }
 //                    }
 //
 //                    @Override
-//                    public void onFailure(Call<NewOrderResponse> call, Throwable t) {
-//                        Log.d("ORDERRRR", "onFailure: "+t.toString());
-//                    }
-//                }
+//                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+//                        Log.d("ORDERRRR",t.getMessage());
 //
-//                );
+//                    }
+//                });
+
+
+
+        BaseClient.getService()
+                .recordNewOrder(SharedHelper.getKey(getApplicationContext(),LoginActivity.TOKEN),
+                        null,productId,client_name,client_order_phone1,CITY_ID,client_area,client_address
+                ,item_no,null)
+                .enqueue(new Callback<NewOrderResponse>() {
+                    @Override
+                    public void onResponse(Call<NewOrderResponse> call, Response<NewOrderResponse> response) {
+                        NewOrderResponse newOrderResponse=response.body();
+                        if (newOrderResponse!=null){
+                            Toast.makeText(BubbleService.this, newOrderResponse.getData(), Toast.LENGTH_LONG).show();
+                            clearOrderFields();
+                        }
+                        else
+                            Toast.makeText(BubbleService.this,"Error placing Order" , Toast.LENGTH_SHORT).show();
+
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<NewOrderResponse> call, Throwable t) {
+                        Toast.makeText(BubbleService.this,"Error placing Order" , Toast.LENGTH_SHORT).show();
+
+                    }
+                }
+
+                );
     }
+
+
 
 
     private void setupSubscribersDialog(ArrayList<Subscriber> subscribers){
@@ -515,7 +523,30 @@ public class BubbleService extends Service
 
 
     }
+    private void clearOrderFields() {
+        if (newOrderDialog==null)
+            return;
 
+        Spinner product=newOrderDialog.findViewById(R.id.product);
+        Spinner city=newOrderDialog.findViewById(R.id.client_city);
+        EditText client_name=newOrderDialog.findViewById(R.id.client_name);
+        EditText client_address=newOrderDialog.findViewById(R.id.client_address);
+        EditText client_area=newOrderDialog.findViewById(R.id.client_area);
+        EditText client_order_phone1=newOrderDialog.findViewById(R.id.client_order_phone1);
+        EditText item_no=newOrderDialog.findViewById(R.id.item_no);
+
+        client_name.setText("");
+        client_address.setText("");
+        client_area.setText("");
+        client_order_phone1.setText("");
+        item_no.setText("");
+
+        product.setSelection(0);
+        city.setSelection(0);
+
+
+
+    }
 
 
     @Override
@@ -898,7 +929,7 @@ public class BubbleService extends Service
                         @Override
                         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                             productId = allProducts.getProducts().get(position).getProduct_id();
-                            //Log.d("ORDERRRR", "product : "+productId);
+                            Log.d("ORDERRRR", "product : "+productId);
 
                         }
 
@@ -953,7 +984,7 @@ public class BubbleService extends Service
                             @Override
                             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                                 CITY_ID = String.valueOf(citiesBody.get(position).getCity_id());
-                                //Log.d("ORDERRRR", "onItemSelected: "+CITY_ID);
+                                Log.d("ORDERRRR", "onItemSelected: "+CITY_ID);
                             }
 
                             @Override
