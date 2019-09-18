@@ -115,7 +115,9 @@ public interface Api {
             @Field("client_area") String client_area,
             @Field("client_address") String client_address,
             @Field("items") String items,
-            @Field("discount") String discount
+            @Field("discount") String discount,
+            @Field("sender_name") String sender_name,
+            @Field("sender_id") String sender_id
     );
 
 

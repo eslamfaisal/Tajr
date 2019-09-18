@@ -348,7 +348,7 @@ public class BubbleService extends Service
         BaseClient.getService()
                 .recordNewOrder(SharedHelper.getKey(getApplicationContext(),LoginActivity.TOKEN),
                         null,productId,client_name,client_order_phone1,CITY_ID,client_area,client_address
-                ,item_no,null)
+                ,item_no,null,userName,userId)
                 .enqueue(new Callback<NewOrderResponse>() {
                     @Override
                     public void onResponse(Call<NewOrderResponse> call, Response<NewOrderResponse> response) {

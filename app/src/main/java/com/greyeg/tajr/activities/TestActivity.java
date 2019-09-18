@@ -214,9 +214,12 @@ public class TestActivity extends AppCompatActivity {
     }
 
     public void newOrder() {
+        //todo add pssid and sender name to order
         BaseClient.getBaseClient().create(Api.class).recordNewOrder("pvBZJQ6tEeWDO8UjTnxdcboP",
                 "127",
-                "357", "eslam", "01067457655", "113", "sandbis", "amaira", "2", "0")
+                "357", "eslam", "01067457655"
+                , "113", "sandbis", "amaira"
+                , "2", "0",null,null)
                 .enqueue(new Callback<NewOrderResponse>() {
                     @Override
                     public void onResponse(Call<NewOrderResponse> call, Response<NewOrderResponse> response) {

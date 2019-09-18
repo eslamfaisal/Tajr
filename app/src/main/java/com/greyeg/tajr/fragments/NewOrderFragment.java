@@ -207,6 +207,7 @@ public class NewOrderFragment extends Fragment {
     ProgressDialog progressDialog;
     @OnClick(R.id.send_order)
     void sendOrder() {
+        //todo add pssid and sender name to order
         progressDialog = new ProgressDialog(getActivity());
         progressDialog.setMessage("جار ارسال الطلب");
         progressDialog.show();
@@ -228,7 +229,7 @@ public class NewOrderFragment extends Fragment {
                     client_area.getText().toString(),
                     client_address.getText().toString(),
                     item_no.getText().toString(),
-                    "0"
+                    "0",null,null
             ).enqueue(new Callback<NewOrderResponse>() {
                 @Override
                 public void onResponse(Call<NewOrderResponse> call, Response<NewOrderResponse> response) {
