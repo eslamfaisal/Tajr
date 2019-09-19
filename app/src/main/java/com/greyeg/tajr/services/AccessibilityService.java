@@ -16,7 +16,7 @@ import org.greenrobot.eventbus.EventBus;
 
 public class AccessibilityService extends android.accessibilityservice.AccessibilityService {
 
-    public static final String TAG="ACCESSIBLILTYY";
+    public static final String TAG="ACCESSIBLILTYYY";
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent accessibilityEvent) {
@@ -76,7 +76,7 @@ public class AccessibilityService extends android.accessibilityservice.Accessibi
         AccessibilityNodeInfo root =getRootInActiveWindow();
 
 
-        if (root.getChildCount()>1 &&root.getChild(1)!=null
+        if (root!=null&&root.getChildCount()>1 &&root.getChild(1)!=null
         &&root.getChild(0).getClassName().equals("android.widget.ImageView")
         &&root.getChild(1).getClassName().equals("android.view.ViewGroup")
         ) {
