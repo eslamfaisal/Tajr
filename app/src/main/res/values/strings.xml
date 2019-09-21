@@ -261,8 +261,9 @@
     <string name="le">LE</string>
     <string name="for_shipping">For shipping</string>
     <string name="phone_boot">Phone bot</string>
-    <string name="tajr_bubble">tajr bubble</string>
-    <string name="dummy_product">red soes with great quality size 38</string>
+    <string name="tajr_bubble" translatable="false">tajr bubble</string>
+    <string name="dummy_product" translatable="false">red soes with great quality size 38</string>
     <string name="accessibility_dialog_message">Accessibility service is disabled \n  please go and enable tajr accessibility Service</string>
+    <string name="edit_order">Edit The Order</string>
 
 </resources>

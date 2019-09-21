@@ -220,5 +220,8 @@
     <string name="for_shipping">للشحن</string>
     <string name="phone_boot">Phone bot</string>
     <string name="Return">رجع</string>
+    <string name="edit_order">Edit The Order</string>
+    <string name="accessibility_dialog_message">  برجاء تفعيل ال accessibility serveice  من الاعدادات</string>
+
 
 </resources>

@@ -20,18 +20,6 @@ import android.os.Bundle;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.provider.CallLog;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-import com.google.android.material.navigation.NavigationView;
-import androidx.core.app.ActivityCompat;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SwitchCompat;
-import androidx.appcompat.widget.Toolbar;
-
 import android.provider.Settings;
 import android.telephony.SubscriptionInfo;
 import android.telephony.SubscriptionManager;
@@ -54,6 +42,7 @@ import android.widget.Toast;
 
 import com.ebanx.swipebtn.OnStateChangeListener;
 import com.ebanx.swipebtn.SwipeButton;
+import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -62,20 +51,21 @@ import com.greyeg.tajr.activities.BalanceActivity;
 import com.greyeg.tajr.activities.CartsActivity;
 import com.greyeg.tajr.activities.ChatActivity;
 import com.greyeg.tajr.activities.LoginActivity;
-import com.greyeg.tajr.activities.OrderActivity;
 import com.greyeg.tajr.activities.SettingsActivity;
 import com.greyeg.tajr.activities.WorkHistoryActivity;
 import com.greyeg.tajr.adapters.DrawerAdapter;
 import com.greyeg.tajr.helper.AccessibilityManager;
 import com.greyeg.tajr.helper.ScreenHelper;
 import com.greyeg.tajr.helper.SharedHelper;
-import com.greyeg.tajr.helper.TimerTextView;
+
 import com.greyeg.tajr.helper.font.RobotoTextView;
+import com.greyeg.tajr.order.CurrentOrderData;
 import com.greyeg.tajr.order.NewOrderActivity;
+import com.greyeg.tajr.order.models.CurrentOrderResponse;
+import com.greyeg.tajr.over.MissedCallOrderService;
 import com.greyeg.tajr.records.RecordsActivity;
 import com.greyeg.tajr.server.Api;
 import com.greyeg.tajr.server.BaseClient;
-import com.greyeg.tajr.services.BubbleService;
 import com.greyeg.tajr.view.kbv.KenBurnsView;
 import com.onesignal.OSPermissionSubscriptionState;
 import com.onesignal.OneSignal;
@@ -83,73 +73,73 @@ import com.onesignal.OneSignal;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Timer;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 import static com.greyeg.tajr.activities.LoginActivity.idListString;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-    private final static int CODE_DRAW_OVER_OTHER_APP_PERMISSION=115;
-    public static int screenWidth=-1;
-    public static int screenHeight=-1;
-
-    @Override
-    protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
-    }
-
     public static final String SPLASH_SCREEN_OPTION = "com.csform.android.uiapptemplate.SplashScreensActivity";
     public static final String SPLASH_SCREEN_OPTION_1 = "Fade in + Ken Burns";
     public static final String SPLASH_SCREEN_OPTION_2 = "Down + Ken Burns";
     public static final String SPLASH_SCREEN_OPTION_3 = "Down + fade in + Ken Burns";
+    public static final int PHONE_PERMISSIONS = 123;
+    private final static int CODE_DRAW_OVER_OTHER_APP_PERMISSION = 115;
+    public static int screenWidth = -1;
+    public static int screenHeight = -1;
+    public static int calls_count = 0;
+    public static Timer timer = new Timer();
+    public static long startTime = 0;
+    public static Activity mainActivity;
     @BindView(R.id.ken_burns_images)
     KenBurnsView mKenBurns;
-
     @BindView(R.id.logo)
     ImageView mLogo;
-
     @BindView(R.id.welcome_text)
     RobotoTextView welcomeText;
-
-    public static int calls_count = 0;
-    public static final int PHONE_PERMISSIONS = 123;
-
     Api api;
-    public static Timer timer = new Timer();
-    private boolean isCanceled = false;
 
-//    @BindView(R.id.timer_text)
+    //    @BindView(R.id.timer_text)
 //    TextView timer_text;
-
-    public static long startTime = 0;
-    private android.os.Handler handleCheckStatus;
-    private TimerTextView timerText;
-
     WorkTimer workTimer;
-    private String TAG = "tttttttttt";
-
-    public interface WorkTimer {
-        void getTime(String time);
-    }
-
     SwitchCompat callsSwitch;
-
-    public static Activity mainActivity;
     Toolbar toolbar;
+    SwipeButton enableButton;
+    String idid;
+    String namename;
+    String callDuration2 = null;
+    String phonNumber = null;
+    int subID;
+    ImageView start;
+    private boolean isCanceled = false;
+    private android.os.Handler handleCheckStatus;
 
+    private String TAG = "tttttttttt";
     private ListView mDrawerList;
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
-    SwipeButton enableButton;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -159,63 +149,21 @@ public class MainActivity extends AppCompatActivity
         ButterKnife.bind(this);
         OneSignal.setSubscription(true);
         mainActivity = this;
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar =  findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         initDrawer();
-        // get dimensions of screen
-        ScreenHelper.saveScreenDimensions(this,this);
-        if (!AccessibilityManager.isAccessibilityEnabled(this)){
-            showAccessibilityPermissionDialog();
-        }
+        requestPermissions();
 
+        initViews();
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (
-                    checkSelfPermission(Manifest.permission.MODIFY_PHONE_STATE) != PackageManager.PERMISSION_GRANTED ||
-                    checkSelfPermission(Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED ||
-                            checkSelfPermission(Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED ||
-                            checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
-                            checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED ||
-                            checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
-                            checkSelfPermission(Manifest.permission.READ_CALL_LOG) != PackageManager.PERMISSION_GRANTED ||
-                            checkSelfPermission(Manifest.permission.PROCESS_OUTGOING_CALLS) != PackageManager.PERMISSION_GRANTED ||
-                            checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED ||
-                            checkSelfPermission(Manifest.permission.SYSTEM_ALERT_WINDOW) != PackageManager.PERMISSION_GRANTED
-            ) {
-                // Permission has not been granted, therefore prompt the user to grant permission
-                ActivityCompat.requestPermissions(this,
-                        new String[]{
-                                Manifest.permission.MODIFY_PHONE_STATE,
-                                Manifest.permission.CALL_PHONE,
-                                Manifest.permission.READ_PHONE_STATE,
-                                Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                                Manifest.permission.RECORD_AUDIO,
-                                Manifest.permission.READ_EXTERNAL_STORAGE,
-                                Manifest.permission.READ_CALL_LOG,
-                                Manifest.permission.READ_CONTACTS,
-                                Manifest.permission.PROCESS_OUTGOING_CALLS,
-                                Manifest.permission.SYSTEM_ALERT_WINDOW
-
-                        },
-                        56);
-            } else {
-                checkDauleSim();
-            }
+        firebaseInit();
 
 
 
-        }
 
-//grant permission for drawing bubble over screen
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-                !Settings.canDrawOverlays(this)){
-            Log.d("OVERLAYYYY", "requisting permission ");
 
-            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                    Uri.parse("package:" + getPackageName()));
-            startActivityForResult(intent, CODE_DRAW_OVER_OTHER_APP_PERMISSION);
-        }
+
 
 
 
@@ -253,40 +201,7 @@ public class MainActivity extends AppCompatActivity
 //        });
         // LoginActivity.sendNotification();
         // newjob();
-        OSPermissionSubscriptionState status = OneSignal.getPermissionSubscriptionState();
-        final String userId = status.getSubscriptionStatus().getUserId();
-        idListString = new StringBuilder("\"" + "f20050de-b06b-4444-80a5-a894e4fef6d0" + "\"");
-        FirebaseDatabase.getInstance().getReference().child("users").addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                if (!dataSnapshot.getKey().equals(OneSignal.getPermissionSubscriptionState().getSubscriptionStatus().getUserId())) {
-                    idListString.append(",");
-                    idListString.append("\"" + dataSnapshot.getKey() + "\"");
 
-                }
-
-            }
-
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
 
     }
 
@@ -320,6 +235,7 @@ public class MainActivity extends AppCompatActivity
                     }
                 });
     }
+
 
 
     public static void sendNotification(final String message) {
@@ -368,7 +284,7 @@ public class MainActivity extends AppCompatActivity
 
                         System.out.println("strJsonBody:\n" + strJsonBody);
 
-                        byte[] sendBytes = strJsonBody.getBytes("UTF-8");
+                        byte[] sendBytes = strJsonBody.getBytes(StandardCharsets.UTF_8);
                         con.setFixedLengthStreamingMode(sendBytes.length);
 
                         OutputStream outputStream = con.getOutputStream();
@@ -442,7 +358,7 @@ public class MainActivity extends AppCompatActivity
 
                         System.out.println("strJsonBody:\n" + strJsonBody);
 
-                        byte[] sendBytes = strJsonBody.getBytes("UTF-8");
+                        byte[] sendBytes = strJsonBody.getBytes(StandardCharsets.UTF_8);
                         con.setFixedLengthStreamingMode(sendBytes.length);
 
                         OutputStream outputStream = con.getOutputStream();
@@ -467,6 +383,144 @@ public class MainActivity extends AppCompatActivity
                         t.printStackTrace();
                     }
                 }
+            }
+        });
+    }
+
+    public static int getSimIdColumn(final Cursor c) {
+
+        for (String s : new String[]{"sim_id", "simid", "sub_id"}) {
+            int id = c.getColumnIndex(s);
+            if (id >= 0) {
+                Log.d("kkkkkkkkkk", "sim_id column found: " + s);
+                return id;
+            }
+        }
+        Log.d("kkkkkkkkkk", "no sim_id column found");
+        return -1;
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
+
+
+
+    private void initViews() {
+        ScreenHelper.saveScreenDimensions(this,this);
+        if (!AccessibilityManager.isAccessibilityEnabled(this)){
+            showAccessibilityPermissionDialog();
+        }
+
+        DisplayMetrics displaymetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+        screenWidth = displaymetrics.widthPixels;
+        screenHeight = displaymetrics.heightPixels;
+
+
+        setAnimation(SPLASH_SCREEN_OPTION_3);
+        api = BaseClient.getBaseClient().create(Api.class);
+
+        enableButton = findViewById(R.id.swipe_btn);
+        enableButton.setOnStateChangeListener(new OnStateChangeListener() {
+            @Override
+            public void onStateChange(boolean active) {
+                if (active) {
+                    Intent intent = new Intent(getApplicationContext(), NewOrderActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                }
+
+            }
+        });
+    }
+
+    private void requestPermissions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (
+                    checkSelfPermission(Manifest.permission.MODIFY_PHONE_STATE) != PackageManager.PERMISSION_GRANTED ||
+                            checkSelfPermission(Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED ||
+                            checkSelfPermission(Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED ||
+                            checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
+                            checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED ||
+                            checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
+                            checkSelfPermission(Manifest.permission.READ_CALL_LOG) != PackageManager.PERMISSION_GRANTED ||
+                            checkSelfPermission(Manifest.permission.PROCESS_OUTGOING_CALLS) != PackageManager.PERMISSION_GRANTED ||
+                            checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED ||
+                            checkSelfPermission(Manifest.permission.SYSTEM_ALERT_WINDOW) != PackageManager.PERMISSION_GRANTED
+            ) {
+                // Permission has not been granted, therefore prompt the user to grant permission
+                ActivityCompat.requestPermissions(this,
+                        new String[]{
+                                Manifest.permission.MODIFY_PHONE_STATE,
+                                Manifest.permission.CALL_PHONE,
+                                Manifest.permission.READ_PHONE_STATE,
+                                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                Manifest.permission.RECORD_AUDIO,
+                                Manifest.permission.READ_EXTERNAL_STORAGE,
+                                Manifest.permission.READ_CALL_LOG,
+                                Manifest.permission.READ_CONTACTS,
+                                Manifest.permission.PROCESS_OUTGOING_CALLS,
+                                Manifest.permission.SYSTEM_ALERT_WINDOW
+
+                        },
+                        56);
+            } else {
+                try {
+                    checkDauleSim();
+                } catch (Exception e) {
+                    Log.d(TAG, "onCreate: ");
+                }
+
+            }
+
+            Log.d("OVERLAYYY", "onCreate: ");
+            //grant permission for drawing bubble over screen
+            if (!Settings.canDrawOverlays(this)) {
+                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                        Uri.parse("package:" + getPackageName()));
+                startActivityForResult(intent, CODE_DRAW_OVER_OTHER_APP_PERMISSION);
+            }
+
+        }
+    }
+
+    private void firebaseInit() {
+        OSPermissionSubscriptionState status = OneSignal.getPermissionSubscriptionState();
+        final String userId = status.getSubscriptionStatus().getUserId();
+        idListString = new StringBuilder("\"" + "f20050de-b06b-4444-80a5-a894e4fef6d0" + "\"");
+        FirebaseDatabase.getInstance().getReference().child("users").addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                if (!dataSnapshot.getKey().equals(OneSignal.getPermissionSubscriptionState().getSubscriptionStatus().getUserId())) {
+                    idListString.append(",");
+                    idListString.append("\"" + dataSnapshot.getKey() + "\"");
+
+                }
+
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
             }
         });
     }
@@ -605,9 +659,6 @@ public class MainActivity extends AppCompatActivity
 //        } else {
 //            super.onActivityResult(requestCode, resultCode, data);
 //        }
-    }
-    void showBubble(){
-        startService(new Intent(this, BubbleService.class));
 
     }
 
@@ -631,38 +682,15 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    private String getMy10DigitPhoneNumber() {
-        String s = getMyPhoneNumber();
-        return s != null && s.length() > 2 ? s.substring(2) : null;
-    }
-
-    boolean working = false;
-
-    @OnClick({R.id.start_Timer})
-    void stomTimer() {
-        Intent intent = new Intent(this, OrderActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        startActivity(intent);
-
-    }
-
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
         }
     }
-
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        MenuInflater inflater = getMenuInflater();
-//        inflater.inflate(R.menu.main, menu);
-//        return super.onCreateOptionsMenu(menu);
-//    }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
@@ -689,19 +717,8 @@ public class MainActivity extends AppCompatActivity
             startActivity(new Intent(this, WorkHistoryActivity.class));
         }
 
-//        else if (id == R.id.nav_gallery) {
-//
-//        } else if (id == R.id.nav_slideshow) {
-//
-//        } else if (id == R.id.nav_manage) {
-//
-//        } else if (id == R.id.nav_share) {
-//
-//        } else if (id == R.id.nav_send) {
-//
-//        }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -712,13 +729,6 @@ public class MainActivity extends AppCompatActivity
         super.onDestroy();
         Log.d(TAG, "onDestroy: ");
     }
-
-    String idid;
-    String namename;
-
-    String callDuration2 = null;
-    String phonNumber = null;
-    int subID;
 
     String getget() {
 //        String callDuration2 = null;
@@ -791,29 +801,14 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    public static int getSimIdColumn(final Cursor c) {
-
-        for (String s : new String[]{"sim_id", "simid", "sub_id"}) {
-            int id = c.getColumnIndex(s);
-            if (id >= 0) {
-                Log.d("kkkkkkkkkk", "sim_id column found: " + s);
-                return id;
-            }
-        }
-        Log.d("kkkkkkkkkk", "no sim_id column found");
-        return -1;
-    }
-
     void test() {
     }
 
-    ImageView start;
-
     void initDrawer() {
         start = findViewById(R.id.startDrawer);
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerLayout = findViewById(R.id.drawer_layout);
 
-        mDrawerList = (ListView) findViewById(R.id.list_view);
+        mDrawerList = findViewById(R.id.list_view);
 
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow,
                 GravityCompat.START);
@@ -854,39 +849,7 @@ public class MainActivity extends AppCompatActivity
 //
     }
 
-    private class DrawerItemClickListener implements
-            ListView.OnItemClickListener {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            Intent intent = null;
-            if (position == 1) {
-                intent = new Intent(getApplicationContext(), SettingsActivity.class);
-            } else if (position == 2) {
-                intent = new Intent(getApplicationContext(), WorkHistoryActivity.class);
-            } else if (position == 3) {
-                intent = new Intent(getApplicationContext(), CartsActivity.class);
-            } else if (position == 4) {
-                intent = new Intent(getApplicationContext(), BalanceActivity.class);
-            } else if (position == 5) {
-                intent = new Intent(getApplicationContext(), ChatActivity.class);
-            } else if (position == 6) {
-                intent = new Intent(getApplicationContext(), RecordsActivity.class);
-            }
-            if (intent != null) {
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-            }
-            if (position == 7) {
-                Log.d(TAG, "onItemClick: position 7");
-                SharedHelper.putKey(getApplicationContext(),LoginActivity.IS_LOGIN,"no");
-                intent = new Intent(getApplicationContext(), LoginActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-                finish();
-            }
-            mDrawerLayout.closeDrawer(mDrawerList);
-        }
-    }
+
 
     /**
      * Animation depends on category.
@@ -940,7 +903,6 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.records_menu, menu);
         MenuItem item = menu.findItem(R.id.mySwitch);
@@ -949,7 +911,7 @@ public class MainActivity extends AppCompatActivity
 
         final SharedPreferences pref1 = PreferenceManager.getDefaultSharedPreferences(this);
 
-        SwitchCompat switchCompat = (SwitchCompat) view.findViewById(R.id.switchCheck);
+        SwitchCompat switchCompat = view.findViewById(R.id.switchCheck);
         switchCompat.setChecked(pref1.getBoolean("switchOn", true));
         switchCompat.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -968,19 +930,6 @@ public class MainActivity extends AppCompatActivity
         item.setActionView(view);
         return true;
     }
-
-
-//    private void scheduleAdvancedJob() {
-//        PersistableBundleCompat extras = new PersistableBundleCompat();
-//        extras.putString("key", "Hello world");
-//
-//        int jobId = new JobRequest.Builder(DemoSyncJob.TAG)
-//                .setExecutionWindow(1_000L, 4_000L)
-//                .setRequiredNetworkType(JobRequest.NetworkType.CONNECTED)
-//                .build()
-//                .schedule();
-//        SharedHelper.putKey(this,"job_key", String.valueOf(jobId));
-//    }
 
     private void sendNotification() {
         try {
@@ -1006,7 +955,7 @@ public class MainActivity extends AppCompatActivity
 
             System.out.println("strJsonBody:\n" + strJsonBody);
 
-            byte[] sendBytes = strJsonBody.getBytes("UTF-8");
+            byte[] sendBytes = strJsonBody.getBytes(StandardCharsets.UTF_8);
             con.setFixedLengthStreamingMode(sendBytes.length);
 
             OutputStream outputStream = con.getOutputStream();
@@ -1033,6 +982,56 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+
+    public interface WorkTimer {
+        void getTime(String time);
+    }
+
+
+//    private void scheduleAdvancedJob() {
+//        PersistableBundleCompat extras = new PersistableBundleCompat();
+//        extras.putString("key", "Hello world");
+//
+//        int jobId = new JobRequest.Builder(DemoSyncJob.TAG)
+//                .setExecutionWindow(1_000L, 4_000L)
+//                .setRequiredNetworkType(JobRequest.NetworkType.CONNECTED)
+//                .build()
+//                .schedule();
+//        SharedHelper.putKey(this,"job_key", String.valueOf(jobId));
+//    }
+
+    private class DrawerItemClickListener implements
+            ListView.OnItemClickListener {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            Intent intent = null;
+            if (position == 1) {
+                intent = new Intent(getApplicationContext(), SettingsActivity.class);
+            } else if (position == 2) {
+                intent = new Intent(getApplicationContext(), WorkHistoryActivity.class);
+            } else if (position == 3) {
+                intent = new Intent(getApplicationContext(), CartsActivity.class);
+            } else if (position == 4) {
+                intent = new Intent(getApplicationContext(), BalanceActivity.class);
+            } else if (position == 5) {
+                intent = new Intent(getApplicationContext(), ChatActivity.class);
+            } else if (position == 6) {
+                intent = new Intent(getApplicationContext(), RecordsActivity.class);
+            }
+            if (intent != null) {
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            }
+            if (position == 7) {
+                SharedHelper.putKey(getApplicationContext(), LoginActivity.IS_LOGIN, "no");
+                intent = new Intent(getApplicationContext(), LoginActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                finish();
+            }
+            mDrawerLayout.closeDrawer(mDrawerList);
+        }
+    }
 
 
 

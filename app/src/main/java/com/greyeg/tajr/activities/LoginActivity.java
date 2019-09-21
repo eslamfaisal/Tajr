@@ -68,6 +68,7 @@ public class LoginActivity extends AppCompatActivity {
     public static final String REMEMBERED_PASS = "REMEMBERED_PASS";
     public static final String REMEMBERED_EMAIL = "REMEMBERED_EMAIL";
     public static StringBuilder idListString;
+
     final List<String> ids = new ArrayList<>();
     @BindView(R.id.loginbtn)
     RobotoTextView loginBtn;
@@ -168,7 +169,9 @@ public class LoginActivity extends AppCompatActivity {
                                                         SharedHelper.putKey(getApplicationContext(), IS_TAJR, response.body().getData().getLogin_data().getIs_tajr());
                                                         SharedHelper.putKey(getApplicationContext(), TOKEN, response.body().getData().getLogin_data().getToken());
                                                         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                                                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                                         startActivity(intent);
                                                         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                                                         finish();

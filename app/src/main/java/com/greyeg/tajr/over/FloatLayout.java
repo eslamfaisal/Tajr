@@ -21,8 +21,9 @@ import android.widget.Toast;
 
 import com.greyeg.tajr.R;
 import com.greyeg.tajr.activities.EmptyCallActivity;
+import com.greyeg.tajr.order.CurrentOrderData;
 
-import static com.greyeg.tajr.activities.OrderActivity.order;
+
 import static com.greyeg.tajr.records.CallsReceiver.inOrderActivity;
 
 public class FloatLayout extends Service {
@@ -234,10 +235,10 @@ public class FloatLayout extends Service {
         EditText clientName, status;
 
         clientName = floatingview.findViewById(R.id.client_name);
-        clientName.setText(order.getClient_name());
+        clientName.setText(CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getClientName());
 
         status = floatingview.findViewById(R.id.order_status);
-        status.setText(order.getOrder_status());
+        status.setText(CurrentOrderData.getInstance().getCurrentOrderResponse().getCheckType());
 
 //        editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 //            @Override

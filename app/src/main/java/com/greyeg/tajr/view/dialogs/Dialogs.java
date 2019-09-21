@@ -3,6 +3,7 @@ package com.greyeg.tajr.view.dialogs;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -11,7 +12,7 @@ import com.greyeg.tajr.helper.font.RobotoTextView;
 
 public class Dialogs {
 
-    public static Dialog showCustomDialog(Activity activity, String msg, String title,
+    public static Dialog showCustomDialog(Context activity, String msg, String title,
                                           String positive, String negative,
                                           View.OnClickListener positiveLisn, View.OnClickListener negativeLisn) {
         Dialog warningDialog = new Dialog(activity);
@@ -43,7 +44,7 @@ public class Dialogs {
         return warningDialog;
     }
 
-    public static ProgressDialog showProgressDialog(Activity activity, String msg) {
+    public static ProgressDialog showProgressDialog(Context activity, String msg) {
         ProgressDialog progressDialog = new ProgressDialog(activity);
         progressDialog.setMessage(msg);
         progressDialog.setCancelable(false);

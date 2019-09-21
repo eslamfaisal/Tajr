@@ -39,7 +39,5 @@ public class WorkHistoryActivity extends AppCompatActivity {
         SmartTabLayout viewPagerTab = (SmartTabLayout) findViewById(R.id.viewpagertab);
         viewPagerTab.setViewPager(viewPager);
     }
-//
-//    PointsFragment
-//            fragment_points
+
 }

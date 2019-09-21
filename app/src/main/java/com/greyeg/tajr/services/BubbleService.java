@@ -590,11 +590,13 @@ public class BubbleService extends Service
     private void stopFlasher(){
         handler.removeCallbacksAndMessages(null);
         //handler.removeCallbacks(runnable);
+        if (bubbleView!=null)
         bubbleView.findViewById(R.id.gotUserId)
                 .setBackgroundResource(R.drawable.circle_green);
     }
 
     private void setBroadCastLoading(int visibility){
+        if (bubbleView!=null)
         bubbleView.findViewById(R.id.broadcast_progressBar)
                 .setVisibility(visibility);
     }
@@ -762,7 +764,7 @@ public class BubbleService extends Service
                     {
                         Log.d("DELETEE", "must delete: h"+height);
                         if (deleteViewAdded){
-                            mWindowManager.removeView(bubbleView);
+                            if (bubbleView!=null) mWindowManager.removeView(bubbleView);
                             mWindowManager.removeView(deleteView);
                             deleteViewAdded=false;
                             bubbleView=null;

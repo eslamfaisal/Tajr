@@ -87,20 +87,6 @@ public class App extends Application {
 //        startActivity(refresh);
 //        finish();
     }
-    public void changeLang(String lang) {
-        Configuration config = getBaseContext().getResources().getConfiguration();
-        locale = new Locale("en");
-        Locale.setDefault(locale);
-        Configuration conf = new Configuration(config);
-        conf.locale = locale;
-        getBaseContext().getResources().updateConfiguration(conf, getBaseContext().getResources().getDisplayMetrics());
-
-    }
-
-//    public String getLang(){
-//        return PreferenceManager.getDefaultSharedPreferences(this).getString(this.getString(R.string.locale_lang), "");
-//    }
-
 
     private class ExampleNotificationReceivedHandler implements OneSignal.NotificationReceivedHandler {
         @Override

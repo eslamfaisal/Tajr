@@ -1,33 +1,532 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".order.fragments.CurrentOrderFragment">
 
-    android:orientation="vertical"
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-
-    <TextView
-        android:textSize="@dimen/_16ssp"
-        android:textColor="@color/colorPrimaryDark"
-        android:gravity="center"
-        android:layout_gravity="center"
-        android:padding="@dimen/_16ssp"
-        android:text="@string/no_order_is_found_do_you_want_to_goto_order_activity"
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="match_parent">
 
-    <com.greyeg.tajr.helper.font.RobotoTextView
-        android:id="@+id/go_order_activity"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:background="@drawable/selector_dialog_warning"
-        android:gravity="center"
-        android:minWidth="64dp"
-        android:padding="8dp"
-        android:text="@string/ok"
-        android:textColor="@color/main_color_600"
-        android:textSize="20sp"
-        android:textStyle="bold"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/order_fields"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="visible">
+
+                <LinearLayout
+                    android:id="@+id/ddww"
+                    style="@style/linear_order_item_style">
+
+                    <TextView
+                        android:id="@+id/order_idl"
+                        style="@style/missed_call_item_label_style"
+                        android:text="@string/order_id" />
+
+                    <FrameLayout
+                        android:id="@+id/order_id2"
+                        style="@style/oder_item_frame_style">
+
+                        <EditText
+                            android:id="@+id/order_id"
+                            style="@style/oder_item_edit_text_style" />
+                    </FrameLayout>
 
 
-</LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ddf"
+                    style="@style/linear_order_item_style">
+
+                    <TextView
+                        android:id="@+id/client_name_label"
+                        style="@style/missed_call_item_label_style"
+                        android:text="@string/client_name" />
+
+                    <FrameLayout
+                        android:id="@+id/client_name2"
+                        style="@style/oder_item_frame_style">
+
+                        <EditText
+                            android:id="@+id/client_name"
+                            style="@style/oder_item_edit_text_style" />
+
+
+                    </FrameLayout>
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/dderhjf"
+                    style="@style/linear_order_item_style">
+
+                    <TextView
+                        android:id="@+id/sender_name_label"
+                        style="@style/missed_call_item_label_style"
+                        android:text="@string/sender_name" />
+
+                    <FrameLayout
+                        android:id="@+id/sender_name2"
+                        style="@style/oder_item_frame_style">
+
+                        <EditText
+                            android:id="@+id/sender_name"
+                            style="@style/oder_item_edit_text_style" />
+                    </FrameLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/product_label_view"
+                    style="@style/linear_order_item_style">
+
+                    <TextView
+                        android:id="@+id/product_label"
+                        style="@style/missed_call_item_label_style"
+                        android:text="@string/Product" />
+
+                    <FrameLayout
+                        android:id="@+id/product2"
+                        style="@style/oder_item_frame_style">
+
+                        <Spinner
+                            android:id="@+id/single_order_product_spinner"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginEnd="26dp"
+                            android:background="@color/gray"
+                            android:paddingStart="16dp"
+                            android:tag="client_name_label" />
+                    </FrameLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/products_view"
+                    style="@style/linear_order_item_style">
+
+                    <TextView
+                        android:id="@+id/products"
+                        style="@style/missed_call_item_label_style"
+                        android:text="@string/Products" />
+
+                    <FrameLayout
+                        android:id="@+id/ffgxrgr"
+                        style="@style/oder_item_frame_style">
+
+                        <TextView
+                            android:id="@+id/no_products"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:id="@+id/add_product"
+                                android:layout_width="@dimen/_40sdp"
+                                android:layout_height="@dimen/_35sdp"
+                                android:layout_gravity="center"
+                                android:paddingTop="@dimen/_4sdp"
+                                android:src="@drawable/ic_add_circle_black_24dp" />
+
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/products_recycler_view"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="@dimen/_18ssp"
+                                android:padding="@dimen/_4sdp" />
+
+
+                        </LinearLayout>
+
+                    </FrameLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ddafdff"
+                    style="@style/linear_order_item_style">
+
+                    <TextView
+                        android:id="@+id/status_label"
+                        style="@style/missed_call_item_label_style"
+                        android:text="@string/stause" />
+
+                    <FrameLayout
+                        android:id="@+id/status2"
+                        style="@style/oder_item_frame_style">
+
+                        <EditText
+                            android:id="@+id/status"
+                            style="@style/oder_item_edit_text_style" />
+                    </FrameLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/lotrsddf"
+                    style="@style/linear_order_item_style">
+
+                    <TextView
+                        android:id="@+id/shipping_status_label"
+                        style="@style/missed_call_item_label_style"
+                        android:text="@string/shipping_state" />
+
+                    <FrameLayout
+                        android:id="@+id/shipping_status2"
+                        style="@style/oder_item_frame_style">
+
+                        <EditText
+                            android:id="@+id/shipping_status"
+                            style="@style/oder_item_edit_text_style" />
+                    </FrameLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/dhdtxjhsdf"
+                    style="@style/linear_order_item_style">
+
+                    <TextView
+                        android:id="@+id/client_order_phone1_label"
+                        style="@style/missed_call_item_label_style"
+                        android:text="@string/client_order_phone" />
+
+                    <FrameLayout
+                        android:id="@+id/client_order_phone12"
+                        style="@style/oder_item_frame_style">
+
+                        <EditText
+                            android:id="@+id/client_order_phone1"
+                            style="@style/oder_item_edit_text_style" />
+                    </FrameLayout>
+
+                </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/dhdtxjhdsdf"
+                    style="@style/linear_order_item_style">
+
+                    <TextView
+                        android:id="@+id/client_order_phone1_label_boot"
+                        style="@style/missed_call_item_label_style"
+                        android:text="@string/phone_boot" />
+
+                    <FrameLayout
+                        android:id="@+id/client_order_phone12_boot"
+                        style="@style/oder_item_frame_style">
+
+                        <EditText
+                            android:id="@+id/client_order_phone1_boot"
+                            style="@style/oder_item_edit_text_style" />
+                    </FrameLayout>
+
+                </LinearLayout>
+
+                <!--address-->
+                <LinearLayout
+                    android:id="@+id/ddtregdsf"
+                    style="@style/linear_order_item_style">
+
+                    <TextView
+                        android:id="@+id/client_address_label"
+                        style="@style/missed_call_item_label_style"
+                        android:text="@string/client_address" />
+
+                    <FrameLayout
+                        android:id="@+id/client_address2"
+                        style="@style/oder_item_frame_style">
+
+                        <EditText
+                            android:id="@+id/client_address"
+                            style="@style/oder_item_edit_text_style" />
+                    </FrameLayout>
+                </LinearLayout>
+
+                <!--area-->
+                <LinearLayout
+                    android:id="@+id/ddfbdf"
+                    style="@style/linear_order_item_style">
+
+                    <TextView
+                        android:id="@+id/client_area_label"
+                        style="@style/missed_call_item_label_style"
+                        android:text="@string/client_area" />
+
+                    <FrameLayout
+                        android:id="@+id/client_area2"
+                        style="@style/oder_item_frame_style">
+
+                        <EditText
+                            android:id="@+id/client_area"
+                            style="@style/oder_item_edit_text_style" />
+                    </FrameLayout>
+
+                </LinearLayout>
+
+                <!--city-->
+                <LinearLayout
+                    android:id="@+id/derwxddf"
+                    style="@style/linear_order_item_style">
+
+                    <TextView
+                        android:id="@+id/client_city_label"
+                        style="@style/missed_call_item_label_style"
+                        android:text="@string/client_city" />
+
+                    <FrameLayout
+                        android:id="@+id/client_city2"
+                        style="@style/oder_item_frame_style">
+
+                        <Spinner
+                            android:id="@+id/client_city"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginEnd="26dp"
+                            android:background="@color/gray"
+                            android:gravity="center"
+                            android:paddingStart="16dp"
+                            android:tag="client_name_label" />
+
+                    </FrameLayout>
+
+                </LinearLayout>
+
+                <!--shipping cost-->
+                <LinearLayout
+                    android:id="@+id/fdlj"
+                    style="@style/linear_order_item_style">
+
+                    <TextView
+                        android:id="@+id/shipping_cost_label"
+                        style="@style/missed_call_item_label_style"
+                        android:text="@string/shipping_cost" />
+
+                    <FrameLayout
+                        android:id="@+id/shipping_cost2"
+                        style="@style/oder_item_frame_style">
+
+                        <EditText
+                            android:id="@+id/shipping_cost"
+                            style="@style/oder_item_edit_text_style" />
+                    </FrameLayout>
+                </LinearLayout>
+
+                <!--item cost-->
+                <LinearLayout
+                    android:id="@+id/dplkjdf"
+                    style="@style/linear_order_item_style">
+
+                    <TextView
+                        android:id="@+id/item_cost_label"
+                        style="@style/missed_call_item_label_style"
+                        android:text="@string/item_cost" />
+
+                    <FrameLayout
+                        android:id="@+id/item_cost2"
+                        style="@style/oder_item_frame_style">
+
+                        <EditText
+                            android:id="@+id/item_cost"
+                            style="@style/oder_item_edit_text_style" />
+                    </FrameLayout>
+
+                </LinearLayout>
+
+                <!--item no-->
+                <LinearLayout
+                    android:id="@+id/ddmnbvf"
+                    style="@style/linear_order_item_style">
+
+                    <TextView
+                        android:id="@+id/item_no_label"
+                        style="@style/missed_call_item_label_style"
+                        android:text="@string/item_no" />
+
+                    <FrameLayout
+                        android:id="@+id/item_no2"
+                        style="@style/oder_item_frame_style">
+
+                        <EditText
+                            android:id="@+id/item_no"
+                            style="@style/oder_item_edit_text_style" />
+                    </FrameLayout>
+
+                </LinearLayout>
+
+                <!--discount-->
+                <LinearLayout
+                    android:id="@+id/ddfltf"
+                    style="@style/linear_order_item_style">
+
+                    <TextView
+                        android:id="@+id/discount_label"
+                        style="@style/missed_call_item_label_style"
+                        android:text="@string/discount" />
+
+                    <FrameLayout
+                        android:id="@+id/discount2"
+                        style="@style/oder_item_frame_style">
+
+                        <EditText
+                            android:id="@+id/discount"
+                            style="@style/oder_item_edit_text_style" />
+                    </FrameLayout>
+                </LinearLayout>
+
+                <!--total cost-->
+                <LinearLayout
+                    android:id="@+id/ddsdchgfdsghjf"
+                    style="@style/linear_order_item_style">
+
+                    <TextView
+                        android:id="@+id/order_total_cost_label"
+                        style="@style/missed_call_item_label_style"
+                        android:text="@string/order_total_cost" />
+
+                    <FrameLayout
+                        android:id="@+id/order_total_cost2"
+                        style="@style/oder_item_frame_style">
+
+                        <EditText
+                            android:id="@+id/order_total_cost"
+                            style="@style/oder_item_edit_text_style" />
+                    </FrameLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:visibility="gone"
+                    android:id="@+id/order_type_state"
+                    style="@style/linear_order_item_style">
+
+                    <TextView
+                        android:id="@+id/order_type_label"
+                        style="@style/missed_call_item_label_style"
+                        android:text="@string/order_type" />
+
+                    <FrameLayout
+                        android:id="@+id/order_type2"
+                        style="@style/oder_item_frame_style">
+
+                        <EditText
+                            android:id="@+id/order_type"
+                            style="@style/oder_item_edit_text_style" />
+                    </FrameLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ddfmn"
+                    style="@style/linear_order_item_style">
+
+                    <TextView
+                        android:id="@+id/ntes_label"
+                        style="@style/missed_call_item_label_style"
+                        android:text="@string/notes" />
+
+                    <FrameLayout
+                        android:id="@+id/ntes2"
+                        style="@style/oder_item_frame_style">
+
+                        <EditText
+                            android:id="@+id/ntes"
+                            style="@style/oder_item_edit_text_style" />
+
+                    </FrameLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:visibility="gone"
+                    android:id="@+id/dpolkjhbvcdf"
+                    style="@style/linear_order_item_style">
+
+                    <TextView
+                        android:id="@+id/real_shipping_return_cost_label"
+                        style="@style/missed_call_item_label_style"
+                        android:text="@string/real_shipping_return_cost" />
+
+                    <FrameLayout
+                        android:id="@+id/real_shipping_return_cost2"
+                        style="@style/oder_item_frame_style">
+
+                        <EditText
+                            android:id="@+id/real_shipping_return_cost"
+                            style="@style/oder_item_edit_text_style" />
+                    </FrameLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:visibility="gone"
+                    android:id="@+id/tgjklkmjnhbddf"
+                    style="@style/linear_order_item_style">
+
+                    <TextView
+                        android:id="@+id/client_feedback_label"
+                        style="@style/missed_call_item_label_style"
+                        android:text="@string/client_feedback" />
+
+                    <FrameLayout
+                        android:id="@+id/client_feedback2"
+                        style="@style/oder_item_frame_style">
+
+                        <EditText
+                            android:id="@+id/client_feedback"
+                            style="@style/oder_item_edit_text_style" />
+                    </FrameLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_16sdp"
+                android:layout_marginTop="@dimen/_16sdp"
+                android:layout_marginBottom="@dimen/_16sdp"
+                android:background="#40000000"
+                android:orientation="vertical"
+                android:visibility="invisible">
+
+            </Space>
+
+            <com.greyeg.tajr.helper.font.RobotoTextView
+                android:id="@+id/edit_order"
+                android:layout_marginTop="@dimen/_16sdp"
+                android:layout_gravity="center"
+                style="@style/ButtonStyle.RaisedEmpty"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/main_color_500"
+                android:minWidth="112dp"
+                android:text="@string/edit_order"
+                android:textColor="#fff" />
+
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_50sdp"
+                android:layout_marginTop="@dimen/_16sdp"
+                android:layout_marginBottom="@dimen/_16sdp"
+                android:background="#40000000"
+                android:orientation="vertical"
+                android:visibility="invisible">
+
+            </Space>
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</RelativeLayout>
