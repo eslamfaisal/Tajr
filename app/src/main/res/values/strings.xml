@@ -265,5 +265,6 @@
     <string name="dummy_product" translatable="false">red soes with great quality size 38</string>
     <string name="accessibility_dialog_message">Accessibility service is disabled \n  please go and enable tajr accessibility Service</string>
     <string name="edit_order">Edit The Order</string>
+    <string name="order_cancelation_reason_label">Order Cancelation Reason</string>
 
 </resources>

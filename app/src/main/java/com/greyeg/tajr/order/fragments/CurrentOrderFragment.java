@@ -54,6 +54,7 @@ import com.greyeg.tajr.order.models.SingleOrderProductsResponse;
 import com.greyeg.tajr.server.Api;
 import com.greyeg.tajr.server.BaseClient;
 import com.greyeg.tajr.sheets.FragmentBottomSheetDialogFull;
+import com.greyeg.tajr.view.dialogs.CancelOrderDialog;
 import com.greyeg.tajr.view.dialogs.Dialogs;
 
 import org.jetbrains.annotations.NotNull;
@@ -243,7 +244,8 @@ public class CurrentOrderFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 toggleFabMode(normalUpdateButton);
-                normalUpdateOrder(OrderUpdateStatusEnums.client_cancel.name());
+                new CancelOrderDialog().show(getChildFragmentManager(),"CANCEL");
+                //normalUpdateOrder(OrderUpdateStatusEnums.client_cancel.name());
             }
         });
 
