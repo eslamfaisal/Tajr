@@ -36,7 +36,6 @@ public class CancellationReasonsAdapter  extends RecyclerView.Adapter<Cancellati
 
     @Override
     public void onBindViewHolder(@NonNull CancellationReasonsViewHolder holder, int position) {
-        Log.d("CANCELLATIONN","name "+cancellationReasons.get(position).getReason_name());
         holder.reason.setText(cancellationReasons.get(position).getReason_name());
     }
 
