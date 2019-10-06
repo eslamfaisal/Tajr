@@ -1,6 +1,7 @@
 package com.greyeg.tajr.server;
 
 import com.greyeg.tajr.models.ActivityHistory;
+import com.greyeg.tajr.models.AddReasonResponse;
 import com.greyeg.tajr.models.AdminRecordsResponse;
 import com.greyeg.tajr.models.AllProducts;
 import com.greyeg.tajr.models.BotBlocksResponse;
@@ -428,6 +429,10 @@ public interface Api {
     @FormUrlEncoded
     @POST("send_test/cancellation_reasons")
     Call<CancellationReasonsResponse> getCancellationReasons(@Field("token") String token);
+
+    @FormUrlEncoded
+    @POST("send_test/add_cancellation_reason")
+    Call<AddReasonResponse> submitNewCancellationReason(@Field("token") String token,@Field("name") String name);
 
 
 }
