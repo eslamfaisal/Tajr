@@ -36,6 +36,7 @@ import com.greyeg.tajr.R;
 import com.greyeg.tajr.activities.LoginActivity;
 import com.greyeg.tajr.helper.SharedHelper;
 import com.greyeg.tajr.helper.ViewAnimation;
+import com.greyeg.tajr.models.CancellationReasonsResponse;
 import com.greyeg.tajr.models.DeleteAddProductResponse;
 import com.greyeg.tajr.models.RemainingOrdersResponse;
 import com.greyeg.tajr.models.UpdateOrederNewResponse;
@@ -56,6 +57,7 @@ import com.greyeg.tajr.server.BaseClient;
 import com.greyeg.tajr.sheets.FragmentBottomSheetDialogFull;
 import com.greyeg.tajr.view.dialogs.CancelOrderDialog;
 import com.greyeg.tajr.view.dialogs.Dialogs;
+import com.greyeg.tajr.viewmodels.CurrentOrderViewModel;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -179,6 +181,7 @@ public class CurrentOrderFragment extends Fragment {
     private boolean rotateshipper = false;
     private boolean productExbandable = false;
 
+
     public CurrentOrderFragment() {
         // Required empty public constructor
     }
@@ -189,6 +192,8 @@ public class CurrentOrderFragment extends Fragment {
         // Inflate the layout for this fragment
         mainView = inflater.inflate(R.layout.fragment_current_order, container, false);
         ButterKnife.bind(this, mainView);
+
+
         initLabels();
         setListeners();
 
@@ -203,6 +208,8 @@ public class CurrentOrderFragment extends Fragment {
 
         return mainView;
     }
+
+
 
     private void setListeners() {
         add_product.setOnClickListener(new View.OnClickListener() {
