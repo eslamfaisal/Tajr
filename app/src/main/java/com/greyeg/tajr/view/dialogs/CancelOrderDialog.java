@@ -1,5 +1,6 @@
 package com.greyeg.tajr.view.dialogs;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -37,7 +38,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class CancelOrderDialog extends DialogFragment {
+public class CancelOrderDialog extends DialogFragment implements CancellationReasonsAdapter.OnReasonSelected {
 
     private CurrentOrderViewModel currentOrderViewModel;
     @BindView(R.id.cancel_order_recycler)
@@ -48,6 +49,11 @@ public class CancelOrderDialog extends DialogFragment {
     ImageView submitNewReason;
     @BindView(R.id.newReason)
     EditText newReason;
+    private OnReasonSubmitted onReasonSubmitted;
+
+    public CancelOrderDialog(OnReasonSubmitted onReasonSubmitted) {
+        this.onReasonSubmitted = onReasonSubmitted;
+    }
 
     @Nullable
     @Override
@@ -80,6 +86,7 @@ public class CancelOrderDialog extends DialogFragment {
                            public void onChanged(AddReasonResponse addReasonResponse) {
                                Toast.makeText(getContext(), addReasonResponse.getData()
                                        , Toast.LENGTH_SHORT).show();
+                               onReasonSubmitted.onReasonSubmitted(addReasonResponse.getReasonId());
                            }
                        });
 
@@ -130,7 +137,7 @@ public class CancelOrderDialog extends DialogFragment {
 
 
         private void populateReasons(ArrayList<CancellationReason> reasons){
-        CancellationReasonsAdapter adapter=new CancellationReasonsAdapter(reasons);
+        CancellationReasonsAdapter adapter=new CancellationReasonsAdapter(reasons,this);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
     }
@@ -166,4 +173,15 @@ public class CancelOrderDialog extends DialogFragment {
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
     }
+
+    @Override
+    public void onReasonSelected(int reason) {
+        onReasonSubmitted.onReasonSubmitted(reason);
+    }
+
+    public interface OnReasonSubmitted{
+        void onReasonSubmitted(int reasonId);
+    }
+
+
 }

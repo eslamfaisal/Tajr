@@ -328,7 +328,7 @@ public class BubbleService extends Service
 //                        ,item_no,null)
 //                .enqueue(new Callback<ResponseBody>() {
 //                    @Override
-//                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+//                    public void onResponse(Call<ResponseBody> call, MainResponse<ResponseBody> response) {
 //                        try {
 //                            Log.d("ORDERRRR",response.body().string());
 //                        } catch (IOException e) {

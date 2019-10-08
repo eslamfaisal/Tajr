@@ -1,15 +1,12 @@
 package com.greyeg.tajr.viewmodels;
 
-import android.util.Log;
-import android.view.View;
-
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 
 import com.greyeg.tajr.models.AddReasonResponse;
 import com.greyeg.tajr.models.CancellationReasonsResponse;
-import com.greyeg.tajr.repository.OrdersRepository;
+import com.greyeg.tajr.models.MainResponse;
+import com.greyeg.tajr.repository.CancellationReasonsRepository;
 
 public class CurrentOrderViewModel extends ViewModel {
 
@@ -17,13 +14,14 @@ public class CurrentOrderViewModel extends ViewModel {
     private MutableLiveData<Boolean> cancellationReasonsLoading;
 
     private MutableLiveData<AddReasonResponse> addReason;
+    private MutableLiveData<MainResponse> addReasonToOrder;
 
 
     //get order cancellation reason
     public void getCancellationReasons(String token){
-        cancellationReasonsResponse= OrdersRepository.getInstance()
+        cancellationReasonsResponse= CancellationReasonsRepository.getInstance()
                 .getCancellationReasons(token);
-        cancellationReasonsLoading=OrdersRepository.getInstance().getIsCancellationReasonsLoading();
+        cancellationReasonsLoading= CancellationReasonsRepository.getInstance().getIsCancellationReasonsLoading();
 
     }
 
@@ -36,13 +34,13 @@ public class CurrentOrderViewModel extends ViewModel {
     }
 
     public MutableLiveData<String> getCancellationReasonsLoadingError() {
-        return OrdersRepository.getInstance().getCancellationReasonsLoadingError();
+        return CancellationReasonsRepository.getInstance().getCancellationReasonsLoadingError();
     }
 
     //submit new Order cancellation reason
 
     public MutableLiveData<AddReasonResponse> addReason(String token,String name){
-        return addReason= OrdersRepository.getInstance()
+        return addReason= CancellationReasonsRepository.getInstance()
                 .addReason(token,name);
     }
 
@@ -51,10 +49,29 @@ public class CurrentOrderViewModel extends ViewModel {
     }
 
     public MutableLiveData<Boolean> getIsSubmittingReason() {
-        return OrdersRepository.getInstance().getIsSubmittingReason();
+        return CancellationReasonsRepository.getInstance().getIsSubmittingReason();
     }
 
     public MutableLiveData<String> getReasonSubmittingError() {
-        return OrdersRepository.getInstance().getReasonSubmittingError();
+        return CancellationReasonsRepository.getInstance().getReasonSubmittingError();
+    }
+
+    public void addReasonToOrder(String token, String orderId, String reason_id){
+        addReasonToOrder=CancellationReasonsRepository.getInstance()
+                .addReasonToOrder(token,orderId,reason_id);
+    }
+
+    public MutableLiveData<MainResponse> addReasonToOrder() {
+        return addReasonToOrder;
+    }
+
+    public MutableLiveData<Boolean> getIsReasonAddingTOOrder() {
+        return CancellationReasonsRepository.getInstance()
+                .getIsReasonAddingTOOrder();
+    }
+
+    public MutableLiveData<String> getReasonAddingToOrderError() {
+        return CancellationReasonsRepository.getInstance()
+                .getReasonAddingToOrderError();
     }
 }

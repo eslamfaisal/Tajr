@@ -38,6 +38,7 @@ import com.greyeg.tajr.helper.SharedHelper;
 import com.greyeg.tajr.helper.ViewAnimation;
 import com.greyeg.tajr.models.CancellationReasonsResponse;
 import com.greyeg.tajr.models.DeleteAddProductResponse;
+import com.greyeg.tajr.models.MainResponse;
 import com.greyeg.tajr.models.RemainingOrdersResponse;
 import com.greyeg.tajr.models.UpdateOrederNewResponse;
 import com.greyeg.tajr.order.CurrentOrderData;
@@ -61,6 +62,7 @@ import com.greyeg.tajr.viewmodels.CurrentOrderViewModel;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -70,11 +72,14 @@ import java.util.Locale;
 import androidx.cardview.widget.CardView;
 import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -83,7 +88,7 @@ import static android.content.Context.NOTIFICATION_SERVICE;
 import static com.greyeg.tajr.activities.LoginActivity.IS_LOGIN;
 import static com.greyeg.tajr.view.dialogs.Dialogs.showProgressDialog;
 
-public class CurrentOrderFragment extends Fragment {
+public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.OnReasonSubmitted{
 
     private final String TAG = "CurrentOrderFragment";
     @BindView(R.id.client_name)
@@ -180,7 +185,10 @@ public class CurrentOrderFragment extends Fragment {
     private boolean rotate = false;
     private boolean rotateshipper = false;
     private boolean productExbandable = false;
-
+    CurrentOrderViewModel currentOrderViewModel;
+    private CancelOrderDialog cancelOrderDialog;
+    private CancelOrderDialog.OnReasonSubmitted onReasonSubmitted=this;
+    private int orderId=-1;
 
     public CurrentOrderFragment() {
         // Required empty public constructor
@@ -196,6 +204,7 @@ public class CurrentOrderFragment extends Fragment {
 
         initLabels();
         setListeners();
+        currentOrderViewModel= ViewModelProviders.of(getActivity()).get(CurrentOrderViewModel.class);
 
         Bundle bundle = getArguments();
         if (bundle!=null){
@@ -251,7 +260,8 @@ public class CurrentOrderFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 toggleFabMode(normalUpdateButton);
-                new CancelOrderDialog().show(getChildFragmentManager(),"CANCEL");
+                cancelOrderDialog=new CancelOrderDialog(onReasonSubmitted);
+                cancelOrderDialog.show(getChildFragmentManager(),"CANCEL");
                 //normalUpdateOrder(OrderUpdateStatusEnums.client_cancel.name());
             }
         });
@@ -318,6 +328,38 @@ public class CurrentOrderFragment extends Fragment {
                 updateShippingOrder("client_noanswer");
             }
         });
+
+    }
+
+    private void observeAddingReasonToOrder(){
+        currentOrderViewModel
+                .addReasonToOrder()
+        .observe(getActivity(), new Observer<MainResponse>() {
+            @Override
+            public void onChanged(MainResponse mainResponse) {
+                Toast.makeText(getContext(), mainResponse.getData(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    private void observeIsReasonAddingToOrder(){
+        currentOrderViewModel
+                .getIsReasonAddingTOOrder()
+                .observe(getActivity(), new Observer<Boolean>() {
+                    @Override
+                    public void onChanged(Boolean aBoolean) {
+                        Log.d("REASONORDER", "onChanged: "+aBoolean);
+                    }
+                });
+    }
+    private void observeAddingReasonToOrderError(){
+        currentOrderViewModel
+                .getReasonAddingToOrderError()
+                .observe(getActivity(), new Observer<String>() {
+                    @Override
+                    public void onChanged(String s) {
+                        Toast.makeText(getContext(), s, Toast.LENGTH_SHORT).show();
+                    }
+                });
 
     }
 
@@ -510,7 +552,7 @@ public class CurrentOrderFragment extends Fragment {
         datePicker.setOnCancelListener(dialog -> dialog.dismiss());
     }
 
-    void addProductToMultiOrdersTv() {
+    private void addProductToMultiOrdersTv() {
         Dialog dialog = new Dialog(getActivity());
         dialog.setContentView(R.layout.layout_add_rpoduct_dialog);
 
@@ -637,6 +679,7 @@ public class CurrentOrderFragment extends Fragment {
         CurrentOrderData.getInstance().setCurrentOrderResponse(CurrentOrderData.getInstance().getMissedCallOrderResponse());
 
         try {
+            orderId=Integer.valueOf(CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getId());
             if (CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getCheckType().equals("normal_order")) {
                 fillFieldsWithOrderData(CurrentOrderData.getInstance().getMissedCallOrderResponse());
                 updateProgress();
@@ -675,6 +718,7 @@ public class CurrentOrderFragment extends Fragment {
                     public void onResponse(Call<CurrentOrderResponse> call, Response<CurrentOrderResponse> response) {
                         progressDialog.dismiss();
                         if (response.body() != null) {
+                            orderId= Integer.parseInt(response.body().getOrder().getId());
                             if (response.body().getCode().equals(ResponseCodeEnums.code_1200.getCode())) {
                                 CurrentOrderData.getInstance().setCurrentOrderResponse(response.body());
 
@@ -1025,4 +1069,17 @@ public class CurrentOrderFragment extends Fragment {
 
     }
 
+    @Override
+    public void onReasonSubmitted(int reason) {
+
+        normalUpdateOrder(OrderUpdateStatusEnums.client_cancel.name());
+        String token=SharedHelper.getKey(getContext(),LoginActivity.TOKEN);
+        currentOrderViewModel
+                .addReasonToOrder(token,String.valueOf(orderId),String.valueOf(reason));
+        observeAddingReasonToOrder();
+        observeIsReasonAddingToOrder();
+        observeAddingReasonToOrderError();
+        cancelOrderDialog.dismiss();
+
+    }
 }

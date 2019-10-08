@@ -6,15 +6,16 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.greyeg.tajr.models.AddReasonResponse;
 import com.greyeg.tajr.models.CancellationReasonsResponse;
+import com.greyeg.tajr.models.MainResponse;
 import com.greyeg.tajr.server.BaseClient;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class OrdersRepository {
+public class CancellationReasonsRepository {
 
-    private static OrdersRepository ordersRepository;
+    private static CancellationReasonsRepository cancellationReasonsRepository;
 
     //get order cancellation reason
     private MutableLiveData<CancellationReasonsResponse> cancellationReasonsResponse;
@@ -26,13 +27,17 @@ public class OrdersRepository {
     private MutableLiveData<Boolean>  isSubmittingReason=new MutableLiveData<>();
     private MutableLiveData<String> reasonSubmittingError=new MutableLiveData<>();
 
+    //add reason to order
+    private MutableLiveData<MainResponse> addReasonToOrder;
+    private MutableLiveData<Boolean>  isReasonAddingToOrder=new MutableLiveData<>();
+    private MutableLiveData<String> reasonAddingToOrderError=new MutableLiveData<>();
 
 
-    public static OrdersRepository getInstance() {
-        return ordersRepository==null?new OrdersRepository():ordersRepository;
+    public static CancellationReasonsRepository getInstance() {
+        return cancellationReasonsRepository ==null?new CancellationReasonsRepository(): cancellationReasonsRepository;
     }
 
-    private OrdersRepository(){
+    private CancellationReasonsRepository(){
     }
 
     public MutableLiveData<CancellationReasonsResponse> getCancellationReasons(String token){
@@ -112,5 +117,44 @@ public class OrdersRepository {
 
     public MutableLiveData<String> getReasonSubmittingError() {
         return reasonSubmittingError;
+    }
+
+    //add reason to order
+
+    public MutableLiveData<MainResponse> addReasonToOrder(String token, String orderId, String reason_id){
+        addReasonToOrder=new MutableLiveData<>();
+        isReasonAddingToOrder.setValue(true);
+        BaseClient
+                .getService()
+                .addReasonToOrder(token,orderId,reason_id)
+                .enqueue(new Callback<MainResponse>() {
+                    @Override
+                    public void onResponse(Call<MainResponse> call, Response<MainResponse> response) {
+                        isReasonAddingToOrder.setValue(true);
+                        MainResponse res=response.body();
+                        //todo check code 1200 in all requests
+                        if (response.isSuccessful()&&res!=null)
+                            addReasonToOrder.setValue(res);
+                        else
+                            reasonAddingToOrderError.setValue("Error adding reason to order");
+                    }
+
+                    @Override
+                    public void onFailure(Call<MainResponse> call, Throwable t) {
+                        isReasonAddingToOrder.setValue(true);
+                        reasonAddingToOrderError.setValue(t.getMessage());
+                        Log.d("REASONORDER", "onFailure: "+t.getMessage());
+
+                    }
+                });
+        return addReasonToOrder;
+    }
+
+    public MutableLiveData<Boolean> getIsReasonAddingTOOrder() {
+        return isReasonAddingToOrder;
+    }
+
+    public MutableLiveData<String> getReasonAddingToOrderError() {
+        return reasonAddingToOrderError;
     }
 }

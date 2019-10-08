@@ -371,7 +371,7 @@ public class NewOrderActivity extends AppCompatActivity implements CurrentCallLi
         long currentWorkTime = getNotSavedWrokTime() + Integer.valueOf(timerTv.getTag().toString());
         BaseClient.getBaseClient().create(Api.class).userWorkTime(SharedHelper.getKey(this, LoginActivity.TOKEN),
                 String.valueOf(currentWorkTime),
-                CurrentOrderData.getInstance().getCurrentOrderResponse().getUserId())
+                CurrentOrderData.getInstance().getCurrentOrderResponse().getUserId(),"APP")
                 .enqueue(new Callback<UserWorkTimeResponse>() {
                     @Override
                     public void onResponse(Call<UserWorkTimeResponse> call, Response<UserWorkTimeResponse> response) {

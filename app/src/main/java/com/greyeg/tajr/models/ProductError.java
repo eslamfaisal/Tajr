@@ -14,7 +14,7 @@ public class ProductError {
     @Expose
     private String info;
 
-    @SerializedName("Response")
+    @SerializedName("MainResponse")
     @Expose
     private String Response;
 

@@ -18,7 +18,7 @@ import com.greyeg.tajr.models.NewOrderResponse;
 import com.greyeg.tajr.models.OrderStatusHistoryResponse;
 import com.greyeg.tajr.models.PointsHistory;
 import com.greyeg.tajr.models.RemainingOrdersResponse;
-import com.greyeg.tajr.models.Response;
+import com.greyeg.tajr.models.MainResponse;
 import com.greyeg.tajr.models.SimpleOrderResponse;
 import com.greyeg.tajr.models.SimpleResponse;
 import com.greyeg.tajr.models.SubscriberInfo;
@@ -439,9 +439,10 @@ public interface Api {
 
 
     @FormUrlEncoded
-    @POST("add_reason_to_order")
-    Call<Response> addReasonToOrder(@Field("token") String token,
-                                    @Field("order_id") String order_id,
-                                    @Field("reason_id") String reason_id);
+    @POST("send_test/add_reason_to_order")
+    Call<MainResponse> addReasonToOrder(@Field("token") String token,
+                                        @Field("order_id") String order_id,
+                                        @Field("reason_id") String reason_id);
+
 
 }

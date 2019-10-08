@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 
 public class UserWorkTimeResponse {
 
-    @SerializedName("Response")
+    @SerializedName("MainResponse")
     @Expose
     private String Response;
 
@@ -44,7 +44,7 @@ public class UserWorkTimeResponse {
     @Override
     public String toString() {
         return "UserWorkTimeResponse{" +
-                "Response='" + Response + '\'' +
+                "MainResponse='" + Response + '\'' +
                 ", data='" + data + '\'' +
                 ", code='" + code + '\'' +
                 ", info='" + info + '\'' +

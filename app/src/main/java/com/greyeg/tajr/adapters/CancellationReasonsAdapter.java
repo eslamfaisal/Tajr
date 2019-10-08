@@ -1,13 +1,11 @@
 package com.greyeg.tajr.adapters;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.Constraints;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.greyeg.tajr.R;
@@ -21,9 +19,12 @@ import butterknife.ButterKnife;
 public class CancellationReasonsAdapter  extends RecyclerView.Adapter<CancellationReasonsAdapter.CancellationReasonsViewHolder> {
 
     private ArrayList<CancellationReason> cancellationReasons;
+    private OnReasonSelected onReasonSelected;
 
-    public CancellationReasonsAdapter(ArrayList<CancellationReason> cancellationReasons) {
+
+    public CancellationReasonsAdapter(ArrayList<CancellationReason> cancellationReasons, OnReasonSelected onReasonSelected) {
         this.cancellationReasons = cancellationReasons;
+        this.onReasonSelected = onReasonSelected;
     }
 
     @NonNull
@@ -50,6 +51,18 @@ public class CancellationReasonsAdapter  extends RecyclerView.Adapter<Cancellati
         CancellationReasonsViewHolder(@NonNull View itemView) {
             super(itemView);
             ButterKnife.bind(this,itemView);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    int id=Integer.valueOf(cancellationReasons.get(getAdapterPosition()).getReason_id());
+                    onReasonSelected.onReasonSelected(id);
+                }
+            });
         }
+    }
+
+    public interface OnReasonSelected{
+        void onReasonSelected(int reason);
     }
 }

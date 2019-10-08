@@ -80,7 +80,7 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.MyViewHold
 //                    RequestBody token = RequestBody.create(MediaType.parse("text/plain"), SharedHelper.getKey(context, LoginActivity.TOKEN));
 //                    BaseClient.getBaseClient().create(Api.class).uploadVoice(token,title1,image).enqueue(new Callback<UploadVoiceResponse>() {
 //                        @Override
-//                        public void onResponse(Call<UploadVoiceResponse> call, Response<UploadVoiceResponse> response) {
+//                        public void onResponse(Call<UploadVoiceResponse> call, MainResponse<UploadVoiceResponse> response) {
 //
 //                            Log.d("caaaaaaaaaaaaaal", "onResponse: "+response.body().getInfo());
 //                        }
