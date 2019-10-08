@@ -18,6 +18,7 @@ import com.greyeg.tajr.models.NewOrderResponse;
 import com.greyeg.tajr.models.OrderStatusHistoryResponse;
 import com.greyeg.tajr.models.PointsHistory;
 import com.greyeg.tajr.models.RemainingOrdersResponse;
+import com.greyeg.tajr.models.Response;
 import com.greyeg.tajr.models.SimpleOrderResponse;
 import com.greyeg.tajr.models.SimpleResponse;
 import com.greyeg.tajr.models.SubscriberInfo;
@@ -74,7 +75,9 @@ public interface Api {
     @FormUrlEncoded
     @POST("send_test/set_active_time")
     Call<UserWorkTimeResponse> userWorkTime(@Field("token") String token,
-                                            @Field("activity") String activity, @Field("user_id") String user_id);
+                                            @Field("activity") String activity,
+                                            @Field("user_id") String user_id,
+                                            @Field("action") String action);
 
 
     @Multipart
@@ -434,5 +437,11 @@ public interface Api {
     @POST("send_test/add_cancellation_reason")
     Call<AddReasonResponse> submitNewCancellationReason(@Field("token") String token,@Field("name") String name);
 
+
+    @FormUrlEncoded
+    @POST("add_reason_to_order")
+    Call<Response> addReasonToOrder(@Field("token") String token,
+                                    @Field("order_id") String order_id,
+                                    @Field("reason_id") String reason_id);
 
 }

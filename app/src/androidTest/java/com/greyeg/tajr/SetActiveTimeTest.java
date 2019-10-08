@@ -19,7 +19,8 @@ public class SetActiveTimeTest {
 
     @Test
     public void setActivrTime() {
-        BaseClient.getBaseClient().create(Api.class).userWorkTime("YIXRKEsDUv4VpAP5BaroqlJb", "55", "108")
+        BaseClient.getBaseClient().create(Api.class).userWorkTime("YIXRKEsDUv4VpAP5BaroqlJb", "55"
+                , "108","APP")
                 .enqueue(new Callback<UserWorkTimeResponse>() {
                     @Override
                     public void onResponse(Call<UserWorkTimeResponse> call, Response<UserWorkTimeResponse> response) {
