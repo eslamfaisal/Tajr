@@ -40,6 +40,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.ebanx.swipebtn.OnStateChangeListener;
 import com.ebanx.swipebtn.SwipeButton;
 import com.google.android.material.navigation.NavigationView;
@@ -120,6 +121,7 @@ public class MainActivity extends AppCompatActivity
     @BindView(R.id.welcome_text)
     RobotoTextView welcomeText;
     Api api;
+    Crashlytics crashlytics;
 
     //    @BindView(R.id.timer_text)
 //    TextView timer_text;
@@ -147,6 +149,7 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        crashlytics=Crashlytics.getInstance();
         OneSignal.setSubscription(true);
         mainActivity = this;
         toolbar =  findViewById(R.id.toolbar);
