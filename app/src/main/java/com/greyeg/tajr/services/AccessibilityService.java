@@ -26,7 +26,7 @@ public class AccessibilityService extends android.accessibilityservice.Accessibi
         {
             //Log.d(TAG, "onAccessibilityEvent: "+"TYPE_WINDOW_STATE_CHANGED");
             Log.d("TIMERCALCC", "timer start ");
-            TimeCalculator.getInstance().startTimer();
+            TimeCalculator.getInstance(getApplicationContext()).startTimer();
 
 
             if (accessibilityEvent.getEventType()==AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED){
@@ -37,7 +37,7 @@ public class AccessibilityService extends android.accessibilityservice.Accessibi
         }
         }else {
             Log.d("TIMERCALCC", "timer stop ");
-            TimeCalculator.getInstance().stopTimer();
+            TimeCalculator.getInstance(getApplicationContext()).stopTimer();
 
         }
 

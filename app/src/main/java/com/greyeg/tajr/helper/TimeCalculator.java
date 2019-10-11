@@ -1,5 +1,6 @@
 package com.greyeg.tajr.helper;
 
+import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
 
@@ -11,13 +12,20 @@ public class TimeCalculator {
     private static TimeCalculator timeCalculator;
     private static Timer timer;
     private static boolean running=false;
+    private Context context;
+    private static long seconds;
+    private static final String TIME_KEY="pm_time";
 
 
-    public static TimeCalculator getInstance() {
-        return timeCalculator==null?new TimeCalculator():timeCalculator;
+
+    public static TimeCalculator getInstance(Context context) {
+
+        return timeCalculator==null?new TimeCalculator(context):timeCalculator;
     }
 
-    private TimeCalculator() {
+
+    private TimeCalculator(Context context) {
+        this.context=context;
     }
 
 
@@ -28,7 +36,9 @@ public class TimeCalculator {
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                Log.d("TIMERCALCC", "run ");
+                seconds=SharedHelper.getLongValue(context,TIME_KEY)+1;
+                saveTime(seconds);
+                Log.d("TIMERCALCC", "time "+seconds);
 
             }
         },0,1000);
@@ -49,5 +59,9 @@ public class TimeCalculator {
 
     public boolean isRunning() {
         return running;
+    }
+
+    private void saveTime(long seconds){
+        SharedHelper.putKey(context,TIME_KEY,seconds);
     }
 }
