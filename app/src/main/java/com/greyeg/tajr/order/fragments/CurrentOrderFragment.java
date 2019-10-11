@@ -188,7 +188,7 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
     CurrentOrderViewModel currentOrderViewModel;
     private CancelOrderDialog cancelOrderDialog;
     private CancelOrderDialog.OnReasonSubmitted onReasonSubmitted=this;
-    private int orderId=-1;
+    private long orderId=-1;
 
     public CurrentOrderFragment() {
         // Required empty public constructor
@@ -679,7 +679,7 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
         CurrentOrderData.getInstance().setCurrentOrderResponse(CurrentOrderData.getInstance().getMissedCallOrderResponse());
 
         try {
-            orderId=Integer.valueOf(CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getId());
+            orderId=Long.valueOf(CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getId());
             if (CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getCheckType().equals("normal_order")) {
                 fillFieldsWithOrderData(CurrentOrderData.getInstance().getMissedCallOrderResponse());
                 updateProgress();
@@ -718,7 +718,8 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
                     public void onResponse(Call<CurrentOrderResponse> call, Response<CurrentOrderResponse> response) {
                         progressDialog.dismiss();
                         if (response.body() != null) {
-                            orderId= Integer.parseInt(response.body().getOrder().getId());
+                            Log.d(TAG, "onResponse: "+response.body().getOrder().getId());
+                            orderId= Long.valueOf(response.body().getOrder().getId());
                             if (response.body().getCode().equals(ResponseCodeEnums.code_1200.getCode())) {
                                 CurrentOrderData.getInstance().setCurrentOrderResponse(response.body());
 
