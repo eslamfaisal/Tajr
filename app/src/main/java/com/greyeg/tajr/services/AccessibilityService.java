@@ -10,6 +10,7 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.Toast;
 
 import com.greyeg.tajr.MainActivity;
+import com.greyeg.tajr.helper.TimeCalculator;
 import com.greyeg.tajr.helper.UserNameEvent;
 
 import org.greenrobot.eventbus.EventBus;
@@ -20,19 +21,23 @@ public class AccessibilityService extends android.accessibilityservice.Accessibi
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent accessibilityEvent) {
-        Log.d(TAG, "timer start ");
 
-        if (accessibilityEvent.getEventType()==AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED
-        &&accessibilityEvent.getPackageName().equals("com.facebook.pages.app"))
+        if (accessibilityEvent.getPackageName().equals("com.facebook.pages.app"))
         {
             //Log.d(TAG, "onAccessibilityEvent: "+"TYPE_WINDOW_STATE_CHANGED");
+            Log.d("TIMERCALCC", "timer start ");
+            TimeCalculator.getInstance().startTimer();
 
+
+            if (accessibilityEvent.getEventType()==AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED){
             checkOverlayPermission();
             String userName=getUserName();
             if (userName!=null)
             EventBus.getDefault().post(new UserNameEvent(userName));
+        }
         }else {
-            Log.d(TAG, "timer stop ");
+            Log.d("TIMERCALCC", "timer stop ");
+            TimeCalculator.getInstance().stopTimer();
 
         }
 
