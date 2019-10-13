@@ -15,6 +15,7 @@ import com.greyeg.tajr.models.DeleteAddProductResponse;
 import com.greyeg.tajr.models.MoneyHistory;
 import com.greyeg.tajr.models.MoneyRequestResponse;
 import com.greyeg.tajr.models.NewOrderResponse;
+import com.greyeg.tajr.models.OrderPayload;
 import com.greyeg.tajr.models.OrderStatusHistoryResponse;
 import com.greyeg.tajr.models.PointsHistory;
 import com.greyeg.tajr.models.RemainingOrdersResponse;
@@ -37,6 +38,7 @@ import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
@@ -124,20 +126,8 @@ public interface Api {
     );
 
 
-    @FormUrlEncoded
-    @POST("send_test/new_order")
-    Call<ResponseBody> testNewOrder(
-            @Field("token") String token,
-            @Field("user_id") String user_id,
-            @Field("product_id") String product_id,
-            @Field("client_name") String client_name,
-            @Field("client_phone") String client_phone,
-            @Field("city_id") String city_id,
-            @Field("client_area") String client_area,
-            @Field("client_address") String client_address,
-            @Field("items") String items,
-            @Field("discount") String discount
-    );
+    @POST("send_test/record_new_order")
+    Call<NewOrderResponse> makeNewOrder(@Body OrderPayload orderPayload) ;
 
     @FormUrlEncoded
     @POST("send_test/update_order")

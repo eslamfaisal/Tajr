@@ -40,6 +40,8 @@ import com.greyeg.tajr.models.BotBlocksResponse;
 import com.greyeg.tajr.models.Broadcast;
 import com.greyeg.tajr.models.Cities;
 import com.greyeg.tajr.models.NewOrderResponse;
+import com.greyeg.tajr.models.OrderItem;
+import com.greyeg.tajr.models.OrderPayload;
 import com.greyeg.tajr.models.ProductData;
 import com.greyeg.tajr.models.ProductForSpinner;
 import com.greyeg.tajr.models.Subscriber;
@@ -94,6 +96,7 @@ public class BubbleService extends Service
     List<String> citiesId = new ArrayList<>();
     private List<Cities.City> citiesBody;
     ArrayList<Subscriber> subscribers=new ArrayList<>();
+    ArrayList<OrderItem> orderItems;
 
 
     @Nullable
@@ -115,6 +118,7 @@ public class BubbleService extends Service
 
         width= ScreenHelper.getScreenDimensions(getApplicationContext())[0];
         height= ScreenHelper.getScreenDimensions(getApplicationContext())[1];
+        orderItems=new ArrayList<>();
 
         Log.d("SCREEEEEENw", "onCreate: "+width);
 
@@ -321,44 +325,35 @@ public class BubbleService extends Service
         Log.d("ORDERRRR", "CITY ID: "+CITY_ID);
         Log.d("ORDERRRR", "product id: "+productId);
 
+        String token=SharedHelper.getKey(getApplicationContext(),LoginActivity.TOKEN);
 
-//        BaseClient.getService()
-//                .testNewOrder(SharedHelper.getKey(getApplicationContext(),LoginActivity.TOKEN),
-//                        null,productId,client_name,client_order_phone1,CITY_ID,client_area,client_address
-//                        ,item_no,null)
-//                .enqueue(new Callback<ResponseBody>() {
-//                    @Override
-//                    public void onResponse(Call<ResponseBody> call, MainResponse<ResponseBody> response) {
-//                        try {
-//                            Log.d("ORDERRRR",response.body().string());
-//                        } catch (IOException e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//
-//                    @Override
-//                    public void onFailure(Call<ResponseBody> call, Throwable t) {
-//                        Log.d("ORDERRRR",t.getMessage());
-//
-//                    }
-//                });
+        orderItems.add(new OrderItem("490",1));
+        orderItems.add(new OrderItem("489",1));
+
+        OrderPayload orderPayload=new OrderPayload(token,null,client_name,client_order_phone1,
+                CITY_ID,client_area,client_address,null,
+                userName,userId,orderItems);
+
 
 
 
         BaseClient.getService()
-                .recordNewOrder(SharedHelper.getKey(getApplicationContext(),LoginActivity.TOKEN),
-                        null,productId,client_name,client_order_phone1,CITY_ID,client_area,client_address
-                ,item_no,null,userName,userId)
+                .makeNewOrder(orderPayload)
                 .enqueue(new Callback<NewOrderResponse>() {
                     @Override
                     public void onResponse(Call<NewOrderResponse> call, Response<NewOrderResponse> response) {
+                        Log.d("OORRDDEERRR","is null "+(response.body()==null));
+
                         NewOrderResponse newOrderResponse=response.body();
                         if (newOrderResponse!=null){
                             Toast.makeText(BubbleService.this, newOrderResponse.getData(), Toast.LENGTH_LONG).show();
                             clearOrderFields();
                         }
-                        else
-                            Toast.makeText(BubbleService.this,"Error placing Order" , Toast.LENGTH_SHORT).show();
+                        else{
+                            Log.d("OORRDDEERRR","r)");
+                            Toast.makeText(BubbleService.this,"Error placing Order :(" +
+                                    ""+response.code() , Toast.LENGTH_SHORT).show();
+                        }
 
 
                     }
