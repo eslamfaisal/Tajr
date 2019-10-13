@@ -36,6 +36,7 @@ public class AccessibilityService extends android.accessibilityservice.Accessibi
             EventBus.getDefault().post(new UserNameEvent(userName));
         }
         }else {
+            //todo check for connection
             Log.d("TIMERCALCC", "timer stop ");
             TimeCalculator.getInstance(getApplicationContext()).stopTimer();
 

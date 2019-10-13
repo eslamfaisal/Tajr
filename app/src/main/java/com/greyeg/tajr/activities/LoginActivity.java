@@ -144,11 +144,13 @@ public class LoginActivity extends AppCompatActivity {
                             if (response.body() != null) {
                                 Log.d(TAG, "onResponse: "+response.body().toString());
                                 if (response.body().getCode().equals("1202") || response.body().getCode().equals("1212")) {
+                                    //todo solve onesignal error
                                     String onsignalid = OneSignal.getPermissionSubscriptionState().getSubscriptionStatus().getUserId();
-                                    while (onsignalid == null) {
-
-                                        onsignalid = null;
-                                    }
+//                                    while (onsignalid == null) {
+//
+//                                        onsignalid = null;
+//                                    }
+                                    onsignalid=response.body().getData().getLogin_data().getUser_id();
                                     FirebaseDatabase.getInstance().getReference().child("users")
                                             .child(onsignalid)
                                             .setValue(new User(response.body().getData().getLogin_data().getUsername(), OneSignal.getPermissionSubscriptionState().getSubscriptionStatus().getUserId()))
@@ -175,6 +177,9 @@ public class LoginActivity extends AppCompatActivity {
                                                         startActivity(intent);
                                                         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                                                         finish();
+
+                                                    }else {
+                                                        Log.d("eeeeeeeeeeeeeeee", "task failed: " );
 
                                                     }
                                                 }
