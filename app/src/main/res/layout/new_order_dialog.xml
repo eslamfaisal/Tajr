@@ -59,6 +59,12 @@
             android:background="#FFFFFF"
             android:orientation="vertical">
 
+            <androidx.recyclerview.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:elevation="3dp"
+                android:id="@+id/cart"/>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

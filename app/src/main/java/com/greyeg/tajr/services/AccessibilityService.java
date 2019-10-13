@@ -9,15 +9,19 @@ import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.Toast;
 
+import androidx.lifecycle.ViewModelProviders;
+
 import com.greyeg.tajr.MainActivity;
 import com.greyeg.tajr.helper.TimeCalculator;
 import com.greyeg.tajr.helper.UserNameEvent;
+import com.greyeg.tajr.viewmodels.NewOrderActivityVM;
 
 import org.greenrobot.eventbus.EventBus;
 
 public class AccessibilityService extends android.accessibilityservice.AccessibilityService {
 
     public static final String TAG="ACCESSIBLILTYYY";
+    NewOrderActivityVM newOrderActivityVM;
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent accessibilityEvent) {
@@ -40,12 +44,13 @@ public class AccessibilityService extends android.accessibilityservice.Accessibi
             Log.d("TIMERCALCC", "timer stop ");
             TimeCalculator.getInstance(getApplicationContext()).stopTimer();
 
-        }
-
-
-
 
         }
+        }
+
+    void observeSendingWorkTime(){
+
+    }
 
     @Override
     public void onInterrupt() {
@@ -56,6 +61,7 @@ public class AccessibilityService extends android.accessibilityservice.Accessibi
     @Override
     protected void onServiceConnected() {
         super.onServiceConnected();
+        newOrderActivityVM = new NewOrderActivityVM();
         Log.d(TAG, "onServiceConnected: ");
     }
 

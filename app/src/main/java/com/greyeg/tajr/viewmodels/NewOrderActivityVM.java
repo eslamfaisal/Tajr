@@ -11,7 +11,7 @@ public class NewOrderActivityVM {
     private MutableLiveData<Boolean> isWorkTimeSending;
     private MutableLiveData<String> workTimeSendingError;
 
-    public MutableLiveData<UserWorkTimeResponse> getSendWorkTime(String token,
+    public MutableLiveData<UserWorkTimeResponse> SendWorkTime(String token,
                                                                  String activity,
                                                                  String user_id,
                                                                  String action) {
