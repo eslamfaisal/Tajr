@@ -36,7 +36,6 @@ import com.greyeg.tajr.R;
 import com.greyeg.tajr.activities.LoginActivity;
 import com.greyeg.tajr.helper.SharedHelper;
 import com.greyeg.tajr.helper.ViewAnimation;
-import com.greyeg.tajr.models.CancellationReasonsResponse;
 import com.greyeg.tajr.models.DeleteAddProductResponse;
 import com.greyeg.tajr.models.MainResponse;
 import com.greyeg.tajr.models.RemainingOrdersResponse;
@@ -62,7 +61,6 @@ import com.greyeg.tajr.viewmodels.CurrentOrderViewModel;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -79,7 +77,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -554,7 +551,7 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
 
     private void addProductToMultiOrdersTv() {
         Dialog dialog = new Dialog(getActivity());
-        dialog.setContentView(R.layout.layout_add_rpoduct_dialog);
+        dialog.setContentView(R.layout.layout_add_poduct_dialog);
 
         Spinner productSpinner = dialog.findViewById(R.id.product_spinner);
         productSpinner.setTag(OrderProductsType.MuhltiOrder.getType());
@@ -570,8 +567,19 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
         addProductBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                int no;
+                try {
+                    no=Integer.valueOf(productNo.getText().toString());
+                }catch (Exception e){
+                    no=0;
+                }
+                if (no<1){
+                    Toast.makeText(getContext(), R.string.enter_valid_quantity, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 dialog.dismiss();
-                addProductToMultiOrder(Integer.valueOf(productNo.getText().toString()), productSpinner.getSelectedItemPosition());
+                addProductToMultiOrder(no, productSpinner.getSelectedItemPosition());
             }
         });
         dialog.show();
@@ -718,9 +726,11 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
                     public void onResponse(Call<CurrentOrderResponse> call, Response<CurrentOrderResponse> response) {
                         progressDialog.dismiss();
                         if (response.body() != null) {
-                            Log.d(TAG, "onResponse: "+response.body().getOrder().getId());
-                            orderId= Long.valueOf(response.body().getOrder().getId());
+
+
                             if (response.body().getCode().equals(ResponseCodeEnums.code_1200.getCode())) {
+                                orderId= Long.valueOf(response.body().getOrder().getId());
+                                Log.d(TAG, "order id: ");
                                 CurrentOrderData.getInstance().setCurrentOrderResponse(response.body());
 
                                 try {
