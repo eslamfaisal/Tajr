@@ -21,14 +21,13 @@
 
     <TextView
         android:id="@+id/price"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
         android:textColor="@color/material_red_400"
         android:textStyle="bold"
         android:gravity="end"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_weight="2"
         app:layout_constraintStart_toEndOf="@id/product_name"
         app:layout_constraintTop_toTopOf="@id/product_image"
         tools:text="30000 LE" />

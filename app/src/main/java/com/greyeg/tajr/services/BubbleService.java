@@ -3,6 +3,7 @@ package com.greyeg.tajr.services;
 import android.app.Service;
 import android.content.ClipData;
 import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.os.Handler;
@@ -14,11 +15,13 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -40,6 +43,7 @@ import com.greyeg.tajr.models.BotBlocksResponse;
 import com.greyeg.tajr.models.Broadcast;
 import com.greyeg.tajr.models.Cities;
 import com.greyeg.tajr.models.NewOrderResponse;
+import com.greyeg.tajr.models.Order;
 import com.greyeg.tajr.models.OrderItem;
 import com.greyeg.tajr.models.OrderPayload;
 import com.greyeg.tajr.models.ProductData;
@@ -58,7 +62,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -74,6 +77,7 @@ public class BubbleService extends Service
     View botBlocksDialog;
     View subscribersDialog;
     View newOrderDialog;
+    View addNewProductDialog;
     WindowManager.LayoutParams params;
     WindowManager.LayoutParams dialogParams;
     WindowManager.LayoutParams subscribersDialogParams;
@@ -90,14 +94,13 @@ public class BubbleService extends Service
     private   boolean deleteViewAdded=false;
     private Handler handler;
     private int width,height;
-    String productId;
     List<String> cities = new ArrayList<>();
     public static String CITY_ID;
     List<String> citiesId = new ArrayList<>();
     private List<Cities.City> citiesBody;
     ArrayList<Subscriber> subscribers=new ArrayList<>();
     ArrayList<OrderItem> orderItems;
-
+    private List<ProductData> products;
 
     @Nullable
     @Override
@@ -216,12 +219,14 @@ public class BubbleService extends Service
                         stopFlasher();
                         SubscriberInfo subscriberInfo=response.body();
                         if (response.isSuccessful()&&subscriberInfo!=null){
-                            Log.d("SUBSCRIPERR","subscriper "+response.body().getData());
+                            Log.d("SUBSCRIPERR","subscriper "+subscriberInfo.getData());
                             ArrayList<Subscriber> subscribersData =subscriberInfo.getSubscribers_data();
                             if(subscribersData==null||subscribersData.isEmpty()){
+                                //todo handle session expire
+                                stopFlasher();
                                 Toast.makeText(BubbleService.this,
-                                        "there is a problem fetching user data"
-                                        , Toast.LENGTH_SHORT).show();
+                                        subscriberInfo.getData()
+                                        , Toast.LENGTH_LONG).show();
                             }else if (subscribersData.size()==1){
                                 psid =subscribersData.get(0).getPsid();
                                 page=subscribersData.get(0).getPage();
@@ -233,12 +238,7 @@ public class BubbleService extends Service
 
                         }
                         else {
-                            try {
-                                Log.d("SUBSCRIPERR","code "+response.code()+" error "+response.errorBody().string());
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                                Log.d("SUBSCRIPERR","error");
-                            }
+                            Toast.makeText(BubbleService.this, "Server Error occured", Toast.LENGTH_SHORT).show();
                         }
                     }
 
@@ -304,7 +304,12 @@ public class BubbleService extends Service
     private void MakeNewOrder(String client_name, String client_order_phone1
             , String client_area, String client_address, String item_no){
 
-        String[] params={client_name,client_order_phone1,client_area,client_address,item_no,CITY_ID,productId};
+        if (orderItems.isEmpty()){
+            Toast.makeText(this, "choose product first", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String[] params={client_name,client_order_phone1,client_area,client_address,item_no,CITY_ID};
         for (String param : params) {
             if (TextUtils.isEmpty(param)) {
                 Toast.makeText(this, "complete all Fields", Toast.LENGTH_SHORT).show();
@@ -313,7 +318,12 @@ public class BubbleService extends Service
 
         }
 
+        if (Integer.valueOf(item_no)<1){
+            Toast.makeText(this, "mimimum order items is 1", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
+        orderItems.get(0).setItems(Integer.valueOf(item_no));
 
 
         Log.d("ORDERRRR", "token : "+SharedHelper.getKey(getApplicationContext(),LoginActivity.TOKEN));
@@ -323,17 +333,21 @@ public class BubbleService extends Service
         Log.d("ORDERRRR", "client_address: "+client_address);
         Log.d("ORDERRRR", "item_no: "+item_no);
         Log.d("ORDERRRR", "CITY ID: "+CITY_ID);
-        Log.d("ORDERRRR", "product id: "+productId);
+        Log.d("ORDERRRR", "product id: "+orderItems.get(0).getProduct_id());
 
         String token=SharedHelper.getKey(getApplicationContext(),LoginActivity.TOKEN);
 
-        orderItems.add(new OrderItem("490",1));
-        orderItems.add(new OrderItem("489",1));
 
         OrderPayload orderPayload=new OrderPayload(token,null,client_name,client_order_phone1,
                 CITY_ID,client_area,client_address,null,
                 userName,userId,orderItems);
 
+
+
+
+        Log.d("OORRDDEERRR","order items "+orderItems.size());
+        InputMethodManager imm = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(newOrderDialog.getWindowToken(), 0);
 
 
 
@@ -490,6 +504,23 @@ public class BubbleService extends Service
         ImageView item_no_paste=newOrderDialog.findViewById(R.id.item_no_paste);
 
 
+        addNewProductDialog=LayoutInflater.from(getApplicationContext())
+                .inflate(R.layout.layout_add_poduct_dialog,null,false);
+        ImageView addProduct=newOrderDialog.findViewById(R.id.addNewProduct);
+        addProduct.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if (products==null) return;
+                if (newOrderDialog!=null)newOrderDialog.setVisibility(View.INVISIBLE);
+                WindowManager.LayoutParams layoutParams=getViewParams(-1,-1,-1,-1,null);
+                layoutParams.gravity = Gravity.TOP | Gravity.END;
+
+                mWindowManager.addView(addNewProductDialog,layoutParams);
+                setupAddNewProductDialog();
+            }
+        });
+
         newOrderDialog.setOnTouchListener(setOnTOuchListener(newOrderDialogParams));
 
         send_order.setOnClickListener(new View.OnClickListener() {
@@ -507,9 +538,6 @@ public class BubbleService extends Service
         });
 
 
-
-
-
         pasteData(client_name_Paste,client_name);
         pasteData(client_address_paste,client_address);
         pasteData(client_area_paste,client_area);
@@ -518,6 +546,73 @@ public class BubbleService extends Service
 
 
     }
+
+    private void setupAddNewProductDialog(){
+        if (products==null||products.isEmpty())return;
+        OrderItem orderItem=new OrderItem();
+
+        Spinner productsSpinner=addNewProductDialog.findViewById(R.id.product_spinner);
+        TextView itemsNumber=addNewProductDialog.findViewById(R.id.product_no);
+        ImageView close=addNewProductDialog.findViewById(R.id.close);
+        TextView add_product=addNewProductDialog.findViewById(R.id.add_product);
+
+        ArrayList<ProductForSpinner> spinnerProducts=new ArrayList<>();
+        for (ProductData product : products) {
+            spinnerProducts.add(new ProductForSpinner(product.getProduct_name(), product.getProduct_image(), product.getProduct_id(),product.getProduct_real_price()));
+        }
+
+        ProductSpinnerAdapter adapter=new ProductSpinnerAdapter(getApplicationContext(),spinnerProducts);
+        productsSpinner.setAdapter(adapter);
+
+        productsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                orderItem.setProduct_id(products.get(i).getProduct_id());
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+        add_product.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int items;
+                try{
+                     items=Integer.valueOf(itemsNumber.getText().toString());
+                }catch (NumberFormatException ex){
+                     items=0;
+                }
+
+                if (TextUtils.isEmpty(itemsNumber.getText().toString())||items<1) {
+                    Toast.makeText(BubbleService.this, "please enter valid quantity ", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                orderItem.setItems(items);
+                if (!orderItems.contains(orderItem)){
+                    orderItems.add(orderItem);
+                    Toast.makeText(BubbleService.this, "product Added to order", Toast.LENGTH_SHORT).show();
+                    mWindowManager.removeView(addNewProductDialog);
+                    if (newOrderDialog!=null)newOrderDialog.setVisibility(View.VISIBLE);
+
+                }
+                else
+                    Toast.makeText(BubbleService.this, "item already exist", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        close.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (addNewProductDialog!=null) mWindowManager.removeView(addNewProductDialog);
+                if (newOrderDialog!=null)newOrderDialog.setVisibility(View.VISIBLE);
+            }
+        });
+
+    }
+
     private void clearOrderFields() {
         if (newOrderDialog==null)
             return;
@@ -538,6 +633,9 @@ public class BubbleService extends Service
 
         product.setSelection(0);
         city.setSelection(0);
+        orderItems.clear();
+        orderItems.add(0,new OrderItem(products.get(0).getProduct_id()));
+
 
 
 
@@ -658,7 +756,9 @@ public class BubbleService extends Service
         }
 
         layoutParams.gravity = Gravity.TOP | Gravity.START;
+        if (x!=-1)
         layoutParams.x = x;
+        if (y!=-1)
         layoutParams.y = y;
 
         if (width!=-1)
@@ -901,7 +1001,6 @@ public class BubbleService extends Service
 
 
     private void getProducts() {
-        Spinner product=newOrderDialog.findViewById(R.id.product);
 
         BaseClient.getService().getProducts(SharedHelper.getKey(getApplicationContext(), LoginActivity.TOKEN), null)
                 .enqueue(new Callback<AllProducts>() {
@@ -910,31 +1009,9 @@ public class BubbleService extends Service
                 Log.d("eeeeeeeeeeeeeee", "response: " + response.body().getProducts_count());
                 AllProducts allProducts=response.body();
                 if (allProducts!= null&&allProducts.getProducts()!=null) {
-                    if (allProducts.getProducts().size() > 0) {
-                        productId = allProducts.getProducts().get(0).getProduct_id();
+                    products=allProducts.getProducts();
+                    populateSpinner(response.body().getProducts());
 
-                    }
-                    List<ProductForSpinner> products = new ArrayList<>();
-                    for (ProductData product : response.body().getProducts()) {
-                        products.add(new ProductForSpinner(product.getProduct_name(), product.getProduct_image(), product.getProduct_id(),product.getProduct_real_price()));
-                    }
-                    ArrayAdapter<String> myAdapter = new ProductSpinnerAdapter(
-                            getApplicationContext(), products,R.layout.layout_product_spinner_item2);
-                    product.setAdapter(myAdapter);
-
-                    product.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                        @Override
-                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                            productId = allProducts.getProducts().get(position).getProduct_id();
-                            Log.d("ORDERRRR", "product : "+productId);
-
-                        }
-
-                        @Override
-                        public void onNothingSelected(AdapterView<?> parent) {
-
-                        }
-                    });
                 }
             }
 
@@ -944,6 +1021,37 @@ public class BubbleService extends Service
             }
         });
 
+    }
+
+    private void populateSpinner(List<ProductData> allProducts){
+        Spinner productSpinner=newOrderDialog.findViewById(R.id.product);
+
+        // todo change productForSpinners to productdata
+        List<ProductForSpinner> products = new ArrayList<>();
+        for (ProductData product : allProducts) {
+            products.add(new ProductForSpinner(product.getProduct_name(), product.getProduct_image(), product.getProduct_id(),product.getProduct_real_price()));
+        }
+        ArrayAdapter<String> myAdapter = new ProductSpinnerAdapter(
+                getApplicationContext(), products,R.layout.layout_product_spinner_item2);
+        productSpinner.setAdapter(myAdapter);
+
+        productSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                OrderItem orderItem=new OrderItem(allProducts.get(position).getProduct_id());
+                if (orderItems.contains(orderItem)){
+                    Toast.makeText(BubbleService.this, "already exist", Toast.LENGTH_SHORT).show();
+                }else
+                orderItems.add(0,orderItem);
+                Log.d("ORDERRRR", "product : "+allProducts.get(position).getProduct_id());
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
     }
 
     private void getCities() {

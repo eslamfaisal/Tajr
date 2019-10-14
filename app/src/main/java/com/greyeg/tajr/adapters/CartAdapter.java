@@ -17,11 +17,16 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartItemHolder> {
 
     private Context context;
     private ArrayList<ProductData> products;
+
+    public CartAdapter(Context context) {
+        this.context = context;
+    }
 
     @NonNull
     @Override
@@ -44,6 +49,11 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartItemHolder
         return products==null?0:products.size();
     }
 
+    public void addCartItem(ProductData productData){
+        this.products.add(productData);
+        notifyDataSetChanged();
+    }
+
     class CartItemHolder extends RecyclerView.ViewHolder{
         @BindView(R.id.img)
         ImageView thumbnail;
@@ -56,8 +66,9 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartItemHolder
         @BindView(R.id.quantity)
         TextView quantity;
 
-        public CartItemHolder(@NonNull View itemView) {
+        CartItemHolder(@NonNull View itemView) {
             super(itemView);
+            ButterKnife.bind(this,itemView);
         }
     }
 }

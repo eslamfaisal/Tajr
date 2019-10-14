@@ -55,7 +55,7 @@ public class ProductSpinnerAdapter extends ArrayAdapter<String > {
             LayoutInflater mInflater = (LayoutInflater) mContext.
                     getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             if (layout==-1)
-            convertView = mInflater.inflate(R.layout.layout_product_spinner_item, parent, false);
+            convertView = mInflater.inflate(R.layout.layout_product_spinner_item2, parent, false);
             else
                 convertView = mInflater.inflate(layout, parent, false);
 

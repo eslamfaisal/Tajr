@@ -268,5 +268,6 @@
     <string name="order_cancelation_reason_label">Order Cancelation Reason</string>
     <string name="sample_cancellation_reason">the product does not look like image</string>
     <string name="submit_other_reason">submit other reason</string>
+    <string name="enter_valid_quantity">enter valid quantity</string>
 
 </resources>

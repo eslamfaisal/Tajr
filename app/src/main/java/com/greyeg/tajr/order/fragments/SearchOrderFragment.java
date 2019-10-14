@@ -8,13 +8,10 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.text.InputType;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +25,6 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,7 +35,6 @@ import com.greyeg.tajr.activities.LoginActivity;
 import com.greyeg.tajr.helper.SharedHelper;
 import com.greyeg.tajr.helper.ViewAnimation;
 import com.greyeg.tajr.models.DeleteAddProductResponse;
-import com.greyeg.tajr.models.RemainingOrdersResponse;
 import com.greyeg.tajr.models.UpdateOrederNewResponse;
 import com.greyeg.tajr.order.CurrentOrderData;
 import com.greyeg.tajr.order.NewOrderActivity;
@@ -55,16 +50,13 @@ import com.greyeg.tajr.order.models.Product;
 import com.greyeg.tajr.order.models.SingleOrderProductsResponse;
 import com.greyeg.tajr.server.Api;
 import com.greyeg.tajr.server.BaseClient;
-import com.greyeg.tajr.sheets.FragmentBottomSheetDialogFull;
 import com.greyeg.tajr.view.dialogs.Dialogs;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Locale;
 
 import androidx.cardview.widget.CardView;
 import androidx.core.app.NotificationCompat;
@@ -509,7 +501,7 @@ public class SearchOrderFragment extends Fragment {
 
     void addProductToMultiOrdersTv() {
         Dialog dialog = new Dialog(getActivity());
-        dialog.setContentView(R.layout.layout_add_rpoduct_dialog);
+        dialog.setContentView(R.layout.layout_add_poduct_dialog);
 
         Spinner productSpinner = dialog.findViewById(R.id.product_spinner);
         productSpinner.setTag(OrderProductsType.MuhltiOrder.getType());
