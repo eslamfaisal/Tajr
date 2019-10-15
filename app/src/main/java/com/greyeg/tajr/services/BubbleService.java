@@ -1049,13 +1049,15 @@ public class BubbleService extends Service
             products.add(new ProductForSpinner(product.getProduct_name(), product.getProduct_image(), product.getProduct_id(),product.getProduct_real_price()));
         }
         ArrayAdapter<String> myAdapter = new ProductSpinnerAdapter(
-                getApplicationContext(), products,R.layout.layout_product_spinner_item2);
+                getApplicationContext(), products);
         productSpinner.setAdapter(myAdapter);
 
         productSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                OrderItem orderItem=new OrderItem(allProducts.get(position).getProduct_id());
+                if (position==0)return;
+                int index=position-1;
+                OrderItem orderItem=new OrderItem(allProducts.get(index).getProduct_id());
                 if (!orderItems.isEmpty()&&orderItems.contains(orderItem)){
                     Toast.makeText(BubbleService.this, "already exist", Toast.LENGTH_SHORT).show();
                 }else{
@@ -1069,9 +1071,9 @@ public class BubbleService extends Service
                         quantity=1;
                     }
 
-                    cartAdapter.addCartItem(new CartItem(allProducts.get(position),quantity));
+                    cartAdapter.addCartItem(new CartItem(allProducts.get(index),quantity));
                 }
-                Log.d("ORDERRRR", "product : "+allProducts.get(position).getProduct_id());
+                Log.d("ORDERRRR", "product : "+allProducts.get(index).getProduct_id());
 
             }
 

@@ -223,7 +223,7 @@
     <string name="edit_order">Edit The Order</string>
     <string name="accessibility_dialog_message">  برجاء تفعيل ال accessibility serveice  من الاعدادات</string>
     <string name="enter_valid_quantity">قم بادخال قيمه صحيحه للكميه</string>
-
+    <string name="add_product_to_order">اضف منتج </string>
 
 
 </resources>

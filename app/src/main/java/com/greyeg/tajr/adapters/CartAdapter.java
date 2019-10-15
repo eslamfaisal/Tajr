@@ -113,7 +113,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartItemHolder
                     int product_id=Integer.valueOf(cartItem.getProduct().getProduct_id());
                     cartItem.setQuantity(cartItem.getQuantity()-1);
                     notifyDataSetChanged();
-                    onCartItemEvent.onCartItemQuantityIncrease(product_id,cartItem.getQuantity());
+                    onCartItemEvent.onCartItemQuantityDecrease(product_id,cartItem.getQuantity());
                 }
             });
         }

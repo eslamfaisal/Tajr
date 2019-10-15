@@ -269,5 +269,6 @@
     <string name="sample_cancellation_reason">the product does not look like image</string>
     <string name="submit_other_reason">submit other reason</string>
     <string name="enter_valid_quantity">enter valid quantity</string>
+    <string name="add_product_to_order">Add product</string>
 
 </resources>
