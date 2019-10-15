@@ -71,7 +71,8 @@ import retrofit2.Response;
 
 public class BubbleService extends Service
         implements BotBlocksAdapter.OnBlockSelected
-            , SubscribersAdapter.OnSubscriberSelected {
+            , SubscribersAdapter.OnSubscriberSelected
+            , CartAdapter.OnCartItemEvent {
 
     private WindowManager mWindowManager;
     private View bubbleView;
@@ -1131,6 +1132,18 @@ public class BubbleService extends Service
     }
 
 
+    @Override
+    public void onCartItemDeleted(int productId) {
+        orderItems.remove(new OrderItem(String.valueOf(productId)));
+    }
 
+    @Override
+    public void onCartItemQuantityIncrease(int productId) {
 
+    }
+
+    @Override
+    public void onCartItemQuantityDecrease(int productId) {
+
+    }
 }

@@ -89,6 +89,26 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartItemHolder
                     notifyDataSetChanged();
                 }
             });
+
+
+            increaseQuantity.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    CartItem cartItem=cartItems.get(getAdapterPosition());
+                    cartItem.setQuantity(cartItem.getQuantity()+1);
+                    notifyDataSetChanged();
+                }
+            });
+
+            decreaseQuantity.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    CartItem cartItem=cartItems.get(getAdapterPosition());
+                    if (cartItem.getQuantity()==1) return;
+                    cartItem.setQuantity(cartItem.getQuantity()-1);
+                    notifyDataSetChanged();
+                }
+            });
         }
     }
 
