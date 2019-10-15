@@ -127,7 +127,7 @@ public class BubbleService extends Service
         width= ScreenHelper.getScreenDimensions(getApplicationContext())[0];
         height= ScreenHelper.getScreenDimensions(getApplicationContext())[1];
         orderItems=new ArrayList<>();
-        cartAdapter=new CartAdapter(getApplicationContext());
+        cartAdapter=new CartAdapter(getApplicationContext(),this);
 
         Log.d("SCREEEEEENw", "onCreate: "+width);
 
@@ -351,7 +351,7 @@ public class BubbleService extends Service
 
 
 
-        Log.d("OORRDDEERRR","order items "+orderItems.size());
+        Log.d("OORRDDEERRR","order items size"+orderItems.size());
         InputMethodManager imm = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(newOrderDialog.getWindowToken(), 0);
 
@@ -588,6 +588,10 @@ public class BubbleService extends Service
         add_product.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                InputMethodManager imm = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(addNewProductDialog.getWindowToken(), 0);
+
                 int items;
                 try{
                      items=Integer.valueOf(itemsNumber.getText().toString());
@@ -645,6 +649,8 @@ public class BubbleService extends Service
         product.setSelection(0);
         city.setSelection(0);
         orderItems.clear();
+        cartAdapter.emptyCart();
+
         orderItems.add(0,new OrderItem(products.get(0).getProduct_id()));
 
 
@@ -1138,12 +1144,18 @@ public class BubbleService extends Service
     }
 
     @Override
-    public void onCartItemQuantityIncrease(int productId) {
-
+    public void onCartItemQuantityIncrease(int productId,int quantity) {
+        orderItems.get(
+                orderItems.indexOf(
+                        new OrderItem(String.valueOf(productId))))
+                .setItems(quantity);
     }
 
     @Override
-    public void onCartItemQuantityDecrease(int productId) {
-
+    public void onCartItemQuantityDecrease(int productId,int quantity) {
+        orderItems.get(
+                orderItems.indexOf(
+                        new OrderItem(String.valueOf(productId))))
+                .setItems(quantity);
     }
 }

@@ -26,13 +26,9 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartItemHolder
     private ArrayList<CartItem> cartItems;
     private OnCartItemEvent onCartItemEvent;
 
-    public CartAdapter(Context context) {
-        this.context = context;
-    }
 
-    public CartAdapter(Context context, ArrayList<CartItem> cartItems, OnCartItemEvent onCartItemEvent) {
+    public CartAdapter(Context context, OnCartItemEvent onCartItemEvent) {
         this.context = context;
-        this.cartItems = cartItems;
         this.onCartItemEvent = onCartItemEvent;
     }
 
@@ -66,6 +62,11 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartItemHolder
         notifyDataSetChanged();
     }
 
+    public void emptyCart(){
+        this.cartItems.clear();
+        notifyDataSetChanged();
+    }
+
     class CartItemHolder extends RecyclerView.ViewHolder{
         @BindView(R.id.item_img)
         ImageView thumbnail;
@@ -85,8 +86,10 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartItemHolder
             delete.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    int product_id=Integer.valueOf(cartItems.get(getAdapterPosition()).getProduct().getProduct_id());
                     cartItems.remove(cartItems.get(getAdapterPosition()));
                     notifyDataSetChanged();
+                    onCartItemEvent.onCartItemDeleted(product_id);
                 }
             });
 
@@ -95,8 +98,10 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartItemHolder
                 @Override
                 public void onClick(View view) {
                     CartItem cartItem=cartItems.get(getAdapterPosition());
+                    int product_id=Integer.valueOf(cartItem.getProduct().getProduct_id());
                     cartItem.setQuantity(cartItem.getQuantity()+1);
                     notifyDataSetChanged();
+                    onCartItemEvent.onCartItemQuantityIncrease(product_id,cartItem.getQuantity());
                 }
             });
 
@@ -105,8 +110,10 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartItemHolder
                 public void onClick(View view) {
                     CartItem cartItem=cartItems.get(getAdapterPosition());
                     if (cartItem.getQuantity()==1) return;
+                    int product_id=Integer.valueOf(cartItem.getProduct().getProduct_id());
                     cartItem.setQuantity(cartItem.getQuantity()-1);
                     notifyDataSetChanged();
+                    onCartItemEvent.onCartItemQuantityIncrease(product_id,cartItem.getQuantity());
                 }
             });
         }
@@ -114,7 +121,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartItemHolder
 
     public interface OnCartItemEvent{
         void onCartItemDeleted(int productId);
-        void onCartItemQuantityIncrease(int productId);
-        void onCartItemQuantityDecrease(int productId);
+        void onCartItemQuantityIncrease(int productId,int quantity);
+        void onCartItemQuantityDecrease(int productId,int quantity);
     }
 }
