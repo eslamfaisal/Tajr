@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.greyeg.tajr.R;
+import com.greyeg.tajr.models.CartItem;
 import com.greyeg.tajr.models.ProductData;
 import com.squareup.picasso.Picasso;
 
@@ -22,10 +23,17 @@ import butterknife.ButterKnife;
 public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartItemHolder> {
 
     private Context context;
-    private ArrayList<ProductData> products;
+    private ArrayList<CartItem> cartItems;
+    private OnCartItemEvent onCartItemEvent;
 
     public CartAdapter(Context context) {
         this.context = context;
+    }
+
+    public CartAdapter(Context context, ArrayList<CartItem> cartItems, OnCartItemEvent onCartItemEvent) {
+        this.context = context;
+        this.cartItems = cartItems;
+        this.onCartItemEvent = onCartItemEvent;
     }
 
     @NonNull
@@ -38,24 +46,28 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartItemHolder
     @Override
     public void onBindViewHolder(@NonNull CartItemHolder holder, int position) {
         // todo show error image
-        ProductData product=products.get(position);
+
+        ProductData product=cartItems.get(position).getProduct();
         Picasso.get()
                 .load(product.getProduct_image())
                 .into(holder.thumbnail);
+
+        holder.quantity.setText(String.valueOf(cartItems.get(position).getQuantity()));
     }
 
     @Override
     public int getItemCount() {
-        return products==null?0:products.size();
+        return cartItems==null?0:cartItems.size();
     }
 
-    public void addCartItem(ProductData productData){
-        this.products.add(productData);
+    public void addCartItem(CartItem cartItem){
+        if (cartItems==null) cartItems=new ArrayList<>();
+        this.cartItems.add(cartItem);
         notifyDataSetChanged();
     }
 
     class CartItemHolder extends RecyclerView.ViewHolder{
-        @BindView(R.id.img)
+        @BindView(R.id.item_img)
         ImageView thumbnail;
         @BindView(R.id.increase)
         ImageView increaseQuantity;
@@ -69,6 +81,20 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartItemHolder
         CartItemHolder(@NonNull View itemView) {
             super(itemView);
             ButterKnife.bind(this,itemView);
+
+            delete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    cartItems.remove(cartItems.get(getAdapterPosition()));
+                    notifyDataSetChanged();
+                }
+            });
         }
+    }
+
+    public interface OnCartItemEvent{
+        void onCartItemDeleted(int productId);
+        void onCartItemQuantityIncrease(int productId);
+        void onCartItemQuantityDecrease(int productId);
     }
 }

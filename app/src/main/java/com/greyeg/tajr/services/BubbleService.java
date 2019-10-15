@@ -32,6 +32,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.greyeg.tajr.R;
 import com.greyeg.tajr.activities.LoginActivity;
 import com.greyeg.tajr.adapters.BotBlocksAdapter;
+import com.greyeg.tajr.adapters.CartAdapter;
 import com.greyeg.tajr.adapters.ProductSpinnerAdapter;
 import com.greyeg.tajr.adapters.SubscribersAdapter;
 import com.greyeg.tajr.helper.ScreenHelper;
@@ -41,6 +42,7 @@ import com.greyeg.tajr.models.AllProducts;
 import com.greyeg.tajr.models.BotBlock;
 import com.greyeg.tajr.models.BotBlocksResponse;
 import com.greyeg.tajr.models.Broadcast;
+import com.greyeg.tajr.models.CartItem;
 import com.greyeg.tajr.models.Cities;
 import com.greyeg.tajr.models.NewOrderResponse;
 import com.greyeg.tajr.models.Order;
@@ -48,6 +50,7 @@ import com.greyeg.tajr.models.OrderItem;
 import com.greyeg.tajr.models.OrderPayload;
 import com.greyeg.tajr.models.ProductData;
 import com.greyeg.tajr.models.ProductForSpinner;
+import com.greyeg.tajr.models.Products;
 import com.greyeg.tajr.models.Subscriber;
 import com.greyeg.tajr.models.SubscriberInfo;
 import com.greyeg.tajr.server.BaseClient;
@@ -101,6 +104,7 @@ public class BubbleService extends Service
     ArrayList<Subscriber> subscribers=new ArrayList<>();
     ArrayList<OrderItem> orderItems;
     private List<ProductData> products;
+    CartAdapter cartAdapter;
 
     @Nullable
     @Override
@@ -122,6 +126,7 @@ public class BubbleService extends Service
         width= ScreenHelper.getScreenDimensions(getApplicationContext())[0];
         height= ScreenHelper.getScreenDimensions(getApplicationContext())[1];
         orderItems=new ArrayList<>();
+        cartAdapter=new CartAdapter(getApplicationContext());
 
         Log.d("SCREEEEEENw", "onCreate: "+width);
 
@@ -451,6 +456,9 @@ public class BubbleService extends Service
         newOrderDialogParams=getViewParams(100,100,600,600,newOrderDialogParams);
         mWindowManager.addView(newOrderDialog,newOrderDialogParams);
 
+        RecyclerView cartRecycler=newOrderDialog.findViewById(R.id.cart);
+        cartRecycler.setAdapter(cartAdapter);
+        cartRecycler.setLayoutManager(new LinearLayoutManager(getApplicationContext(),RecyclerView.HORIZONTAL,false));
 
         newOrderDialog.findViewById(R.id.close)
                 .setOnClickListener(new View.OnClickListener() {
@@ -593,6 +601,8 @@ public class BubbleService extends Service
                 orderItem.setItems(items);
                 if (!orderItems.contains(orderItem)){
                     orderItems.add(orderItem);
+                    cartAdapter.addCartItem(
+                            new CartItem(products.get(products.indexOf(new ProductData(orderItem.getProduct_id()))),items));
                     Toast.makeText(BubbleService.this, "product Added to order", Toast.LENGTH_SHORT).show();
                     mWindowManager.removeView(addNewProductDialog);
                     if (newOrderDialog!=null)newOrderDialog.setVisibility(View.VISIBLE);
@@ -1039,10 +1049,21 @@ public class BubbleService extends Service
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 OrderItem orderItem=new OrderItem(allProducts.get(position).getProduct_id());
-                if (orderItems.contains(orderItem)){
+                if (!orderItems.isEmpty()&&orderItems.contains(orderItem)){
                     Toast.makeText(BubbleService.this, "already exist", Toast.LENGTH_SHORT).show();
-                }else
-                orderItems.add(0,orderItem);
+                }else{
+                    orderItems.add(0,orderItem);
+                    EditText items=newOrderDialog.findViewById(R.id.item_no);
+                    TextView items_no;
+                    int quantity;
+                    try {
+                        quantity=Integer.valueOf(items.getText().toString());
+                    }catch (Exception e){
+                        quantity=1;
+                    }
+
+                    cartAdapter.addCartItem(new CartItem(allProducts.get(position),quantity));
+                }
                 Log.d("ORDERRRR", "product : "+allProducts.get(position).getProduct_id());
 
             }

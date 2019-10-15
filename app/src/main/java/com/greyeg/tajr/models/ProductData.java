@@ -1,5 +1,7 @@
 package com.greyeg.tajr.models;
 
+import androidx.annotation.Nullable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -51,6 +53,10 @@ public class ProductData {
 //    private String extra_data;
 
     public ProductData() {
+    }
+
+    public ProductData(String product_id) {
+        this.product_id = product_id;
     }
 
     public void setProduct_id(String product_id) {
@@ -152,5 +158,13 @@ public class ProductData {
                 ", product_info='" + product_info + '\'' +
                 ", product_real_price='" + product_real_price + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (obj==null)return false;
+        if (!(obj instanceof ProductData)) return false;
+        ProductData productData= (ProductData) obj;
+        return productData.product_id.equals(this.product_id);
     }
 }
