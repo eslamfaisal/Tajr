@@ -1,6 +1,7 @@
 package com.greyeg.tajr.adapters;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -59,6 +60,17 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartItemHolder
     public void addCartItem(CartItem cartItem){
         if (cartItems==null) cartItems=new ArrayList<>();
         this.cartItems.add(cartItem);
+        Log.d("REPLCAEEE", " addCartItem: "+cartItem.getProduct().getProduct_id());
+        notifyDataSetChanged();
+    }
+
+    public void replaceCartItem(String product_id,CartItem cartItem){
+        int index=this.cartItems.indexOf(new CartItem(product_id));
+        Log.d("REPLCAEEE", product_id+" replaceCartItem: "+cartItem.getProduct().getProduct_id());
+        if (index>-1)
+        this.cartItems.set(index,cartItem);
+        else
+            Log.d("REPLCAEEE", "error not found this product : "+product_id+" cart current "+cartItems.get(0).getProduct().getProduct_id());
         notifyDataSetChanged();
     }
 

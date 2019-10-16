@@ -576,7 +576,8 @@ public class BubbleService extends Service
         productsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                orderItem.setProduct_id(products.get(i).getProduct_id());
+                if (i==0)return;
+                orderItem.setProduct_id(products.get(i-1).getProduct_id());
             }
 
             @Override
@@ -650,12 +651,6 @@ public class BubbleService extends Service
         city.setSelection(0);
         orderItems.clear();
         cartAdapter.emptyCart();
-
-        orderItems.add(0,new OrderItem(products.get(0).getProduct_id()));
-
-
-
-
     }
 
 
@@ -1058,10 +1053,11 @@ public class BubbleService extends Service
                 if (position==0)return;
                 int index=position-1;
                 OrderItem orderItem=new OrderItem(allProducts.get(index).getProduct_id());
+                Log.d("REPLCAEEE", " selected Item: "+orderItem.getProduct_id());
+
                 if (!orderItems.isEmpty()&&orderItems.contains(orderItem)){
                     Toast.makeText(BubbleService.this, "already exist", Toast.LENGTH_SHORT).show();
                 }else{
-                    orderItems.add(0,orderItem);
                     EditText items=newOrderDialog.findViewById(R.id.item_no);
                     TextView items_no;
                     int quantity;
@@ -1070,8 +1066,18 @@ public class BubbleService extends Service
                     }catch (Exception e){
                         quantity=1;
                     }
+                    orderItem.setItems(quantity);
 
-                    cartAdapter.addCartItem(new CartItem(allProducts.get(index),quantity));
+                    if (orderItems.isEmpty()){
+                        orderItems.add(0,orderItem);
+                        cartAdapter.addCartItem(new CartItem(allProducts.get(index),quantity));
+
+                    }else{
+                        cartAdapter.replaceCartItem(orderItems.get(0).getProduct_id(),new CartItem(allProducts.get(index),quantity));
+                        orderItems.set(0,orderItem);
+
+                    }
+
                 }
                 Log.d("ORDERRRR", "product : "+allProducts.get(index).getProduct_id());
 

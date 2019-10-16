@@ -12,6 +12,10 @@ public class CartItem {
         this.quantity = quantity;
     }
 
+    public CartItem(String productId) {
+        this.product = new ProductData(productId);
+    }
+
     public ProductData getProduct() {
         return product;
     }
@@ -32,6 +36,7 @@ public class CartItem {
     public boolean equals(@Nullable Object obj) {
         if (obj==null) return false;
         if (!(obj instanceof CartItem)) return false;
-        return ((CartItem) obj).product.equals(this.product);
+        CartItem cartItem= (CartItem) obj;
+        return cartItem.product.equals(this.product);
     }
 }
