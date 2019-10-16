@@ -8,7 +8,9 @@ import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.os.Handler;
 import android.os.IBinder;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -546,6 +548,36 @@ public class BubbleService extends Service
             }
         });
 
+        item_no.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                Log.d("TEXTWATCHHEER", charSequence+" : "+i +"  "+i1+"  "+i2 );
+                try{
+                    int q=Integer.valueOf(charSequence.toString());
+                    if (q==0&&i==0){
+                                Toast.makeText(BubbleService.this, R.string.enter_valid_quantity, Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    if (orderItems!=null&&!orderItems.isEmpty())
+                    cartAdapter.updateQuantity(orderItems.get(0).getProduct_id(),q);
+                }catch (Exception e){
+                    Log.d("TEXTWATCHHEER",e.getMessage());
+                }
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
 
         pasteData(client_name_Paste,client_name);
         pasteData(client_address_paste,client_address);
@@ -710,7 +742,7 @@ public class BubbleService extends Service
     public void onDestroy() {
         super.onDestroy();
         if (bubbleView != null) mWindowManager.removeView(bubbleView);
-        if (newOrderDialog != null) mWindowManager.removeView(newOrderDialog);
+        if (newOrderDialog != null&&newOrderDialog.getWindowToken()!=null) mWindowManager.removeView(newOrderDialog);
         if (subscribersDialog != null&&subscribersDialog.getWindowToken()!=null) mWindowManager.removeView(subscribersDialog);
         if (botBlocksDialog != null&&botBlocksDialog.getWindowToken()!=null) mWindowManager.removeView(botBlocksDialog);
         isRunning=false;
@@ -1157,6 +1189,11 @@ public class BubbleService extends Service
                 orderItems.indexOf(
                         new OrderItem(String.valueOf(productId))))
                 .setItems(quantity);
+        int index=orderItems.indexOf(new OrderItem(String.valueOf(productId)));
+        if (index==0){
+            EditText items_no= newOrderDialog.findViewById(R.id.item_no);
+            items_no.setText(String.valueOf(quantity));
+        }
     }
 
     @Override
@@ -1165,5 +1202,11 @@ public class BubbleService extends Service
                 orderItems.indexOf(
                         new OrderItem(String.valueOf(productId))))
                 .setItems(quantity);
+        int index=orderItems.indexOf(new OrderItem(String.valueOf(productId)));
+        if (index==0){
+            EditText items_no= newOrderDialog.findViewById(R.id.item_no);
+            items_no.setText(String.valueOf(quantity));
+        }
+
     }
 }

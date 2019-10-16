@@ -75,6 +75,11 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartItemHolder
         notifyDataSetChanged();
     }
 
+    public void updateQuantity(String product_id,int quantity){
+        this.cartItems.get(cartItems.indexOf(new CartItem(product_id))).setQuantity(quantity);
+        notifyDataSetChanged();
+    }
+
     public void emptyCart(){
         this.cartItems.clear();
         notifyDataSetChanged();
