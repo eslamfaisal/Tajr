@@ -45,33 +45,50 @@
         />
 
     <ImageView
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:id="@+id/increase"
-        app:layout_constraintEnd_toEndOf="@id/item_img"
         app:layout_constraintTop_toTopOf="@id/item_img"
+        app:layout_constraintStart_toEndOf="@id/quantity"
         android:src="@drawable/fab_add"
         />
 
     <TextView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:id="@+id/quantity"
         tools:text="2"
-        android:textSize="14sp"
+        android:textSize="18sp"
         android:textColor="@color/white"
-        app:layout_constraintTop_toTopOf="@id/item_img"
-        app:layout_constraintEnd_toStartOf="@id/increase"
+        app:layout_constraintTop_toTopOf="@id/increase"
+        app:layout_constraintBottom_toBottomOf="@id/increase"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         />
 
     <ImageView
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:id="@+id/decrease"
         android:scaleType="fitXY"
         app:layout_constraintEnd_toStartOf="@id/quantity"
         app:layout_constraintTop_toTopOf="@id/item_img"
         android:src="@drawable/ic_remove_black_24dp"
+        />
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/name"
+        tools:text="@string/dummy_product"
+        android:textSize="15sp"
+        android:padding="1dp"
+        android:background="@color/txt_bg"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="@id/item_img"
+        app:layout_constraintStart_toStartOf="@id/item_img"
+        app:layout_constraintEnd_toEndOf="@id/item_img"
+        android:layout_marginBottom="5dp"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

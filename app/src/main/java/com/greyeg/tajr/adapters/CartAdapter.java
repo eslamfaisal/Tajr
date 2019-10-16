@@ -50,6 +50,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartItemHolder
                 .into(holder.thumbnail);
 
         holder.quantity.setText(String.valueOf(cartItems.get(position).getQuantity()));
+        holder.name.setText(cartItems.get(position).getProduct().getProduct_name());
     }
 
     @Override
@@ -90,6 +91,8 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartItemHolder
         ImageView delete;
         @BindView(R.id.quantity)
         TextView quantity;
+        @BindView(R.id.name)
+        TextView name;
 
         CartItemHolder(@NonNull View itemView) {
             super(itemView);
