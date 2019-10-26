@@ -9,16 +9,19 @@ import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.Toast;
 
-import androidx.lifecycle.ViewModelProviders;
-
+import androidx.lifecycle.LifecycleObserver;
+import androidx.lifecycle.Observer;
 import com.greyeg.tajr.MainActivity;
+import com.greyeg.tajr.activities.LoginActivity;
+import com.greyeg.tajr.helper.SharedHelper;
 import com.greyeg.tajr.helper.TimeCalculator;
 import com.greyeg.tajr.helper.UserNameEvent;
+import com.greyeg.tajr.repository.WorkTimeRepo;
 import com.greyeg.tajr.viewmodels.NewOrderActivityVM;
 
 import org.greenrobot.eventbus.EventBus;
 
-public class AccessibilityService extends android.accessibilityservice.AccessibilityService {
+public class AccessibilityService extends android.accessibilityservice.AccessibilityService implements LifecycleObserver {
 
     public static final String TAG="ACCESSIBLILTYYY";
     NewOrderActivityVM newOrderActivityVM;
@@ -26,11 +29,13 @@ public class AccessibilityService extends android.accessibilityservice.Accessibi
     @Override
     public void onAccessibilityEvent(AccessibilityEvent accessibilityEvent) {
 
-        if (accessibilityEvent.getPackageName().equals("com.facebook.pages.app"))
+        if (accessibilityEvent!=null&&
+                accessibilityEvent.getPackageName()!=null&&
+                accessibilityEvent.getPackageName().equals("com.facebook.pages.app"))
         {
             //Log.d(TAG, "onAccessibilityEvent: "+"TYPE_WINDOW_STATE_CHANGED");
             Log.d("TIMERCALCC", "timer start ");
-            TimeCalculator.getInstance(getApplicationContext()).startTimer();
+            //TimeCalculator.getInstance(getApplicationContext()).startTimer();
 
 
             if (accessibilityEvent.getEventType()==AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED){
@@ -42,13 +47,17 @@ public class AccessibilityService extends android.accessibilityservice.Accessibi
         }else {
             //todo check for connection
             Log.d("TIMERCALCC", "timer stop ");
-            TimeCalculator.getInstance(getApplicationContext()).stopTimer();
+            //TimeCalculator.getInstance(getApplicationContext()).stopTimer();
 
 
         }
         }
 
-    void observeSendingWorkTime(){
+    void SendWorkTime(int activity){
+
+        String token= SharedHelper.getKey(getApplicationContext(), LoginActivity.TOKEN);
+        WorkTimeRepo.getInstance()
+                .sendWorkTime(token,String.valueOf(activity),null,"PM");
 
     }
 
