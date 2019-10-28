@@ -877,7 +877,7 @@ public class BubbleService extends Service
 
                     // bubble is in the bottom and delete bubble must be shown
                     if (event.getRawY()/height>.75){
-                        Log.d("DELETEE", "is delete added "+deleteViewAdded);
+                        //Log.d("DELETEE", "is delete added "+deleteViewAdded);
 
                         if (!deleteViewAdded){
                             mWindowManager.addView(deleteView

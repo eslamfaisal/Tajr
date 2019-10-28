@@ -1,6 +1,7 @@
 package com.greyeg.tajr.services;
 
 import android.content.Intent;
+import android.net.Network;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
@@ -12,7 +13,9 @@ import android.widget.Toast;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.Observer;
 import com.greyeg.tajr.MainActivity;
+import com.greyeg.tajr.R;
 import com.greyeg.tajr.activities.LoginActivity;
+import com.greyeg.tajr.helper.NetworkUtil;
 import com.greyeg.tajr.helper.SharedHelper;
 import com.greyeg.tajr.helper.TimeCalculator;
 import com.greyeg.tajr.helper.UserNameEvent;
@@ -31,7 +34,8 @@ import retrofit2.Response;
 public class AccessibilityService extends android.accessibilityservice.AccessibilityService implements LifecycleObserver {
 
     public static final String TAG="ACCESSIBLILTYYY";
-    private String lastOpenedApp="";
+    private static String lastOpenedApp="";
+    Toast toast;
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent accessibilityEvent) {
@@ -40,34 +44,61 @@ public class AccessibilityService extends android.accessibilityservice.Accessibi
                 accessibilityEvent.getPackageName()!=null&&
                 accessibilityEvent.getPackageName().equals("com.facebook.pages.app"))
         {
-            //Log.d(TAG, "onAccessibilityEvent: "+"TYPE_WINDOW_STATE_CHANGED");
-            Log.d("TIMERCALCC", "timer start ");
-            TimeCalculator.getInstance(getApplicationContext()).startTimer();
 
 
             if (accessibilityEvent.getEventType()==AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED){
+
+                if (NetworkUtil.getConnectivityStatus(getApplicationContext())==NetworkUtil.TYPE_NOT_CONNECTED){
+
+                    if (toast.getView()==null||!toast.getView().isShown()){
+                        toast.show();
+                    }
+                    TimeCalculator.getInstance(getApplicationContext()).stopTimer();
+                    return;
+                }
+                Log.d("TIMERCALCC", "timer start ");
+                TimeCalculator.getInstance(getApplicationContext()).startTimer();
+
             checkOverlayPermission();
             String userName=getUserName();
             if (userName!=null)
             EventBus.getDefault().post(new UserNameEvent(userName));
         }
         }else {
-            //todo check for connection
-            //Log.d("TIMERCALCCCC",accessibilityEvent.getClassName().toString());
+            Log.d("TIMERCALCCCC",accessibilityEvent!=null
+                    ?"\n"+lastOpenedApp+"\n"
+                    +"\n"+accessibilityEvent.getClassName()+"\n"
+                    +"\n"+accessibilityEvent.getPackageName()+"\n"
+                    +"----------------------------------- \n"
+
+                    :"nulllll");
             if (lastOpenedApp.equals("com.facebook.pages.app")
                     &&accessibilityEvent!=null
                     &&!(accessibilityEvent.getClassName()!=null&&
-                            accessibilityEvent.getClassName().equals("android.view.ViewGroup")&&accessibilityEvent.getPackageName().equals("com.greyeg.tajr"))){
+                    ( accessibilityEvent.getClassName().equals("android.view.ViewGroup")||
+                            accessibilityEvent.getClassName().equals("android.widget.LinearLayout")    )
+                    &&accessibilityEvent.getPackageName().equals("com.greyeg.tajr"))  ){
 
                 Log.d("TIMERCALCCCC", "timer stop ");
+                Toast.makeText(this, "timer stop", Toast.LENGTH_SHORT).show();
+
                 TimeCalculator.getInstance(getApplicationContext()).stopTimer();
-                //sendWorkTime(TimeCalculator.getInstance(getApplicationContext()).getWorkTime());
+                if (NetworkUtil.getConnectivityStatus(getApplicationContext())!=NetworkUtil.TYPE_NOT_CONNECTED){
+                    //sendWorkTime(TimeCalculator.getInstance(getApplicationContext()).getWorkTime());
+                }
+
             }
 
 
         }
-        if (accessibilityEvent!=null&&accessibilityEvent.getPackageName()!=null)
+
+
+        if (accessibilityEvent!=null&&accessibilityEvent.getPackageName()!=null
+        &&!(accessibilityEvent.getPackageName().equals("com.greyeg.tajr")
+                &&( accessibilityEvent.getClassName().equals("android.view.ViewGroup")||
+                accessibilityEvent.getClassName().equals("android.widget.LinearLayout")    )))
         lastOpenedApp=accessibilityEvent.getPackageName().toString();
+        Log.d("TIMERCALCCCC",">>>>>>>>> "+lastOpenedApp);
         }
 
     void sendWorkTime(long activity){
@@ -105,6 +136,7 @@ public class AccessibilityService extends android.accessibilityservice.Accessibi
     @Override
     protected void onServiceConnected() {
         super.onServiceConnected();
+        toast=Toast.makeText(this, R.string.no_connection_message, Toast.LENGTH_SHORT);
         Log.d(TAG, "onServiceConnected: ");
     }
 
