@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData;
 import com.greyeg.tajr.models.UserWorkTimeResponse;
 import com.greyeg.tajr.server.BaseClient;
 
+import io.reactivex.Single;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -56,6 +57,16 @@ public class WorkTimeRepo {
         return sendWorkTime;
 
 
+    }
+
+    public Single<Response<UserWorkTimeResponse>> sendWorkTime2(String token,
+                                                                String activity,
+                                                                String user_id,
+                                                                String action){
+
+        return BaseClient
+                .getService()
+                .sendWorkTime(token,activity,user_id,action);
     }
 
     public MutableLiveData<Boolean> getIsWorkTimeSending() {

@@ -34,10 +34,12 @@ import com.greyeg.tajr.models.UserWorkTimeResponse;
 import com.greyeg.tajr.order.models.CurrentOrderResponse;
 import com.greyeg.tajr.order.models.SingleOrderProductsResponse;
 
+import io.reactivex.Single;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
+import retrofit2.Response;
 import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
@@ -74,6 +76,7 @@ public interface Api {
     @POST("send_test/available_cards")
     Call<CardsResponse> getCards(@Field("token") String token);
 
+    ///todo remove old call
     @FormUrlEncoded
     @POST("send_test/set_active_time")
     Call<UserWorkTimeResponse> userWorkTime(@Field("token") String token,
@@ -81,6 +84,13 @@ public interface Api {
                                             @Field("user_id") String user_id,
                                             @Field("action") String action);
 
+
+    @FormUrlEncoded
+    @POST("send_test/set_active_time")
+    Single<Response<UserWorkTimeResponse>> sendWorkTime(@Field("token") String token,
+                                                       @Field("activity") String activity,
+                                                       @Field("user_id") String user_id,
+                                                       @Field("action") String action);
 
     @Multipart
     @POST("send_test/upload_voice_notes")

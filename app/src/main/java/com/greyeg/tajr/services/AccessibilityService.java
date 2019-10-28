@@ -16,15 +16,22 @@ import com.greyeg.tajr.activities.LoginActivity;
 import com.greyeg.tajr.helper.SharedHelper;
 import com.greyeg.tajr.helper.TimeCalculator;
 import com.greyeg.tajr.helper.UserNameEvent;
+import com.greyeg.tajr.models.UserWorkTimeResponse;
 import com.greyeg.tajr.repository.WorkTimeRepo;
 import com.greyeg.tajr.viewmodels.NewOrderActivityVM;
 
 import org.greenrobot.eventbus.EventBus;
 
+import io.reactivex.SingleObserver;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+import retrofit2.Response;
+
 public class AccessibilityService extends android.accessibilityservice.AccessibilityService implements LifecycleObserver {
 
     public static final String TAG="ACCESSIBLILTYYY";
-    NewOrderActivityVM newOrderActivityVM;
+    private String lastOpenedApp="";
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent accessibilityEvent) {
@@ -35,7 +42,7 @@ public class AccessibilityService extends android.accessibilityservice.Accessibi
         {
             //Log.d(TAG, "onAccessibilityEvent: "+"TYPE_WINDOW_STATE_CHANGED");
             Log.d("TIMERCALCC", "timer start ");
-            //TimeCalculator.getInstance(getApplicationContext()).startTimer();
+            TimeCalculator.getInstance(getApplicationContext()).startTimer();
 
 
             if (accessibilityEvent.getEventType()==AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED){
@@ -46,18 +53,46 @@ public class AccessibilityService extends android.accessibilityservice.Accessibi
         }
         }else {
             //todo check for connection
-            Log.d("TIMERCALCC", "timer stop ");
-            //TimeCalculator.getInstance(getApplicationContext()).stopTimer();
+            //Log.d("TIMERCALCCCC",accessibilityEvent.getClassName().toString());
+            if (lastOpenedApp.equals("com.facebook.pages.app")
+                    &&accessibilityEvent!=null
+                    &&!(accessibilityEvent.getClassName()!=null&&
+                            accessibilityEvent.getClassName().equals("android.view.ViewGroup")&&accessibilityEvent.getPackageName().equals("com.greyeg.tajr"))){
+
+                Log.d("TIMERCALCCCC", "timer stop ");
+                TimeCalculator.getInstance(getApplicationContext()).stopTimer();
+                //sendWorkTime(TimeCalculator.getInstance(getApplicationContext()).getWorkTime());
+            }
 
 
         }
+        if (accessibilityEvent!=null&&accessibilityEvent.getPackageName()!=null)
+        lastOpenedApp=accessibilityEvent.getPackageName().toString();
         }
 
-    void SendWorkTime(int activity){
+    void sendWorkTime(long activity){
 
         String token= SharedHelper.getKey(getApplicationContext(), LoginActivity.TOKEN);
         WorkTimeRepo.getInstance()
-                .sendWorkTime(token,String.valueOf(activity),null,"PM");
+                .sendWorkTime2(token,String.valueOf(activity),null,"PM")
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new SingleObserver<Response<UserWorkTimeResponse>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        Log.d("WORKKTIMMEE", "onSubscribe: ");
+                    }
+
+                    @Override
+                    public void onSuccess(Response<UserWorkTimeResponse> userWorkTimeResponse) {
+                        Log.d("WORKKTIMMEE", "onSuccess: "+userWorkTimeResponse.body().getData());
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.d("WORKKTIMMEE", "onError: "+e.getMessage());
+                    }
+                });
 
     }
 
@@ -70,7 +105,6 @@ public class AccessibilityService extends android.accessibilityservice.Accessibi
     @Override
     protected void onServiceConnected() {
         super.onServiceConnected();
-        newOrderActivityVM = new NewOrderActivityVM();
         Log.d(TAG, "onServiceConnected: ");
     }
 

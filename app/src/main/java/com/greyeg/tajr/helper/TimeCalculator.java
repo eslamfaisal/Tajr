@@ -64,4 +64,9 @@ public class TimeCalculator {
     private void saveTime(long seconds){
         SharedHelper.putKey(context,TIME_KEY,seconds);
     }
+
+    public long getWorkTime(){
+        return SharedHelper.getLongValue(context,TIME_KEY);
+    }
+
 }
