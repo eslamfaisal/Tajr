@@ -1,5 +1,7 @@
 package com.greyeg.tajr.viewmodels;
 
+import android.util.Log;
+
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -73,5 +75,11 @@ public class CurrentOrderViewModel extends ViewModel {
     public MutableLiveData<String> getReasonAddingToOrderError() {
         return CancellationReasonsRepository.getInstance()
                 .getReasonAddingToOrderError();
+    }
+
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        Log.d("REASONORDER", "onCleared: ");
     }
 }

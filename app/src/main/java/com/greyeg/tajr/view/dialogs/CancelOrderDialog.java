@@ -130,7 +130,7 @@ public class CancelOrderDialog extends DialogFragment implements CancellationRea
                 .observe(this, new Observer<String>() {
                     @Override
                     public void onChanged(String s) {
-                        Toast.makeText(getContext(), s, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Error Loading Cancellation Reasons", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -148,6 +148,7 @@ public class CancelOrderDialog extends DialogFragment implements CancellationRea
                 .observe(getActivity(), new Observer<Boolean>() {
                     @Override
                     public void onChanged(Boolean aBoolean) {
+                        //todo add spinner while submitting new Reason
                         Log.d("NEWRESONNN", "onChanged: ");
 
                     }
@@ -160,7 +161,7 @@ public class CancelOrderDialog extends DialogFragment implements CancellationRea
                 .observe(getActivity(), new Observer<String>() {
                     @Override
                     public void onChanged(String s) {
-                        Toast.makeText(getContext(), s, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), R.string.adding_new_reason_to_order_error, Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -168,7 +169,7 @@ public class CancelOrderDialog extends DialogFragment implements CancellationRea
     @Override
     public void onResume() {
         super.onResume();
-        if (getDialog().getWindow()!=null)
+        if (getDialog()!=null&&getDialog().getWindow()!=null)
         getDialog().getWindow().setLayout(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);

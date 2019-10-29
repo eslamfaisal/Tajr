@@ -34,10 +34,11 @@ public class CancellationReasonsRepository {
 
 
     public static CancellationReasonsRepository getInstance() {
-        return cancellationReasonsRepository ==null?new CancellationReasonsRepository(): cancellationReasonsRepository;
+        return cancellationReasonsRepository ==null?cancellationReasonsRepository=new CancellationReasonsRepository(): cancellationReasonsRepository;
     }
 
     private CancellationReasonsRepository(){
+
     }
 
     public MutableLiveData<CancellationReasonsResponse> getCancellationReasons(String token){
@@ -121,7 +122,7 @@ public class CancellationReasonsRepository {
 
     //add reason to order
 
-    public MutableLiveData<MainResponse> addReasonToOrder(String token, String orderId, String reason_id){
+    public synchronized MutableLiveData<MainResponse> addReasonToOrder(String token, String orderId, String reason_id){
         addReasonToOrder=new MutableLiveData<>();
         isReasonAddingToOrder.setValue(true);
         BaseClient
@@ -130,7 +131,7 @@ public class CancellationReasonsRepository {
                 .enqueue(new Callback<MainResponse>() {
                     @Override
                     public void onResponse(Call<MainResponse> call, Response<MainResponse> response) {
-                        isReasonAddingToOrder.setValue(true);
+                        isReasonAddingToOrder.setValue(false);
                         MainResponse res=response.body();
                         //todo check code 1200 in all requests
                         if (response.isSuccessful()&&res!=null)
@@ -141,16 +142,17 @@ public class CancellationReasonsRepository {
 
                     @Override
                     public void onFailure(Call<MainResponse> call, Throwable t) {
-                        isReasonAddingToOrder.setValue(true);
+                        isReasonAddingToOrder.setValue(false);
                         reasonAddingToOrderError.setValue(t.getMessage());
                         Log.d("REASONORDER", "onFailure: "+t.getMessage());
 
                     }
                 });
+
         return addReasonToOrder;
     }
 
-    public MutableLiveData<Boolean> getIsReasonAddingTOOrder() {
+    public  MutableLiveData<Boolean> getIsReasonAddingTOOrder() {
         return isReasonAddingToOrder;
     }
 

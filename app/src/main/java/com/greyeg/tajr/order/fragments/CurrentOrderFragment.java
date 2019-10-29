@@ -60,6 +60,7 @@ import com.greyeg.tajr.view.dialogs.Dialogs;
 import com.greyeg.tajr.viewmodels.CurrentOrderViewModel;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
@@ -334,7 +335,7 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
         .observe(getActivity(), new Observer<MainResponse>() {
             @Override
             public void onChanged(MainResponse mainResponse) {
-                Toast.makeText(getContext(), mainResponse.getData(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), mainResponse.getData(), Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -343,7 +344,7 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
                 .getIsReasonAddingTOOrder()
                 .observe(getActivity(), new Observer<Boolean>() {
                     @Override
-                    public void onChanged(Boolean aBoolean) {
+                    public void onChanged(@Nullable Boolean aBoolean) {
                         Log.d("REASONORDER", "onChanged: "+aBoolean);
                     }
                 });
@@ -354,10 +355,9 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
                 .observe(getActivity(), new Observer<String>() {
                     @Override
                     public void onChanged(String s) {
-                        Toast.makeText(getContext(), s, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), R.string.adding_reason_to_order_error, Toast.LENGTH_SHORT).show();
                     }
                 });
-
     }
 
     private void updateShippingOrder(String action) {
@@ -501,7 +501,7 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
                     public void onFailure(Call<UpdateOrederNewResponse> call, Throwable t) {
                         progressDialog.dismiss();
                         Log.d(TAG, "onFailure: " + t.getMessage());
-                        showErrorGetCurrentOrderDialog(t.getMessage());
+                        showErrorGetCurrentOrderDialog(getString(R.string.error_has_occured));
                     }
                 });
     }
