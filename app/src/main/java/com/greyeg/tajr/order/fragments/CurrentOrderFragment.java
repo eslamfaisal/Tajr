@@ -183,7 +183,7 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
     private boolean rotate = false;
     private boolean rotateshipper = false;
     private boolean productExbandable = false;
-    CurrentOrderViewModel currentOrderViewModel;
+    private CurrentOrderViewModel currentOrderViewModel;
     private CancelOrderDialog cancelOrderDialog;
     private CancelOrderDialog.OnReasonSubmitted onReasonSubmitted=this;
     private long orderId=-1;

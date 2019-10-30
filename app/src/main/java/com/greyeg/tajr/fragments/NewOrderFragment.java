@@ -7,6 +7,9 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
+
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +32,7 @@ import com.greyeg.tajr.models.ProductForSpinner;
 import com.greyeg.tajr.order.CurrentOrderData;
 import com.greyeg.tajr.server.Api;
 import com.greyeg.tajr.server.BaseClient;
+import com.greyeg.tajr.viewmodels.NewOrderFragVM;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -83,6 +87,7 @@ public class NewOrderFragment extends Fragment {
     public static String CITY_ID;
 
     private List<Cities.City> citiesBody;
+    private NewOrderFragVM newOrderFragVM;
 
     public NewOrderFragment() {
         // Required empty public constructor
@@ -93,6 +98,7 @@ public class NewOrderFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         mainView = inflater.inflate(R.layout.fragment_new_order, container, false);
+        newOrderFragVM= ViewModelProviders.of(getActivity()).get(NewOrderFragVM.class);
 
         ButterKnife.bind(this, mainView);
         return mainView;
@@ -104,10 +110,75 @@ public class NewOrderFragment extends Fragment {
 
         Api api = BaseClient.getBaseClient().create(Api.class);
 
-        getProducts(api);
+        getProducts();
+        observeProductsLoading();
+        observeProductsLoadingError();
 
         getcities(api);
 
+    }
+
+    private void getProducts() {
+        String token=SharedHelper.getKey(getActivity(), LoginActivity.TOKEN);
+        newOrderFragVM.getProducts(token,null)
+        .observe(this, new Observer<Response<AllProducts>>() {
+                    @Override
+                    public void onChanged(Response<AllProducts> response) {
+                        //Log.d("NEWORDERFRAGG", "onChanged: "+(response.body().getCode()));
+
+                        allProducts = response.body();
+                        if (allProducts != null&&allProducts.getProducts()!=null) {
+                            if (allProducts.getProducts().size() > 0) {
+                                productId = allProducts.getProducts().get(0).getProduct_id();
+
+                            }
+                            products = new ArrayList<>();
+                            for (ProductData product : allProducts.getProducts()) {
+                                products.add(new ProductForSpinner(product.getProduct_name(), product.getProduct_image(), product.getProduct_id(),product.getProduct_real_price()));
+                            }
+                            ArrayAdapter<String> myAdapter = new ProductSpinnerAdapter(
+                                    getActivity(), products);
+                            product.setAdapter(myAdapter);
+
+                            product.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                                @Override
+                                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                                    if (position==0)return;
+                                    productId = allProducts.getProducts().get(position-1).getProduct_id();
+                                    // Toast.makeText(getActivity(), ""+productId, Toast.LENGTH_SHORT).show();
+                                }
+
+                                @Override
+                                public void onNothingSelected(AdapterView<?> parent) {
+
+                                }
+                            });
+                        }
+
+                    }
+                });
+    }
+
+    private void observeProductsLoading(){
+        newOrderFragVM
+                .getIsProductsLoading()
+                .observe(this, new Observer<Boolean>() {
+                    @Override
+                    public void onChanged(Boolean aBoolean) {
+                        Log.d("NEWORDERFRAGG","is loading "+aBoolean);
+                    }
+                });
+    }
+
+    private void observeProductsLoadingError(){
+        newOrderFragVM
+                .getProductsLoadingError()
+                .observe(this, new Observer<String>() {
+                    @Override
+                    public void onChanged(String s) {
+                        Toast.makeText(getContext(), R.string.error_getting_products, Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     private void getcities(Api api) {
@@ -160,49 +231,6 @@ public class NewOrderFragment extends Fragment {
 
   public static AllProducts allProducts;
 
-    private void getProducts(Api api) {
-        api.getProducts(SharedHelper.getKey(getActivity(), LoginActivity.TOKEN),
-                CurrentOrderData.getInstance().getCurrentOrderResponse().getUserId()
-        ).enqueue(new Callback<AllProducts>() {
-            @Override
-            public void onResponse(Call<AllProducts> call, final Response<AllProducts> response) {
-                Log.d("eeeeeeeeeeeeeee", "respons: " + response.body().getProducts_count());
-                if (response.body() != null&&response.body().getProducts()!=null) {
-                    allProducts = response.body();
-                    if (response.body().getProducts().size() > 0) {
-                        productId = response.body().getProducts().get(0).getProduct_id();
-
-                    }
-                    products = new ArrayList<>();
-                    for (ProductData product : response.body().getProducts()) {
-                        products.add(new ProductForSpinner(product.getProduct_name(), product.getProduct_image(), product.getProduct_id(),product.getProduct_real_price()));
-                    }
-                    ArrayAdapter<String> myAdapter = new ProductSpinnerAdapter(
-                            getActivity(), products);
-                    product.setAdapter(myAdapter);
-
-                    product.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                        @Override
-                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                            productId = response.body().getProducts().get(position).getProduct_id();
-                            // Toast.makeText(getActivity(), ""+productId, Toast.LENGTH_SHORT).show();
-                        }
-
-                        @Override
-                        public void onNothingSelected(AdapterView<?> parent) {
-
-                        }
-                    });
-                }
-            }
-
-            @Override
-            public void onFailure(Call<AllProducts> call, Throwable t) {
-                Log.d("eeeeeeeeeeeeeee", "onFailure: " + t.getMessage());
-            }
-        });
-
-    }
 
     ProgressDialog progressDialog;
     @OnClick(R.id.send_order)

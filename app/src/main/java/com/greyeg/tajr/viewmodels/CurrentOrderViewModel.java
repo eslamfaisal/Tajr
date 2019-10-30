@@ -1,10 +1,8 @@
 package com.greyeg.tajr.viewmodels;
 
 import android.util.Log;
-
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
-
 import com.greyeg.tajr.models.AddReasonResponse;
 import com.greyeg.tajr.models.CancellationReasonsResponse;
 import com.greyeg.tajr.models.MainResponse;
