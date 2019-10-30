@@ -34,6 +34,8 @@ import com.greyeg.tajr.models.UserWorkTimeResponse;
 import com.greyeg.tajr.order.models.CurrentOrderResponse;
 import com.greyeg.tajr.order.models.SingleOrderProductsResponse;
 
+import java.util.ArrayList;
+
 import io.reactivex.Single;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -63,6 +65,10 @@ public interface Api {
     Call<AllProducts> getProducts(@Field("token") String token,
                                   @Field("user_id") String user_id);
 
+    @FormUrlEncoded
+    @POST("send_test/get_products")
+    Single<Response<AllProducts>> getProducts2(@Field("token") String token,
+                                                           @Field("user_id") String user_id);
 
     @FormUrlEncoded
     @POST("send_test/get_status_history")

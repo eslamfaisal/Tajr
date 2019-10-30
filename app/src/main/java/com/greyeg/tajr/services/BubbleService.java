@@ -55,6 +55,7 @@ import com.greyeg.tajr.models.ProductForSpinner;
 import com.greyeg.tajr.models.Products;
 import com.greyeg.tajr.models.Subscriber;
 import com.greyeg.tajr.models.SubscriberInfo;
+import com.greyeg.tajr.repository.ProductsRepo;
 import com.greyeg.tajr.server.BaseClient;
 import com.rafakob.drawme.DrawMeButton;
 
@@ -67,6 +68,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import io.reactivex.SingleObserver;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -1044,27 +1049,35 @@ public class BubbleService extends Service
     }
 
 
-    private void getProducts() {
 
-        BaseClient.getService().getProducts(SharedHelper.getKey(getApplicationContext(), LoginActivity.TOKEN), null)
-                .enqueue(new Callback<AllProducts>() {
-            @Override
-            public void onResponse(Call<AllProducts> call, final Response<AllProducts> response) {
-                Log.d("eeeeeeeeeeeeeee", "response: " + response.body().getProducts_count());
-                AllProducts allProducts=response.body();
-                if (allProducts!= null&&allProducts.getProducts()!=null) {
-                    products=allProducts.getProducts();
-                    populateSpinner(response.body().getProducts());
 
-                }
-            }
+    private void getProducts(){
+        String token=SharedHelper.getKey(getApplicationContext(), LoginActivity.TOKEN);
+        ProductsRepo.getInstance()
+                .getProducts(token,null)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new SingleObserver<Response<AllProducts>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
 
-            @Override
-            public void onFailure(Call<AllProducts> call, Throwable t) {
-                Log.d("eeeeeeeeeeeeeee", "onFailure: " + t.getMessage());
-            }
-        });
+                    }
 
+                    @Override
+                    public void onSuccess(Response<AllProducts> response) {
+                        AllProducts allProducts=response.body();
+                        if (allProducts!= null&&allProducts.getProducts()!=null) {
+                            products=allProducts.getProducts();
+                            populateSpinner(products);
+
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Toast.makeText(BubbleService.this,R.string.error_getting_products, Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     private void populateSpinner(List<ProductData> allProducts){

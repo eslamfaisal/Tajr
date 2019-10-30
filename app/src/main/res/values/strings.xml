@@ -274,5 +274,6 @@
     <string name="adding_reason_to_order_error">Error adding reason to Order</string>
     <string name="adding_new_reason_to_order_error">Error adding new Reason</string>
     <string name="error_has_occured">An Error has Occured , please try again</string>
+    <string name="error_getting_products">Error getting products</string>
 
 </resources>
