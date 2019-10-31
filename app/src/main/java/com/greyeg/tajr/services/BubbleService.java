@@ -48,15 +48,14 @@ import com.greyeg.tajr.models.Broadcast;
 import com.greyeg.tajr.models.CartItem;
 import com.greyeg.tajr.models.Cities;
 import com.greyeg.tajr.models.NewOrderResponse;
-import com.greyeg.tajr.models.Order;
 import com.greyeg.tajr.models.OrderItem;
 import com.greyeg.tajr.models.OrderPayload;
 import com.greyeg.tajr.models.ProductData;
 import com.greyeg.tajr.models.ProductForSpinner;
-import com.greyeg.tajr.models.Products;
 import com.greyeg.tajr.models.Subscriber;
 import com.greyeg.tajr.models.SubscriberInfo;
 import com.greyeg.tajr.repository.CitiesRepo;
+import com.greyeg.tajr.repository.OrdersRepo;
 import com.greyeg.tajr.repository.ProductsRepo;
 import com.greyeg.tajr.server.BaseClient;
 import com.rafakob.drawme.DrawMeButton;
@@ -64,7 +63,6 @@ import com.rafakob.drawme.DrawMeButton;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -365,15 +363,19 @@ public class BubbleService extends Service
         InputMethodManager imm = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(newOrderDialog.getWindowToken(), 0);
 
-
-
-        BaseClient.getService()
+        OrdersRepo
+                .getInstance()
                 .makeNewOrder(orderPayload)
-                .enqueue(new Callback<NewOrderResponse>() {
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new SingleObserver<Response<NewOrderResponse>>() {
                     @Override
-                    public void onResponse(Call<NewOrderResponse> call, Response<NewOrderResponse> response) {
-                        Log.d("OORRDDEERRR","is null "+(response.body()==null));
+                    public void onSubscribe(Disposable d) {
 
+                    }
+
+                    @Override
+                    public void onSuccess(Response<NewOrderResponse> response) {
                         NewOrderResponse newOrderResponse=response.body();
                         if (newOrderResponse!=null){
                             Toast.makeText(BubbleService.this, newOrderResponse.getData(), Toast.LENGTH_LONG).show();
@@ -384,18 +386,14 @@ public class BubbleService extends Service
                             Toast.makeText(BubbleService.this,"Error placing Order :(" +
                                     ""+response.code() , Toast.LENGTH_SHORT).show();
                         }
-
-
                     }
 
                     @Override
-                    public void onFailure(Call<NewOrderResponse> call, Throwable t) {
-                        Toast.makeText(BubbleService.this,"Error placing Order" , Toast.LENGTH_SHORT).show();
+                    public void onError(Throwable e) {
+                        Toast.makeText(BubbleService.this,R.string.error_placing_order, Toast.LENGTH_SHORT).show();
 
                     }
-                }
-
-                );
+                });
     }
 
 
@@ -704,6 +702,7 @@ public class BubbleService extends Service
         city.setSelection(0);
         orderItems.clear();
         cartAdapter.emptyCart();
+        if (emptyView!=null)emptyView.setVisibility(View.VISIBLE);
     }
 
 

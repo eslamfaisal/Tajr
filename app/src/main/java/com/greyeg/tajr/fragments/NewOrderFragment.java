@@ -20,7 +20,6 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.google.android.material.snackbar.Snackbar;
 import com.greyeg.tajr.R;
 import com.greyeg.tajr.activities.LoginActivity;
 import com.greyeg.tajr.adapters.ProductSpinnerAdapter;
@@ -316,7 +315,7 @@ public class NewOrderFragment extends Fragment {
                 @Override
                 public void onFailure(Call<NewOrderResponse> call, Throwable t) {
                     progressDialog.dismiss();
-                    showAlert(R.string.errror_placing_order);
+                    showAlert(R.string.error_placing_order);
                     Log.d("GGGGGGGGGGgggggg", "onFailure: "+t.getMessage());
                 }
             });

@@ -143,7 +143,7 @@ public interface Api {
 
 
     @POST("send_test/record_new_order")
-    Call<NewOrderResponse> makeNewOrder(@Body OrderPayload orderPayload) ;
+    Single<Response<NewOrderResponse>> makeNewOrder(@Body OrderPayload orderPayload);
 
     @FormUrlEncoded
     @POST("send_test/update_order")

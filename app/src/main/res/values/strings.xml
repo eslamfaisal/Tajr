@@ -276,6 +276,6 @@
     <string name="error_has_occured">An Error has Occured , please try again</string>
     <string name="error_getting_products">Error getting products</string>
     <string name="empty_cart_message">your cart is empty , choose your products</string>
-    <string name="errror_placing_order">Error Placing Order</string>
+    <string name="error_placing_order">Error Placing Order</string>
 
 </resources>
