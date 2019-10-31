@@ -127,7 +127,9 @@ public class NewOrderFragment extends Fragment {
         getProducts();
         observeProductsLoading();
         observeProductsLoadingError();
-        getcities(api);
+        getCities();
+        observeCitiesLoading();
+        observeProductsLoadingError();
     }
 
     private void getProducts() {
@@ -177,6 +179,7 @@ public class NewOrderFragment extends Fragment {
                 .observe(this, new Observer<Boolean>() {
                     @Override
                     public void onChanged(Boolean aBoolean) {
+                        //todo handle products loading
                         Log.d("NEWORDERFRAGG","is loading "+aBoolean);
                     }
                 });
@@ -193,53 +196,71 @@ public class NewOrderFragment extends Fragment {
                 });
     }
 
-    private void getcities(Api api) {
+
+    private void getCities(){
         if (cities != null && cities.size() > 1) {
             cities.clear();
         }
-        Call<Cities> getCiriesCall = api.getCities(
-                SharedHelper.getKey(getActivity(), LoginActivity.TOKEN),
-                SharedHelper.getKey(getActivity(), LoginActivity.PARENT_ID)
-        );
+        newOrderFragVM.getCities( SharedHelper.getKey(getActivity(), LoginActivity.TOKEN),
+                SharedHelper.getKey(getActivity(), LoginActivity.PARENT_ID))
+                .observe(this, new Observer<Response<Cities>>() {
+                    @Override
+                    public void onChanged(Response<Cities> response) {
+                        if (response.body()!=null&&response.body().getCities() != null) {
+                            if (response.body().getCities().size() > 0) {
 
-        getCiriesCall.enqueue(new Callback<Cities>() {
-            @Override
-            public void onResponse(Call<Cities> call, Response<Cities> response) {
-                if (response.body().getCities() != null) {
-                    if (response.body().getCities().size() > 0) {
+                                citiesBody = response.body().getCities();
+                                for (Cities.City city : citiesBody) {
+                                    cities.add(city.getCity_name()+" >> "+
+                                            NumberFormat.getNumberInstance(Locale.getDefault()).format(Integer.valueOf(city.getShipping_cost()))+getActivity().getString(R.string.le)+" "+getString(R.string.for_shipping));
+                                    citiesId.add(city.getCity_id());
+                                }
+                                ArrayAdapter adapter = new ArrayAdapter(getActivity()
+                                        , R.layout.layout_cities_spinner_item, cities);
 
-                        citiesBody = response.body().getCities();
-                        for (Cities.City city : citiesBody) {
-                            cities.add(city.getCity_name()+" >> "+
-                                    NumberFormat.getNumberInstance(Locale.getDefault()).format(Integer.valueOf(city.getShipping_cost()))+getActivity().getString(R.string.le)+" "+getString(R.string.for_shipping));
-                            citiesId.add(city.getCity_id());
+                                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                                client_city.setAdapter(adapter);
+                                client_city.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                                    @Override
+                                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                                        CITY_ID = String.valueOf(citiesBody.get(position).getCity_id());
+                                    }
+
+                                    @Override
+                                    public void onNothingSelected(AdapterView<?> parent) {
+
+                                    }
+                                });
+                            }
                         }
-                        ArrayAdapter adapter = new ArrayAdapter(getActivity(), R.layout.layout_cities_spinner_item, cities);
 
-                        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                        client_city.setAdapter(adapter);
-                        client_city.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                            @Override
-                            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                                CITY_ID = String.valueOf(citiesBody.get(position).getCity_id());
-                            }
-
-                            @Override
-                            public void onNothingSelected(AdapterView<?> parent) {
-
-                            }
-                        });
                     }
-                }
-
-            }
-
-            @Override
-            public void onFailure(Call<Cities> call, Throwable t) {
-
-            }
-        });
+                });
     }
+
+    private void observeCitiesLoading(){
+        newOrderFragVM
+                .getIsCitiesLoading()
+                .observe(this, new Observer<Boolean>() {
+                    @Override
+                    public void onChanged(Boolean aBoolean) {
+                        //todo hable cities loading
+                        Log.d("NEWORDERFRAGG","is loading "+aBoolean);
+                    }
+                });
+    }
+
+    private void observecitiesLoadingError(){
+        newOrderFragVM
+                .getCitiesLoadingError()
+                .observe(this, new Observer<String>() {
+                    @Override
+                    public void onChanged(String s) {
+                        Toast.makeText(getContext(), R.string.error_getting_products, Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
 
   public static AllProducts allProducts;
 

@@ -355,6 +355,10 @@ public interface Api {
     Call<Cities> getCities(@Field("token") String token, @Field("user_id") String user_id);
 
 
+    @FormUrlEncoded
+    @POST("send_test/get_cities")
+    Single<Response<Cities>> getCities2(@Field("token") String token, @Field("user_id") String user_id);
+
     // log in user client
     @FormUrlEncoded
     @POST("send_test/get_products")
