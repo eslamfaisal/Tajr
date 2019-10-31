@@ -38,4 +38,8 @@ public class NetworkUtil {
         }
         return status;
     }
+
+    public static Boolean isConnected(Context context){
+        return getConnectivityStatus(context)!=TYPE_NOT_CONNECTED;
+    }
 }

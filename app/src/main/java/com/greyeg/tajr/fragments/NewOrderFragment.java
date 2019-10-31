@@ -20,9 +20,11 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.greyeg.tajr.R;
 import com.greyeg.tajr.activities.LoginActivity;
 import com.greyeg.tajr.adapters.ProductSpinnerAdapter;
+import com.greyeg.tajr.helper.NetworkUtil;
 import com.greyeg.tajr.helper.SharedHelper;
 import com.greyeg.tajr.models.AllProducts;
 import com.greyeg.tajr.models.Cities;
@@ -33,6 +35,7 @@ import com.greyeg.tajr.order.CurrentOrderData;
 import com.greyeg.tajr.server.Api;
 import com.greyeg.tajr.server.BaseClient;
 import com.greyeg.tajr.viewmodels.NewOrderFragVM;
+import com.tapadoo.alerter.Alerter;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -75,19 +78,20 @@ public class NewOrderFragment extends Fragment {
     @BindView(R.id.client_order_phone1)
     EditText client_order_phone1;
 
-    View mainView;
+    private View mainView;
 
-    String productId;
+    private String productId;
 
-    List<ProductForSpinner> products;
+    private List<ProductForSpinner> products;
 
-    List<String> cities = new ArrayList<>();
-    List<String> citiesId = new ArrayList<>();
+    private List<String> cities = new ArrayList<>();
+    private List<String> citiesId = new ArrayList<>();
 
-    public static String CITY_ID;
+    private static String CITY_ID;
 
     private List<Cities.City> citiesBody;
     private NewOrderFragVM newOrderFragVM;
+    Api api;
 
     public NewOrderFragment() {
         // Required empty public constructor
@@ -108,14 +112,22 @@ public class NewOrderFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        Api api = BaseClient.getBaseClient().create(Api.class);
+        if (!NetworkUtil.isConnected(getContext())){
+            showAlert();
+            return;
+        }
 
+        api = BaseClient.getBaseClient().create(Api.class);
+        loadData();
+
+
+    }
+
+    private void loadData(){
         getProducts();
         observeProductsLoading();
         observeProductsLoadingError();
-
         getcities(api);
-
     }
 
     private void getProducts() {
@@ -286,7 +298,6 @@ public class NewOrderFragment extends Fragment {
     }
 
     private void showDialog(String msg) {
-
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setIcon(R.drawable.ic_warning);
         builder.setMessage(msg);
@@ -297,6 +308,21 @@ public class NewOrderFragment extends Fragment {
             }
         });
         builder.show();
+    }
+
+    private void showAlert(){
+        Alerter.create(getActivity())
+                .setText(R.string.no_connection_message)
+                .setIcon(R.drawable.ic_warning_black_24dp)
+                .setBackgroundColorRes(R.color.material_red_700)
+                .setDuration(4000)
+                .setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                    }
+                })
+                .show();
     }
 //
 //    private SendOrderListener mListener;
