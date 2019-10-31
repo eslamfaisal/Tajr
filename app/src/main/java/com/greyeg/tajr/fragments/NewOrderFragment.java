@@ -142,10 +142,6 @@ public class NewOrderFragment extends Fragment {
 
                         allProducts = response.body();
                         if (allProducts != null&&allProducts.getProducts()!=null) {
-                            if (allProducts.getProducts().size() > 0) {
-                                productId = allProducts.getProducts().get(0).getProduct_id();
-
-                            }
                             products = new ArrayList<>();
                             for (ProductData product : allProducts.getProducts()) {
                                 products.add(new ProductForSpinner(product.getProduct_name(), product.getProduct_image(), product.getProduct_id(),product.getProduct_real_price()));
@@ -157,7 +153,11 @@ public class NewOrderFragment extends Fragment {
                             product.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                                 @Override
                                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                                    if (position==0)return;
+                                    if (position==0){
+                                        productId=null;
+                                        return;
+                                    }
+
                                     productId = allProducts.getProducts().get(position-1).getProduct_id();
                                     // Toast.makeText(getActivity(), ""+productId, Toast.LENGTH_SHORT).show();
                                 }
@@ -300,6 +300,7 @@ public class NewOrderFragment extends Fragment {
                         showDialog(getString(R.string.invalid_ph_num));
                     }else if (response.body().getCode().equals("1200")){
                         Toast.makeText(getActivity(), getString(R.string.added_success), Toast.LENGTH_SHORT).show();
+                        clearFields();
                    //     onButtonPressed();
                     }else {
                         showDialog(response.body().getDetails());
@@ -344,6 +345,17 @@ public class NewOrderFragment extends Fragment {
                     }
                 })
                 .show();
+    }
+
+    private void clearFields(){
+        client_name.setText("");
+        client_address.setText("");
+        client_area.setText("");
+        client_order_phone1.setText("");
+        item_no.setText("");
+        productId=null;
+        product.setSelection(0);
+
     }
 //
 //    private SendOrderListener mListener;
