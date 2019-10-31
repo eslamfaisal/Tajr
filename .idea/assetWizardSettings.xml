@@ -35,8 +35,8 @@
                           <map>
                             <entry key="assetSourceType" value="FILE" />
                             <entry key="color" value="ffffff" />
-                            <entry key="outputName" value="dummy_product" />
-                            <entry key="sourceFile" value="C:\Users\AHMD\Downloads\iconfinder_product_4172167.svg" />
+                            <entry key="outputName" value="ic_empty" />
+                            <entry key="sourceFile" value="C:\Users\AHMD\Downloads\empty.svg" />
                           </map>
                         </option>
                       </PersistentState>

@@ -16,6 +16,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -114,6 +115,7 @@ public class BubbleService extends Service
     ArrayList<OrderItem> orderItems;
     private List<ProductData> products;
     CartAdapter cartAdapter;
+    private ViewGroup emptyView;
 
     @Nullable
     @Override
@@ -465,9 +467,14 @@ public class BubbleService extends Service
         newOrderDialogParams=getViewParams(100,100,600,600,newOrderDialogParams);
         mWindowManager.addView(newOrderDialog,newOrderDialogParams);
 
+        emptyView =newOrderDialog.findViewById(R.id.emptyView);
         RecyclerView cartRecycler=newOrderDialog.findViewById(R.id.cart);
         cartRecycler.setAdapter(cartAdapter);
         cartRecycler.setLayoutManager(new LinearLayoutManager(getApplicationContext(),RecyclerView.HORIZONTAL,false));
+
+        if (orderItems!=null&&orderItems.isEmpty()){
+            emptyView.setVisibility(View.VISIBLE);
+        }
 
         newOrderDialog.findViewById(R.id.close)
                 .setOnClickListener(new View.OnClickListener() {
@@ -595,6 +602,7 @@ public class BubbleService extends Service
     }
 
     private void setupAddNewProductDialog(){
+        final int[] pos = {0};
         if (products==null||products.isEmpty())return;
         OrderItem orderItem=new OrderItem();
 
@@ -614,6 +622,7 @@ public class BubbleService extends Service
         productsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                pos[0] =i;
                 if (i==0)return;
                 orderItem.setProduct_id(products.get(i-1).getProduct_id());
             }
@@ -630,6 +639,11 @@ public class BubbleService extends Service
 
                 InputMethodManager imm = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(addNewProductDialog.getWindowToken(), 0);
+
+                if (pos[0]==0){
+                    Toast.makeText(BubbleService.this, "please choose product ", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
                 int items;
                 try{
@@ -650,6 +664,7 @@ public class BubbleService extends Service
                     Toast.makeText(BubbleService.this, "product Added to order", Toast.LENGTH_SHORT).show();
                     mWindowManager.removeView(addNewProductDialog);
                     if (newOrderDialog!=null)newOrderDialog.setVisibility(View.VISIBLE);
+                    if (newOrderDialog!=null)emptyView.setVisibility(View.GONE);
 
                 }
                 else
@@ -1123,6 +1138,7 @@ public class BubbleService extends Service
                         orderItems.set(0,orderItem);
 
                     }
+                    emptyView.setVisibility(View.GONE);
 
                 }
                 Log.d("ORDERRRR", "product : "+allProducts.get(index).getProduct_id());
@@ -1203,6 +1219,9 @@ public class BubbleService extends Service
     @Override
     public void onCartItemDeleted(int productId) {
         orderItems.remove(new OrderItem(String.valueOf(productId)));
+        if (orderItems!=null&&orderItems.isEmpty()){
+            emptyView.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
