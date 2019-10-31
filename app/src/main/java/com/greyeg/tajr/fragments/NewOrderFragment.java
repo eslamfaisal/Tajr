@@ -113,7 +113,7 @@ public class NewOrderFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         if (!NetworkUtil.isConnected(getContext())){
-            showAlert();
+            showAlert(R.string.no_connection_message);
             return;
         }
 
@@ -265,9 +265,15 @@ public class NewOrderFragment extends Fragment {
   public static AllProducts allProducts;
 
 
-    ProgressDialog progressDialog;
+    private ProgressDialog progressDialog;
     @OnClick(R.id.send_order)
     void sendOrder() {
+
+        if (!NetworkUtil.isConnected(getContext())){
+            showAlert(R.string.no_connection_message);
+            return;
+        }
+
         //todo add pssid and sender name to order
         progressDialog = new ProgressDialog(getActivity());
         progressDialog.setMessage("جار ارسال الطلب");
@@ -310,6 +316,7 @@ public class NewOrderFragment extends Fragment {
                 @Override
                 public void onFailure(Call<NewOrderResponse> call, Throwable t) {
                     progressDialog.dismiss();
+                    showAlert(R.string.errror_placing_order);
                     Log.d("GGGGGGGGGGgggggg", "onFailure: "+t.getMessage());
                 }
             });
@@ -332,12 +339,13 @@ public class NewOrderFragment extends Fragment {
         builder.show();
     }
 
-    private void showAlert(){
+    private void showAlert(int textId){
         Alerter.create(getActivity())
-                .setText(R.string.no_connection_message)
+                .setText(textId)
                 .setIcon(R.drawable.ic_warning_black_24dp)
-                .setBackgroundColorRes(R.color.material_red_700)
+                .setBackgroundColorRes(R.color.material_red_600)
                 .setDuration(4000)
+                .enableSwipeToDismiss()
                 .setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
