@@ -55,6 +55,7 @@ import com.greyeg.tajr.models.ProductForSpinner;
 import com.greyeg.tajr.models.Products;
 import com.greyeg.tajr.models.Subscriber;
 import com.greyeg.tajr.models.SubscriberInfo;
+import com.greyeg.tajr.repository.CitiesRepo;
 import com.greyeg.tajr.repository.ProductsRepo;
 import com.greyeg.tajr.server.BaseClient;
 import com.rafakob.drawme.DrawMeButton;
@@ -502,7 +503,7 @@ public class BubbleService extends Service
                 });
 
         getProducts();
-        getCities();
+        getCities2();
 
         Spinner product=newOrderDialog.findViewById(R.id.product);
         Spinner city=newOrderDialog.findViewById(R.id.client_city);
@@ -1135,59 +1136,67 @@ public class BubbleService extends Service
         });
     }
 
-    private void getCities() {
+
+    private void getCities2(){
         Spinner client_city=newOrderDialog.findViewById(R.id.client_city);
         if (cities != null) {
             cities.clear();
             Log.d("ORDERRRR", "clear Cities: ");
         }
-        Call<Cities> getCitiesCall = BaseClient.getService().getCities(
-                SharedHelper.getKey(getApplicationContext(), LoginActivity.TOKEN),
-                SharedHelper.getKey(getApplicationContext(), LoginActivity.PARENT_ID)
-        );
+        CitiesRepo
+                .getInstance()
+                .getCities(SharedHelper.getKey(getApplicationContext(), LoginActivity.TOKEN),
+                        SharedHelper.getKey(getApplicationContext(), LoginActivity.PARENT_ID))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new SingleObserver<Response<Cities>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
 
-        getCitiesCall.enqueue(new Callback<Cities>() {
-            @Override
-            public void onResponse(Call<Cities> call, Response<Cities> response) {
-                if (response.body().getCities() != null) {
-                    if (response.body().getCities().size() > 0) {
-
-                        citiesBody = response.body().getCities();
-                        for (Cities.City city : citiesBody) {
-                            cities.add(city.getCity_name()+" >> "+
-                                    NumberFormat.getNumberInstance(Locale.getDefault()).format(
-                                            Integer.valueOf(city.getShipping_cost()))+
-                                    getString(R.string.le)+" "
-                                    +getString(R.string.for_shipping));
-                            citiesId.add(city.getCity_id());
-                        }
-                        ArrayAdapter adapter = new ArrayAdapter(getApplicationContext()
-                                , R.layout.layout_cities_spinner_item, cities);
-
-                        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                        client_city.setAdapter(adapter);
-                        client_city.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                            @Override
-                            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                                CITY_ID = String.valueOf(citiesBody.get(position).getCity_id());
-                                Log.d("ORDERRRR", "onItemSelected: "+CITY_ID);
-                            }
-
-                            @Override
-                            public void onNothingSelected(AdapterView<?> parent) {
-
-                            }
-                        });
                     }
-                }
 
-            }
+                    @Override
+                    public void onSuccess(Response<Cities> response) {
+                        if (response.body()!=null&&response.body().getCities() != null) {
+                            if (response.body().getCities().size() > 0) {
 
-            @Override
-            public void onFailure(Call<Cities> call, Throwable t) {
+                                citiesBody = response.body().getCities();
+                                for (Cities.City city : citiesBody) {
+                                    cities.add(city.getCity_name()+" >> "+
+                                            NumberFormat.getNumberInstance(Locale.getDefault()).format(
+                                                    Integer.valueOf(city.getShipping_cost()))+
+                                            getString(R.string.le)+" "
+                                            +getString(R.string.for_shipping));
+                                    citiesId.add(city.getCity_id());
+                                }
+                                ArrayAdapter adapter = new ArrayAdapter(getApplicationContext()
+                                        , R.layout.layout_cities_spinner_item, cities);
 
-            }
-        });
+                                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                                client_city.setAdapter(adapter);
+                                client_city.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                                    @Override
+                                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                                        CITY_ID = String.valueOf(citiesBody.get(position).getCity_id());
+                                        Log.d("ORDERRRR", "onItemSelected: "+CITY_ID);
+                                    }
+
+                                    @Override
+                                    public void onNothingSelected(AdapterView<?> parent) {
+
+                                    }
+                                });
+                            }
+                        }
+
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+                });
     }
 
 
@@ -1198,19 +1207,16 @@ public class BubbleService extends Service
 
     @Override
     public void onCartItemQuantityIncrease(int productId,int quantity) {
-        orderItems.get(
-                orderItems.indexOf(
-                        new OrderItem(String.valueOf(productId))))
-                .setItems(quantity);
-        int index=orderItems.indexOf(new OrderItem(String.valueOf(productId)));
-        if (index==0){
-            EditText items_no= newOrderDialog.findViewById(R.id.item_no);
-            items_no.setText(String.valueOf(quantity));
-        }
+        updateQuantity(productId,quantity);
     }
 
     @Override
     public void onCartItemQuantityDecrease(int productId,int quantity) {
+        updateQuantity(productId,quantity);
+
+    }
+
+    private void updateQuantity(int productId,int quantity){
         orderItems.get(
                 orderItems.indexOf(
                         new OrderItem(String.valueOf(productId))))
@@ -1220,6 +1226,5 @@ public class BubbleService extends Service
             EditText items_no= newOrderDialog.findViewById(R.id.item_no);
             items_no.setText(String.valueOf(quantity));
         }
-
     }
 }

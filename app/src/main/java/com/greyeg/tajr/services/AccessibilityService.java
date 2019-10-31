@@ -80,7 +80,7 @@ public class AccessibilityService extends android.accessibilityservice.Accessibi
                     &&accessibilityEvent.getPackageName().equals("com.greyeg.tajr"))  ){
 
                 Log.d("TIMERCALCCCC", "timer stop ");
-                Toast.makeText(this, "timer stop", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(this, "timer stop", Toast.LENGTH_SHORT).show();
 
                 //TimeCalculator.getInstance(getApplicationContext()).stopTimer();
                 if (NetworkUtil.getConnectivityStatus(getApplicationContext())!=NetworkUtil.TYPE_NOT_CONNECTED){
