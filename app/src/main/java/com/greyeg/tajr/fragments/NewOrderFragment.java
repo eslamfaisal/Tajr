@@ -129,7 +129,7 @@ public class NewOrderFragment extends Fragment {
         observeProductsLoadingError();
         getCities();
         observeCitiesLoading();
-        observeProductsLoadingError();
+        observecitiesLoadingError();
     }
 
     private void getProducts() {
