@@ -28,6 +28,8 @@ import com.greyeg.tajr.helper.SharedHelper;
 import com.greyeg.tajr.models.AllProducts;
 import com.greyeg.tajr.models.Cities;
 import com.greyeg.tajr.models.NewOrderResponse;
+import com.greyeg.tajr.models.OrderItem;
+import com.greyeg.tajr.models.OrderPayload;
 import com.greyeg.tajr.models.ProductData;
 import com.greyeg.tajr.models.ProductForSpinner;
 import com.greyeg.tajr.order.CurrentOrderData;
@@ -85,6 +87,7 @@ public class NewOrderFragment extends Fragment {
 
     private List<String> cities = new ArrayList<>();
     private List<String> citiesId = new ArrayList<>();
+    private ArrayList<OrderItem> orderItems = new ArrayList<>();
 
     private static String CITY_ID;
 
@@ -276,7 +279,7 @@ public class NewOrderFragment extends Fragment {
         //todo add pssid and sender name to order
         progressDialog = new ProgressDialog(getActivity());
         progressDialog.setMessage("جار ارسال الطلب");
-        progressDialog.show();
+
         if (productId != null && CITY_ID != null &&
                 !client_name.getText().toString().equals("")
                 && !client_address.getText().toString().equals("")
@@ -284,45 +287,113 @@ public class NewOrderFragment extends Fragment {
                 && !client_order_phone1.getText().toString().equals("")
                 && !item_no.getText().toString().equals("")
                 ) {
-            Api api = BaseClient.getBaseClient().create(Api.class);
-            api.recordNewOrder(
+            int no;
+            try {
+                no=Integer.valueOf(item_no.getText().toString());
+            }catch (Exception e){
+                Toast.makeText(getContext(), R.string.enter_valid_quantity, Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            orderItems.add(new OrderItem(productId,no));
+            OrderPayload orderPayload=new OrderPayload(
                     SharedHelper.getKey(getActivity(),LoginActivity.TOKEN),
                     CurrentOrderData.getInstance().getCurrentOrderResponse().getUserId(),
-                    productId,
                     client_name.getText().toString(),
                     client_order_phone1.getText().toString(),
                     CITY_ID,
                     client_area.getText().toString(),
                     client_address.getText().toString(),
-                    item_no.getText().toString(),
-                    "0",null,null
-            ).enqueue(new Callback<NewOrderResponse>() {
-                @Override
-                public void onResponse(Call<NewOrderResponse> call, Response<NewOrderResponse> response) {
-                    progressDialog.dismiss();
-                    Log.d("GGGGGGGGGGgggggg", "onResponse: "+response.body().getCode());
-                    if (response.body().getCode().equals("1411")){
-                        showDialog(getString(R.string.invalid_ph_num));
-                    }else if (response.body().getCode().equals("1200")){
-                        Toast.makeText(getActivity(), getString(R.string.added_success), Toast.LENGTH_SHORT).show();
-                        clearFields();
-                   //     onButtonPressed();
-                    }else {
-                        showDialog(response.body().getDetails());
-                    }
-                }
+                    null,null,null,
+                    orderItems
+            );
 
-                @Override
-                public void onFailure(Call<NewOrderResponse> call, Throwable t) {
-                    progressDialog.dismiss();
-                    showAlert(R.string.error_placing_order);
-                    Log.d("GGGGGGGGGGgggggg", "onFailure: "+t.getMessage());
-                }
-            });
+            newOrderFragVM
+                    .makeNewOrder(orderPayload)
+                    .observe(this, new Observer<NewOrderResponse>() {
+                        @Override
+                        public void onChanged(NewOrderResponse response) {
+                            if (response!=null&&response.getCode().equals("1411")){
+                                showDialog(getString(R.string.invalid_ph_num));
+                            }else if (response!=null&&response.getCode().equals("1200")){
+                                Toast.makeText(getActivity(), getString(R.string.added_success), Toast.LENGTH_SHORT).show();
+                                clearFields();
+                                //     onButtonPressed();
+                            }else {
+                                if (response!=null)
+                                showDialog(response.getDetails());
+                            }
+                        }
+                    });
+            observeIsOrderPlacing();
+            observePlacingOrderError();
+
+//
+//            Api api = BaseClient.getBaseClient().create(Api.class);
+//            api.recordNewOrder(
+//                    SharedHelper.getKey(getActivity(),LoginActivity.TOKEN),
+//                    CurrentOrderData.getInstance().getCurrentOrderResponse().getUserId(),
+//                    productId,
+//                    client_name.getText().toString(),
+//                    client_order_phone1.getText().toString(),
+//                    CITY_ID,
+//                    client_area.getText().toString(),
+//                    client_address.getText().toString(),
+//                    item_no.getText().toString(),
+//                    "0",null,null
+//            ).enqueue(new Callback<NewOrderResponse>() {
+//                @Override
+//                public void onResponse(Call<NewOrderResponse> call, Response<NewOrderResponse> response) {
+//                    progressDialog.dismiss();
+//                    Log.d("GGGGGGGGGGgggggg", "onResponse: "+response.body().getCode());
+//                    if (response.body().getCode().equals("1411")){
+//                        showDialog(getString(R.string.invalid_ph_num));
+//                    }else if (response.body().getCode().equals("1200")){
+//                        Toast.makeText(getActivity(), getString(R.string.added_success), Toast.LENGTH_SHORT).show();
+//                        clearFields();
+//                   //     onButtonPressed();
+//                    }else {
+//                        showDialog(response.body().getDetails());
+//                    }
+//                }
+//
+//                @Override
+//                public void onFailure(Call<NewOrderResponse> call, Throwable t) {
+//                    progressDialog.dismiss();
+//                    showAlert(R.string.error_placing_order);
+//                    Log.d("GGGGGGGGGGgggggg", "onFailure: "+t.getMessage());
+//                }
+//            });
         }else {
             progressDialog.dismiss();
             Toast.makeText(getActivity(), "برجاء ادخال جميع البيانات", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void observeIsOrderPlacing(){
+        newOrderFragVM
+                .getIsOrderPlacing()
+                .observe(this, new Observer<Boolean>() {
+                    @Override
+                    public void onChanged(Boolean b) {
+                        if (b)
+                          progressDialog.show();
+                        else
+                        progressDialog.dismiss();
+                    }
+                });
+    }
+
+    private void observePlacingOrderError(){
+        newOrderFragVM
+                .getOrderPlacingError()
+                .observe(this, new Observer<String>() {
+                    @Override
+                    public void onChanged(String s) {
+                        progressDialog.dismiss();
+                        showAlert(R.string.error_placing_order);
+                    }
+                });
     }
 
     private void showDialog(String msg) {

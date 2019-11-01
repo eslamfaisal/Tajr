@@ -1,5 +1,7 @@
 package com.greyeg.tajr.viewmodels;
 
+import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.LiveDataReactiveStreams;
 import androidx.lifecycle.MutableLiveData;
@@ -7,7 +9,10 @@ import androidx.lifecycle.ViewModel;
 
 import com.greyeg.tajr.models.AllProducts;
 import com.greyeg.tajr.models.Cities;
+import com.greyeg.tajr.models.NewOrderResponse;
+import com.greyeg.tajr.models.OrderPayload;
 import com.greyeg.tajr.repository.CitiesRepo;
+import com.greyeg.tajr.repository.OrdersRepo;
 import com.greyeg.tajr.repository.ProductsRepo;
 
 import io.reactivex.Single;
@@ -19,19 +24,26 @@ import retrofit2.Response;
 
 public class NewOrderFragVM extends ViewModel {
 
-    // livedata fields of products
+    // liveData fields of products
     private MutableLiveData<Response<AllProducts>> products=new MutableLiveData<>();
     private MutableLiveData<Boolean> isProductsLoading=new MutableLiveData<>();
     private MutableLiveData<String> productsLoadingError=new MutableLiveData<>();
 
-    //livedata of cities
+    //liveData of cities
     private MutableLiveData<Response<Cities>> cities=new MutableLiveData<>();
     private MutableLiveData<Boolean> isCitiesLoading=new MutableLiveData<>();
     private MutableLiveData<String> citiesLoadingError=new MutableLiveData<>();
 
+    //liveData of placingOrder
+    private MutableLiveData<NewOrderResponse> makeNewOrder=new MutableLiveData<>();
+    private MutableLiveData<Boolean> isOrderPlacing=new MutableLiveData<>();
+    private MutableLiveData<String> orderPlacingError=new MutableLiveData<>();
+
+
 
     // products part
     public MutableLiveData<Response<AllProducts>> getProducts(String token, String user_id){
+
 
         isProductsLoading.setValue(true);
         ProductsRepo.getInstance().getProducts(token,user_id)
@@ -74,8 +86,6 @@ public class NewOrderFragVM extends ViewModel {
     }
 
     // cities part
-
-
     public MutableLiveData<Response<Cities>> getCities(String token, String user_id) {
         isCitiesLoading.setValue(true);
         CitiesRepo
@@ -111,5 +121,47 @@ public class NewOrderFragVM extends ViewModel {
 
     public MutableLiveData<String> getCitiesLoadingError() {
         return citiesLoadingError;
+    }
+
+    //placing order part
+
+    public MutableLiveData<NewOrderResponse> makeNewOrder(OrderPayload orderPayload){
+        isOrderPlacing.setValue(true);
+        OrdersRepo
+                .getInstance()
+                .makeNewOrder(orderPayload)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new SingleObserver<Response<NewOrderResponse>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onSuccess(Response<NewOrderResponse> response) {
+                        isOrderPlacing.setValue(false);
+                        makeNewOrder.setValue(response.body());
+                        Log.d("PLACCEEORDERR", "onSuccess: "+(response.body().getData()));
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        isOrderPlacing.setValue(false);
+                        orderPlacingError.setValue(e.getMessage());
+                        Log.d("PLACCEEORDERR", "onError: "+e.getMessage());
+                    }
+                });
+
+        return makeNewOrder;
+    }
+
+    public MutableLiveData<Boolean> getIsOrderPlacing() {
+        return isOrderPlacing;
+    }
+
+    public MutableLiveData<String> getOrderPlacingError() {
+        return orderPlacingError;
     }
 }
