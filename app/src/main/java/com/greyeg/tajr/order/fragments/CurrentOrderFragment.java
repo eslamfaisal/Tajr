@@ -12,7 +12,9 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.text.Editable;
 import android.text.InputType;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -165,8 +167,7 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
     View shipper_update_actions;
 
 
-    @BindView(R.id.save_edit)
-    FloatingActionButton save_edit;
+
     @BindView(R.id.deliver)
     CardView deliver;
     @BindView(R.id.shipping_no_answer)
@@ -295,12 +296,7 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
                 chooseDate();
             }
         });
-        save_edit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                updateClientData();
-            }
-        });
+
 
         deliver.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -586,42 +582,6 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
 
     }
 
-    private void toggleFabMode(View v) {
-        rotate = ViewAnimation.rotateFab(v, !rotate);
-        if (rotate) {
-            ViewAnimation.showIn(normal_busy);
-            ViewAnimation.showIn(normal_client_cancel);
-            ViewAnimation.showIn(normal_client_phone_error);
-            ViewAnimation.showIn(normal_delay);
-            ViewAnimation.showIn(normal_no_answer);
-            ViewAnimation.showIn(normal_order_data_confirmed);
-            back_drop.setVisibility(View.VISIBLE);
-        } else {
-            ViewAnimation.showOut(normal_busy);
-            ViewAnimation.showOut(normal_client_cancel);
-            ViewAnimation.showOut(normal_client_phone_error);
-            ViewAnimation.showOut(normal_delay);
-            ViewAnimation.showOut(normal_no_answer);
-            ViewAnimation.showOut(normal_order_data_confirmed);
-            back_drop.setVisibility(View.GONE);
-        }
-    }
-
-    private void toggleFabModeShipper(View v) {
-        rotateshipper = ViewAnimation.rotateFab(v, !rotateshipper);
-        if (rotateshipper) {
-            ViewAnimation.showIn(return_order);
-            ViewAnimation.showIn(shipping_no_answer);
-            ViewAnimation.showIn(deliver);
-            back_drop.setVisibility(View.VISIBLE);
-        } else {
-            ViewAnimation.showOut(return_order);
-            ViewAnimation.showOut(shipping_no_answer);
-            ViewAnimation.showOut(deliver);
-            back_drop.setVisibility(View.GONE);
-        }
-    }
-
     private void addProductToMultiOrder(int number, int index) {
         ProgressDialog progressDialog = showProgressDialog(getActivity(), getString(R.string.add_product));
         BaseClient.getBaseClient().create(Api.class).addProduct(
@@ -846,6 +806,8 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
             getMultiOrdersProducts();
             single_order_product_spinner.setVisibility(View.GONE);
         }
+
+        updateOrderTotal();
     }
 
     private void getMultiOrdersProducts() {
@@ -941,10 +903,12 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
                 Log.d(TAG, "onItemSelected: " + position);
                 Log.d(TAG, "onItemSelected: " + client_city.getSelectedItemPosition());
 
-                if (!citiesNames.get(position).equals(CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getClientCity())) {
+                if (!citiesNames.get(position).equals(CurrentOrderData.getInstance()
+                        .getCurrentOrderResponse().getOrder().getClientCity())) {
 
                     ProgressDialog progressDialog = showProgressDialog(getActivity(), getString(R.string.fetching_th_order));
-                    if (CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getOrderType().equals(OrderProductsType.SingleOrder.getType())) {
+                    if (CurrentOrderData.getInstance()
+                            .getCurrentOrderResponse().getOrder().getOrderType().equals(OrderProductsType.SingleOrder.getType())) {
                         updateSingleOrderData(progressDialog);
                     } else {
                         updateOrderMultiOrderData(progressDialog);
@@ -958,6 +922,94 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
 
             }
         });
+    }
+
+    private void updateOrderTotal(){
+        item_no.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                Log.d(TAG, i+" "+i1+" "+i2+" onTextChanged: "+charSequence);
+
+                double discountVal=1;
+                if (!discount.getText().toString().isEmpty()&&Integer.valueOf(discount.getText().toString())>0
+                    &&Integer.valueOf(discount.getText().toString())<=100){
+                    discountVal= 1-Double.parseDouble(discount.getText().toString())/100;
+                }
+
+                Double t= ((Integer.parseInt(item_cost.getText().toString())
+                        +Integer.parseInt(shipping_cost.getText().toString()))*discountVal);
+                int total=t.intValue();
+                if (charSequence.equals("0")){
+                    Toast.makeText(getContext(), R.string.wrong_item_quantity_warning, Toast.LENGTH_SHORT).show();
+                    order_total_cost.setText(String.valueOf(total));
+
+                    return;
+                }
+
+                if (i==0&&i2==0){
+                    order_total_cost.setText(String.valueOf(total));
+                    return;
+                }
+
+
+                  t=(Integer.parseInt(item_cost.getText().toString())*Integer.parseInt(item_no.getText().toString())
+                        +Integer.parseInt(shipping_cost.getText().toString()))*discountVal;
+                total=t.intValue();
+                order_total_cost.setText(String.valueOf(total));
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
+        discount.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                int items=1;
+                if (!item_no.getText().toString().isEmpty())
+                     items=Integer.parseInt(item_no.getText().toString());
+
+
+                int total=(Integer.parseInt(item_cost.getText().toString())*items
+                        +Integer.parseInt(shipping_cost.getText().toString()));
+
+                if (charSequence.length()>0&&Integer.valueOf(charSequence.toString())>100){
+                    Toast.makeText(getContext(),R.string.over_discount_warning, Toast.LENGTH_SHORT).show();
+                    order_total_cost.setText(String.valueOf(total));
+                    return;
+                }
+
+                if (i==0&&i2==0){
+                    order_total_cost.setText(String.valueOf(total));
+                    return;
+                }
+                 total=total
+                        *(100-Integer.valueOf(discount.getText().toString()))/100;
+                order_total_cost.setText(String.valueOf(total));
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
+
     }
 
     // init hide and show labels
@@ -999,6 +1051,42 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
 
         }
 
+    }
+
+    private void toggleFabMode(View v) {
+        rotate = ViewAnimation.rotateFab(v, !rotate);
+        if (rotate) {
+            ViewAnimation.showIn(normal_busy);
+            ViewAnimation.showIn(normal_client_cancel);
+            ViewAnimation.showIn(normal_client_phone_error);
+            ViewAnimation.showIn(normal_delay);
+            ViewAnimation.showIn(normal_no_answer);
+            ViewAnimation.showIn(normal_order_data_confirmed);
+            back_drop.setVisibility(View.VISIBLE);
+        } else {
+            ViewAnimation.showOut(normal_busy);
+            ViewAnimation.showOut(normal_client_cancel);
+            ViewAnimation.showOut(normal_client_phone_error);
+            ViewAnimation.showOut(normal_delay);
+            ViewAnimation.showOut(normal_no_answer);
+            ViewAnimation.showOut(normal_order_data_confirmed);
+            back_drop.setVisibility(View.GONE);
+        }
+    }
+
+    private void toggleFabModeShipper(View v) {
+        rotateshipper = ViewAnimation.rotateFab(v, !rotateshipper);
+        if (rotateshipper) {
+            ViewAnimation.showIn(return_order);
+            ViewAnimation.showIn(shipping_no_answer);
+            ViewAnimation.showIn(deliver);
+            back_drop.setVisibility(View.VISIBLE);
+        } else {
+            ViewAnimation.showOut(return_order);
+            ViewAnimation.showOut(shipping_no_answer);
+            ViewAnimation.showOut(deliver);
+            back_drop.setVisibility(View.GONE);
+        }
     }
 
     private void updateProgress() {

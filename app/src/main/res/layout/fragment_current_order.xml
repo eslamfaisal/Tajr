@@ -395,6 +395,7 @@
 
                         <EditText
                             android:id="@+id/item_no"
+                            android:inputType="number"
                             style="@style/oder_item_edit_text_style_editable" />
                     </FrameLayout>
 
@@ -717,19 +718,6 @@
             app:srcCompat="@drawable/fab_add" />
     </LinearLayout>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/save_edit"
-        android:layout_margin="@dimen/_16sdp"
-        android:layout_width="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:layout_height="wrap_content"
-        android:clickable="true"
-        android:tint="@color/green"
-        app:backgroundTint="@color/colorPrimary"
-        app:fabSize="normal"
-        app:rippleColor="@android:color/white"
-        app:srcCompat="@drawable/ic_save_edite" />
 
 
 </RelativeLayout>
