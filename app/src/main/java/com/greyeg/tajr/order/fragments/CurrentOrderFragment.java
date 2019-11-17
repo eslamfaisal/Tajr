@@ -51,6 +51,7 @@ import com.greyeg.tajr.order.enums.OrderUpdateStatusEnums;
 import com.greyeg.tajr.order.enums.ResponseCodeEnums;
 import com.greyeg.tajr.order.models.City;
 import com.greyeg.tajr.order.models.CurrentOrderResponse;
+import com.greyeg.tajr.order.models.MultiOrderProducts;
 import com.greyeg.tajr.order.models.Order;
 import com.greyeg.tajr.order.models.Product;
 import com.greyeg.tajr.order.models.SingleOrderProductsResponse;
@@ -68,6 +69,7 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 
 import androidx.cardview.widget.CardView;
@@ -694,7 +696,8 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
                                 CurrentOrderData.getInstance().setCurrentOrderResponse(response.body());
 
                                 try {
-                                    if (CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getCheckType().equals("normal_order")) {
+                                    if (CurrentOrderData.getInstance().getCurrentOrderResponse()
+                                            .getOrder().getCheckType().equals("normal_order")) {
                                         fillFieldsWithOrderData(response.body());
                                         updateProgress();
                                         productExbandable = true;
@@ -798,7 +801,7 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
         shipping_cost.setText(order.getShippingCost());
 
         Log.d(TAG, "fillFieldsWithOrderData: "+orderResponse.getOrder().getClientCity() +" >> "+order.getShippingCost() +"  --  "+order.getTotalOrderCost());
-        order_total_cost.setText(order.getTotalOrderCost());
+        //order_total_cost.setText(order.getTotalOrderCost());
 
         initCities(orderResponse);
         getSingleOrderProducts();
@@ -807,9 +810,11 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
         } else {
             getMultiOrdersProducts();
             single_order_product_spinner.setVisibility(View.GONE);
+            item_no.setEnabled(false);
         }
 
-        updateOrderTotal();
+        calculateOrderTotal(order.getOrderType());
+        updateOrderTotal(order.getOrderType());
     }
 
     private void getMultiOrdersProducts() {
@@ -926,8 +931,72 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
         });
     }
 
-    private void updateOrderTotal(){
-        item_no.addTextChangedListener(new TextWatcher() {
+    private void calculateOrderTotal(String orderType){
+        int discountValue=0;
+        try {
+             discountValue=Integer.valueOf(discount.getText().toString());
+        }catch (Exception e){
+        }
+
+        int items=1;
+        try {
+             items=Integer.valueOf(item_no.getText().toString());
+        }catch (Exception e){
+        }
+        int shipping=Integer.valueOf(shipping_cost.getText().toString());
+
+        if (orderType.equals(OrderProductsType.SingleOrder.getType())){
+
+            if (items==0){
+                Toast.makeText(getContext(), R.string.enter_valid_quantity, Toast.LENGTH_SHORT).show();
+                int total=Integer.valueOf(item_cost.getText().toString())+shipping;
+                order_total_cost.setText(String.valueOf(total));
+
+                return;
+            }
+            
+            int total=items*Integer.valueOf(item_cost.getText().toString())+shipping;
+            
+            if (discountValue > 0 && discountValue >= total) {
+                Toast.makeText(getContext(), R.string.over_discount_warning, Toast.LENGTH_SHORT).show();
+                order_total_cost.setText(String.valueOf(total));
+                return;
+            }
+            total=total-discountValue;
+            order_total_cost.setText(String.valueOf(total));
+
+
+
+        }else{
+            List<MultiOrderProducts> products =multiOrderProductsAdapter.getProDucts();
+            int total=0;
+            for (MultiOrderProducts product:products) {
+                total+=(Integer.valueOf(product.getItems_no())*Integer.valueOf(product.getItem_cost()));
+
+            }
+            total+=Integer.valueOf(shipping_cost.getText().toString());
+            Log.d("DISCOUNRTR", discountValue+"  calculateOrderTotal: "+total);
+            if (discountValue > 0 && discountValue >= total) {
+                Toast.makeText(getContext(), R.string.over_discount_warning, Toast.LENGTH_SHORT).show();
+                order_total_cost.setText(String.valueOf(total));
+                return;
+            }
+
+            if (discount.getText().length()==0) {
+                order_total_cost.setText(String.valueOf(total));
+                return;
+            }
+            total = total-discountValue;
+            order_total_cost.setText(String.valueOf(total));
+
+        }
+
+    }
+
+    private void updateOrderTotal(String orderType){
+        Log.d("MULTIIIORDERR", "updateOrderTotal");
+
+        TextWatcher textWatcher=new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -937,80 +1006,23 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 Log.d(TAG, i+" "+i1+" "+i2+" onTextChanged: "+charSequence);
 
-                double discountVal=1;
-                if (!discount.getText().toString().isEmpty()&&Integer.valueOf(discount.getText().toString())>0
-                    &&Integer.valueOf(discount.getText().toString())<=100){
-                    discountVal= 1-Double.parseDouble(discount.getText().toString())/100;
-                }
-
-                Double t= ((Integer.parseInt(item_cost.getText().toString())
-                        +Integer.parseInt(shipping_cost.getText().toString()))*discountVal);
-                int total=t.intValue();
-                if (charSequence.equals("0")){
-                    Toast.makeText(getContext(), R.string.wrong_item_quantity_warning, Toast.LENGTH_SHORT).show();
-                    order_total_cost.setText(String.valueOf(total));
-
-                    return;
-                }
-
-                if (i==0&&i2==0){
-                    order_total_cost.setText(String.valueOf(total));
-                    return;
-                }
-
-
-                  t=(Integer.parseInt(item_cost.getText().toString())*Integer.parseInt(item_no.getText().toString())
-                        +Integer.parseInt(shipping_cost.getText().toString()))*discountVal;
-                total=t.intValue();
-                order_total_cost.setText(String.valueOf(total));
+                calculateOrderTotal(orderType);
 
             }
+
+
+
+
 
             @Override
             public void afterTextChanged(Editable editable) {
 
             }
-        });
-
-        discount.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-                int items=1;
-                if (!item_no.getText().toString().isEmpty())
-                     items=Integer.parseInt(item_no.getText().toString());
-
-
-                int total=(Integer.parseInt(item_cost.getText().toString())*items
-                        +Integer.parseInt(shipping_cost.getText().toString()));
-
-                if (charSequence.length()>0&&Integer.valueOf(charSequence.toString())>100){
-                    Toast.makeText(getContext(),R.string.over_discount_warning, Toast.LENGTH_SHORT).show();
-                    order_total_cost.setText(String.valueOf(total));
-                    return;
-                }
-
-                if (i==0&&i2==0){
-                    order_total_cost.setText(String.valueOf(total));
-                    return;
-                }
-                 total=total
-                        *(100-Integer.valueOf(discount.getText().toString()))/100;
-                order_total_cost.setText(String.valueOf(total));
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
-        });
-
+        };
+        if (orderType.equals(OrderProductsType.SingleOrder.getType())) {
+            item_no.addTextChangedListener(textWatcher);
+        }
+        discount.addTextChangedListener(textWatcher);
 
     }
 

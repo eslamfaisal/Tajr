@@ -61,12 +61,6 @@ public class MultiOrderProductsAdapter extends RecyclerView.Adapter<MultiOrderPr
         holder.delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (i == 0) {
-                    Toast.makeText(context, "لا يمكن مسح المنتج الرئيسي", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-
                 showDeleteDialog(CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getId(), String.valueOf(proDuct.getExtra_product_key()), proDuct.getProduct_id(), i);
             }
         });
@@ -131,6 +125,10 @@ public class MultiOrderProductsAdapter extends RecyclerView.Adapter<MultiOrderPr
     public interface GetOrderInterface {
 
         void getOrder();
+    }
+
+    public List<MultiOrderProducts> getProDucts() {
+        return proDucts;
     }
 
     public class Holder extends RecyclerView.ViewHolder {
