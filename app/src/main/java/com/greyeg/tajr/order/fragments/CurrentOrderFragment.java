@@ -790,13 +790,15 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
             item_no.setText(order.getItemsNo());
         else
             item_no.setText("1");
-        order_total_cost.setText(order.getTotalOrderCost());
         sender_name.setText(order.getSenderName());
         order_type.setText(order.getOrderType());
         client_feedback.setText(order.getClientFeedback());
         notes.setText(order.getNotes());
         discount.setText(order.getDiscount());
         shipping_cost.setText(order.getShippingCost());
+
+        Log.d(TAG, "fillFieldsWithOrderData: "+orderResponse.getOrder().getClientCity() +" >> "+order.getShippingCost() +"  --  "+order.getTotalOrderCost());
+        order_total_cost.setText(order.getTotalOrderCost());
 
         initCities(orderResponse);
         getSingleOrderProducts();
