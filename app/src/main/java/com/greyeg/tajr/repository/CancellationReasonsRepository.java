@@ -46,7 +46,7 @@ public class CancellationReasonsRepository {
         isCancellationReasonsLoading.setValue(true);
         Log.d("CANCELLATIONN","from repo "+isCancellationReasonsLoading.getValue());
         BaseClient
-                .getService()
+                .getApiService()
                 .getCancellationReasons(token)
                 .enqueue(new Callback<CancellationReasonsResponse>() {
                     @Override
@@ -87,7 +87,7 @@ public class CancellationReasonsRepository {
         addReasonResponse=new MutableLiveData<>();
         isSubmittingReason.setValue(true);
         BaseClient
-                .getService()
+                .getApiService()
                 .submitNewCancellationReason(token,name)
                 .enqueue(new Callback<AddReasonResponse>() {
                     @Override
@@ -126,7 +126,7 @@ public class CancellationReasonsRepository {
         addReasonToOrder=new MutableLiveData<>();
         isReasonAddingToOrder.setValue(true);
         BaseClient
-                .getService()
+                .getApiService()
                 .addReasonToOrder(token,orderId,reason_id)
                 .enqueue(new Callback<MainResponse>() {
                     @Override

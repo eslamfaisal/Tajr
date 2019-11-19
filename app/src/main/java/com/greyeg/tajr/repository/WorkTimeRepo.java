@@ -31,7 +31,7 @@ public class WorkTimeRepo {
 
         isWorkTimeSending.setValue(true);
         BaseClient
-                .getService()
+                .getApiService()
                 .userWorkTime(token,activity,user_id,action)
                 .enqueue(new Callback<UserWorkTimeResponse>() {
                     @Override
@@ -65,7 +65,7 @@ public class WorkTimeRepo {
                                                                 String action){
 
         return BaseClient
-                .getService()
+                .getApiService()
                 .sendWorkTime(token,activity,user_id,action);
     }
 

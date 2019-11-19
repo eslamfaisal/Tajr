@@ -196,7 +196,7 @@ public class TestActivity extends AppCompatActivity {
 
     public void getCurrentOrder() {
 
-        BaseClient.getBaseClient().create(Api.class).getNewCurrentOrderResponce("pvBZJQ6tEeWDO8UjTnxdcboP")
+        BaseClient.getBaseClient().create(Api.class).getNewCurrentOrder("pvBZJQ6tEeWDO8UjTnxdcboP")
                 .enqueue(new Callback<CurrentOrderResponse>() {
                     @Override
                     public void onResponse(Call<CurrentOrderResponse> call, Response<CurrentOrderResponse> response) {

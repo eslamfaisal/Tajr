@@ -26,4 +26,13 @@ public enum ResponseCodeEnums {
     public String getCode() {
         return this.code;
     }
+    
+    public static boolean loginIssue(String code){
+        return 
+                code.equals(ResponseCodeEnums.code_1407.getCode()) ||
+                        code.equals(ResponseCodeEnums.code_1408.getCode()) ||
+                        code.equals(ResponseCodeEnums.code_1490.getCode()) ||
+                        code.equals(ResponseCodeEnums.code_1511.getCode()) ||
+                        code.equals(ResponseCodeEnums.code_1440.getCode());
+    }
 }

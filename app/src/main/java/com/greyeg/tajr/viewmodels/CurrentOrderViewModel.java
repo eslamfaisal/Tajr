@@ -6,15 +6,20 @@ import androidx.lifecycle.ViewModel;
 import com.greyeg.tajr.models.AddReasonResponse;
 import com.greyeg.tajr.models.CancellationReasonsResponse;
 import com.greyeg.tajr.models.MainResponse;
+import com.greyeg.tajr.order.models.CurrentOrderResponse;
 import com.greyeg.tajr.repository.CancellationReasonsRepository;
+import com.greyeg.tajr.repository.OrdersRepo;
 
 public class CurrentOrderViewModel extends ViewModel {
 
     private MutableLiveData<CancellationReasonsResponse> cancellationReasonsResponse;
     private MutableLiveData<AddReasonResponse> addReason;
     private MutableLiveData<MainResponse> addReasonToOrder;
+    private MutableLiveData<CurrentOrderResponse> currentOrder;
 
 
+
+    //--------- cancellation reasons ------------
     public void getCancellationReasons(String token) {
         cancellationReasonsResponse= CancellationReasonsRepository.getInstance()
                 .getCancellationReasons(token);
@@ -51,6 +56,8 @@ public class CurrentOrderViewModel extends ViewModel {
         return CancellationReasonsRepository.getInstance().getReasonSubmittingError();
     }
 
+    //---------- adding reason to order
+
     public void addReasonToOrder(String token, String orderId, String reason_id){
         addReasonToOrder=CancellationReasonsRepository.getInstance()
                 .addReasonToOrder(token,orderId,reason_id);
@@ -70,6 +77,25 @@ public class CurrentOrderViewModel extends ViewModel {
                 .getReasonAddingToOrderError();
     }
 
+    // ------- getting current order -------------
+    public MutableLiveData<CurrentOrderResponse> getCurrentOrder(String token) {
+
+        return currentOrder=OrdersRepo.getInstance().getCurrentOrder(token);
+    }
+
+    public MutableLiveData<CurrentOrderResponse> getCurrentOrder() {
+        return currentOrder;
+    }
+
+    public MutableLiveData<Boolean> getIsCurrentOrderLoading() {
+        return OrdersRepo.getInstance().getIsCurrentOrderLoading();
+    }
+
+    public MutableLiveData<String> getCurrentOrderLoadingError() {
+        return OrdersRepo.getInstance().getCurrentOrderLoadingError();
+    }
+
+    //-----------  -----------------
 
     @Override
     protected void onCleared() {

@@ -11,6 +11,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class BaseClient {
     private static Retrofit retrofit = null;
+    private static Api  apiService;
 
     private static OkHttpClient buildClient() {
         return new OkHttpClient
@@ -35,8 +36,8 @@ public class BaseClient {
         return retrofit;
     }
 
-    public static Api getService(){
-        return getBaseClient().create(Api.class);
+    public static Api getApiService(){
+        return apiService==null?apiService= getBaseClient().create(Api.class):apiService;
     }
 
 }

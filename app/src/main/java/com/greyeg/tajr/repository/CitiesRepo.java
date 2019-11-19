@@ -20,7 +20,7 @@ public class CitiesRepo {
     public Single<Response<Cities>> getCities(String token, String user_id){
         Single<Response<Cities>> cities=
                 BaseClient
-                .getService()
+                .getApiService()
                 .getCities2(token,user_id);
 
         return cities;

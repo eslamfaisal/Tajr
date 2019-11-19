@@ -279,5 +279,6 @@
     <string name="error_placing_order">Error Placing Order</string>
     <string name="wrong_item_quantity_warning">item_number can not be zero</string>
     <string name="over_discount_warning">discount cannot be more than total price</string>
+    <string name="server_error">A Server Error Has Occured ,Please try again later</string>
 
 </resources>

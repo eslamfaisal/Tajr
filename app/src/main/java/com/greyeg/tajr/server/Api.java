@@ -107,7 +107,7 @@ public interface Api {
 
     @Headers({"Content-Type: application/json"})
     @GET("send_test/get_orders")
-    Call<CurrentOrderResponse> getNewCurrentOrderResponce(@Query("token") String token);
+    Call<CurrentOrderResponse> getNewCurrentOrder(@Query("token") String token);
 
     @FormUrlEncoded
     @POST("send_test/cpanel_login")

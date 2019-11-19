@@ -225,7 +225,7 @@ public class BubbleService extends Service
         String token= SharedHelper.getKey(getApplicationContext(), LoginActivity.TOKEN);
         Log.d("SUBSCRIPERR", "token: "+token);
         startFlasher();
-        BaseClient.getService()
+        BaseClient.getApiService()
                 .getSubscriberInfo(token,userName)
                 .enqueue(new Callback<SubscriberInfo>() {
                     @Override
@@ -267,7 +267,7 @@ public class BubbleService extends Service
     private void getBotBlocks(){
         setBroadCastLoading(View.VISIBLE);
         String token=SharedHelper.getKey(getApplicationContext(),LoginActivity.TOKEN);
-        BaseClient.getService()
+        BaseClient.getApiService()
                 .getBotBlocks(token)
                 .enqueue(new Callback<BotBlocksResponse>() {
                     @Override
@@ -711,7 +711,7 @@ public class BubbleService extends Service
         setBroadCastLoading(View.VISIBLE);
         mWindowManager.removeView(botBlocksDialog);
         String token=SharedHelper.getKey(getApplicationContext(),LoginActivity.TOKEN);
-        BaseClient.getService()
+        BaseClient.getApiService()
                 .sendBroadcast(token, psid,page,blockId)
                 .enqueue(new Callback<Broadcast>() {
                     @Override

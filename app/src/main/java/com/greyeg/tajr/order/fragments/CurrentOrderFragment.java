@@ -679,11 +679,79 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
 
     }
 
-    private void getCurrentOrder() {
+    private void getCurrentOrder(){
+        currentOrderViewModel
+                .getCurrentOrder(SharedHelper.getKey(getContext(),LoginActivity.TOKEN))
+                .observe(getActivity(), new Observer<CurrentOrderResponse>() {
+                    @Override
+                    public void onChanged(CurrentOrderResponse currentOrderResponse) {
+                        if (currentOrderResponse!=null){
+                            if (currentOrderResponse.getCode().equals(ResponseCodeEnums.code_1200.getCode())) {
+                                orderId= Long.valueOf(currentOrderResponse.getOrder().getId());
+                                CurrentOrderData.getInstance().setCurrentOrderResponse(currentOrderResponse);
+
+                                try {
+                                    if (CurrentOrderData.getInstance().getCurrentOrderResponse()
+                                            .getOrder().getCheckType().equals("normal_order")) {
+                                        fillFieldsWithOrderData(currentOrderResponse);
+                                        updateProgress();
+                                        productExbandable = true;
+                                        normal_update_actions.setVisibility(View.VISIBLE);
+                                        shipper_update_actions.setVisibility(View.GONE);
+                                    } else {
+                                        fillFieldsWithOrderData(currentOrderResponse);
+                                        updateProgress();
+                                        productExbandable = true;
+                                        normal_update_actions.setVisibility(View.GONE);
+                                        shipper_update_actions.setVisibility(View.VISIBLE);
+
+                                    }
+                                } catch (Exception e) {
+                                    Log.e("eslamfaissal", "onResponse: ", e);
+                                    Log.d("eslamfaissal", "onResponse: " + currentOrderResponse.toString());
+                                    CurrentOrderData.getInstance().setCurrentOrderResponse(currentOrderResponse);
+                                    fillFieldsWithOrderData(currentOrderResponse);
+                                    updateProgress();
+                                    productExbandable = true;
+                                    normal_update_actions.setVisibility(View.VISIBLE);
+                                    shipper_update_actions.setVisibility(View.GONE);
+                                }
+
+
+                            }
+                            else if (currentOrderResponse.getCode().equals(ResponseCodeEnums.code_1300.getCode())) {
+                                // no new orders all handled
+                                Dialogs.showCustomDialog(getActivity(), getString(R.string.no_more_orders), getString(R.string.order),
+                                        "Back", null, new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                NewOrderActivity.finishWork();
+                                            }
+                                        }, null);
+                            } else if (ResponseCodeEnums.loginIssue(currentOrderResponse.getCode())) {
+
+                                SharedHelper.putKey(getActivity(), IS_LOGIN, "no");
+                                startActivity(new Intent(getActivity(), LoginActivity.class));
+                                NewOrderActivity.finishWork();
+                            }
+                        }else {
+                            showErrorGetCurrentOrderDialog(getString(R.string.server_error));
+                            Log.d(TAG, "onResponse: null = failure" );
+                        }
+                    }
+                });
+    }
+
+    void observeLoadingCurrentOrder(){
+
+    }
+
+
+    private void getCurrentOrder2() {
 
         ProgressDialog progressDialog = showProgressDialog(getActivity(), getString(R.string.fetching_th_order));
         BaseClient.getBaseClient().create(Api.class)
-                .getNewCurrentOrderResponce(SharedHelper.getKey(getActivity(), LoginActivity.TOKEN))
+                .getNewCurrentOrder(SharedHelper.getKey(getActivity(), LoginActivity.TOKEN))
                 .enqueue(new Callback<CurrentOrderResponse>() {
                     @Override
                     public void onResponse(Call<CurrentOrderResponse> call, Response<CurrentOrderResponse> response) {
@@ -1111,7 +1179,12 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
                     @Override
                     public void onResponse(Call<RemainingOrdersResponse> call, Response<RemainingOrdersResponse> response) {
                         if (response.body() != null) {
-                            Log.d("REMAIIGNN", ""+response.body().getResponse());
+                            Log.d("REMAIIGNN", ""+response.body().getInfo()
+                            +" "+response.body().getCode()
+                                            +"  "+response.body().getData()
+                                            +"  "+response.body().getInfo()
+                                    +"  "+firstOrder
+                            );
                             if (!firstOrder) {
                                 firstOrder = true;
                                 firstRemaining = response.body().getData();
