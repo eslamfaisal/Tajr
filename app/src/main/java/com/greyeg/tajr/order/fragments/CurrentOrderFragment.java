@@ -751,7 +751,6 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
                 .observe(getActivity(), new Observer<Boolean>() {
                     @Override
                     public void onChanged(Boolean aBoolean) {
-
                         if (aBoolean!=null&&aBoolean){
                              progressDialog[0] = showProgressDialog(getActivity(), getString(R.string.fetching_th_order));
 
@@ -773,87 +772,6 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
                 });
     }
 
-
-    private void getCurrentOrder2() {
-
-        ProgressDialog progressDialog = showProgressDialog(getActivity(), getString(R.string.fetching_th_order));
-        BaseClient.getBaseClient().create(Api.class)
-                .getNewCurrentOrder(SharedHelper.getKey(getActivity(), LoginActivity.TOKEN))
-                .enqueue(new Callback<CurrentOrderResponse>() {
-                    @Override
-                    public void onResponse(Call<CurrentOrderResponse> call, Response<CurrentOrderResponse> response) {
-                        progressDialog.dismiss();
-                        if (response.body() != null) {
-
-
-                            if (response.body().getCode().equals(ResponseCodeEnums.code_1200.getCode())) {
-                                orderId= Long.valueOf(response.body().getOrder().getId());
-                                Log.d(TAG, "order id: ");
-                                CurrentOrderData.getInstance().setCurrentOrderResponse(response.body());
-
-                                try {
-                                    if (CurrentOrderData.getInstance().getCurrentOrderResponse()
-                                            .getOrder().getCheckType().equals("normal_order")) {
-                                        fillFieldsWithOrderData(response.body());
-                                        updateProgress();
-                                        productExbandable = true;
-                                        normal_update_actions.setVisibility(View.VISIBLE);
-                                        shipper_update_actions.setVisibility(View.GONE);
-                                    } else {
-                                        fillFieldsWithOrderData(response.body());
-                                        updateProgress();
-                                        productExbandable = true;
-                                        normal_update_actions.setVisibility(View.GONE);
-                                        shipper_update_actions.setVisibility(View.VISIBLE);
-
-                                    }
-                                } catch (Exception e) {
-                                    Log.e("eslamfaissal", "onResponse: ", e);
-                                    Log.d("eslamfaissal", "onResponse: " + response.body().toString());
-                                    CurrentOrderData.getInstance().setCurrentOrderResponse(response.body());
-                                    fillFieldsWithOrderData(response.body());
-                                    updateProgress();
-                                    productExbandable = true;
-                                    normal_update_actions.setVisibility(View.VISIBLE);
-                                    shipper_update_actions.setVisibility(View.GONE);
-                                }
-
-
-                            } else if (response.body().getCode().equals(ResponseCodeEnums.code_1300.getCode())) {
-                                // no new orders all handled
-                                Dialogs.showCustomDialog(getActivity(), getString(R.string.no_more_orders), getString(R.string.order),
-                                        "Back", null, new View.OnClickListener() {
-                                            @Override
-                                            public void onClick(View v) {
-                                                NewOrderActivity.finishWork();
-                                            }
-                                        }, null);
-                            } else if (
-                                    response.body().getCode().equals(ResponseCodeEnums.code_1407.getCode()) ||
-                                            response.body().getCode().equals(ResponseCodeEnums.code_1408.getCode()) ||
-                                            response.body().getCode().equals(ResponseCodeEnums.code_1490.getCode()) ||
-                                            response.body().getCode().equals(ResponseCodeEnums.code_1511.getCode()) ||
-                                            response.body().getCode().equals(ResponseCodeEnums.code_1440.getCode())) {
-
-                                SharedHelper.putKey(getActivity(), IS_LOGIN, "no");
-                                startActivity(new Intent(getActivity(), LoginActivity.class));
-                                NewOrderActivity.finishWork();
-                            }
-
-                        } else {
-                            showErrorGetCurrentOrderDialog(response.toString());
-                            Log.d(TAG, "onResponse: null = " + response.toString());
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<CurrentOrderResponse> call, Throwable t) {
-                        progressDialog.dismiss();
-                        showErrorGetCurrentOrderDialog(t.getMessage());
-
-                    }
-                });
-    }
 
     private void showErrorGetCurrentOrderDialog(String msg) {
         errorGetCurrentOrderDialog = Dialogs.showCustomDialog(getActivity(),
