@@ -101,7 +101,7 @@ public class CancelOrderDialog extends DialogFragment implements CancellationRea
 
     private void observeCancellationReasonsResponse(){
         currentOrderViewModel
-                .getCancellationReasonsResponse()
+                .getCancellationReasons()
                 .observe(this, new Observer<CancellationReasonsResponse>() {
                     @Override
                     public void onChanged(CancellationReasonsResponse cancellationReasonsResponse) {

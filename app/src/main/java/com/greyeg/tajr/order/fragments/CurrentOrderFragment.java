@@ -1111,7 +1111,7 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
                     @Override
                     public void onResponse(Call<RemainingOrdersResponse> call, Response<RemainingOrdersResponse> response) {
                         if (response.body() != null) {
-
+                            Log.d("REMAIIGNN", ""+response.body().getResponse());
                             if (!firstOrder) {
                                 firstOrder = true;
                                 firstRemaining = response.body().getData();

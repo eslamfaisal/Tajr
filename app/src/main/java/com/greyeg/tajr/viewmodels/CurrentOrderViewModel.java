@@ -15,6 +15,19 @@ public class CurrentOrderViewModel extends ViewModel {
     private MutableLiveData<MainResponse> addReasonToOrder;
 
 
+    public void getCancellationReasons(String token) {
+        cancellationReasonsResponse= CancellationReasonsRepository.getInstance()
+                .getCancellationReasons(token);
+    }
+
+    public MutableLiveData<CancellationReasonsResponse> getCancellationReasons() {
+        return cancellationReasonsResponse;
+    }
+
+    public MutableLiveData<Boolean> getIsCancellationReasonsLoading(){
+        return CancellationReasonsRepository.getInstance().getIsCancellationReasonsLoading();
+    }
+
     public MutableLiveData<String> getCancellationReasonsLoadingError() {
         return CancellationReasonsRepository.getInstance().getCancellationReasonsLoadingError();
     }
@@ -56,7 +69,6 @@ public class CurrentOrderViewModel extends ViewModel {
         return CancellationReasonsRepository.getInstance()
                 .getReasonAddingToOrderError();
     }
-
 
 
     @Override
