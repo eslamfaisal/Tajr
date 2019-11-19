@@ -11,27 +11,9 @@ import com.greyeg.tajr.repository.CancellationReasonsRepository;
 public class CurrentOrderViewModel extends ViewModel {
 
     private MutableLiveData<CancellationReasonsResponse> cancellationReasonsResponse;
-    private MutableLiveData<Boolean> cancellationReasonsLoading;
-
     private MutableLiveData<AddReasonResponse> addReason;
     private MutableLiveData<MainResponse> addReasonToOrder;
 
-
-    //get order cancellation reason
-    public void getCancellationReasons(String token){
-        cancellationReasonsResponse= CancellationReasonsRepository.getInstance()
-                .getCancellationReasons(token);
-        cancellationReasonsLoading= CancellationReasonsRepository.getInstance().getIsCancellationReasonsLoading();
-
-    }
-
-    public MutableLiveData<CancellationReasonsResponse> getCancellationReasonsResponse() {
-        return cancellationReasonsResponse;
-    }
-
-    public MutableLiveData<Boolean> getIsCancellationReasonsLoading() {
-        return cancellationReasonsLoading;
-    }
 
     public MutableLiveData<String> getCancellationReasonsLoadingError() {
         return CancellationReasonsRepository.getInstance().getCancellationReasonsLoadingError();
@@ -74,6 +56,8 @@ public class CurrentOrderViewModel extends ViewModel {
         return CancellationReasonsRepository.getInstance()
                 .getReasonAddingToOrderError();
     }
+
+
 
     @Override
     protected void onCleared() {

@@ -288,6 +288,7 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
             public void onClick(View v) {
                 toggleFabMode(normalUpdateButton);
                 normalUpdateOrder(OrderUpdateStatusEnums.order_data_confirmed.name());
+                updateClientData();
             }
         });
 
