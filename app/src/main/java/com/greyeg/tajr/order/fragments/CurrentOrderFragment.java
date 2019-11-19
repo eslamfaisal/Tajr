@@ -740,10 +740,37 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
                         }
                     }
                 });
+        observeLoadingCurrentOrder();
+        observeLoadingCurrentOrderError();
     }
 
-    void observeLoadingCurrentOrder(){
+    private void observeLoadingCurrentOrder(){
+        final ProgressDialog[] progressDialog = new ProgressDialog[1];
+        currentOrderViewModel
+                .getIsCurrentOrderLoading()
+                .observe(getActivity(), new Observer<Boolean>() {
+                    @Override
+                    public void onChanged(Boolean aBoolean) {
 
+                        if (aBoolean!=null&&aBoolean){
+                             progressDialog[0] = showProgressDialog(getActivity(), getString(R.string.fetching_th_order));
+
+                        }else {
+                            progressDialog[0].dismiss();
+                        }
+                    }
+                });
+    }
+
+    private void observeLoadingCurrentOrderError(){
+        currentOrderViewModel
+                .getCurrentOrderLoadingError()
+                .observe(getActivity(), new Observer<String>() {
+                    @Override
+                    public void onChanged(String s) {
+                        Toast.makeText(getContext(), s, Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
 
