@@ -10,8 +10,13 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class BaseClient {
+    private static BaseClient baseClient;
     private static Retrofit retrofit = null;
     private static Api  apiService;
+
+    public static BaseClient getInstance() {
+        return baseClient==null?baseClient=new BaseClient():baseClient;
+    }
 
     private static OkHttpClient buildClient() {
         return new OkHttpClient

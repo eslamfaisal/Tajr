@@ -117,8 +117,7 @@ public class NewOrderActivity extends AppCompatActivity implements CurrentCallLi
                 .replace(R.id.Handle_Frame, GuiManger.getInstance().getcurrFragment(), null).commit();
     }
 
-    public static void
-    finishWork() {
+    public static void finishWork() {
         GuiManger.getInstance().getActivity().finish();
     }
 
@@ -142,7 +141,12 @@ public class NewOrderActivity extends AppCompatActivity implements CurrentCallLi
         currentOrderFragment = new CurrentOrderFragment();
         missedCallFragment = new MissedCallFragment();
         checkFromWhat();
-        GuiManger.getInstance().setcurrFragment(currentOrderFragment);
+        //GuiManger.getInstance().setcurrFragment(currentOrderFragment);
+
+
+
+
+        Log.d("WORKTIMEEEEEE", "onCreate: ");
 
 
     }
@@ -230,14 +234,7 @@ public class NewOrderActivity extends AppCompatActivity implements CurrentCallLi
         workTimer.cancel();
     }
 
-    @Override
-    public void onBackPressed() {
-        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-    }
+
 
     void endCAll() {
         //stopService(new Intent(this, FloatLayout.class));
@@ -395,6 +392,7 @@ public class NewOrderActivity extends AppCompatActivity implements CurrentCallLi
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        Log.d("WORKTIMEEEEEE", "onDestroy: ");
         try {
             cancelNotification();
             closeRecords();
@@ -403,6 +401,12 @@ public class NewOrderActivity extends AppCompatActivity implements CurrentCallLi
             Log.d(TAG, "onDestroy: ");
         }
 
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.d("WORKTIMEEEEEE", "onStop: ");
     }
 
     public void cancelNotification() {

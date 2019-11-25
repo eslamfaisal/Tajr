@@ -2,6 +2,8 @@ package com.greyeg.tajr.repository;
 
 import androidx.lifecycle.MutableLiveData;
 
+import com.greyeg.tajr.models.MainResponse;
+import com.greyeg.tajr.models.UserTimePayload;
 import com.greyeg.tajr.models.UserWorkTimeResponse;
 import com.greyeg.tajr.server.BaseClient;
 
@@ -17,8 +19,9 @@ public class WorkTimeRepo {
     private MutableLiveData<Boolean> isWorkTimeSending;
     private MutableLiveData<String> workTimeSendingError;
 
+
     public static WorkTimeRepo getInstance() {
-        return workTimeRepo == null ? new WorkTimeRepo() : workTimeRepo;
+        return workTimeRepo == null ?workTimeRepo= new WorkTimeRepo() : workTimeRepo;
     }
 
     public MutableLiveData<UserWorkTimeResponse> sendWorkTime( String token,
@@ -76,4 +79,11 @@ public class WorkTimeRepo {
     public MutableLiveData<String> getWorkTimeSendingError() {
         return workTimeSendingError;
     }
+
+    public Single<Response<MainResponse>> setUserTime(UserTimePayload userTimePayload){
+        return BaseClient.getApiService()
+                .set_user_time(userTimePayload);
+    }
+
+
 }

@@ -30,6 +30,7 @@ import com.greyeg.tajr.models.UploadPhoneResponse;
 import com.greyeg.tajr.models.UploadVoiceResponse;
 import com.greyeg.tajr.models.UserOrders;
 import com.greyeg.tajr.models.UserResponse;
+import com.greyeg.tajr.models.UserTimePayload;
 import com.greyeg.tajr.models.UserWorkTimeResponse;
 import com.greyeg.tajr.order.models.CurrentOrderResponse;
 import com.greyeg.tajr.order.models.SingleOrderProductsResponse;
@@ -97,6 +98,11 @@ public interface Api {
                                                        @Field("activity") String activity,
                                                        @Field("user_id") String user_id,
                                                        @Field("action") String action);
+
+
+    @FormUrlEncoded
+    @POST("send_test/set_user_time")
+    Single<Response<MainResponse>> set_user_time(UserTimePayload userTimePayload);
 
     @Multipart
     @POST("send_test/upload_voice_notes")
