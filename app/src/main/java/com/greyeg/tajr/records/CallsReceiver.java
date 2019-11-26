@@ -4,9 +4,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.provider.CallLog;
+import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.widget.Toast;
@@ -48,13 +51,20 @@ public class CallsReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(final Context context, Intent intent) {
+
+        if (intent.getStringExtra(TelephonyManager.EXTRA_STATE).equals(TelephonyManager.EXTRA_STATE_IDLE)){
+            getCallDuration(context);
+        }
+        //getCallDuration(context);
+
+        Log.d("CALLLLLLL", "onReceive: "+intent.getStringExtra(TelephonyManager.EXTRA_STATE));
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
 //        Toast.makeText(context, "تم بدء مكالمة", Toast.LENGTH_SHORT).show();
         boolean switchCheckOn = pref.getBoolean("switchOn", true);
         if (switchCheckOn) try {
 
 
-            if (intent.getAction().equals("android.intent.action.NEW_OUTGOING_CALL")) {
+            if (intent.getAction()!=null&&intent.getAction().equals("android.intent.action.NEW_OUTGOING_CALL")) {
                 savedNumber = intent.getExtras().getString("android.intent.extra.PHONE_NUMBER");
                 final Intent intent2 = new Intent(context, EmptyCallActivity.class);
                 intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -75,7 +85,7 @@ public class CallsReceiver extends BroadcastReceiver {
 
 
 
-            if (state.equals(TelephonyManager.EXTRA_STATE_RINGING)) {
+            if (state!=null&&state.equals(TelephonyManager.EXTRA_STATE_RINGING)) {
 
                 String incomingNumber = intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER);
                 Toast.makeText(context, "incoming call  " + incomingNumber, Toast.LENGTH_SHORT).show();
@@ -109,11 +119,12 @@ public class CallsReceiver extends BroadcastReceiver {
                 /*int j=pref.getInt("numOfCalls",0);
                 pref.edit().putInt("numOfCalls",++j).apply();
                 Log.d(TAG, "onReceive: num of calls "+ pref.getInt("numOfCalls",0));*/
-            } else if (state.equals(TelephonyManager.EXTRA_STATE_OFFHOOK)/*&& pref.getInt("numOfCalls",1)==1*/) {
+            } else if (state!=null&&state.equals(TelephonyManager.EXTRA_STATE_OFFHOOK)/*&& pref.getInt("numOfCalls",1)==1*/) {
 
                 int j = pref.getInt("numOfCalls", 0);
                 pref.edit().putInt("numOfCalls", ++j).apply();
 
+                if (CurrentOrderData.getInstance().getCurrentOrderResponse()!=null)
                 phoneNumber = CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getPhone1();
 
                 if (pref.getInt("numOfCalls", 1) == 1) {
@@ -124,7 +135,8 @@ public class CallsReceiver extends BroadcastReceiver {
                     //name=new CommonMethods().getContactName(phoneNumber,context);
                 }
 
-            } else if (state.equals(TelephonyManager.EXTRA_STATE_IDLE)) {
+            } else if (state!=null&&state.equals(TelephonyManager.EXTRA_STATE_IDLE)) {
+
                 int k = pref.getInt("numOfCalls", 1);
                 pref.edit().putInt("numOfCalls", --k).apply();
                 int l = pref.getInt("numOfCalls", 0);
@@ -149,6 +161,29 @@ public class CallsReceiver extends BroadcastReceiver {
 
         } catch (Exception e) {
             e.printStackTrace();
+            Log.d("CALLLLLLL", e.getMessage());
+
         }
     }
+
+
+    private void getCallDuration(Context context){
+
+        Log.d("CALLLLLLL","start calculating");
+
+        Cursor c = context.getContentResolver().query(
+
+                android.provider.CallLog.Calls.CONTENT_URI,
+
+                null, null, null,
+
+                android.provider.CallLog.Calls.DATE + " DESC "+ " LIMIT 1");
+
+        while (c.moveToNext()){
+            Log.d("CALLLLLLL", "getCallDuration: "+c.getString(c.getColumnIndex(CallLog.Calls.DURATION)));
+        }
+
+        Log.d("CALLLLLLL","--------------------------------------------------/n");
+    }
+
 }

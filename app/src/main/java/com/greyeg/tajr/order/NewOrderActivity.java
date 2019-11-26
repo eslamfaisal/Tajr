@@ -141,7 +141,7 @@ public class NewOrderActivity extends AppCompatActivity implements CurrentCallLi
         currentOrderFragment = new CurrentOrderFragment();
         missedCallFragment = new MissedCallFragment();
         checkFromWhat();
-        //GuiManger.getInstance().setcurrFragment(currentOrderFragment);
+        GuiManger.getInstance().setcurrFragment(currentOrderFragment);
 
 
 
