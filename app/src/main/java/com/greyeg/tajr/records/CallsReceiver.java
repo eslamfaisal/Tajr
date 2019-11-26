@@ -51,13 +51,22 @@ public class CallsReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(final Context context, Intent intent) {
+        String state=intent.getStringExtra(TelephonyManager.EXTRA_STATE);
+        String number=intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER);
 
-        if (intent.getStringExtra(TelephonyManager.EXTRA_STATE).equals(TelephonyManager.EXTRA_STATE_IDLE)){
-            getCallDuration(context);
+        String orderPhone=null;
+        if (CurrentOrderData.getInstance().getCurrentOrderResponse()!=null)
+             orderPhone =CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getPhone1();
+
+        Log.d("CALLLLLLL", "number : "+number );
+        if (number==null) return;
+
+
+
+        if (state!=null&& state.equals(TelephonyManager.EXTRA_STATE_IDLE)){
+            getCallDuration(context,number,orderPhone);
         }
-        //getCallDuration(context);
 
-        Log.d("CALLLLLLL", "onReceive: "+intent.getStringExtra(TelephonyManager.EXTRA_STATE));
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
 //        Toast.makeText(context, "تم بدء مكالمة", Toast.LENGTH_SHORT).show();
         boolean switchCheckOn = pref.getBoolean("switchOn", true);
@@ -81,7 +90,6 @@ public class CallsReceiver extends BroadcastReceiver {
             System.out.println("Receiver Start");
 
             Bundle extras = intent.getExtras();
-            String state = extras.getString(TelephonyManager.EXTRA_STATE);
 
 
 
@@ -167,9 +175,8 @@ public class CallsReceiver extends BroadcastReceiver {
     }
 
 
-    private void getCallDuration(Context context){
-
-        Log.d("CALLLLLLL","start calculating");
+    private void getCallDuration(Context context,String number,String orderPhone){
+        if (!number.equals(orderPhone))return;
 
         Cursor c = context.getContentResolver().query(
 
@@ -179,11 +186,12 @@ public class CallsReceiver extends BroadcastReceiver {
 
                 android.provider.CallLog.Calls.DATE + " DESC "+ " LIMIT 1");
 
-        while (c.moveToNext()){
-            Log.d("CALLLLLLL", "getCallDuration: "+c.getString(c.getColumnIndex(CallLog.Calls.DURATION)));
+        while (c!=null&&c.moveToNext()){
+            Log.d("CALLLLLLL", "getCallDuration: "
+                    +"  "+c.getString(c.getColumnIndex(CallLog.Calls.NUMBER))
+                    +""+c.getString(c.getColumnIndex(CallLog.Calls.DURATION)));
         }
 
-        Log.d("CALLLLLLL","--------------------------------------------------/n");
     }
 
 }
