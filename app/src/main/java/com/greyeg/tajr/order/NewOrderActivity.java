@@ -136,7 +136,6 @@ public class NewOrderActivity extends AppCompatActivity implements CurrentCallLi
         showFragment(currentOrderFragment,false);
 
 
-
         Log.d("WORKTIMEEEEEE", "onCreate: ");
 
 
@@ -234,6 +233,9 @@ public class NewOrderActivity extends AppCompatActivity implements CurrentCallLi
         workTimer.cancel();
     }
 
+    public static void finishWork(){
+
+    }
 
 
     void endCAll() {

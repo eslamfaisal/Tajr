@@ -36,6 +36,10 @@ public class CurrentOrderResponse implements Serializable {
     @Expose
     private List<City> cities = null;
 
+    @SerializedName("history_line")
+    @Expose
+    private String history_line;
+
     public String getCode() {
         return code;
     }
@@ -108,6 +112,10 @@ public class CurrentOrderResponse implements Serializable {
         this.cities = cities;
     }
 
+    public String getHistory_line() {
+        return history_line;
+    }
+
     @Override
     public String toString() {
         return "CurrentOrderResponse{" +
@@ -120,6 +128,7 @@ public class CurrentOrderResponse implements Serializable {
                 ", checkType='" + checkType + '\'' +
                 ", order=" + order +
                 ", cities=" + cities +
+                ", history_line=" + history_line +
                 '}';
     }
 }

@@ -725,14 +725,14 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
                                         "Back", null, new View.OnClickListener() {
                                             @Override
                                             public void onClick(View v) {
-                                                NewOrderActivity.finishWork();
+                                                getActivity().finish();
                                             }
                                         }, null);
                             } else if (ResponseCodeEnums.loginIssue(currentOrderResponse.getCode())) {
 
                                 SharedHelper.putKey(getActivity(), IS_LOGIN, "no");
                                 startActivity(new Intent(getActivity(), LoginActivity.class));
-                                NewOrderActivity.finishWork();
+                                getActivity().finish();
                             }
                         }else {
                             showErrorGetCurrentOrderDialog(getString(R.string.server_error));
