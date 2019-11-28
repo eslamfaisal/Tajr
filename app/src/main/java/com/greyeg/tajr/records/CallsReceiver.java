@@ -18,15 +18,22 @@ import com.greyeg.tajr.activities.EmptyCallActivity;
 import com.greyeg.tajr.activities.LoginActivity;
 import com.greyeg.tajr.helper.CurrentCallListener;
 import com.greyeg.tajr.helper.SharedHelper;
+import com.greyeg.tajr.models.CallTimePayload;
+import com.greyeg.tajr.models.CallTimeResponse;
 import com.greyeg.tajr.models.SimpleOrderResponse;
 import com.greyeg.tajr.order.CurrentOrderData;
 import com.greyeg.tajr.order.NewOrderActivity;
 import com.greyeg.tajr.order.models.CurrentOrderResponse;
 import com.greyeg.tajr.over.MissedCallNoOrderService;
 import com.greyeg.tajr.over.MissedCallOrderService;
+import com.greyeg.tajr.repository.CallTimeRepo;
 import com.greyeg.tajr.server.Api;
 import com.greyeg.tajr.server.BaseClient;
 
+import io.reactivex.SingleObserver;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -44,6 +51,7 @@ public class CallsReceiver extends BroadcastReceiver {
     public static boolean inCall = false;
     static boolean recordStarted;
     private static String savedNumber;
+    private static int outgoing=-1;
 
     public static void setCurrentCallListener(CurrentCallListener listener) {
         currentCallListener = listener;
@@ -58,12 +66,22 @@ public class CallsReceiver extends BroadcastReceiver {
         if (CurrentOrderData.getInstance().getCurrentOrderResponse()!=null)
              orderPhone =CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getPhone1();
 
-        Log.d("CALLLLLLL", "number : "+number );
-        if (number==null) return;
+        //Log.d("CALLLLLLL", "number : "+number );
+        Log.d("CALLLLLLL", "state : "+state );
+        Log.d("CALLLLLLL", "action : "+intent.getAction() );
+        if (number==null){
+            if (intent.getAction()!=null&&intent.getAction().equals(Intent.ACTION_NEW_OUTGOING_CALL))
+                outgoing=1;
+            Log.d("CALLLLLLL", "inside outgoing : "+outgoing);
+
+            return;
+        }
+
+        Log.d("CALLLLLLL", "outgoing : "+outgoing);
+        Log.d("CALLLLLLL", "------------------------ : ");
 
 
-
-        if (state!=null&& state.equals(TelephonyManager.EXTRA_STATE_IDLE)){
+        if (state!=null&& state.equals(TelephonyManager.EXTRA_STATE_IDLE)&&outgoing==1){
             getCallDuration(context,number,orderPhone);
         }
 
@@ -169,6 +187,7 @@ public class CallsReceiver extends BroadcastReceiver {
 
         } catch (Exception e) {
             e.printStackTrace();
+            //todo cache call
             Log.d("CALLLLLLL", e.getMessage());
 
         }
@@ -176,7 +195,7 @@ public class CallsReceiver extends BroadcastReceiver {
 
 
     private void getCallDuration(Context context,String number,String orderPhone){
-        if (!number.equals(orderPhone))return;
+        //if (!number.equals(orderPhone))return;
 
         Cursor c = context.getContentResolver().query(
 
@@ -189,9 +208,51 @@ public class CallsReceiver extends BroadcastReceiver {
         while (c!=null&&c.moveToNext()){
             Log.d("CALLLLLLL", "getCallDuration: "
                     +"  "+c.getString(c.getColumnIndex(CallLog.Calls.NUMBER))
-                    +""+c.getString(c.getColumnIndex(CallLog.Calls.DURATION)));
+                    +"   "+c.getString(c.getColumnIndex(CallLog.Calls.DURATION))
+                    +"   "+c.getString(c.getColumnIndex(CallLog.Calls.DATE))
+
+            );
+//            setCallTime(context
+//                    ,"1","1"
+//                    ,c.getString(c.getColumnIndex(CallLog.Calls.DURATION))
+//            );
+
         }
 
     }
+
+    private void setCallTime(Context context,String order_id,String history_id,String duration){
+        String token=SharedHelper.getKey(context,LoginActivity.TOKEN);
+        CallTimePayload callTimePayload=new CallTimePayload(token,order_id,history_id,duration);
+        CallTimeRepo
+                .getInstance()
+                .setCallTime(callTimePayload)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new SingleObserver<Response<CallTimeResponse>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onSuccess(Response<CallTimeResponse> response) {
+                        CallTimeResponse callTimeResponse=response.body();
+                        if (response.isSuccessful()&&callTimeResponse!=null){
+                            Log.d("CALLLTIMEE", "onSuccess: "+callTimeResponse.getData());
+                        }else{
+                            Log.d("CALLLTIMEE", "on failure: ");
+
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.d("CALLLTIMEE", "onError: "+e.getMessage());
+                    }
+                });
+    }
+
+
 
 }

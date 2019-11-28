@@ -6,6 +6,8 @@ import com.greyeg.tajr.models.AdminRecordsResponse;
 import com.greyeg.tajr.models.AllProducts;
 import com.greyeg.tajr.models.BotBlocksResponse;
 import com.greyeg.tajr.models.Broadcast;
+import com.greyeg.tajr.models.CallTimePayload;
+import com.greyeg.tajr.models.CallTimeResponse;
 import com.greyeg.tajr.models.CancellationReasonsResponse;
 import com.greyeg.tajr.models.CardsResponse;
 import com.greyeg.tajr.models.CartResponse;
@@ -35,12 +37,9 @@ import com.greyeg.tajr.models.UserWorkTimeResponse;
 import com.greyeg.tajr.order.models.CurrentOrderResponse;
 import com.greyeg.tajr.order.models.SingleOrderProductsResponse;
 
-import java.util.ArrayList;
-
 import io.reactivex.Single;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.http.Body;
@@ -460,5 +459,8 @@ public interface Api {
                                         @Field("order_id") String order_id,
                                         @Field("reason_id") String reason_id);
 
+
+    @POST("send_test/set_call_time")
+    Single<Response<CallTimeResponse>> setCallTime(@Body CallTimePayload callTImePayload);
 
 }
