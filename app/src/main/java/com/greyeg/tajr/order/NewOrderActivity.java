@@ -25,12 +25,10 @@ import android.widget.Toast;
 
 import com.android.internal.telephony.ITelephony;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.greyeg.tajr.MainActivity;
 import com.greyeg.tajr.R;
 import com.greyeg.tajr.activities.LoginActivity;
 import com.greyeg.tajr.calc.CalcDialog;
 import com.greyeg.tajr.helper.CurrentCallListener;
-import com.greyeg.tajr.helper.GuiManger;
 import com.greyeg.tajr.helper.SharedHelper;
 import com.greyeg.tajr.models.LastCallDetails;
 import com.greyeg.tajr.models.UploadPhoneResponse;
@@ -57,7 +55,10 @@ import java.util.concurrent.TimeUnit;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import okhttp3.MediaType;
@@ -111,15 +112,7 @@ public class NewOrderActivity extends AppCompatActivity implements CurrentCallLi
     private DatabaseManager databaseManager;
     private boolean fromBuble = false;
 
-    //GUIManger Methods
-    public static void update() {
-        GuiManger.getInstance().getFragmentManager().beginTransaction().addToBackStack("")
-                .replace(R.id.Handle_Frame, GuiManger.getInstance().getcurrFragment(), null).commit();
-    }
 
-    public static void finishWork() {
-        GuiManger.getInstance().getActivity().finish();
-    }
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -136,13 +129,11 @@ public class NewOrderActivity extends AppCompatActivity implements CurrentCallLi
         openRecords();
         initToolBar();
         initCallController();
-        GuiManger.getInstance().setActivity(this);
-        GuiManger.getInstance().setFragmentManager(getSupportFragmentManager());
         currentOrderFragment = new CurrentOrderFragment();
         missedCallFragment = new MissedCallFragment();
         checkFromWhat();
-        GuiManger.getInstance().setcurrFragment(currentOrderFragment);
 
+        showFragment(currentOrderFragment,false);
 
 
 
@@ -182,6 +173,15 @@ public class NewOrderActivity extends AppCompatActivity implements CurrentCallLi
         }
 
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+
+    }
+
+    private void showFragment(Fragment fragment,boolean addToBackStack){
+        FragmentTransaction fragmentTransaction =getSupportFragmentManager()
+                .beginTransaction();
+        if (addToBackStack)fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.replace(R.id.Handle_Frame,fragment).commit();
+
 
     }
 
@@ -317,13 +317,13 @@ public class NewOrderActivity extends AppCompatActivity implements CurrentCallLi
         if (id == R.id.calc) {
             showCalculatoe();
         } else if (id == R.id.finish_work) {
-            finishWork();
+            finish();
         } else if (id == R.id.show_missed_call) {
-            if (GuiManger.getInstance().getcurrFragment() instanceof MissedCallFragment) {
-                GuiManger.getInstance().setcurrFragment(currentOrderFragment);
-            } else if (GuiManger.getInstance().getcurrFragment() instanceof CurrentOrderFragment) {
-                GuiManger.getInstance().setcurrFragment(missedCallFragment);
-            }
+            if (getSupportFragmentManager().findFragmentById(R.id.Handle_Frame) instanceof MissedCallFragment)
+                showFragment(currentOrderFragment,true);
+            if (getSupportFragmentManager().findFragmentById(R.id.Handle_Frame) instanceof CurrentOrderFragment)
+                showFragment(missedCallFragment,true);
+
         }
         return super.onOptionsItemSelected(item);
     }
