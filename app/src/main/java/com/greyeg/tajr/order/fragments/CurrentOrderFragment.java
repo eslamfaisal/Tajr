@@ -36,12 +36,16 @@ import android.widget.Toast;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.greyeg.tajr.R;
 import com.greyeg.tajr.activities.LoginActivity;
+import com.greyeg.tajr.helper.CallTimeManager;
 import com.greyeg.tajr.helper.SharedHelper;
 import com.greyeg.tajr.helper.ViewAnimation;
+import com.greyeg.tajr.models.CallActivity;
+import com.greyeg.tajr.models.CallTimePayload;
+import com.greyeg.tajr.models.CallTimeResponse;
 import com.greyeg.tajr.models.DeleteAddProductResponse;
 import com.greyeg.tajr.models.MainResponse;
 import com.greyeg.tajr.models.RemainingOrdersResponse;
-import com.greyeg.tajr.models.UpdateOrederNewResponse;
+import com.greyeg.tajr.models.UpdateOrderNewResponse;
 import com.greyeg.tajr.order.CurrentOrderData;
 import com.greyeg.tajr.order.NewOrderActivity;
 import com.greyeg.tajr.order.adapters.MultiOrderProductsAdapter;
@@ -367,16 +371,16 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
                 CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getId(),
                 action,
                 CurrentOrderData.getInstance().getCurrentOrderResponse().getUserId()
-        ).enqueue(new Callback<UpdateOrederNewResponse>() {
+        ).enqueue(new Callback<UpdateOrderNewResponse>() {
             @Override
-            public void onResponse(@NotNull Call<UpdateOrederNewResponse> call, @NotNull Response<UpdateOrederNewResponse> response) {
+            public void onResponse(@NotNull Call<UpdateOrderNewResponse> call, @NotNull Response<UpdateOrderNewResponse> response) {
                 progressDialog.dismiss();
                 getCurrentOrder();
                 Log.d(TAG, "onResponse: " + response.toString());
             }
 
             @Override
-            public void onFailure(Call<UpdateOrederNewResponse> call, Throwable t) {
+            public void onFailure(Call<UpdateOrderNewResponse> call, Throwable t) {
                 progressDialog.dismiss();
                 getCurrentOrder();
                 Log.d(TAG, "onResponse: " + t.getMessage());
@@ -488,22 +492,51 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
                 CurrentOrderData.getInstance().getCurrentOrderResponse().getUserId(),
                 status
         )
-                .enqueue(new Callback<UpdateOrederNewResponse>() {
+                .enqueue(new Callback<UpdateOrderNewResponse>() {
                     @Override
-                    public void onResponse(Call<UpdateOrederNewResponse> call, Response<UpdateOrederNewResponse> response) {
+                    public void onResponse(Call<UpdateOrderNewResponse> call, Response<UpdateOrderNewResponse> response) {
                         progressDialog.dismiss();
+
+                        UpdateOrderNewResponse updateOrderNewResponse =response.body();
+                        if (updateOrderNewResponse!=null)
+                        handleCallTime(updateOrderNewResponse.getOrder_id(),updateOrderNewResponse.getHistory_line());
                         getCurrentOrder();
                         Log.d(TAG, "onResponse: " + response.toString());
                     }
 
                     @Override
-                    public void onFailure(Call<UpdateOrederNewResponse> call, Throwable t) {
+                    public void onFailure(Call<UpdateOrderNewResponse> call, Throwable t) {
                         progressDialog.dismiss();
                         Log.d(TAG, "onFailure: " + t.getMessage());
                         showErrorGetCurrentOrderDialog(getString(R.string.error_has_occured));
                     }
                 });
     }
+
+    private void handleCallTime(String order_id,String history_line){
+        ArrayList<CallActivity> callActivity=CallTimeManager.getInstance(getContext())
+                .getCallActivity();
+
+        for (CallActivity activity:callActivity) {
+            activity.setHistory_line(history_line);
+        }
+
+        String token=SharedHelper.getKey(getContext(),LoginActivity.TOKEN);
+        CallTimePayload payload=new CallTimePayload(token,order_id,callActivity);
+
+        currentOrderViewModel
+                .setCallTime(payload)
+                .observe(getActivity(), new Observer<CallTimeResponse>() {
+                    @Override
+                    public void onChanged(CallTimeResponse callTimeResponse) {
+                        Toast.makeText(getContext(), callTimeResponse.getData(), Toast.LENGTH_LONG).show();
+                        CallTimeManager.getInstance(getContext())
+                                .emptyCallsHistory();
+                    }
+                });
+
+    }
+
 
     private void chooseDate() {
         final Calendar calendar = Calendar.getInstance();
@@ -526,16 +559,16 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
                             dateString,
                             CurrentOrderData.getInstance().getCurrentOrderResponse().getUserId(),
                             OrderUpdateStatusEnums.client_delay.name()
-                    ).enqueue(new Callback<UpdateOrederNewResponse>() {
+                    ).enqueue(new Callback<UpdateOrderNewResponse>() {
                         @Override
-                        public void onResponse(@NotNull Call<UpdateOrederNewResponse> call, @NotNull Response<UpdateOrederNewResponse> response) {
+                        public void onResponse(@NotNull Call<UpdateOrderNewResponse> call, @NotNull Response<UpdateOrderNewResponse> response) {
                             progressDialog.dismiss();
                             getCurrentOrder();
                             Log.d(TAG, "onResponse: " + response.toString());
                         }
 
                         @Override
-                        public void onFailure(Call<UpdateOrederNewResponse> call, Throwable t) {
+                        public void onFailure(Call<UpdateOrderNewResponse> call, Throwable t) {
                             progressDialog.dismiss();
                             Log.d(TAG, "onFailure: " + t.getMessage());
                             showErrorGetCurrentOrderDialog(t.getMessage());
@@ -751,6 +784,7 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
                 .observe(getActivity(), new Observer<Boolean>() {
                     @Override
                     public void onChanged(Boolean aBoolean) {
+                        Log.d("DDIAALOOOOGGG", "onChanged: "+aBoolean);
                         if (aBoolean!=null&&aBoolean){
                              progressDialog[0] = showProgressDialog(getActivity(), getString(R.string.fetching_th_order));
 

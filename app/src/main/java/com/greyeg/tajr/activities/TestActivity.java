@@ -17,7 +17,7 @@ import com.greyeg.tajr.models.NewOrderResponse;
 import com.greyeg.tajr.models.OrderStatusHistoryResponse;
 import com.greyeg.tajr.models.RemainingOrdersResponse;
 import com.greyeg.tajr.models.SimpleResponse;
-import com.greyeg.tajr.models.UpdateOrederNewResponse;
+import com.greyeg.tajr.models.UpdateOrderNewResponse;
 import com.greyeg.tajr.models.UploadPhoneResponse;
 import com.greyeg.tajr.models.UploadVoiceResponse;
 import com.greyeg.tajr.models.UserWorkTimeResponse;
@@ -238,15 +238,15 @@ public class TestActivity extends AppCompatActivity {
     public void updateOrder() {
         BaseClient.getBaseClient().create(Api.class).updateOrders("pvBZJQ6tEeWDO8UjTnxdcboP", "8329",
                 "127", "client_noanswer")
-                .enqueue(new Callback<UpdateOrederNewResponse>() {
+                .enqueue(new Callback<UpdateOrderNewResponse>() {
                     @Override
-                    public void onResponse(Call<UpdateOrederNewResponse> call, Response<UpdateOrederNewResponse> response) {
+                    public void onResponse(Call<UpdateOrderNewResponse> call, Response<UpdateOrderNewResponse> response) {
                         success.setText(response.body().toString());
                         Log.d(TAG, "onResponse: " + response.toString());
                     }
 
                     @Override
-                    public void onFailure(Call<UpdateOrederNewResponse> call, Throwable t) {
+                    public void onFailure(Call<UpdateOrderNewResponse> call, Throwable t) {
 
                         Log.d(TAG, "onFailure: " + t.getMessage());
                         error.setText(t.getMessage());
@@ -322,15 +322,15 @@ public class TestActivity extends AppCompatActivity {
                 "pvBZJQ6tEeWDO8UjTnxdcboP",
                 "7550", "client_noanswer",
                 "127"
-        ).enqueue(new Callback<UpdateOrederNewResponse>() {
+        ).enqueue(new Callback<UpdateOrderNewResponse>() {
             @Override
-            public void onResponse(Call<UpdateOrederNewResponse> call, Response<UpdateOrederNewResponse> response) {
+            public void onResponse(Call<UpdateOrderNewResponse> call, Response<UpdateOrderNewResponse> response) {
                 success.setText(response.body().toString());
                 Log.d(TAG, "onResponse: " + response.toString());
             }
 
             @Override
-            public void onFailure(Call<UpdateOrederNewResponse> call, Throwable t) {
+            public void onFailure(Call<UpdateOrderNewResponse> call, Throwable t) {
                 Log.d(TAG, "onFailure: " + t.getMessage());
                 error.setText(t.getMessage());
             }
@@ -461,16 +461,16 @@ public class TestActivity extends AppCompatActivity {
                             dateString,
                             "127",
                             "client_delay"
-                    ).enqueue(new Callback<UpdateOrederNewResponse>() {
+                    ).enqueue(new Callback<UpdateOrderNewResponse>() {
                         @Override
-                        public void onResponse(@NotNull Call<UpdateOrederNewResponse> call, @NotNull Response<UpdateOrederNewResponse> response) {
+                        public void onResponse(@NotNull Call<UpdateOrderNewResponse> call, @NotNull Response<UpdateOrderNewResponse> response) {
                             success.setText(response.body().toString());
                             Log.d(TAG, "onResponse: " + response.toString());
 
                         }
 
                         @Override
-                        public void onFailure(Call<UpdateOrederNewResponse> call, Throwable t) {
+                        public void onFailure(Call<UpdateOrderNewResponse> call, Throwable t) {
                             Log.d(TAG, "onFailure: " + t.getMessage());
                             error.setText(t.getMessage());
                         }

@@ -1,44 +1,25 @@
 package com.greyeg.tajr.over;
 
-import android.annotation.SuppressLint;
-import android.app.DatePickerDialog;
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.text.InputType;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.view.inputmethod.EditorInfo;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.greyeg.tajr.R;
 import com.greyeg.tajr.activities.LoginActivity;
 import com.greyeg.tajr.helper.SharedHelper;
-import com.greyeg.tajr.helper.ViewAnimation;
 import com.greyeg.tajr.helper.font.RobotoTextView;
-import com.greyeg.tajr.models.DeleteAddProductResponse;
-import com.greyeg.tajr.models.UpdateOrederNewResponse;
 import com.greyeg.tajr.order.CurrentOrderData;
 import com.greyeg.tajr.order.NewOrderActivity;
 import com.greyeg.tajr.order.adapters.MultiOrderProductsAdapter;
 import com.greyeg.tajr.order.adapters.SignleOrderProductsAdapter;
 import com.greyeg.tajr.order.enums.OrderProductsType;
-import com.greyeg.tajr.order.enums.OrderUpdateStatusEnums;
-import com.greyeg.tajr.order.enums.ResponseCodeEnums;
 import com.greyeg.tajr.order.models.City;
 import com.greyeg.tajr.order.models.CurrentOrderResponse;
 import com.greyeg.tajr.order.models.Order;
@@ -46,16 +27,10 @@ import com.greyeg.tajr.order.models.Product;
 import com.greyeg.tajr.order.models.SingleOrderProductsResponse;
 import com.greyeg.tajr.server.Api;
 import com.greyeg.tajr.server.BaseClient;
-import com.greyeg.tajr.view.dialogs.Dialogs;
 
-import org.jetbrains.annotations.NotNull;
-
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
@@ -67,8 +42,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import static android.content.Context.LAYOUT_INFLATER_SERVICE;
-import static com.greyeg.tajr.activities.LoginActivity.IS_LOGIN;
-import static com.greyeg.tajr.view.dialogs.Dialogs.showProgressDialog;
 
 public class MissedCallScreenNewOrderContent implements Content {
 

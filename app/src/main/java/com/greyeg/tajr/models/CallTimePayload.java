@@ -1,51 +1,40 @@
 package com.greyeg.tajr.models;
 
+import java.util.ArrayList;
+
 public class CallTimePayload {
 
     private String token;
     private String order_id;
-    private String history_line;
-    private String duration;
-    private String verb;
-    private String count;
+    private ArrayList<CallActivity> activity;
 
-    public CallTimePayload(String token, String order_id, String history_line, String duration, String verb, String count) {
+    public CallTimePayload(String token, String order_id, ArrayList<CallActivity> activity) {
         this.token = token;
         this.order_id = order_id;
-        this.history_line = history_line;
-        this.duration = duration;
-        this.verb = verb;
-        this.count = count;
-    }
-
-    public CallTimePayload(String token, String order_id, String history_line, String duration) {
-        this.token = token;
-        this.order_id = order_id;
-        this.history_line = history_line;
-        this.duration = duration;
+        this.activity = activity;
     }
 
     public String getToken() {
         return token;
     }
 
+    public void setToken(String token) {
+        this.token = token;
+    }
+
     public String getOrder_id() {
         return order_id;
     }
 
-    public String getHistory_line() {
-        return history_line;
+    public void setOrder_id(String order_id) {
+        this.order_id = order_id;
     }
 
-    public String getDuration() {
-        return duration;
+    public ArrayList<CallActivity> getActivity() {
+        return activity;
     }
 
-    public String getVerb() {
-        return verb;
-    }
-
-    public String getCount() {
-        return count;
+    public void setActivity(ArrayList<CallActivity> activity) {
+        this.activity = activity;
     }
 }

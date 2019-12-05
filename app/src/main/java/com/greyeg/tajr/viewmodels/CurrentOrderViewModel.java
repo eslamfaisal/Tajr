@@ -4,11 +4,20 @@ import android.util.Log;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import com.greyeg.tajr.models.AddReasonResponse;
+import com.greyeg.tajr.models.CallTimePayload;
+import com.greyeg.tajr.models.CallTimeResponse;
 import com.greyeg.tajr.models.CancellationReasonsResponse;
 import com.greyeg.tajr.models.MainResponse;
 import com.greyeg.tajr.order.models.CurrentOrderResponse;
+import com.greyeg.tajr.repository.CallTimeRepo;
 import com.greyeg.tajr.repository.CancellationReasonsRepository;
 import com.greyeg.tajr.repository.OrdersRepo;
+
+import io.reactivex.SingleObserver;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+import retrofit2.Response;
 
 public class CurrentOrderViewModel extends ViewModel {
 
@@ -16,6 +25,7 @@ public class CurrentOrderViewModel extends ViewModel {
     private MutableLiveData<AddReasonResponse> addReason;
     private MutableLiveData<MainResponse> addReasonToOrder;
     private MutableLiveData<CurrentOrderResponse> currentOrder;
+    private MutableLiveData<CallTimeResponse> callTime;
 
 
 
@@ -95,7 +105,35 @@ public class CurrentOrderViewModel extends ViewModel {
         return OrdersRepo.getInstance().getCurrentOrderLoadingError();
     }
 
-    //-----------  -----------------
+    //----------- upload call time  -----------------
+
+    public MutableLiveData<CallTimeResponse>  setCallTime(CallTimePayload payload){
+        callTime=new MutableLiveData<>();
+        CallTimeRepo.getInstance()
+                .setCallTime(payload)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new SingleObserver<Response<CallTimeResponse>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onSuccess(Response<CallTimeResponse> response) {
+                        CallTimeResponse callTimeResponse=response.body();
+                        if (response.isSuccessful()&&callTimeResponse!=null){
+                            callTime.setValue(callTimeResponse);
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+                });
+        return callTime;
+    }
 
     @Override
     protected void onCleared() {

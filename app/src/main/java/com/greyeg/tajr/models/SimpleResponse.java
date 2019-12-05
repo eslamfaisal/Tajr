@@ -71,7 +71,7 @@ public class SimpleResponse {
 
     @Override
     public String toString() {
-        return "UpdateOrederNewResponse{" +
+        return "UpdateOrderNewResponse{" +
                 "data='" + data + '\'' +
                 ", Details='" + Details + '\'' +
                 ", code='" + code + '\'' +

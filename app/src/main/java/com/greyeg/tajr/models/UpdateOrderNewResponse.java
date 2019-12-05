@@ -3,16 +3,14 @@ package com.greyeg.tajr.models;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class UpdateOrederNewResponse {
+import org.jetbrains.annotations.NotNull;
+
+public class UpdateOrderNewResponse {
 
 
     @SerializedName("data")
     @Expose
     private String data;
-
-    @SerializedName("Details")
-    @Expose
-    private String Details;
 
     @SerializedName("code")
     @Expose
@@ -26,7 +24,15 @@ public class UpdateOrederNewResponse {
     @Expose
     private String response;
 
-    public UpdateOrederNewResponse() {
+    @SerializedName("order_id")
+    @Expose
+    private String order_id;
+
+    @SerializedName("history_line")
+    @Expose
+    private String history_line;
+
+    public UpdateOrderNewResponse() {
     }
 
     public String getData() {
@@ -35,14 +41,6 @@ public class UpdateOrederNewResponse {
 
     public void setData(String data) {
         this.data = data;
-    }
-
-    public String getDetails() {
-        return Details;
-    }
-
-    public void setDetails(String details) {
-        Details = details;
     }
 
     public String getCode() {
@@ -69,11 +67,19 @@ public class UpdateOrederNewResponse {
         this.response = response;
     }
 
+    public String getOrder_id() {
+        return order_id;
+    }
+
+    public String getHistory_line() {
+        return history_line;
+    }
+
+    @NotNull
     @Override
     public String toString() {
-        return "UpdateOrederNewResponse{" +
+        return "UpdateOrderNewResponse{" +
                 "data='" + data + '\'' +
-                ", Details='" + Details + '\'' +
                 ", code='" + code + '\'' +
                 ", info='" + info + '\'' +
                 ", response='" + response + '\'' +

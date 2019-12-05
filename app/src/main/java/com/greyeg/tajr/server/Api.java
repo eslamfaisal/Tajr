@@ -26,8 +26,8 @@ import com.greyeg.tajr.models.SimpleOrderResponse;
 import com.greyeg.tajr.models.SimpleResponse;
 import com.greyeg.tajr.models.SubscriberInfo;
 import com.greyeg.tajr.models.ToalAvailableBalance;
+import com.greyeg.tajr.models.UpdateOrderNewResponse;
 import com.greyeg.tajr.models.UpdateOrderResponse;
-import com.greyeg.tajr.models.UpdateOrederNewResponse;
 import com.greyeg.tajr.models.UploadPhoneResponse;
 import com.greyeg.tajr.models.UploadVoiceResponse;
 import com.greyeg.tajr.models.UserOrders;
@@ -152,7 +152,7 @@ public interface Api {
 
     @FormUrlEncoded
     @POST("send_test/update_order")
-    Call<UpdateOrederNewResponse> updateOrders(
+    Call<UpdateOrderNewResponse> updateOrders(
             @Field("token") String token,
             @Field("order_id") String order_id,
             @Field("user_id") String user_id,
@@ -239,7 +239,7 @@ public interface Api {
 
     @FormUrlEncoded
     @POST("send_test/shipping_attempts")
-    Call<UpdateOrederNewResponse> updateShippingOrders(
+    Call<UpdateOrderNewResponse> updateShippingOrders(
             @Field("token") String token,
             @Field("order_id") String order_id,
             @Field("action") String action,
@@ -265,7 +265,7 @@ public interface Api {
 
     @FormUrlEncoded
     @POST("send_test/update_order")
-    Call<UpdateOrederNewResponse> updateDelayedOrders(
+    Call<UpdateOrderNewResponse> updateDelayedOrders(
             @Field("token") String token,
             @Field("order_id") String order_id,
             @Field("delayed_until") String delayed_until,
@@ -296,7 +296,7 @@ public interface Api {
 
     @FormUrlEncoded
     @POST("send_test/update_order")
-    Call<UpdateOrederNewResponse> updateOrders(
+    Call<UpdateOrderNewResponse> updateOrders(
             @Field("token") String token,
             @Field("order_id") String order_id,
             @Field("status") String status
@@ -306,7 +306,7 @@ public interface Api {
 
     @FormUrlEncoded
     @POST("send_test/confirm_shipper_status")
-    Call<UpdateOrederNewResponse> confirm_shipper_status(
+    Call<UpdateOrderNewResponse> confirm_shipper_status(
             @Field("token") String token,
             @Field("order_id") String order_id
 

@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.greyeg.tajr.activities.EmptyCallActivity;
 import com.greyeg.tajr.activities.LoginActivity;
+import com.greyeg.tajr.helper.CallTimeManager;
 import com.greyeg.tajr.helper.CurrentCallListener;
 import com.greyeg.tajr.helper.SharedHelper;
 import com.greyeg.tajr.models.CallTimePayload;
@@ -212,46 +213,16 @@ public class CallsReceiver extends BroadcastReceiver {
                     +"   "+c.getString(c.getColumnIndex(CallLog.Calls.DATE))
 
             );
-//            setCallTime(context
-//                    ,"1","1"
-//                    ,c.getString(c.getColumnIndex(CallLog.Calls.DURATION))
-//            );
-
+            String duration=c.getString(c.getColumnIndex(CallLog.Calls.DURATION));
+            String date=c.getString(c.getColumnIndex(CallLog.Calls.DURATION));
+            CallTimeManager.getInstance(context)
+                    .saveCallSession(duration,date);
         }
 
+
+
     }
 
-    private void setCallTime(Context context,String order_id,String history_id,String duration){
-        String token=SharedHelper.getKey(context,LoginActivity.TOKEN);
-        CallTimePayload callTimePayload=new CallTimePayload(token,order_id,history_id,duration);
-        CallTimeRepo
-                .getInstance()
-                .setCallTime(callTimePayload)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new SingleObserver<Response<CallTimeResponse>>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-
-                    }
-
-                    @Override
-                    public void onSuccess(Response<CallTimeResponse> response) {
-                        CallTimeResponse callTimeResponse=response.body();
-                        if (response.isSuccessful()&&callTimeResponse!=null){
-                            Log.d("CALLLTIMEE", "onSuccess: "+callTimeResponse.getData());
-                        }else{
-                            Log.d("CALLLTIMEE", "on failure: ");
-
-                        }
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Log.d("CALLLTIMEE", "onError: "+e.getMessage());
-                    }
-                });
-    }
 
 
 

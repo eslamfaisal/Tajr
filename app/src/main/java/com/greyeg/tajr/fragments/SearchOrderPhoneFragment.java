@@ -1,7 +1,6 @@
 package com.greyeg.tajr.fragments;
 
 
-import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
@@ -20,10 +19,8 @@ import android.widget.Toast;
 import com.greyeg.tajr.R;
 import com.greyeg.tajr.activities.LoginActivity;
 import com.greyeg.tajr.helper.SharedHelper;
-import com.greyeg.tajr.helper.font.RobotoTextView;
 import com.greyeg.tajr.models.SimpleOrderResponse;
-import com.greyeg.tajr.models.UpdateOrderResponse;
-import com.greyeg.tajr.models.UpdateOrederNewResponse;
+import com.greyeg.tajr.models.UpdateOrderNewResponse;
 import com.greyeg.tajr.server.Api;
 import com.greyeg.tajr.server.BaseClient;
 import com.greyeg.tajr.view.ProgressWheel;
@@ -201,9 +198,9 @@ public class SearchOrderPhoneFragment extends Fragment {
                 order_ud,
                 SharedHelper.getKey(getActivity(), LoginActivity.USER_ID),
                 value
-        ).enqueue(new Callback<UpdateOrederNewResponse>() {
+        ).enqueue(new Callback<UpdateOrderNewResponse>() {
             @Override
-            public void onResponse(Call<UpdateOrederNewResponse> call, Response<UpdateOrederNewResponse> response) {
+            public void onResponse(Call<UpdateOrderNewResponse> call, Response<UpdateOrderNewResponse> response) {
                 if (response.body() != null) {
                     Log.d("eeeeeeeeeeeeee", "onResponse: updateOrder" + response.body().getCode());
                 }
@@ -218,7 +215,7 @@ public class SearchOrderPhoneFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(Call<UpdateOrederNewResponse> call, Throwable t) {
+            public void onFailure(Call<UpdateOrderNewResponse> call, Throwable t) {
                 progressDialog.dismiss();
                 Toast.makeText(getActivity(), ""+t.getMessage(), Toast.LENGTH_SHORT).show();
                 Log.d("eeeeeeeeeeeeeeee", "onFailure:update order " + t.getMessage());

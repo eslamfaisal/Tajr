@@ -35,7 +35,7 @@ import com.greyeg.tajr.activities.LoginActivity;
 import com.greyeg.tajr.helper.SharedHelper;
 import com.greyeg.tajr.helper.ViewAnimation;
 import com.greyeg.tajr.models.DeleteAddProductResponse;
-import com.greyeg.tajr.models.UpdateOrederNewResponse;
+import com.greyeg.tajr.models.UpdateOrderNewResponse;
 import com.greyeg.tajr.order.CurrentOrderData;
 import com.greyeg.tajr.order.NewOrderActivity;
 import com.greyeg.tajr.order.adapters.MultiOrderProductsAdapter;
@@ -325,16 +325,16 @@ public class SearchOrderFragment extends Fragment {
                 CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getId(),
                 action,
                 CurrentOrderData.getInstance().getCurrentOrderResponse().getUserId()
-        ).enqueue(new Callback<UpdateOrederNewResponse>() {
+        ).enqueue(new Callback<UpdateOrderNewResponse>() {
             @Override
-            public void onResponse(@NotNull Call<UpdateOrederNewResponse> call, @NotNull Response<UpdateOrederNewResponse> response) {
+            public void onResponse(@NotNull Call<UpdateOrderNewResponse> call, @NotNull Response<UpdateOrderNewResponse> response) {
                 progressDialog.dismiss();
                 getActivity().onBackPressed();
                 Log.d(TAG, "onResponse: " + response.toString());
             }
 
             @Override
-            public void onFailure(Call<UpdateOrederNewResponse> call, Throwable t) {
+            public void onFailure(Call<UpdateOrderNewResponse> call, Throwable t) {
                 progressDialog.dismiss();
                 getCurrentOrder();
                 Log.d(TAG, "onResponse: " + t.getMessage());
@@ -439,16 +439,16 @@ public class SearchOrderFragment extends Fragment {
                 CurrentOrderData.getInstance().getCurrentOrderResponse().getUserId(),
                 status
         )
-                .enqueue(new Callback<UpdateOrederNewResponse>() {
+                .enqueue(new Callback<UpdateOrderNewResponse>() {
                     @Override
-                    public void onResponse(Call<UpdateOrederNewResponse> call, Response<UpdateOrederNewResponse> response) {
+                    public void onResponse(Call<UpdateOrderNewResponse> call, Response<UpdateOrderNewResponse> response) {
                         progressDialog.dismiss();
                         getActivity().onBackPressed();
                         Log.d(TAG, "onResponse: " + response.toString());
                     }
 
                     @Override
-                    public void onFailure(Call<UpdateOrederNewResponse> call, Throwable t) {
+                    public void onFailure(Call<UpdateOrderNewResponse> call, Throwable t) {
                         progressDialog.dismiss();
                         Log.d(TAG, "onFailure: " + t.getMessage());
                         showErrorGetCurrentOrderDialog(t.getMessage());
@@ -477,16 +477,16 @@ public class SearchOrderFragment extends Fragment {
                             dateString,
                             CurrentOrderData.getInstance().getCurrentOrderResponse().getUserId(),
                             OrderUpdateStatusEnums.client_delay.name()
-                    ).enqueue(new Callback<UpdateOrederNewResponse>() {
+                    ).enqueue(new Callback<UpdateOrderNewResponse>() {
                         @Override
-                        public void onResponse(@NotNull Call<UpdateOrederNewResponse> call, @NotNull Response<UpdateOrederNewResponse> response) {
+                        public void onResponse(@NotNull Call<UpdateOrderNewResponse> call, @NotNull Response<UpdateOrderNewResponse> response) {
                             progressDialog.dismiss();
                             getActivity().onBackPressed();
                             Log.d(TAG, "onResponse: " + response.toString());
                         }
 
                         @Override
-                        public void onFailure(Call<UpdateOrederNewResponse> call, Throwable t) {
+                        public void onFailure(Call<UpdateOrderNewResponse> call, Throwable t) {
                             progressDialog.dismiss();
                             Log.d(TAG, "onFailure: " + t.getMessage());
                             showErrorGetCurrentOrderDialog(t.getMessage());
