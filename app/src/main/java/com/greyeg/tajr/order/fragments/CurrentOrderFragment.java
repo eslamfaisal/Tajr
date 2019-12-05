@@ -565,6 +565,11 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
         ArrayList<CallActivity> callActivity=CallTimeManager.getInstance(getContext())
                 .getCallActivity();
 
+        if (callActivity==null||callActivity.isEmpty()){
+            Log.d("handleCallTime", "empty:" );
+            return;
+        }
+        
         for (CallActivity activity:callActivity) {
             activity.setHistory_line(history_line);
         }
