@@ -37,6 +37,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.greyeg.tajr.R;
 import com.greyeg.tajr.activities.LoginActivity;
 import com.greyeg.tajr.helper.CallTimeManager;
+import com.greyeg.tajr.helper.NetworkUtil;
 import com.greyeg.tajr.helper.SharedHelper;
 import com.greyeg.tajr.helper.ViewAnimation;
 import com.greyeg.tajr.models.CallActivity;
@@ -65,6 +66,7 @@ import com.greyeg.tajr.sheets.FragmentBottomSheetDialogFull;
 import com.greyeg.tajr.view.dialogs.CancelOrderDialog;
 import com.greyeg.tajr.view.dialogs.Dialogs;
 import com.greyeg.tajr.viewmodels.CurrentOrderViewModel;
+import com.tapadoo.alerter.Alerter;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -713,6 +715,17 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
     }
 
     private void getCurrentOrder(){
+
+        if(!NetworkUtil.isConnected(getContext())){
+            Alerter.create(getActivity())
+                    .enableSwipeToDismiss()
+                    .setBackgroundResource(R.color.red)
+                    .setDuration(2500)
+                    .setText(getString(R.string.no_connection_message))
+                    .show();
+            return;
+        }
+
         currentOrderViewModel
                 .getCurrentOrder(SharedHelper.getKey(getContext(),LoginActivity.TOKEN))
                 .observe(getActivity(), new Observer<CurrentOrderResponse>() {
