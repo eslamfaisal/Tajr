@@ -8,6 +8,7 @@ import com.greyeg.tajr.models.CallTimePayload;
 import com.greyeg.tajr.models.CallTimeResponse;
 import com.greyeg.tajr.models.CancellationReasonsResponse;
 import com.greyeg.tajr.models.MainResponse;
+import com.greyeg.tajr.models.UpdateOrderNewResponse;
 import com.greyeg.tajr.order.models.CurrentOrderResponse;
 import com.greyeg.tajr.repository.CallTimeRepo;
 import com.greyeg.tajr.repository.CancellationReasonsRepository;
@@ -134,6 +135,29 @@ public class CurrentOrderViewModel extends ViewModel {
                 });
         return callTime;
     }
+
+    //---------- update order ------
+
+
+    public MutableLiveData<UpdateOrderNewResponse> updateOrder(String token,
+                                                               String order_id,
+                                                               String user_id,
+                                                               String status){
+
+        return OrdersRepo.getInstance()
+                .updateOrder(token,order_id,user_id,status);
+
+    }
+
+    public MutableLiveData<Boolean> getIsOrderUpdating() {
+        return OrdersRepo.getInstance().getIsOrderUpdating();
+    }
+
+    public MutableLiveData<String> getOrderUpdatingError() {
+        return OrdersRepo.getInstance().getOrderUpdateError();
+    }
+
+
 
     @Override
     protected void onCleared() {

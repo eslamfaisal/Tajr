@@ -3,11 +3,10 @@ package com.greyeg.tajr.repository;
 import android.content.res.Resources;
 
 import androidx.lifecycle.MutableLiveData;
-
-import com.crashlytics.android.Crashlytics;
 import com.greyeg.tajr.R;
 import com.greyeg.tajr.models.NewOrderResponse;
 import com.greyeg.tajr.models.OrderPayload;
+import com.greyeg.tajr.models.UpdateOrderNewResponse;
 import com.greyeg.tajr.order.models.CurrentOrderResponse;
 import com.greyeg.tajr.server.BaseClient;
 
@@ -20,10 +19,16 @@ public class OrdersRepo {
 
     private static OrdersRepo ordersRepo;
 
+    //--------- current order -------------------------
     private MutableLiveData<CurrentOrderResponse> currentOrder;
     private MutableLiveData<Boolean> isCurrentOrderLoading=new MutableLiveData<>();
     private MutableLiveData<String> currentOrderLoadingError=new MutableLiveData<>();
 
+    //------------- order status ----------------
+
+    private MutableLiveData<UpdateOrderNewResponse> updateOrder;
+    private MutableLiveData<Boolean> isOrderUpdating=new MutableLiveData<>();
+    private MutableLiveData<String> orderUpdateError=new MutableLiveData<>();
 
     public static OrdersRepo getInstance() {
         return ordersRepo==null?ordersRepo=new OrdersRepo():ordersRepo;
@@ -71,5 +76,46 @@ public class OrdersRepo {
 
     public MutableLiveData<String> getCurrentOrderLoadingError() {
         return currentOrderLoadingError;
+    }
+
+    // --------- order update
+
+    public MutableLiveData<UpdateOrderNewResponse> updateOrder(String token,
+                                                               String order_id,
+                                                                String user_id,
+                                                               String status){
+        updateOrder=new MutableLiveData<>();
+        BaseClient
+                .getApiService()
+                .updateOrders(token,order_id,user_id,status)
+                .enqueue(new Callback<UpdateOrderNewResponse>() {
+                    @Override
+                    public void onResponse(Call<UpdateOrderNewResponse> call, Response<UpdateOrderNewResponse> response) {
+                        UpdateOrderNewResponse updateOrderNewResponse=response.body();
+                        if (response.isSuccessful()&&updateOrderNewResponse!=null)
+                            updateOrder.setValue(updateOrderNewResponse);
+                        else
+                            orderUpdateError.setValue(Resources.getSystem().getString(R.string.server_error));
+
+                        isOrderUpdating.setValue(true);
+                    }
+
+                    @Override
+                    public void onFailure(Call<UpdateOrderNewResponse> call, Throwable t) {
+                        orderUpdateError.setValue(Resources.getSystem().getString(R.string.server_error));
+
+                    }
+                });
+
+        return updateOrder;
+    }
+
+
+    public MutableLiveData<Boolean> getIsOrderUpdating() {
+        return isOrderUpdating;
+    }
+
+    public MutableLiveData<String> getOrderUpdateError() {
+        return orderUpdateError;
     }
 }

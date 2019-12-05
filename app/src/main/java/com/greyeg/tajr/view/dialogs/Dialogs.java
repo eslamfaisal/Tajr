@@ -45,10 +45,11 @@ public class Dialogs {
     }
 
     public static ProgressDialog showProgressDialog(Context activity, String msg) {
-        ProgressDialog progressDialog = new ProgressDialog(activity);
-        progressDialog.setMessage(msg);
-        progressDialog.setCancelable(false);
-        progressDialog.show();
-        return progressDialog;
+
+        ProgressDialog dialog = new ProgressDialog(activity);
+        dialog.setMessage(msg);
+        dialog.setCancelable(false);
+        dialog.show();
+        return dialog;
     }
 }

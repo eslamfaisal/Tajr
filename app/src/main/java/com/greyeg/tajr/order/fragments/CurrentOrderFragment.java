@@ -7,6 +7,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -94,7 +95,6 @@ import retrofit2.Response;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
 import static com.greyeg.tajr.activities.LoginActivity.IS_LOGIN;
-import static com.greyeg.tajr.view.dialogs.Dialogs.showProgressDialog;
 
 public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.OnReasonSubmitted{
 
@@ -189,6 +189,7 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
     private boolean firstOrder;
     private int firstRemaining;
     private Dialog errorGetCurrentOrderDialog;
+    private ProgressDialog progressDialog;
     private boolean rotate = false;
     private boolean rotateshipper = false;
     private boolean productExbandable = false;
@@ -486,31 +487,76 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
     }
 
     private void normalUpdateOrder(String status) {
-        ProgressDialog progressDialog = showProgressDialog(getActivity(), getString(R.string.fetching_th_order));
-
-        BaseClient.getBaseClient().create(Api.class).updateOrders(
-                SharedHelper.getKey(getActivity(), LoginActivity.TOKEN),
-                CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getId(),
-                CurrentOrderData.getInstance().getCurrentOrderResponse().getUserId(),
-                status
-        )
-                .enqueue(new Callback<UpdateOrderNewResponse>() {
+        String token=SharedHelper.getKey(getActivity(), LoginActivity.TOKEN);
+        currentOrderViewModel
+                .updateOrder(token,
+                        CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getId(),
+                        CurrentOrderData.getInstance().getCurrentOrderResponse().getUserId(),
+                        status)
+                .observe(getActivity(), new Observer<UpdateOrderNewResponse>() {
                     @Override
-                    public void onResponse(Call<UpdateOrderNewResponse> call, Response<UpdateOrderNewResponse> response) {
-                        progressDialog.dismiss();
+                    public void onChanged(UpdateOrderNewResponse updateOrderNewResponse) {
 
-                        UpdateOrderNewResponse updateOrderNewResponse =response.body();
                         if (updateOrderNewResponse!=null)
-                        handleCallTime(updateOrderNewResponse.getOrder_id(),updateOrderNewResponse.getHistory_line());
+                            handleCallTime(updateOrderNewResponse.getOrder_id(),updateOrderNewResponse.getHistory_line());
                         getCurrentOrder();
-                        Log.d(TAG, "onResponse: " + response.toString());
                     }
+                });
+        observeOrderUpdating();
+        observeOrderUpdatingError();
 
+//
+//        BaseClient.getBaseClient().create(Api.class).updateOrders(
+//                SharedHelper.getKey(getActivity(), LoginActivity.TOKEN),
+//                CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getId(),
+//                CurrentOrderData.getInstance().getCurrentOrderResponse().getUserId(),
+//                status
+//        )
+//                .enqueue(new Callback<UpdateOrderNewResponse>() {
+//                    @Override
+//                    public void onResponse(Call<UpdateOrderNewResponse> call, Response<UpdateOrderNewResponse> response) {
+////                        progressDialog.dismiss();
+////
+////                        UpdateOrderNewResponse updateOrderNewResponse =response.body();
+////                        if (updateOrderNewResponse!=null)
+////                        handleCallTime(updateOrderNewResponse.getOrder_id(),updateOrderNewResponse.getHistory_line());
+////                        getCurrentOrder();
+////                        Log.d(TAG, "onResponse: " + response.toString());
+//                    }
+//
+//                    @Override
+//                    public void onFailure(Call<UpdateOrderNewResponse> call, Throwable t) {
+//                        progressDialog.dismiss();
+//                        Log.d(TAG, "onFailure: " + t.getMessage());
+//                        showErrorGetCurrentOrderDialog(getString(R.string.error_has_occured));
+//                    }
+//                });
+    }
+
+    public void observeOrderUpdating(){
+        currentOrderViewModel
+                .getIsOrderUpdating()
+                .observe(getActivity(), new Observer<Boolean>() {
                     @Override
-                    public void onFailure(Call<UpdateOrderNewResponse> call, Throwable t) {
-                        progressDialog.dismiss();
-                        Log.d(TAG, "onFailure: " + t.getMessage());
-                        showErrorGetCurrentOrderDialog(getString(R.string.error_has_occured));
+                    public void onChanged(Boolean aBoolean) {
+                        Log.d("DDIAALOOOOGGG", "order update: "+aBoolean);
+
+                        if (aBoolean!=null&&aBoolean)
+                            progressDialog=showProgressDialog(getActivity(), getString(R.string.fetching_th_order));
+                        else
+                            progressDialog.dismiss();
+
+                    }
+                });
+    }
+
+    public void observeOrderUpdatingError(){
+        currentOrderViewModel
+                .getOrderUpdatingError()
+                .observe(getActivity(), new Observer<String>() {
+                    @Override
+                    public void onChanged(String s) {
+                        Toast.makeText(getContext(), s, Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -791,7 +837,6 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
     }
 
     private void observeLoadingCurrentOrder(){
-        final ProgressDialog[] progressDialog = new ProgressDialog[1];
         currentOrderViewModel
                 .getIsCurrentOrderLoading()
                 .observe(getActivity(), new Observer<Boolean>() {
@@ -799,10 +844,10 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
                     public void onChanged(Boolean aBoolean) {
                         Log.d("DDIAALOOOOGGG", "onChanged: "+aBoolean);
                         if (aBoolean!=null&&aBoolean){
-                             progressDialog[0] = showProgressDialog(getActivity(), getString(R.string.fetching_th_order));
+                             progressDialog = showProgressDialog(getActivity(), getString(R.string.fetching_th_order));
 
                         }else {
-                            progressDialog[0].dismiss();
+                            progressDialog.dismiss();
                         }
                     }
                 });
@@ -1260,5 +1305,17 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
         observeAddingReasonToOrderError();
         cancelOrderDialog.dismiss();
 
+    }
+
+    private ProgressDialog showProgressDialog(Context activity, String msg) {
+        if (progressDialog!=null){
+            progressDialog.show();
+            return progressDialog;
+        }
+        ProgressDialog dialog = new ProgressDialog(activity);
+        dialog.setMessage(msg);
+        dialog.setCancelable(false);
+        dialog.show();
+        return dialog;
     }
 }
