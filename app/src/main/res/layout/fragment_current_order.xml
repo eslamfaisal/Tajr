@@ -143,6 +143,15 @@
                             android:paddingStart="16dp"
                             android:tag="client_name_label" />
                     </FrameLayout>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/extra_data_recycler"
+                        android:layout_marginTop="10dp"
+                        />
+
+
                 </LinearLayout>
 
                 <LinearLayout

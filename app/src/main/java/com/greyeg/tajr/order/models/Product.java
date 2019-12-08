@@ -2,8 +2,11 @@ package com.greyeg.tajr.order.models;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.greyeg.tajr.models.ExtraData;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Map;
 
 public class Product implements Serializable {
 
@@ -37,6 +40,9 @@ public class Product implements Serializable {
     @SerializedName("product_real_price")
     @Expose
     private String productRealPrice;
+
+    @SerializedName("extra_data")
+    private ArrayList<ExtraData> extra_data;
 
     public String getProductId() {
         return productId;
@@ -118,4 +124,7 @@ public class Product implements Serializable {
         this.productRealPrice = productRealPrice;
     }
 
+    public ArrayList<ExtraData> getExtra_data() {
+        return extra_data;
+    }
 }

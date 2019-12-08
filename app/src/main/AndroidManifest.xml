@@ -2,8 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.greyeg.tajr">
+
     <uses-permission android:name="android.permission.CALL_PHONE" />
-    <uses-permission android:name="android.permission.MODIFY_PHONE_STATE"
+    <uses-permission
+        android:name="android.permission.MODIFY_PHONE_STATE"
         tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -16,6 +18,7 @@
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS" />
+
     <uses-permission android:name="android.permission.READ_CONTACTS" />
 
     <application
@@ -29,14 +32,13 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning"
         tools:replace="android:allowBackup">
-
-        <activity android:name=".order.NewOrderActivity"
-            android:launchMode="singleTask"
-            android:label=""
+        <activity android:name=".activities.NewOrderActivity2"></activity>
+        <activity
+            android:name=".order.NewOrderActivity"
             android:exported="true"
-            android:theme="@style/AppTheme.NoActionBar" >
-
-        </activity>
+            android:label=""
+            android:launchMode="singleTask"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
             android:name=".activities.AdminRecordsActivity"
             android:parentActivityName=".MainActivity" />
@@ -44,23 +46,18 @@
             android:name=".activities.AdminLoginActivity"
             android:parentActivityName=".activities.LoginActivity" />
         <activity android:name=".activities.BalanceCalculationActivity" />
-
         <activity
             android:name=".activities.CartsActivity"
             android:parentActivityName=".MainActivity" />
-
-        <meta-data
-            android:name="com.onesignal.NotificationOpened.DEFAULT"
-            android:value="DISABLE" />
 
         <activity
             android:name=".MainActivity"
             android:label=""
             android:theme="@style/AppTheme.NoActionBar" />
+
         <activity
             android:name=".activities.LoginActivity"
-            android:theme="@style/AppTheme.NoActionBar"/>
-
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activities.SplashActivity"
             android:theme="@style/AppTheme.NoActionBar">
@@ -70,7 +67,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".activities.EmptyCallActivity"
             android:theme="@style/AppTheme.NoActionBar" />
@@ -93,9 +89,7 @@
         <activity android:name=".activities.CalcActivity" />
         <activity
             android:name=".activities.TestActivity"
-            android:label="Test">
-
-        </activity>
+            android:label="Test"></activity>
         <activity
             android:name=".activities.ChatActivity"
             android:theme="@style/AppTheme.NoActionBar" />
@@ -103,8 +97,13 @@
             android:name="com.yalantis.ucrop.UCropActivity"
             android:screenOrientation="portrait"
             android:theme="@style/UCrop" />
+        <activity
+            android:name=".records.RecordsActivity"
+            android:parentActivityName=".MainActivity" />
 
-        <service android:name=".records.RecorderService" />
+        <meta-data
+            android:name="com.onesignal.NotificationOpened.DEFAULT"
+            android:value="DISABLE" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -126,10 +125,7 @@
             </intent-filter>
         </receiver>
 
-        <activity
-            android:name=".records.RecordsActivity"
-            android:parentActivityName=".MainActivity" /> <!-- <receiver -->
-
+        <service android:name=".records.RecorderService" /> <!-- <receiver -->
         <service
             android:name=".jobs.OrderReminderJobService"
             android:permission="android.permission.BIND_JOB_SERVICE">
@@ -143,7 +139,6 @@
             android:exported="false" />
         <service android:name=".over.MissedCallNoOrderService" />
         <service android:name=".over.MissedCallOrderService" />
-
         <service
             android:name=".services.AccessibilityService"
             android:enabled="true"
@@ -158,12 +153,11 @@
                 android:name="android.accessibilityservice"
                 android:resource="@xml/serviceconfig" />
         </service>
-
         <service
             android:name=".services.BubbleService"
             android:enabled="true"
-            android:exported="false"/>
-
+            android:exported="false" />
     </application>
+
 
 </manifest>

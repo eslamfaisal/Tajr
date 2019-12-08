@@ -37,6 +37,7 @@ import android.widget.Toast;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.greyeg.tajr.R;
 import com.greyeg.tajr.activities.LoginActivity;
+import com.greyeg.tajr.adapters.ExtraDataAdapter;
 import com.greyeg.tajr.helper.CallTimeManager;
 import com.greyeg.tajr.helper.NetworkUtil;
 import com.greyeg.tajr.helper.SharedHelper;
@@ -45,6 +46,7 @@ import com.greyeg.tajr.models.CallActivity;
 import com.greyeg.tajr.models.CallTimePayload;
 import com.greyeg.tajr.models.CallTimeResponse;
 import com.greyeg.tajr.models.DeleteAddProductResponse;
+import com.greyeg.tajr.models.ExtraData;
 import com.greyeg.tajr.models.MainResponse;
 import com.greyeg.tajr.models.RemainingOrdersResponse;
 import com.greyeg.tajr.models.UpdateOrderNewResponse;
@@ -182,6 +184,9 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
     CardView shipping_no_answer;
     @BindView(R.id.return_order)
     CardView return_order;
+    @BindView(R.id.extra_data_recycler)
+    RecyclerView extra_data_recycler;
+
     // main view of the CurrentOrderFragment
     private View mainView;
     private LinearLayoutManager multiOrderProductsLinearLayoutManager;
@@ -190,6 +195,7 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
     private int firstRemaining;
     private Dialog errorGetCurrentOrderDialog;
     private ProgressDialog progressDialog;
+
     private boolean rotate = false;
     private boolean rotateshipper = false;
     private boolean productExbandable = false;
@@ -643,7 +649,7 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
         EditText productNo = dialog.findViewById(R.id.product_no);
         TextView addProductBtn = dialog.findViewById(R.id.add_product);
         productNo.setInputType(InputType.TYPE_CLASS_NUMBER);
-        fillSpinnerWithProduts(productSpinner);
+        fillSpinnerWithProducts(productSpinner);
         WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
         lp.copyFrom(dialog.getWindow().getAttributes());
         lp.width = WindowManager.LayoutParams.MATCH_PARENT;
@@ -946,14 +952,18 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
 
     private void getSingleOrderProducts() {
         BaseClient.getBaseClient().create(Api.class)
-                .getSingleOrderProducts(SharedHelper.getKey(getActivity(), LoginActivity.TOKEN),
-                        CurrentOrderData.getInstance().getCurrentOrderResponse().getUserId()
+               // .getSingleOrderProducts(SharedHelper.getKey(getActivity(), LoginActivity.TOKEN),
+                .getSingleOrderProducts("YIXRKEsDUv4VpAP5BaroqlJb",
+                        null
+                        //CurrentOrderData.getInstance().getCurrentOrderResponse().getUserId()
                 ).enqueue(new Callback<SingleOrderProductsResponse>() {
             @Override
             public void onResponse(Call<SingleOrderProductsResponse> call, Response<SingleOrderProductsResponse> response) {
-                if (response.body() != null) {
-                    CurrentOrderData.getInstance().setSingleOrderProductsResponse(response.body());
-                    fillSpinnerWithProduts(single_order_product_spinner);
+                SingleOrderProductsResponse singleOrderProductsResponse=response.body();
+                if (singleOrderProductsResponse != null) {
+
+                    CurrentOrderData.getInstance().setSingleOrderProductsResponse(singleOrderProductsResponse);
+                    fillSpinnerWithProducts(single_order_product_spinner);
                 } else {
                     //TODO make dialog
                 }
@@ -966,37 +976,55 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
         });
     }
 
-    private void fillSpinnerWithProduts(Spinner spinner) {
-        if (CurrentOrderData.getInstance().getSingleOrderProductsResponse() != null) {
-            ArrayAdapter adapter = new SignleOrderProductsAdapter(getActivity(),
-                    CurrentOrderData.getInstance().getSingleOrderProductsResponse());
+    private void fillSpinnerWithProducts(Spinner spinner) {
+        if (CurrentOrderData.getInstance().getSingleOrderProductsResponse() == null) {
+            return;
+        }
 
-            spinner.setAdapter(adapter);
-            int index = 0;
-            for (Product product : CurrentOrderData.getInstance().getSingleOrderProductsResponse().getProducts()) {
-                if (product.getProductId().equals(CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getProductId())) {
-                    index = CurrentOrderData.getInstance().getSingleOrderProductsResponse().getProducts().indexOf(product);
+
+
+        ArrayAdapter adapter = new SignleOrderProductsAdapter(getActivity(),
+                CurrentOrderData.getInstance().getSingleOrderProductsResponse());
+
+        spinner.setAdapter(adapter);
+        int index = 0;
+        for (Product product : CurrentOrderData.getInstance().getSingleOrderProductsResponse().getProducts()) {
+            if (product.getProductId()
+                    .equals(CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getProductId())) {
+                index = CurrentOrderData.getInstance().getSingleOrderProductsResponse().getProducts().indexOf(product);
+            }
+        }
+        spinner.setSelection(index);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                if (spinner.getTag().equals(OrderProductsType.MuhltiOrder.getType())) {
+                    Log.d(TAG, "onItemSelected: from multi " + spinner.getSelectedItemPosition());
+                } else {
+                    single_order_product_spinner.setTag(CurrentOrderData.getInstance().getSingleOrderProductsResponse().getProducts().get(position).getProductId());
+                    Log.d(TAG, "onItemSelected: from single " + spinner.getSelectedItemPosition());
+
+                    Log.d(TAG, "fillSpinnerWithProducts: "+CurrentOrderData.getInstance()
+                            .getSingleOrderProductsResponse().getProducts().get(position).getProductName());
+
+                    ArrayList<ExtraData> extra_data=CurrentOrderData.getInstance()
+                            .getSingleOrderProductsResponse().getProducts().get(position).getExtra_data();
+                    ExtraDataAdapter extraDataAdapter=new ExtraDataAdapter(extra_data);
+                    extra_data_recycler.setAdapter(extraDataAdapter);
+                    extra_data_recycler.setLayoutManager(new LinearLayoutManager(getContext()
+                    ));
+
+
                 }
             }
-            spinner.setSelection(index);
-            spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
-                    if (spinner.getTag().equals(OrderProductsType.MuhltiOrder.getType())) {
-                        Log.d(TAG, "onItemSelected: from multi " + spinner.getSelectedItemPosition());
-                    } else {
-                        single_order_product_spinner.setTag(CurrentOrderData.getInstance().getSingleOrderProductsResponse().getProducts().get(position).getProductId());
-                        Log.d(TAG, "onItemSelected: from single " + spinner.getSelectedItemPosition());
-                    }
-                }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
 
-                @Override
-                public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
 
-                }
-            });
-        }
     }
 
     private void initCities(CurrentOrderResponse order) {

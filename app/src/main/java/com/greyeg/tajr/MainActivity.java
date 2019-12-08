@@ -174,13 +174,12 @@ public class MainActivity extends AppCompatActivity
         setAnimation(SPLASH_SCREEN_OPTION_3);
         api = BaseClient.getBaseClient().create(Api.class);
 
-        enableButton = (SwipeButton) findViewById(R.id.swipe_btn);
+        enableButton =findViewById(R.id.swipe_btn);
         enableButton.setOnStateChangeListener(new OnStateChangeListener() {
             @Override
             public void onStateChange(boolean active) {
                 if (active) {
                     Intent intent = new Intent(getApplicationContext(), NewOrderActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
 
 
@@ -425,20 +424,7 @@ public class MainActivity extends AppCompatActivity
         setAnimation(SPLASH_SCREEN_OPTION_3);
         api = BaseClient.getBaseClient().create(Api.class);
 
-        enableButton = findViewById(R.id.swipe_btn);
-        enableButton.setOnStateChangeListener(new OnStateChangeListener() {
-            @Override
-            public void onStateChange(boolean active) {
-                if (active) {
-                    Intent intent = new Intent(getApplicationContext(), NewOrderActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    startActivity(intent);
-                }
 
-            }
-        });
     }
 
     private void requestPermissions() {

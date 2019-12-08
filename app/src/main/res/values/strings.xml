@@ -9,23 +9,17 @@
 
     <string name="calc_answer">Ans</string>
 
-    <string-array name="calc_dialog_errors">
-        <item>Division by zero</item>
-        <item>Out of bounds</item>
-        <item>Result must be positive</item>
-        <item>Result must be negative</item>
-    </string-array>
-
     <string name="slide_to_cancel">"Slide to cancel"</string>
+
     <string name="app_info">"A WhatsApp style audio recording view to send voice notes in chat.\nHold the Mic to record, then slide left to cancel or swipe up to Lock and record.\n\nCredit:\nVarun John\nhttps://github.com/varunjohn\nvarunjohn1990@gmail.com"</string>
-
-
     <string name="open_dialog">Open dialog</string>
+
+
     <string name="result_value">Result</string>
     <string name="result_value_none">None</string>
     <string name="calc_settings">Calculator settings</string>
-
     <string name="option_sign">Sign can be changed</string>
+
     <string name="option_sign_show_btn">Show sign button</string>
     <string name="option_answer_btn">Show answer button</string>
     <string name="option_clear_operation">Clear display on operation button click</string>
@@ -33,8 +27,8 @@
     <string name="option_max_value">Maximum value:</string>
     <string name="option_max_int">Maximum integer digits:</string>
     <string name="option_max_frac">Maximum fractional digits:</string>
-
     <string name="navigation_drawer_open">Open navigation drawer</string>
+
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_title">Android Studio</string>
     <string name="nav_header_subtitle">android.studio@android.com</string>
@@ -47,8 +41,8 @@
     <string name="fontello_searc" translatable="false">&#xea01;</string>
     <string name="fontello_x_mark" translatable="false">&#xe887;</string>
     <string name="material_icon_info_box" translatable="false">&#xe896;</string>
-    <!-- Strings related to login -->
     <string name="title_activity_login">Sign in</string>
+    <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password </string>
     <string name="action_sign_in_short">Sign in</string>
@@ -134,10 +128,10 @@
     <string name="sim_1">Sim 1</string>
     <string name="sim_2">Sim 2</string>
     <string name="default_sim_activ">Default sim active</string>
+    <string name="new_order">New Order</string>
 
     <!-- TODO: Remove or change this placeholder text -->
 
-    <string name="new_order">New Order</string>
     <string name="search">Search</string>
     <string name="send_order">Send Order</string>
     <string name="money">Money</string>
@@ -150,8 +144,8 @@
     <string name="call">Call</string>
     <string name="cash">Cash</string>
     <string name="rank">Rank</string>
-
     <string name="download">Download</string>
+
     <string name="done">Done</string>
     <string name="error">Error</string>
     <string name="welcome_in_tajr">Welcome ! \n do you want to start work?</string>
@@ -167,8 +161,8 @@
     <string name="send_problem">Send Problem</string>
     <string name="what_problem">What is the problem</string>
     <string name="send">Send</string>
-
     <string name="choose_lang">Choose language</string>
+
     <string name="arabic">عربي</string>
     <string name="english">English</string>
     <string name="choose_language">Choose language</string>
@@ -280,5 +274,11 @@
     <string name="wrong_item_quantity_warning">item_number can not be zero</string>
     <string name="over_discount_warning">discount cannot be more than total price</string>
     <string name="server_error">A Server Error Has Occurred ,Please try again later</string>
+    <string-array name="calc_dialog_errors">
+        <item>Division by zero</item>
+        <item>Out of bounds</item>
+        <item>Result must be positive</item>
+        <item>Result must be negative</item>
+    </string-array>
 
 </resources>
