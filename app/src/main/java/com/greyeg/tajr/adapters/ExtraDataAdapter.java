@@ -1,10 +1,14 @@
 package com.greyeg.tajr.adapters;
 
+import android.content.Context;
 import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -14,16 +18,21 @@ import com.greyeg.tajr.R;
 import com.greyeg.tajr.models.ExtraData;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class ExtraDataAdapter extends RecyclerView.Adapter<ExtraDataAdapter.ExtraDetailViewHolder> {
 
+    private Context context;
     private ArrayList<ExtraData> extraData;
+    private Map<String,Object> values;
 
 
-    public ExtraDataAdapter(ArrayList<ExtraData> extraData) {
+
+    public ExtraDataAdapter(Context context, ArrayList<ExtraData> extraData) {
+        this.context = context;
         this.extraData = extraData;
     }
 
@@ -45,22 +54,48 @@ public class ExtraDataAdapter extends RecyclerView.Adapter<ExtraDataAdapter.Extr
         return extraData==null?0:extraData.size();
     }
 
+    public Map<String,Object> getValues(){
+        values.clear();
+        return values;
+
+    }
+
     private void handleInputs(ExtraDetailViewHolder holder, ExtraData extra){
         TextView label=holder.label;
-        EditText value=holder.value;
+        Spinner spinner=holder.spinner;
+        EditText edittext=holder.value;
+
 
         label.setText(extra.getName());
-        value.setHint(extra.getDetails());
 
+        if (extra.getType().equals("select")){
+            String[] options=extra.getDetails().split(",");
+            Log.d("SPPIINNERR", "handleInputs: "+options.length);
+            ArrayAdapter arrayAdapter=new ArrayAdapter(context,android.R.layout.simple_list_item_1,options);
+            spinner.setAdapter(arrayAdapter);
+
+            spinner.setVisibility(View.VISIBLE);
+            edittext.setVisibility(View.INVISIBLE);
+
+            return;
+        }
+
+        spinner.setVisibility(View.INVISIBLE);
+        edittext.setVisibility(View.VISIBLE);
+
+        edittext.setHint(extra.getDetails());
 
         if (extra.getType().equals("number"))
-        value.setInputType(InputType.TYPE_CLASS_NUMBER);
+                edittext.setInputType(InputType.TYPE_CLASS_NUMBER);
+
     }
 
     class ExtraDetailViewHolder extends RecyclerView.ViewHolder{
 
         @BindView(R.id.value)
         EditText value;
+        @BindView(R.id.spinnerValue)
+        Spinner spinner;
         @BindView(R.id.field_label)
         TextView label;
         ExtraDetailViewHolder(@NonNull View itemView) {

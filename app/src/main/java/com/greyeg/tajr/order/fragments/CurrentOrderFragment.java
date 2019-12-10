@@ -952,10 +952,10 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
 
     private void getSingleOrderProducts() {
         BaseClient.getBaseClient().create(Api.class)
-               // .getSingleOrderProducts(SharedHelper.getKey(getActivity(), LoginActivity.TOKEN),
-                .getSingleOrderProducts("YIXRKEsDUv4VpAP5BaroqlJb",
-                        null
-                        //CurrentOrderData.getInstance().getCurrentOrderResponse().getUserId()
+                .getSingleOrderProducts(SharedHelper.getKey(getActivity(), LoginActivity.TOKEN),
+                //.getSingleOrderProducts("YIXRKEsDUv4VpAP5BaroqlJb",
+                        //null
+                        CurrentOrderData.getInstance().getCurrentOrderResponse().getUserId()
                 ).enqueue(new Callback<SingleOrderProductsResponse>() {
             @Override
             public void onResponse(Call<SingleOrderProductsResponse> call, Response<SingleOrderProductsResponse> response) {
@@ -1010,7 +1010,7 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
 
                     ArrayList<ExtraData> extra_data=CurrentOrderData.getInstance()
                             .getSingleOrderProductsResponse().getProducts().get(position).getExtra_data();
-                    ExtraDataAdapter extraDataAdapter=new ExtraDataAdapter(extra_data);
+                    ExtraDataAdapter extraDataAdapter=new ExtraDataAdapter(getContext(),extra_data);
                     extra_data_recycler.setAdapter(extraDataAdapter);
                     extra_data_recycler.setLayoutManager(new LinearLayoutManager(getContext()
                     ));

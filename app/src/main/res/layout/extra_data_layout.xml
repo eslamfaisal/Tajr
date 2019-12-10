@@ -15,12 +15,13 @@
         app:layout_constraintHorizontal_weight="3"
         android:id="@+id/field_label"
         tools:text="name"
-        android:textSize="20sp"
+        android:maxLines="1"
+        android:textSize="17sp"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@id/value"
         app:layout_constraintTop_toTopOf="@id/value"
-        app:layout_constraintBottom_toBottomOf="@id/value"
-        app:layout_constraintVertical_bias=".8"
+        android:layout_marginTop="10dp"
         android:layout_marginStart="5dp"
         />
 
@@ -37,4 +38,19 @@
         android:layout_marginStart="5dp"
 
 />
+
+
+    <Spinner
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:background="@color/gray"
+        app:layout_constraintHorizontal_weight="7"
+        android:id="@+id/spinnerValue"
+        android:padding="5dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/value"
+        app:layout_constraintStart_toStartOf="@id/value"
+
+        />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

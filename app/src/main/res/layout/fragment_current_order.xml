@@ -148,6 +148,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:id="@+id/extra_data_recycler"
+                        android:background="@drawable/frame"
                         android:layout_marginTop="10dp"
                         />
 
