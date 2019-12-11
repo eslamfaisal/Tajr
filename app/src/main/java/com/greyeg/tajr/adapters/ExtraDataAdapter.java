@@ -18,6 +18,7 @@ import com.greyeg.tajr.R;
 import com.greyeg.tajr.models.ExtraData;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 import butterknife.BindView;
@@ -27,7 +28,6 @@ public class ExtraDataAdapter extends RecyclerView.Adapter<ExtraDataAdapter.Extr
 
     private Context context;
     private ArrayList<ExtraData> extraData;
-    private Map<String,Object> values;
 
 
 
@@ -46,6 +46,8 @@ public class ExtraDataAdapter extends RecyclerView.Adapter<ExtraDataAdapter.Extr
     @Override
     public void onBindViewHolder(@NonNull ExtraDetailViewHolder holder, int position) {
         ExtraData extra=extraData.get(position);
+
+
         handleInputs(holder,extra);
     }
 
@@ -54,11 +56,7 @@ public class ExtraDataAdapter extends RecyclerView.Adapter<ExtraDataAdapter.Extr
         return extraData==null?0:extraData.size();
     }
 
-    public Map<String,Object> getValues(){
-        values.clear();
-        return values;
 
-    }
 
     private void handleInputs(ExtraDetailViewHolder holder, ExtraData extra){
         TextView label=holder.label;
@@ -88,6 +86,10 @@ public class ExtraDataAdapter extends RecyclerView.Adapter<ExtraDataAdapter.Extr
         if (extra.getType().equals("number"))
                 edittext.setInputType(InputType.TYPE_CLASS_NUMBER);
 
+    }
+
+    public ArrayList<ExtraData> getExtraData() {
+        return extraData;
     }
 
     class ExtraDetailViewHolder extends RecyclerView.ViewHolder{

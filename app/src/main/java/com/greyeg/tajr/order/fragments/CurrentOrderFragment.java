@@ -78,8 +78,10 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import androidx.cardview.widget.CardView;
 import androidx.core.app.NotificationCompat;
@@ -191,6 +193,7 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
     private View mainView;
     private LinearLayoutManager multiOrderProductsLinearLayoutManager;
     private MultiOrderProductsAdapter multiOrderProductsAdapter;
+    ExtraDataAdapter extraDataAdapter;
     private boolean firstOrder;
     private int firstRemaining;
     private Dialog errorGetCurrentOrderDialog;
@@ -300,8 +303,12 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
             @Override
             public void onClick(View v) {
                 toggleFabMode(normalUpdateButton);
+
                 normalUpdateOrder(OrderUpdateStatusEnums.order_data_confirmed.name());
                 updateClientData();
+
+//                Map<String,Object> values =getExtraDataValues();
+//                Log.d("VALUEESSS", "onClick: "+values.toString());
             }
         });
 
@@ -1010,7 +1017,7 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
 
                     ArrayList<ExtraData> extra_data=CurrentOrderData.getInstance()
                             .getSingleOrderProductsResponse().getProducts().get(position).getExtra_data();
-                    ExtraDataAdapter extraDataAdapter=new ExtraDataAdapter(getContext(),extra_data);
+                    extraDataAdapter=new ExtraDataAdapter(getContext(),extra_data);
                     extra_data_recycler.setAdapter(extraDataAdapter);
                     extra_data_recycler.setLayoutManager(new LinearLayoutManager(getContext()
                     ));
@@ -1324,6 +1331,26 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
         }
 
 
+    }
+
+    private Map<String, Object> getExtraDataValues(){
+        Map<String,Object> values=new HashMap<>();
+        ArrayList<ExtraData> extraData=extraDataAdapter.getExtraData();
+        for (int i = 0; i < extraDataAdapter.getItemCount(); i++) {
+
+            View view = extra_data_recycler.getChildAt(i);
+            if (extraData.get(i).getType().equals("select")){
+                Spinner spinner=view.findViewById(R.id.spinnerValue);
+                String value=extraData.get(i).getDetails().split(",")[spinner.getSelectedItemPosition()];
+                values.put(extraData.get(i).getRequest_name(),value);
+            }else {
+                EditText editText=view.findViewById(R.id.value);
+                String value=editText.getText().toString();
+                values.put(extraData.get(i).getRequest_name(),value);
+            }
+
+        }
+        return values;
     }
 
     @Override
