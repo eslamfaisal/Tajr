@@ -63,6 +63,7 @@ import com.rafakob.drawme.DrawMeButton;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -72,6 +73,7 @@ import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -267,6 +269,7 @@ public class BubbleService extends Service
     private void getBotBlocks(){
         setBroadCastLoading(View.VISIBLE);
         String token=SharedHelper.getKey(getApplicationContext(),LoginActivity.TOKEN);
+
         BaseClient.getApiService()
                 .getBotBlocks(token)
                 .enqueue(new Callback<BotBlocksResponse>() {
@@ -916,9 +919,9 @@ public class BubbleService extends Service
                     }
 
 
-                    if (event.getRawY()>height-100  //80
-                            &&event.getRawX()>width/2-40  //20
-                            &&event.getRawX()<width/2+100  //80
+                    if (event.getRawY()>height-150  //100
+                            &&event.getRawX()>width/2-80  //40
+                            &&event.getRawX()<width/2+150  //100
                     )
                     {
                         Log.d("DELETEE", "must delete: h"+height);
