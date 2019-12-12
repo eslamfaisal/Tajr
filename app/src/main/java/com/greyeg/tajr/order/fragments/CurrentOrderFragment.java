@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -1017,6 +1018,7 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
 
                     ArrayList<ExtraData> extra_data=CurrentOrderData.getInstance()
                             .getSingleOrderProductsResponse().getProducts().get(position).getExtra_data();
+                    //extra_data.add(0,new ExtraData())
                     extraDataAdapter=new ExtraDataAdapter(getContext(),extra_data);
                     extra_data_recycler.setAdapter(extraDataAdapter);
                     extra_data_recycler.setLayoutManager(new LinearLayoutManager(getContext()
@@ -1338,14 +1340,30 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
         ArrayList<ExtraData> extraData=extraDataAdapter.getExtraData();
         for (int i = 0; i < extraDataAdapter.getItemCount(); i++) {
 
+
+
             View view = extra_data_recycler.getChildAt(i);
             if (extraData.get(i).getType().equals("select")){
                 Spinner spinner=view.findViewById(R.id.spinnerValue);
-                String value=extraData.get(i).getDetails().split(",")[spinner.getSelectedItemPosition()];
+
+                if (Boolean.valueOf(extraData.get(i).getRequired())&&spinner.getSelectedItemPosition()==0){
+                    Toast.makeText(getContext(), R.string.complete_fields_error, Toast.LENGTH_SHORT).show();
+                    break;
+                }
+
+                if (spinner.getSelectedItemPosition()>0){
+                String value=extraData.get(i).getDetails().split(",")[spinner.getSelectedItemPosition()-1];
                 values.put(extraData.get(i).getRequest_name(),value);
+                }
+
             }else {
+
                 EditText editText=view.findViewById(R.id.value);
                 String value=editText.getText().toString();
+                if (Boolean.valueOf(extraData.get(i).getRequired())&& TextUtils.isEmpty(value)){
+                    Toast.makeText(getContext(), R.string.complete_fields_error, Toast.LENGTH_SHORT).show();
+                    break;
+                }
                 values.put(extraData.get(i).getRequest_name(),value);
             }
 

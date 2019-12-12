@@ -8,13 +8,15 @@ public class ExtraData {
     private String type;
     private String request_name;
     private String details;
+    private String required;
 
 
-    public ExtraData(String name, String type, String request_name, String details) {
+    public ExtraData(String name, String type, String request_name, String details, String required) {
         this.name = name;
         this.type = type;
         this.request_name = request_name;
         this.details = details;
+        this.required = required;
     }
 
     public String getName() {
@@ -31,6 +33,10 @@ public class ExtraData {
 
     public String getDetails() {
         return details;
+    }
+
+    public String getRequired() {
+        return required;
     }
 
     @NonNull

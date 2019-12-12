@@ -274,6 +274,7 @@
     <string name="wrong_item_quantity_warning">item_number can not be zero</string>
     <string name="over_discount_warning">discount cannot be more than total price</string>
     <string name="server_error">A Server Error Has Occurred ,Please try again later</string>
+    <string name="complete_fields_error">please complete all fields</string>
     <string-array name="calc_dialog_errors">
         <item>Division by zero</item>
         <item>Out of bounds</item>

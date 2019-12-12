@@ -18,6 +18,7 @@ import com.greyeg.tajr.R;
 import com.greyeg.tajr.models.ExtraData;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,8 +47,6 @@ public class ExtraDataAdapter extends RecyclerView.Adapter<ExtraDataAdapter.Extr
     @Override
     public void onBindViewHolder(@NonNull ExtraDetailViewHolder holder, int position) {
         ExtraData extra=extraData.get(position);
-
-
         handleInputs(holder,extra);
     }
 
@@ -68,8 +67,10 @@ public class ExtraDataAdapter extends RecyclerView.Adapter<ExtraDataAdapter.Extr
 
         if (extra.getType().equals("select")){
             String[] options=extra.getDetails().split(",");
-            Log.d("SPPIINNERR", "handleInputs: "+options.length);
-            ArrayAdapter arrayAdapter=new ArrayAdapter(context,android.R.layout.simple_list_item_1,options);
+            ArrayList<String> items=new ArrayList<>();
+            items.add("choose");
+            items.addAll(Arrays.asList(options));
+            ArrayAdapter arrayAdapter=new ArrayAdapter(context,android.R.layout.simple_list_item_1,items);
             spinner.setAdapter(arrayAdapter);
 
             spinner.setVisibility(View.VISIBLE);
