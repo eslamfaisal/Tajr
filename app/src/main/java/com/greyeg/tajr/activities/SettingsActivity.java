@@ -18,7 +18,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.greyeg.tajr.MainActivity;
 import com.greyeg.tajr.R;
@@ -29,9 +31,11 @@ import com.rafakob.drawme.DrawMeRelativeLayout;
 import java.util.Locale;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
@@ -42,8 +46,12 @@ public class SettingsActivity extends AppCompatActivity {
     TextView simNum;
     @BindView(R.id.lang_view)
     DrawMeRelativeLayout langView;
+    @BindView(R.id.bubble_container)
+    ConstraintLayout bubble_view;
     @BindView(R.id.lang_name)
     TextView langName;
+    @BindView(R.id.bubble_switch)
+    Switch bubble_switch;
     TextView autoNotifictionTv;
     RadioGroup radioGroup;
     RobotoTextView ok;
@@ -65,6 +73,7 @@ public class SettingsActivity extends AppCompatActivity {
     TextView autoUpdateTv;
     private String carrierName;
     private String TAG = "ttttttttttt";
+    public static final String BUBBLE_SETTING="bubble_settiing";
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -189,6 +198,19 @@ public class SettingsActivity extends AppCompatActivity {
         dialogLang.show();
     }
 
+    @OnClick({R.id.bubble_container})
+    public void bubbleSetting(){
+
+        bubble_switch.setChecked(!bubble_switch.isChecked());
+    }
+
+    @OnCheckedChanged(R.id.bubble_switch)
+    public void bubbleSwitchStateChanged(){
+        boolean state=SharedHelper.getBooleanValue(this,BUBBLE_SETTING);
+        Log.d(TAG, "bubbleSetting: "+state);
+        SharedHelper.putKey(this,BUBBLE_SETTING,!state);
+    }
+
     public void setLocale(String lang) {
         Locale myLocale = new Locale(lang);
         Resources res = getResources();
@@ -270,6 +292,7 @@ public class SettingsActivity extends AppCompatActivity {
             langName.setText(getString(R.string.arabic));
 
         }
+        bubble_switch.setChecked(SharedHelper.getBooleanValue(this,BUBBLE_SETTING));
 
     }
 

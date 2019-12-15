@@ -15,6 +15,7 @@ import androidx.lifecycle.Observer;
 import com.greyeg.tajr.MainActivity;
 import com.greyeg.tajr.R;
 import com.greyeg.tajr.activities.LoginActivity;
+import com.greyeg.tajr.activities.SettingsActivity;
 import com.greyeg.tajr.helper.NetworkUtil;
 import com.greyeg.tajr.helper.SharedHelper;
 import com.greyeg.tajr.helper.TimeCalculator;
@@ -53,11 +54,14 @@ public class AccessibilityService extends android.accessibilityservice.Accessibi
                     if (toast.getView()==null||!toast.getView().isShown()){
                         toast.show();
                     }
-                    TimeCalculator.getInstance(getApplicationContext()).stopTimer();
+                    //TimeCalculator.getInstance(getApplicationContext()).stopTimer();
                     return;
                 }
                 Log.d("TIMERCALCC", "timer start ");
                 //TimeCalculator.getInstance(getApplicationContext()).startTimer();
+                Log.d(TAG, "ttttttttttt: "+SharedHelper.getBooleanValue(getApplicationContext(), SettingsActivity.BUBBLE_SETTING));
+
+                if (!SharedHelper.getBooleanValue(getApplicationContext(), SettingsActivity.BUBBLE_SETTING))return;
 
             checkOverlayPermission();
             String userName=getUserName();
