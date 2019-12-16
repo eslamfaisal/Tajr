@@ -1,8 +1,11 @@
 package com.greyeg.tajr.repository;
 
 import android.content.res.Resources;
+import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
+
+import com.greyeg.tajr.App;
 import com.greyeg.tajr.R;
 import com.greyeg.tajr.models.NewOrderResponse;
 import com.greyeg.tajr.models.OrderPayload;
@@ -63,8 +66,10 @@ public class OrdersRepo {
 
                     @Override
                     public void onFailure(Call<CurrentOrderResponse> call, Throwable t) {
+                        //Log.d("CONFIRMMMM", "onFailure: "+t.getMessage());
                         isCurrentOrderLoading.setValue(false);
-                        currentOrderLoadingError.setValue(Resources.getSystem().getString(R.string.server_error));
+                        //currentOrderLoadingError.setValue(Resources.getSystem().getString(R.string.server_error));
+                        currentOrderLoadingError.setValue(App.getContext().getString(R.string.server_error));
                     }
                 });
         return currentOrder;
@@ -95,14 +100,14 @@ public class OrdersRepo {
                         if (response.isSuccessful()&&updateOrderNewResponse!=null)
                             updateOrder.setValue(updateOrderNewResponse);
                         else
-                            orderUpdateError.setValue(Resources.getSystem().getString(R.string.server_error));
+                            orderUpdateError.setValue(App.getContext().getString(R.string.server_error));
 
                         isOrderUpdating.setValue(true);
                     }
 
                     @Override
                     public void onFailure(Call<UpdateOrderNewResponse> call, Throwable t) {
-                        orderUpdateError.setValue(Resources.getSystem().getString(R.string.server_error));
+                        orderUpdateError.setValue(App.getContext().getString(R.string.server_error));
 
                     }
                 });
