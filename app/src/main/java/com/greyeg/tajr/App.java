@@ -27,6 +27,9 @@ import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 public class App extends Application {
 
     private Locale locale = null;
+    private static Context mContext;
+
+
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
@@ -46,6 +49,7 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        mContext=this;
 
         // OneSignal Initialization
         OneSignal.startInit(this)
@@ -175,4 +179,7 @@ public class App extends Application {
         }
     }
 
+    public static Context getContext() {
+        return mContext;
+    }
 }

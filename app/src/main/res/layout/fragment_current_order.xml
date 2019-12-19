@@ -201,6 +201,18 @@
 
                 </LinearLayout>
 
+
+                <LinearLayout
+                    android:id="@+id/productsRecycler_layout"
+                    style="@style/linear_order_item_style">
+                <androidx.recyclerview.widget.RecyclerView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/productsRecycler"
+                    />
+
+                </LinearLayout>
+
                 <LinearLayout
                     android:id="@+id/ddafdff"
                     style="@style/linear_order_item_style">

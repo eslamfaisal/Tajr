@@ -39,6 +39,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.greyeg.tajr.R;
 import com.greyeg.tajr.activities.LoginActivity;
 import com.greyeg.tajr.adapters.ExtraDataAdapter;
+import com.greyeg.tajr.adapters.OrderProductsAdapter;
 import com.greyeg.tajr.helper.CallTimeManager;
 import com.greyeg.tajr.helper.NetworkUtil;
 import com.greyeg.tajr.helper.SharedHelper;
@@ -49,6 +50,7 @@ import com.greyeg.tajr.models.CallTimeResponse;
 import com.greyeg.tajr.models.DeleteAddProductResponse;
 import com.greyeg.tajr.models.ExtraData;
 import com.greyeg.tajr.models.MainResponse;
+import com.greyeg.tajr.models.OrderProduct;
 import com.greyeg.tajr.models.RemainingOrdersResponse;
 import com.greyeg.tajr.models.UpdateOrderNewResponse;
 import com.greyeg.tajr.order.CurrentOrderData;
@@ -69,6 +71,7 @@ import com.greyeg.tajr.server.BaseClient;
 import com.greyeg.tajr.sheets.FragmentBottomSheetDialogFull;
 import com.greyeg.tajr.view.dialogs.CancelOrderDialog;
 import com.greyeg.tajr.view.dialogs.Dialogs;
+import com.greyeg.tajr.view.dialogs.ProductDetailDialog;
 import com.greyeg.tajr.viewmodels.CurrentOrderViewModel;
 import com.tapadoo.alerter.Alerter;
 
@@ -89,6 +92,7 @@ import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
@@ -101,7 +105,9 @@ import retrofit2.Response;
 import static android.content.Context.NOTIFICATION_SERVICE;
 import static com.greyeg.tajr.activities.LoginActivity.IS_LOGIN;
 
-public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.OnReasonSubmitted{
+public class CurrentOrderFragment extends Fragment
+        implements CancelOrderDialog.OnReasonSubmitted
+        ,OrderProductsAdapter.OnProductItemEvent{
 
     private final String TAG = "CurrentOrderFragment";
     @BindView(R.id.client_name)
@@ -189,6 +195,8 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
     CardView return_order;
     @BindView(R.id.extra_data_recycler)
     RecyclerView extra_data_recycler;
+    @BindView(R.id.productsRecycler)
+    RecyclerView productsRecycler;
 
     // main view of the CurrentOrderFragment
     private View mainView;
@@ -305,8 +313,8 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
             public void onClick(View v) {
                 toggleFabMode(normalUpdateButton);
 
-                normalUpdateOrder(OrderUpdateStatusEnums.order_data_confirmed.name());
                 updateClientData();
+                normalUpdateOrder(OrderUpdateStatusEnums.order_data_confirmed.name());
 
 //                Map<String,Object> values =getExtraDataValues();
 //                Log.d("VALUEESSS", "onClick: "+values.toString());
@@ -392,6 +400,7 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
             @Override
             public void onResponse(@NotNull Call<UpdateOrderNewResponse> call, @NotNull Response<UpdateOrderNewResponse> response) {
                 progressDialog.dismiss();
+                Log.d("CONFIRMMMM", "updateShippingOrder: ");
                 getCurrentOrder();
                 Log.d(TAG, "onResponse: " + response.toString());
             }
@@ -399,6 +408,7 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
             @Override
             public void onFailure(Call<UpdateOrderNewResponse> call, Throwable t) {
                 progressDialog.dismiss();
+                Log.d("CONFIRMMMM", "updateShippingOrder: failure");
                 getCurrentOrder();
                 Log.d(TAG, "onResponse: " + t.getMessage());
             }
@@ -426,7 +436,8 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
         ).enqueue(new Callback<CurrentOrderResponse>() {
             @Override
             public void onResponse(Call<CurrentOrderResponse> call, Response<CurrentOrderResponse> response) {
-                if (CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getOrderType().equals(OrderProductsType.SingleOrder.getType())) {
+                if (CurrentOrderData.getInstance().getCurrentOrderResponse()
+                        .getOrder().getOrderType().equals(OrderProductsType.SingleOrder.getType())) {
                     updateSingleOrderData(progressDialog);
                 } else {
                     updateOrderMultiOrderData(progressDialog);
@@ -455,6 +466,8 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
             @Override
             public void onResponse(Call<CurrentOrderResponse> call, Response<CurrentOrderResponse> response) {
                 progressDialog.dismiss();
+                Log.d("CONFIRMMMM", "updateSingleOrderData: ");
+
                 getCurrentOrder();
                 Log.d(TAG, "onResponse: " + response.toString());
             }
@@ -510,10 +523,14 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
                 .observe(getActivity(), new Observer<UpdateOrderNewResponse>() {
                     @Override
                     public void onChanged(UpdateOrderNewResponse updateOrderNewResponse) {
-
-                        if (updateOrderNewResponse!=null)
+                        if (updateOrderNewResponse!=null){
+                            Log.d("CONFIRMMMM", "onChanged: "+updateOrderNewResponse.getData());
                             handleCallTime(updateOrderNewResponse.getOrder_id(),updateOrderNewResponse.getHistory_line());
-                        getCurrentOrder();
+                            getCurrentOrder();
+                        }else {
+                            Log.d("CONFIRMMMM", "error: ");
+
+                        }
                     }
                 });
         observeOrderUpdating();
@@ -790,12 +807,14 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
                     .show();
             return;
         }
+        Log.d("CONFIRMMMM", " getting CurrentOrder");
 
         currentOrderViewModel
                 .getCurrentOrder(SharedHelper.getKey(getContext(),LoginActivity.TOKEN))
                 .observe(getActivity(), new Observer<CurrentOrderResponse>() {
                     @Override
                     public void onChanged(CurrentOrderResponse currentOrderResponse) {
+                        Log.d("CONFIRMMMM", " onChanged: getCurrentOrder ");
                         if (currentOrderResponse!=null){
                             if (currentOrderResponse.getCode().equals(ResponseCodeEnums.code_1200.getCode())) {
                                 orderId= Long.valueOf(currentOrderResponse.getOrder().getId());
@@ -938,6 +957,11 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
             item_no.setEnabled(false);
         }
 
+        OrderProductsAdapter orderProductsAdapter=new OrderProductsAdapter(getContext()
+                ,orderResponse.getOrder().getProducts(),this);
+        productsRecycler.setAdapter(orderProductsAdapter);
+        productsRecycler.setLayoutManager(new GridLayoutManager(getContext(),3));
+
         calculateOrderTotal(order.getOrderType());
         updateOrderTotal(order.getOrderType());
     }
@@ -948,6 +972,7 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
                 new MultiOrderProductsAdapter.GetOrderInterface() {
                     @Override
                     public void getOrder() {
+                        Log.d("CONFIRMMMM", "getMultiOrdersProducts: ");
                         getCurrentOrder();
                     }
                 });
@@ -1179,6 +1204,8 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
         LinearLayout linearLayout = mainView.findViewById(R.id.order_fields);
 
         for (int i = 0; i < linearLayout.getChildCount(); i++) {
+            if (!(linearLayout.getChildAt(i) instanceof LinearLayout)) return;
+
             LinearLayout chiledLinearLayout = linearLayout.findViewById(linearLayout.getChildAt(i).getId());
             if (chiledLinearLayout != null)
                 chiledLinearLayout.setOnClickListener(new View.OnClickListener() {
@@ -1395,5 +1422,28 @@ public class CurrentOrderFragment extends Fragment implements CancelOrderDialog.
         dialog.setCancelable(false);
         dialog.show();
         return dialog;
+    }
+
+    @Override
+    public void onCartItemDeleted(int productId) {
+
+    }
+
+    @Override
+    public void onCartItemQuantityIncrease(int productId, int quantity) {
+
+    }
+
+    @Override
+    public void onCartItemQuantityDecrease(int productId, int quantity) {
+
+    }
+
+    @Override
+    public void OnProductItemClicked(OrderProduct product) {
+        ProductDetailDialog productDetailDialog=new ProductDetailDialog(product);
+        if (getFragmentManager() != null)
+            productDetailDialog.show(getFragmentManager(),"");
+
     }
 }

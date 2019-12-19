@@ -2,9 +2,12 @@ package com.greyeg.tajr.order.models;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.greyeg.tajr.models.OrderProduct;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class Order implements Serializable {
 
@@ -91,10 +94,14 @@ public class Order implements Serializable {
     private String orderType;
     @SerializedName("extra_data")
     @Expose
-    private List<Object> extraData = null;
+    private List<Map<String,String>> extraData;
     @SerializedName("multi_orders")
     @Expose
     private List<MultiOrderProducts> multiOrders = null;
+
+    @SerializedName("products")
+    @Expose
+    private ArrayList<OrderProduct> products;
 
     @SerializedName("check_type")
     @Expose
@@ -324,12 +331,8 @@ public class Order implements Serializable {
         this.orderType = orderType;
     }
 
-    public List<Object> getExtraData() {
+    public List<Map<String, String>> getExtraData() {
         return extraData;
-    }
-
-    public void setExtraData(List<Object> extraData) {
-        this.extraData = extraData;
     }
 
     public List<MultiOrderProducts> getMultiOrders() {
@@ -338,6 +341,10 @@ public class Order implements Serializable {
 
     public void setMultiOrders(List<MultiOrderProducts> multiOrders) {
         this.multiOrders = multiOrders;
+    }
+
+    public ArrayList<OrderProduct> getProducts() {
+        return products;
     }
 
     @Override

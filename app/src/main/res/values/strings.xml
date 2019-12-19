@@ -276,6 +276,7 @@
     <string name="server_error">A Server Error Has Occurred ,Please try again later</string>
     <string name="complete_fields_error">please complete all fields</string>
     <string name="show_bubble">show Bubble</string>
+    <string name="update_product">update Product</string>
     <string-array name="calc_dialog_errors">
         <item>Division by zero</item>
         <item>Out of bounds</item>

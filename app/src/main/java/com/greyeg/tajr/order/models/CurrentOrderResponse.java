@@ -14,15 +14,23 @@ public class CurrentOrderResponse implements Serializable {
     @SerializedName("info")
     @Expose
     private String info;
+    @SerializedName("response")
+    @Expose
+    private String response;
+
+    @SerializedName("data")
+    @Expose
+    private String data;
+
     @SerializedName("order_type")
     @Expose
     private String orderType;
     @SerializedName("remainig_orders")
     @Expose
     private Integer remainigOrders;
-    @SerializedName("response")
+    @SerializedName("response_info")
     @Expose
-    private String response;
+    private String response_info;
     @SerializedName("user_id")
     @Expose
     private String userId;
