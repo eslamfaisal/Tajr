@@ -15,15 +15,23 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.crashlytics.android.Crashlytics;
 import com.greyeg.tajr.R;
+import com.greyeg.tajr.activities.LoginActivity;
 import com.greyeg.tajr.adapters.ExtraDataAdapter;
 import com.greyeg.tajr.adapters.ExtraDataAdapter2;
+import com.greyeg.tajr.adapters.ProductAdapter;
+import com.greyeg.tajr.helper.SharedHelper;
+import com.greyeg.tajr.models.AllProducts;
 import com.greyeg.tajr.models.ExtraData;
 import com.greyeg.tajr.models.OrderProduct;
+import com.greyeg.tajr.models.ProductData;
 import com.greyeg.tajr.models.ProductExtra;
+import com.greyeg.tajr.repository.ProductsRepo;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -33,8 +41,13 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.reactivex.SingleObserver;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+import retrofit2.Response;
 
-public class ProductDetailDialog extends DialogFragment {
+public class ProductDetailDialog extends DialogFragment implements ProductAdapter.OnProductClicked {
 
     @BindView(R.id.productsRecycler)
     RecyclerView productsRecycler;
@@ -44,9 +57,16 @@ public class ProductDetailDialog extends DialogFragment {
     TextView productName;
     @BindView(R.id.productImg)
     ImageView productImage;
+    @BindView(R.id.quantity)
+    TextView quantity;
+    @BindView(R.id.increase)
+    ImageView increment;
+    @BindView(R.id.decrease)
+    ImageView decrement;
 
     private OrderProduct product;
     private ExtraDataAdapter2 extraDataAdapter;
+    private ProductAdapter productAdapter;
 
     public ProductDetailDialog(OrderProduct product) {
         this.product = product;
@@ -63,6 +83,10 @@ public class ProductDetailDialog extends DialogFragment {
         ButterKnife.bind(this,dialog);
 
         populateProductDetail();
+        productAdapter=new ProductAdapter(getContext(),null,this);
+        productsRecycler.setAdapter(productAdapter);
+        productsRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
+        productsRecycler.addItemDecoration(new DividerItemDecoration(getContext(),DividerItemDecoration.VERTICAL));
 
         Log.d("extraDataAdapter", "onCreateView: ");
 
@@ -119,8 +143,56 @@ public class ProductDetailDialog extends DialogFragment {
                 .load(product.getImage())
                 .into(productImage);
 
+        quantity.setText(String.valueOf(product.getItems_no()));
+
+        increment.setOnClickListener(view -> {
+            if (TextUtils.isEmpty(quantity.getText().toString()))return;
+            int q= Integer.parseInt(quantity.getText().toString());
+            q++;
+            quantity.setText(String.valueOf(q));
+        });
+        decrement.setOnClickListener(view -> {
+            if (TextUtils.isEmpty(quantity.getText().toString()))return;
+
+            int q= Integer.parseInt(quantity.getText().toString());
+            if (q==1)return;
+            q--;
+            quantity.setText(String.valueOf(q));
 
 
+        });
+
+        String token= SharedHelper.getKey(getContext(), LoginActivity.TOKEN);
+        ProductsRepo
+                .getInstance()
+                .getProducts(token,null)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new SingleObserver<Response<AllProducts>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onSuccess(Response<AllProducts> response) {
+                        AllProducts products=response.body();
+                        if (response.isSuccessful()&&products!=null){
+                            productAdapter.addProducts(products.getProducts());
+
+                        }else{
+                            //todo handle case of no products
+                            Toast.makeText(getContext(), R.string.error_getting_products, Toast.LENGTH_SHORT).show();
+                        }
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Toast.makeText(getContext(), R.string.error_getting_products, Toast.LENGTH_SHORT).show();
+
+                    }
+                });
 
         extraDataAdapter=new ExtraDataAdapter2(getContext(),product.getExtras());
         extraDataRecycler.setAdapter(extraDataAdapter);
@@ -136,5 +208,16 @@ public class ProductDetailDialog extends DialogFragment {
             getDialog().getWindow().setLayout(
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT);
+    }
+
+    @Override
+    public void onProductClicked(ProductData product) {
+        productName.setText(product.getProduct_name());
+
+        Picasso
+                .get()
+                .load(product.getProduct_image())
+                .into(productImage);
+
     }
 }

@@ -21,6 +21,8 @@
         android:layout_height="wrap_content"
         android:id="@+id/product_name"
         tools:text="@string/dummy_product"
+        android:textSize="18sp"
+        android:textColor="@color/black_text_color"
         android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@id/product_image"
         app:layout_constraintEnd_toEndOf="parent"
