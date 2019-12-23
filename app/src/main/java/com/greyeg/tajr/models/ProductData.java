@@ -5,6 +5,8 @@ import androidx.annotation.Nullable;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
+
 public class ProductData {
 
     @SerializedName("product_id")
@@ -48,9 +50,9 @@ public class ProductData {
     @Expose
     private String product_real_price;
 
-//    @SerializedName("extra_data")
-//    @Expose
-//    private String extra_data;
+    @SerializedName("extra_data")
+    @Expose
+    private ArrayList<ProductExtra> extra_data;
 
     public ProductData() {
     }
@@ -139,10 +141,9 @@ public class ProductData {
         return product_real_price;
     }
 
-//    public String getExtra_data() {
-//        return extra_data;
-//    }
-
+    public ArrayList<ProductExtra> getExtra_data() {
+        return extra_data;
+    }
 
     @Override
     public String toString() {

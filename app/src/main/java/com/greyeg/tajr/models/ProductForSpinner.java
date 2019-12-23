@@ -1,10 +1,13 @@
 package com.greyeg.tajr.models;
 
+import java.util.ArrayList;
+
 public class ProductForSpinner {
     private String name;
     private String image;
     private String id;
     private String itemCost;
+    private ArrayList<ProductExtra> extraData;
     public ProductForSpinner() {
     }
 
@@ -13,6 +16,14 @@ public class ProductForSpinner {
         this.image = image;
         this.id = id;
         this.itemCost = itemCost;
+    }
+
+    public ProductForSpinner(String name, String image, String id, String itemCost, ArrayList<ProductExtra> extraData) {
+        this.name = name;
+        this.image = image;
+        this.id = id;
+        this.itemCost = itemCost;
+        this.extraData = extraData;
     }
 
     public String getItemCost() {
@@ -45,5 +56,9 @@ public class ProductForSpinner {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public ArrayList<ProductExtra> getExtraData() {
+        return extraData;
     }
 }

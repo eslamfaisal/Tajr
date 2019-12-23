@@ -1,133 +1,123 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
-    android:padding="5dp"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="5dp">
 
-    <ImageView
-        android:layout_width="75dp"
-        android:layout_height="75dp"
-        android:id="@+id/productImg"
-        tools:src="@drawable/product"
+    <Button
+        android:id="@+id/updateProduct"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_marginTop="5dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/product_name"
-        tools:text="@string/dummy_product"
-        android:textStyle="bold"
-        android:textSize="18sp"
-        android:textColor="@color/black_text_color"
-        android:layout_marginTop="5dp"
-        app:layout_constraintTop_toBottomOf="@id/productImg"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:background="@color/colorPrimary"
+        android:text="@string/update_product"
+        android:textColor="#fff"
+        app:layout_constraintTop_toBottomOf="@id/extra_data_recycler"
 
         />
 
-
     <ImageView
+        android:id="@+id/increase"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:id="@+id/increase"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
         android:background="@color/primary"
         android:src="@drawable/fab_add"
-        app:layout_constraintTop_toBottomOf="@id/product_name"
         app:layout_constraintStart_toEndOf="@id/quantity"
-        android:layout_marginTop="5dp"
-        android:layout_marginStart="5dp"
-        />
+        app:layout_constraintTop_toBottomOf="@id/product_name" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:id="@+id/quantity"
-        tools:text="2"
-        android:textSize="18sp"
-        android:textColor="@color/light_black"
-        app:layout_constraintTop_toTopOf="@id/increase"
-        app:layout_constraintBottom_toBottomOf="@id/increase"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        />
 
     <ImageView
+        android:id="@+id/decrease"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:id="@+id/decrease"
-        android:scaleType="fitXY"
-        android:background="@color/primary"
-        app:layout_constraintEnd_toStartOf="@id/quantity"
-        app:layout_constraintTop_toTopOf="@id/increase"
-        android:src="@drawable/ic_remove_black_24dp"
         android:layout_marginEnd="5dp"
-        />
+        android:background="@color/primary"
+        android:scaleType="fitXY"
+        android:src="@drawable/ic_remove_black_24dp"
+        app:layout_constraintEnd_toStartOf="@id/quantity"
+        app:layout_constraintTop_toTopOf="@id/increase" />
 
+    <ImageView
+        android:id="@+id/productImg"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:layout_marginTop="5dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@drawable/product" />
+
+    <TextView
+        android:id="@+id/product_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:textColor="@color/black_text_color"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/productImg"
+        tools:text="@string/dummy_product"
+
+        />
 
 
     <TextView
+        android:id="@+id/products_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/products_label"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="10dp"
         android:text="@string/products"
-        android:textStyle="bold"
         android:textColor="@color/main_color_grey_700"
         android:textSize="18sp"
-        app:layout_constraintTop_toBottomOf="@id/increase"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="10dp"
-        android:layout_marginStart="5dp"
-        />
+        app:layout_constraintTop_toBottomOf="@id/increase" />
+
+    <TextView
+        android:id="@+id/quantity"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:textColor="@color/light_black"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@id/increase"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/increase"
+        tools:text="2" />
+
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/productsRecyclerContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/productsRecyclerContainer"
-        app:cardElevation="3dp"
         android:layout_margin="2dp"
-        app:layout_constraintTop_toBottomOf="@id/products_label"
-        >
+        app:cardElevation="3dp"
+        app:layout_constraintTop_toBottomOf="@id/products_label">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:layout_width="match_parent"
-        android:layout_height="150sp"
-        android:padding="3dp"
-        android:id="@+id/productsRecycler"
-        android:layout_marginTop="10dp"
-        />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/productsRecycler"
+            android:layout_width="match_parent"
+            android:layout_height="150sp"
+            android:layout_marginTop="10dp"
+            android:padding="3dp" />
 
     </androidx.cardview.widget.CardView>
 
-
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/extra_data_recycler"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/extra_data_recycler"
-        android:background="@drawable/frame"
         android:layout_marginTop="10dp"
-        app:layout_constraintTop_toBottomOf="@id/productsRecyclerContainer"
-        />
-
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/updateProduct"
-        android:text="@string/update_product"
-        android:background="@color/colorPrimary"
-        android:textColor="#fff"
-        app:layout_constraintTop_toBottomOf="@id/extra_data_recycler"
-        android:layout_marginTop="5dp"
-
-        />
+        android:background="@drawable/frame"
+        app:layout_constraintTop_toBottomOf="@id/productsRecyclerContainer" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

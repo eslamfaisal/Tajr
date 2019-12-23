@@ -2,14 +2,24 @@ package com.greyeg.tajr.models;
 
 import androidx.annotation.Nullable;
 
+import java.util.HashMap;
+
 public class OrderItem {
 
     private String product_id;
     private int items;
+    private HashMap<String,Object> extras;
+
 
     public OrderItem(String product_id, int items) {
         this.product_id = product_id;
         this.items = items;
+    }
+
+    public OrderItem(String product_id, int items, HashMap<String, Object> extras) {
+        this.product_id = product_id;
+        this.items = items;
+        this.extras = extras;
     }
 
     public OrderItem(String product_id) {
@@ -33,6 +43,14 @@ public class OrderItem {
 
     public void setItems(int items) {
         this.items = items;
+    }
+
+    public HashMap<String, Object> getExtras() {
+        return extras;
+    }
+
+    public void setExtras(HashMap<String, Object> extras) {
+        this.extras = extras;
     }
 
     @Override

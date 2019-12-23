@@ -61,12 +61,12 @@ public interface Api {
 
     // log in user client
     @FormUrlEncoded
-    @POST("send_test/get_products")
+    @POST("send/get_products")
     Call<AllProducts> getProducts(@Field("token") String token,
                                   @Field("user_id") String user_id);
 
     @FormUrlEncoded
-    @POST("send_test/get_products")
+    @POST("send/get_products")
     Single<Response<AllProducts>> getProducts2(@Field("token") String token,
                                                            @Field("user_id") String user_id);
 
@@ -147,7 +147,7 @@ public interface Api {
     );
 
 
-    @POST("send_test/record_new_order")
+    @POST("send/record_new_order")
     Single<Response<NewOrderResponse>> makeNewOrder(@Body OrderPayload orderPayload);
 
     @FormUrlEncoded
@@ -366,7 +366,7 @@ public interface Api {
 
     // log in user client
     @FormUrlEncoded
-    @POST("send_test/get_products")
+    @POST("send/get_products")
     Call<SingleOrderProductsResponse> getSingleOrderProducts(@Field("token") String token,
                                                              @Field("user_id") String user_id);
 

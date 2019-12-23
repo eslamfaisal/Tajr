@@ -36,8 +36,10 @@ import com.greyeg.tajr.R;
 import com.greyeg.tajr.activities.LoginActivity;
 import com.greyeg.tajr.adapters.BotBlocksAdapter;
 import com.greyeg.tajr.adapters.CartAdapter;
+import com.greyeg.tajr.adapters.ExtraDataAdapter2;
 import com.greyeg.tajr.adapters.ProductSpinnerAdapter;
 import com.greyeg.tajr.adapters.SubscribersAdapter;
+import com.greyeg.tajr.helper.ExtraDataHelper;
 import com.greyeg.tajr.helper.ScreenHelper;
 import com.greyeg.tajr.helper.SharedHelper;
 import com.greyeg.tajr.helper.UserNameEvent;
@@ -66,6 +68,7 @@ import org.greenrobot.eventbus.Subscribe;
 import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -115,6 +118,8 @@ public class BubbleService extends Service
     ArrayList<OrderItem> orderItems;
     private List<ProductData> products;
     CartAdapter cartAdapter;
+    ExtraDataAdapter2 extraDataAdapter;
+    RecyclerView extraDataRecycler;
     private ViewGroup emptyView;
 
     @Nullable
@@ -336,7 +341,7 @@ public class BubbleService extends Service
         }
 
         if (Integer.valueOf(item_no)<1){
-            Toast.makeText(this, "mimimum order items is 1", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "minimum order items is 1", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -355,11 +360,18 @@ public class BubbleService extends Service
         String token=SharedHelper.getKey(getApplicationContext(),LoginActivity.TOKEN);
 
 
+//        HashMap<String,Object> extras=new HashMap<>();
+//        extras.put("extra_field_name_1","s");
+//        extras.put("extra_field_name_2","test");
+
+
+
         OrderPayload orderPayload=new OrderPayload(token,null,client_name,client_order_phone1,
                 CITY_ID,client_area,client_address,null,
                 userName,userId,orderItems);
 
 
+        Log.d("ORDERRRR", "user id:"+orderPayload.getSender_id());
 
 
         Log.d("OORRDDEERRR","order items size"+orderItems.size());
@@ -611,21 +623,30 @@ public class BubbleService extends Service
         TextView itemsNumber=addNewProductDialog.findViewById(R.id.product_no);
         ImageView close=addNewProductDialog.findViewById(R.id.close);
         TextView add_product=addNewProductDialog.findViewById(R.id.add_product);
+        extraDataRecycler=addNewProductDialog.findViewById(R.id.extra_data_recycler);
 
         ArrayList<ProductForSpinner> spinnerProducts=new ArrayList<>();
         for (ProductData product : products) {
-            spinnerProducts.add(new ProductForSpinner(product.getProduct_name(), product.getProduct_image(), product.getProduct_id(),product.getProduct_real_price()));
+            spinnerProducts.add(new ProductForSpinner(product.getProduct_name(), product.getProduct_image(),
+                    product.getProduct_id(),product.getProduct_real_price(),product.getExtra_data()));
         }
 
         ProductSpinnerAdapter adapter=new ProductSpinnerAdapter(getApplicationContext(),spinnerProducts);
         productsSpinner.setAdapter(adapter);
+
 
         productsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 pos[0] =i;
                 if (i==0)return;
+                Log.d("EXTRAAAAAAA", "onItemSelected: "+products.get(i-1).getExtra_data().size());
                 orderItem.setProduct_id(products.get(i-1).getProduct_id());
+                extraDataAdapter=new ExtraDataAdapter2(getApplicationContext()
+                        ,products.get(i-1).getExtra_data());
+                extraDataRecycler.setAdapter(extraDataAdapter);
+                extraDataRecycler.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+
             }
 
             @Override
@@ -657,6 +678,11 @@ public class BubbleService extends Service
                     Toast.makeText(BubbleService.this, "please enter valid quantity ", Toast.LENGTH_SHORT).show();
                     return;
                 }
+
+                HashMap<String,Object> values= ExtraDataHelper.getValues(getApplicationContext(),
+                        extraDataAdapter,extraDataRecycler);
+                if (values==null) return;
+
                 orderItem.setItems(items);
                 if (!orderItems.contains(orderItem)){
                     orderItems.add(orderItem);

@@ -93,6 +93,7 @@ public class ExtraDataAdapter2 extends RecyclerView.Adapter<ExtraDataAdapter2.Ex
         return extraData;
     }
 
+
     class ExtraDetailViewHolder extends RecyclerView.ViewHolder{
 
         @BindView(R.id.value)

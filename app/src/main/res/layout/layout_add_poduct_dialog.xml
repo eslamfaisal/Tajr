@@ -59,10 +59,26 @@
             android:layout_marginEnd="@dimen/_16ssp"
             android:hint="@string/item_no" />
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/extra_fields"
+            android:textSize="18sp"
+            android:textColor="@color/calc_grey_500"
+            android:textStyle="bold"
+            />
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:id="@+id/extra_data_recycler"
+            android:layout_marginTop="5dp"
+            />
+
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/colorPrimaryDark" />
+            android:background="@color/colorPrimaryDark"
+            android:layout_marginTop="5dp"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -85,6 +101,8 @@
                 android:textStyle="bold"
                 app:typeface="robotoMedium" />
         </LinearLayout>
+
+
     </LinearLayout>
 
 

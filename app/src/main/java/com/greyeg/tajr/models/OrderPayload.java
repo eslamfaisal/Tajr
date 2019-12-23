@@ -1,6 +1,7 @@
 package com.greyeg.tajr.models;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class OrderPayload {
 
@@ -34,6 +35,8 @@ public class OrderPayload {
         this.sender_id = sender_id;
         this.order_body = order_body;
     }
+
+
 
     public OrderPayload() {
     }
@@ -88,4 +91,7 @@ public class OrderPayload {
     public String getStatus_id() {
         return status_id;
     }
+
+
+
 }

@@ -1,5 +1,6 @@
 package com.greyeg.tajr.view.dialogs;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -25,6 +26,7 @@ import com.greyeg.tajr.activities.LoginActivity;
 import com.greyeg.tajr.adapters.ExtraDataAdapter;
 import com.greyeg.tajr.adapters.ExtraDataAdapter2;
 import com.greyeg.tajr.adapters.ProductAdapter;
+import com.greyeg.tajr.helper.EndlessRecyclerViewScrollListener;
 import com.greyeg.tajr.helper.SharedHelper;
 import com.greyeg.tajr.models.AllProducts;
 import com.greyeg.tajr.models.ExtraData;
@@ -67,6 +69,7 @@ public class ProductDetailDialog extends DialogFragment implements ProductAdapte
     private OrderProduct product;
     private ExtraDataAdapter2 extraDataAdapter;
     private ProductAdapter productAdapter;
+    private OnProductUpdated onProductUpdated;
 
     public ProductDetailDialog(OrderProduct product) {
         this.product = product;
@@ -85,10 +88,18 @@ public class ProductDetailDialog extends DialogFragment implements ProductAdapte
         populateProductDetail();
         productAdapter=new ProductAdapter(getContext(),null,this);
         productsRecycler.setAdapter(productAdapter);
-        productsRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
+        LinearLayoutManager layoutManager=new LinearLayoutManager(getContext());
+        productsRecycler.setLayoutManager(layoutManager);
         productsRecycler.addItemDecoration(new DividerItemDecoration(getContext(),DividerItemDecoration.VERTICAL));
+        productsRecycler.addOnScrollListener(new EndlessRecyclerViewScrollListener(layoutManager,2) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                    Log.d("PAGINATIONN", "onLoadMore: ");
+                    page++;
+                    getProducts(String.valueOf(page));
 
-        Log.d("extraDataAdapter", "onCreateView: ");
+            }
+        });
 
         return dialog;
 
@@ -97,7 +108,12 @@ public class ProductDetailDialog extends DialogFragment implements ProductAdapte
     @OnClick(R.id.updateProduct)
     public void updateProduct(){
         getExtraDataValues();
+        onProductUpdated.onProductUpdated(product);
+        dismiss();
     }
+
+
+
 
     private Map<String, Object> getExtraDataValues(){
         Map<String,Object> values=new HashMap<>();
@@ -162,6 +178,15 @@ public class ProductDetailDialog extends DialogFragment implements ProductAdapte
 
         });
 
+        getProducts(null);
+
+
+        extraDataAdapter=new ExtraDataAdapter2(getContext(),product.getExtras());
+        extraDataRecycler.setAdapter(extraDataAdapter);
+        extraDataRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
+    }
+
+    private void getProducts(String page){
         String token= SharedHelper.getKey(getContext(), LoginActivity.TOKEN);
         ProductsRepo
                 .getInstance()
@@ -193,10 +218,6 @@ public class ProductDetailDialog extends DialogFragment implements ProductAdapte
 
                     }
                 });
-
-        extraDataAdapter=new ExtraDataAdapter2(getContext(),product.getExtras());
-        extraDataRecycler.setAdapter(extraDataAdapter);
-        extraDataRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
     }
 
 
@@ -219,5 +240,15 @@ public class ProductDetailDialog extends DialogFragment implements ProductAdapte
                 .load(product.getProduct_image())
                 .into(productImage);
 
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        onProductUpdated= (OnProductUpdated) this;
+    }
+
+    interface OnProductUpdated{
+        void onProductUpdated(OrderProduct product);
     }
 }
