@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_margin="3dp"
     app:cardElevation="2dp"
-    app:cardCornerRadius="5dp"
+    app:cardCornerRadius="3dp"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
@@ -14,8 +14,8 @@
     android:layout_height="wrap_content">
 
     <ImageView
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="130dp"
+        android:layout_height="130dp"
         android:src="@drawable/product"
         android:id="@+id/item_img"
         android:scaleType="fitXY"
