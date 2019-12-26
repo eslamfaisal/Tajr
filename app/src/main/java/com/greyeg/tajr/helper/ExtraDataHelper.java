@@ -36,7 +36,7 @@ public class ExtraDataHelper {
             }
 
             if (spinner.getSelectedItemPosition()>0){
-                String value=extraData.get(i).getList().get(spinner.getSelectedItemPosition()-1);
+                String value=extraData.get(i).getList().get(spinner.getSelectedItemPosition());
                 values.put(extraData.get(i).getHtml(),value);
             }
 

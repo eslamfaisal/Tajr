@@ -259,7 +259,7 @@ public class BubbleService extends Service
 
                         }
                         else {
-                            Toast.makeText(BubbleService.this, "Server Error occured", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(BubbleService.this, "Server Error occurred", Toast.LENGTH_SHORT).show();
                         }
                     }
 
@@ -324,14 +324,14 @@ public class BubbleService extends Service
     }
 
     private void MakeNewOrder(String client_name, String client_order_phone1
-            , String client_area, String client_address, String item_no){
+            , String client_area, String client_address){
 
         if (orderItems.isEmpty()){
             Toast.makeText(this, "choose product first", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        String[] params={client_name,client_order_phone1,client_area,client_address,item_no,CITY_ID};
+        String[] params={client_name,client_order_phone1,client_area,client_address,CITY_ID};
         for (String param : params) {
             if (TextUtils.isEmpty(param)) {
                 Toast.makeText(this, "complete all Fields", Toast.LENGTH_SHORT).show();
@@ -340,12 +340,8 @@ public class BubbleService extends Service
 
         }
 
-        if (Integer.valueOf(item_no)<1){
-            Toast.makeText(this, "minimum order items is 1", Toast.LENGTH_SHORT).show();
-            return;
-        }
 
-        orderItems.get(0).setItems(Integer.valueOf(item_no));
+
 
 
         Log.d("ORDERRRR", "token : "+SharedHelper.getKey(getApplicationContext(),LoginActivity.TOKEN));
@@ -353,7 +349,6 @@ public class BubbleService extends Service
         Log.d("ORDERRRR", "client_order_phone1: "+client_order_phone1);
         Log.d("ORDERRRR", "client_area: "+client_area);
         Log.d("ORDERRRR", "client_address: "+client_address);
-        Log.d("ORDERRRR", "item_no: "+item_no);
         Log.d("ORDERRRR", "CITY ID: "+CITY_ID);
         Log.d("ORDERRRR", "product id: "+orderItems.get(0).getProduct_id());
 
@@ -525,20 +520,17 @@ public class BubbleService extends Service
         getProducts();
         getCities2();
 
-        Spinner product=newOrderDialog.findViewById(R.id.product);
         Spinner city=newOrderDialog.findViewById(R.id.client_city);
         EditText client_name=newOrderDialog.findViewById(R.id.client_name);
         EditText client_address=newOrderDialog.findViewById(R.id.client_address);
         EditText client_area=newOrderDialog.findViewById(R.id.client_area);
         EditText client_order_phone1=newOrderDialog.findViewById(R.id.client_order_phone1);
-        EditText item_no=newOrderDialog.findViewById(R.id.item_no);
         DrawMeButton send_order=newOrderDialog.findViewById(R.id.send_order);
 
         ImageView client_name_Paste=newOrderDialog.findViewById(R.id.client_name_paste);
         ImageView client_address_paste=newOrderDialog.findViewById(R.id.client_address_paste);
         ImageView client_area_paste=newOrderDialog.findViewById(R.id.client_area_paste);
         ImageView client_order_phone1_paste=newOrderDialog.findViewById(R.id.client_order_phone1_paste);
-        ImageView item_no_paste=newOrderDialog.findViewById(R.id.item_no_paste);
 
 
         addNewProductDialog=LayoutInflater.from(getApplicationContext())
@@ -567,49 +559,47 @@ public class BubbleService extends Service
                         client_name.getText().toString(),
                         client_order_phone1.getText().toString(),
                         client_area.getText().toString(),
-                        client_address.getText().toString(),
-                        item_no.getText().toString()
+                        client_address.getText().toString()
 
                 );
             }
         });
 
-        item_no.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                Log.d("TEXTWATCHHEER", charSequence+" : "+i +"  "+i1+"  "+i2 );
-                try{
-                    int q=Integer.valueOf(charSequence.toString());
-                    if (q==0&&i==0){
-                                Toast.makeText(BubbleService.this, R.string.enter_valid_quantity, Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-
-                    if (orderItems!=null&&!orderItems.isEmpty())
-                    cartAdapter.updateQuantity(orderItems.get(0).getProduct_id(),q);
-                }catch (Exception e){
-                    Log.d("TEXTWATCHHEER",e.getMessage());
-                }
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
-        });
+//        item_no.addTextChangedListener(new TextWatcher() {
+//            @Override
+//            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+//
+//            }
+//
+//            @Override
+//            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+//                Log.d("TEXTWATCHHEER", charSequence+" : "+i +"  "+i1+"  "+i2 );
+//                try{
+//                    int q=Integer.valueOf(charSequence.toString());
+//                    if (q==0&&i==0){
+//                                Toast.makeText(BubbleService.this, R.string.enter_valid_quantity, Toast.LENGTH_SHORT).show();
+//                        return;
+//                    }
+//
+//                    if (orderItems!=null&&!orderItems.isEmpty())
+//                    cartAdapter.updateQuantity(orderItems.get(0).getProduct_id(),q);
+//                }catch (Exception e){
+//                    Log.d("TEXTWATCHHEER",e.getMessage());
+//                }
+//
+//            }
+//
+//            @Override
+//            public void afterTextChanged(Editable editable) {
+//
+//            }
+//        });
 
 
         pasteData(client_name_Paste,client_name);
         pasteData(client_address_paste,client_address);
         pasteData(client_area_paste,client_area);
         pasteData(client_order_phone1_paste,client_order_phone1);
-        pasteData(item_no_paste,item_no);
 
 
     }
@@ -682,9 +672,11 @@ public class BubbleService extends Service
                 HashMap<String,Object> values= ExtraDataHelper.getValues(getApplicationContext(),
                         extraDataAdapter,extraDataRecycler);
                 if (values==null) return;
+                Log.d("EXTRAAAAAAA", "onClick: "+values.toString());
 
-                orderItem.setItems(items);
                 if (!orderItems.contains(orderItem)){
+                    orderItem.setItems(items);
+                    orderItem.setExtras(values);
                     orderItems.add(orderItem);
                     cartAdapter.addCartItem(
                             new CartItem(products.get(products.indexOf(new ProductData(orderItem.getProduct_id()))),items));
@@ -694,8 +686,9 @@ public class BubbleService extends Service
                     if (newOrderDialog!=null)emptyView.setVisibility(View.GONE);
 
                 }
-                else
+                else{
                     Toast.makeText(BubbleService.this, "item already exist", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -713,21 +706,17 @@ public class BubbleService extends Service
         if (newOrderDialog==null)
             return;
 
-        Spinner product=newOrderDialog.findViewById(R.id.product);
         Spinner city=newOrderDialog.findViewById(R.id.client_city);
         EditText client_name=newOrderDialog.findViewById(R.id.client_name);
         EditText client_address=newOrderDialog.findViewById(R.id.client_address);
         EditText client_area=newOrderDialog.findViewById(R.id.client_area);
         EditText client_order_phone1=newOrderDialog.findViewById(R.id.client_order_phone1);
-        EditText item_no=newOrderDialog.findViewById(R.id.item_no);
 
         client_name.setText("");
         client_address.setText("");
         client_area.setText("");
         client_order_phone1.setText("");
-        item_no.setText("");
 
-        product.setSelection(0);
         city.setSelection(0);
         orderItems.clear();
         cartAdapter.emptyCart();
@@ -1112,7 +1101,6 @@ public class BubbleService extends Service
                         AllProducts allProducts=response.body();
                         if (allProducts!= null&&allProducts.getProducts()!=null) {
                             products=allProducts.getProducts();
-                            populateSpinner(products);
 
                         }
                     }
@@ -1124,61 +1112,6 @@ public class BubbleService extends Service
                 });
     }
 
-    private void populateSpinner(List<ProductData> allProducts){
-        Spinner productSpinner=newOrderDialog.findViewById(R.id.product);
-
-        // todo change productForSpinners to productdata
-        List<ProductForSpinner> products = new ArrayList<>();
-        for (ProductData product : allProducts) {
-            products.add(new ProductForSpinner(product.getProduct_name(), product.getProduct_image(), product.getProduct_id(),product.getProduct_real_price()));
-        }
-        ArrayAdapter<String> myAdapter = new ProductSpinnerAdapter(
-                getApplicationContext(), products);
-        productSpinner.setAdapter(myAdapter);
-
-        productSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (position==0)return;
-                int index=position-1;
-                OrderItem orderItem=new OrderItem(allProducts.get(index).getProduct_id());
-                Log.d("REPLCAEEE", " selected Item: "+orderItem.getProduct_id());
-
-                if (!orderItems.isEmpty()&&orderItems.contains(orderItem)){
-                    Toast.makeText(BubbleService.this, "already exist", Toast.LENGTH_SHORT).show();
-                }else{
-                    EditText items=newOrderDialog.findViewById(R.id.item_no);
-                    TextView items_no;
-                    int quantity;
-                    try {
-                        quantity=Integer.valueOf(items.getText().toString());
-                    }catch (Exception e){
-                        quantity=1;
-                    }
-                    orderItem.setItems(quantity);
-
-                    if (orderItems.isEmpty()){
-                        orderItems.add(0,orderItem);
-                        cartAdapter.addCartItem(new CartItem(allProducts.get(index),quantity));
-
-                    }else{
-                        cartAdapter.replaceCartItem(orderItems.get(0).getProduct_id(),new CartItem(allProducts.get(index),quantity));
-                        orderItems.set(0,orderItem);
-
-                    }
-                    emptyView.setVisibility(View.GONE);
-
-                }
-                Log.d("ORDERRRR", "product : "+allProducts.get(index).getProduct_id());
-
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-    }
 
 
     private void getCities2(){
@@ -1268,10 +1201,6 @@ public class BubbleService extends Service
                 orderItems.indexOf(
                         new OrderItem(String.valueOf(productId))))
                 .setItems(quantity);
-        int index=orderItems.indexOf(new OrderItem(String.valueOf(productId)));
-        if (index==0){
-            EditText items_no= newOrderDialog.findViewById(R.id.item_no);
-            items_no.setText(String.valueOf(quantity));
-        }
+
     }
 }
