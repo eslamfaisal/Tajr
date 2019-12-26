@@ -1087,7 +1087,7 @@ public class BubbleService extends Service
     private void getProducts(){
         String token=SharedHelper.getKey(getApplicationContext(), LoginActivity.TOKEN);
         ProductsRepo.getInstance()
-                .getProducts(token,null)
+                .getProducts(token,null,null,null)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SingleObserver<Response<AllProducts>>() {

@@ -46,7 +46,7 @@ public class NewOrderFragVM extends ViewModel {
 
 
         isProductsLoading.setValue(true);
-        ProductsRepo.getInstance().getProducts(token,user_id)
+        ProductsRepo.getInstance().getProducts(token,user_id,null,null)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SingleObserver<Response<AllProducts>>() {

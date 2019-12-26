@@ -68,7 +68,9 @@ public interface Api {
     @FormUrlEncoded
     @POST("send/get_products")
     Single<Response<AllProducts>> getProducts2(@Field("token") String token,
-                                                           @Field("user_id") String user_id);
+                                                           @Field("user_id") String user_id,
+                                               @Query("page") String page,
+                                               @Query("limit") String limit);
 
     @FormUrlEncoded
     @POST("send_test/get_status_history")

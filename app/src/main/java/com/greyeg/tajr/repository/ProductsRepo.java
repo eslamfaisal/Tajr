@@ -20,11 +20,11 @@ public class ProductsRepo {
 
     }
 
-    public Single<Response<AllProducts>> getProducts(String token, String user_id){
+    public Single<Response<AllProducts>> getProducts(String token, String user_id,String page, String limit){
         Single<Response<AllProducts>> products
                 = BaseClient
                 .getApiService()
-                .getProducts2(token,user_id);
+                .getProducts2(token,user_id,page,limit);
 
         return products;
     }

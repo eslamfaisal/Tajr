@@ -23,6 +23,10 @@ public class AllProducts {
     @Expose
     private int products_count;
 
+    @SerializedName("pages")
+    @Expose
+    private Pages pages;
+
     @SerializedName("products")
     @Expose
     private List<ProductData> products;
@@ -68,6 +72,10 @@ public class AllProducts {
 
     public void setProducts_count(int products_count) {
         this.products_count = products_count;
+    }
+
+    public Pages getPages() {
+        return pages;
     }
 
     @Override

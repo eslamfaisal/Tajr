@@ -31,6 +31,7 @@ import com.greyeg.tajr.helper.SharedHelper;
 import com.greyeg.tajr.models.AllProducts;
 import com.greyeg.tajr.models.ExtraData;
 import com.greyeg.tajr.models.OrderProduct;
+import com.greyeg.tajr.models.Pages;
 import com.greyeg.tajr.models.ProductData;
 import com.greyeg.tajr.models.ProductExtra;
 import com.greyeg.tajr.repository.ProductsRepo;
@@ -70,6 +71,7 @@ public class ProductDetailDialog extends DialogFragment implements ProductAdapte
     private ExtraDataAdapter2 extraDataAdapter;
     private ProductAdapter productAdapter;
     private OnProductUpdated onProductUpdated;
+    private Pages pages;
 
     public ProductDetailDialog(OrderProduct product) {
         this.product = product;
@@ -94,9 +96,10 @@ public class ProductDetailDialog extends DialogFragment implements ProductAdapte
         productsRecycler.addOnScrollListener(new EndlessRecyclerViewScrollListener(layoutManager,2) {
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                    Log.d("PAGINATIONN", "onLoadMore: ");
-                    page++;
-                    getProducts(String.valueOf(page));
+                page++;
+                Log.d("PAGINATIONN", "onLoadMore: "+page);
+                if (!pages.exceedLimit(page))
+                getProducts(String.valueOf(page));
 
             }
         });
@@ -187,10 +190,11 @@ public class ProductDetailDialog extends DialogFragment implements ProductAdapte
     }
 
     private void getProducts(String page){
+        Log.d("PAGINATIONN","getProducts "+page);
         String token= SharedHelper.getKey(getContext(), LoginActivity.TOKEN);
         ProductsRepo
                 .getInstance()
-                .getProducts(token,null)
+                .getProducts(token,null,page,"4")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SingleObserver<Response<AllProducts>>() {
@@ -203,6 +207,9 @@ public class ProductDetailDialog extends DialogFragment implements ProductAdapte
                     public void onSuccess(Response<AllProducts> response) {
                         AllProducts products=response.body();
                         if (response.isSuccessful()&&products!=null){
+                            Log.d("PAGINATIONN", products.getPages().getCurrent()
+                                    +" of: "+products.getPages().getOf());
+                            pages=products.getPages();
                             productAdapter.addProducts(products.getProducts());
 
                         }else{
@@ -245,7 +252,7 @@ public class ProductDetailDialog extends DialogFragment implements ProductAdapte
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        onProductUpdated= (OnProductUpdated) this;
+        //onProductUpdated= (OnProductUpdated) this;
     }
 
     interface OnProductUpdated{

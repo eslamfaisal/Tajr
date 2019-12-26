@@ -38,7 +38,6 @@ import android.widget.Toast;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.greyeg.tajr.R;
 import com.greyeg.tajr.activities.LoginActivity;
-import com.greyeg.tajr.adapters.ExtraDataAdapter;
 import com.greyeg.tajr.adapters.OrderProductsAdapter;
 import com.greyeg.tajr.helper.CallTimeManager;
 import com.greyeg.tajr.helper.NetworkUtil;
@@ -193,8 +192,6 @@ public class CurrentOrderFragment extends Fragment
     CardView shipping_no_answer;
     @BindView(R.id.return_order)
     CardView return_order;
-    @BindView(R.id.extra_data_recycler)
-    RecyclerView extra_data_recycler;
     @BindView(R.id.productsRecycler)
     RecyclerView productsRecycler;
 
@@ -202,7 +199,6 @@ public class CurrentOrderFragment extends Fragment
     private View mainView;
     private LinearLayoutManager multiOrderProductsLinearLayoutManager;
     private MultiOrderProductsAdapter multiOrderProductsAdapter;
-    ExtraDataAdapter extraDataAdapter;
     private boolean firstOrder;
     private int firstRemaining;
     private Dialog errorGetCurrentOrderDialog;
@@ -1041,13 +1037,6 @@ public class CurrentOrderFragment extends Fragment
                     Log.d(TAG, "fillSpinnerWithProducts: "+CurrentOrderData.getInstance()
                             .getSingleOrderProductsResponse().getProducts().get(position).getProductName());
 
-                    ArrayList<ExtraData> extra_data=CurrentOrderData.getInstance()
-                            .getSingleOrderProductsResponse().getProducts().get(position).getExtra_data();
-                    //extra_data.add(0,new ExtraData())
-                    extraDataAdapter=new ExtraDataAdapter(getContext(),extra_data);
-                    extra_data_recycler.setAdapter(extraDataAdapter);
-                    extra_data_recycler.setLayoutManager(new LinearLayoutManager(getContext()
-                    ));
 
 
                 }
@@ -1362,41 +1351,41 @@ public class CurrentOrderFragment extends Fragment
 
     }
 
-    private Map<String, Object> getExtraDataValues(){
-        Map<String,Object> values=new HashMap<>();
-        ArrayList<ExtraData> extraData=extraDataAdapter.getExtraData();
-        for (int i = 0; i < extraDataAdapter.getItemCount(); i++) {
-
-
-
-            View view = extra_data_recycler.getChildAt(i);
-            if (extraData.get(i).getType().equals("select")){
-                Spinner spinner=view.findViewById(R.id.spinnerValue);
-
-                if (Boolean.valueOf(extraData.get(i).getRequired())&&spinner.getSelectedItemPosition()==0){
-                    Toast.makeText(getContext(), R.string.complete_fields_error, Toast.LENGTH_SHORT).show();
-                    break;
-                }
-
-                if (spinner.getSelectedItemPosition()>0){
-                String value=extraData.get(i).getDetails().split(",")[spinner.getSelectedItemPosition()-1];
-                values.put(extraData.get(i).getRequest_name(),value);
-                }
-
-            }else {
-
-                EditText editText=view.findViewById(R.id.value);
-                String value=editText.getText().toString();
-                if (Boolean.valueOf(extraData.get(i).getRequired())&& TextUtils.isEmpty(value)){
-                    Toast.makeText(getContext(), R.string.complete_fields_error, Toast.LENGTH_SHORT).show();
-                    break;
-                }
-                values.put(extraData.get(i).getRequest_name(),value);
-            }
-
-        }
-        return values;
-    }
+//    private Map<String, Object> getExtraDataValues(){
+//        Map<String,Object> values=new HashMap<>();
+//        ArrayList<ExtraData> extraData=extraDataAdapter.getExtraData();
+//        for (int i = 0; i < extraDataAdapter.getItemCount(); i++) {
+//
+//
+//
+//            View view = extra_data_recycler.getChildAt(i);
+//            if (extraData.get(i).getType().equals("select")){
+//                Spinner spinner=view.findViewById(R.id.spinnerValue);
+//
+//                if (Boolean.valueOf(extraData.get(i).getRequired())&&spinner.getSelectedItemPosition()==0){
+//                    Toast.makeText(getContext(), R.string.complete_fields_error, Toast.LENGTH_SHORT).show();
+//                    break;
+//                }
+//
+//                if (spinner.getSelectedItemPosition()>0){
+//                String value=extraData.get(i).getDetails().split(",")[spinner.getSelectedItemPosition()-1];
+//                values.put(extraData.get(i).getRequest_name(),value);
+//                }
+//
+//            }else {
+//
+//                EditText editText=view.findViewById(R.id.value);
+//                String value=editText.getText().toString();
+//                if (Boolean.valueOf(extraData.get(i).getRequired())&& TextUtils.isEmpty(value)){
+//                    Toast.makeText(getContext(), R.string.complete_fields_error, Toast.LENGTH_SHORT).show();
+//                    break;
+//                }
+//                values.put(extraData.get(i).getRequest_name(),value);
+//            }
+//
+//        }
+//        return values;
+//    }
 
     @Override
     public void onReasonSubmitted(int reason) {
