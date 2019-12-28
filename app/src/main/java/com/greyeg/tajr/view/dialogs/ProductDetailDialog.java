@@ -27,6 +27,7 @@ import com.greyeg.tajr.adapters.ExtraDataAdapter;
 import com.greyeg.tajr.adapters.ExtraDataAdapter2;
 import com.greyeg.tajr.adapters.ProductAdapter;
 import com.greyeg.tajr.helper.EndlessRecyclerViewScrollListener;
+import com.greyeg.tajr.helper.ProductUtil;
 import com.greyeg.tajr.helper.SharedHelper;
 import com.greyeg.tajr.models.AllProducts;
 import com.greyeg.tajr.models.ExtraData;
@@ -72,9 +73,15 @@ public class ProductDetailDialog extends DialogFragment implements ProductAdapte
     private ProductAdapter productAdapter;
     private OnProductUpdated onProductUpdated;
     private Pages pages;
+    private String oldProductId;
+    private ProductData currentProduct;
 
-    public ProductDetailDialog(OrderProduct product) {
+
+
+    public ProductDetailDialog(OrderProduct product, OnProductUpdated onProductUpdated) {
         this.product = product;
+        oldProductId=product.getId();
+        this.onProductUpdated = onProductUpdated;
     }
 
     public ProductDetailDialog() {
@@ -99,7 +106,7 @@ public class ProductDetailDialog extends DialogFragment implements ProductAdapte
                 page++;
                 Log.d("PAGINATIONN", "onLoadMore: "+page);
                 if (!pages.exceedLimit(page))
-                getProducts(String.valueOf(page));
+                    getProducts(String.valueOf(page));
 
             }
         });
@@ -110,16 +117,21 @@ public class ProductDetailDialog extends DialogFragment implements ProductAdapte
 
     @OnClick(R.id.updateProduct)
     public void updateProduct(){
-        getExtraDataValues();
-        onProductUpdated.onProductUpdated(product);
+        HashMap<String,Object> values =getExtraDataValues();
+        if (values==null)return;
+        product=ProductUtil.toOrderProduct(currentProduct, product);
+        for (String value:values.keySet()) {
+            int position=product.getExtras().indexOf(new ProductExtra(value));
+            product.getExtras().get(position).setValue(value);
+        }
+        Log.d("UPDATEE", " updateProduct: "+oldProductId+" --- "+product.getId()+" "+product.getName());
+        onProductUpdated.onProductUpdated(product,oldProductId);
         dismiss();
     }
 
 
-
-
-    private Map<String, Object> getExtraDataValues(){
-        Map<String,Object> values=new HashMap<>();
+    private HashMap<String, Object> getExtraDataValues(){
+        HashMap<String,Object> values=new HashMap<>();
 
         ArrayList<ProductExtra> extraData=extraDataAdapter.getExtraData();
 
@@ -133,7 +145,7 @@ public class ProductDetailDialog extends DialogFragment implements ProductAdapte
 
                 if (Boolean.valueOf(extraData.get(i).getRequired())&&spinner.getSelectedItemPosition()==0){
                     Toast.makeText(getContext(), R.string.complete_fields_error, Toast.LENGTH_SHORT).show();
-                    break;
+                    return null;
                 }
 
                 if (spinner.getSelectedItemPosition()>0){
@@ -147,7 +159,7 @@ public class ProductDetailDialog extends DialogFragment implements ProductAdapte
                 String value=editText.getText().toString();
                 if (Boolean.valueOf(extraData.get(i).getRequired())&& TextUtils.isEmpty(value)){
                     Toast.makeText(getContext(), R.string.complete_fields_error, Toast.LENGTH_SHORT).show();
-                    break;
+                    return null;
                 }
                 values.put(extraData.get(i).getHtml(),value);
             }
@@ -240,6 +252,8 @@ public class ProductDetailDialog extends DialogFragment implements ProductAdapte
 
     @Override
     public void onProductClicked(ProductData product) {
+        currentProduct=product;
+        Log.d("UPDATEE", "onProductClicked: ");
         productName.setText(product.getProduct_name());
 
         Picasso
@@ -247,15 +261,15 @@ public class ProductDetailDialog extends DialogFragment implements ProductAdapte
                 .load(product.getProduct_image())
                 .into(productImage);
 
+
     }
 
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        //onProductUpdated= (OnProductUpdated) this;
     }
 
-    interface OnProductUpdated{
-        void onProductUpdated(OrderProduct product);
+    public interface OnProductUpdated{
+        void onProductUpdated(OrderProduct product,String productId);
     }
 }

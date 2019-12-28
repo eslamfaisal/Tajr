@@ -1,5 +1,7 @@
 package com.greyeg.tajr.models;
 
+import androidx.annotation.Nullable;
+
 import java.util.ArrayList;
 
 public class ProductExtra {
@@ -13,6 +15,10 @@ public class ProductExtra {
     private String required;
     private String value;
 
+
+    public ProductExtra(String html) {
+        this.html = html;
+    }
 
     public String getName() {
         return name;
@@ -44,5 +50,21 @@ public class ProductExtra {
 
     public String getValue() {
         return value;
+    }
+
+    public void setHtml(String html) {
+        this.html = html;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (obj == null) return false;
+        if ( !(obj instanceof ProductExtra) ) return false;
+        ProductExtra productExtra= (ProductExtra) obj;
+        return html.equals(productExtra.html);
     }
 }

@@ -106,7 +106,8 @@ import static com.greyeg.tajr.activities.LoginActivity.IS_LOGIN;
 
 public class CurrentOrderFragment extends Fragment
         implements CancelOrderDialog.OnReasonSubmitted
-        ,OrderProductsAdapter.OnProductItemEvent{
+        ,OrderProductsAdapter.OnProductItemEvent
+        ,ProductDetailDialog.OnProductUpdated{
 
     private final String TAG = "CurrentOrderFragment";
     @BindView(R.id.client_name)
@@ -211,6 +212,7 @@ public class CurrentOrderFragment extends Fragment
     private CancelOrderDialog cancelOrderDialog;
     private CancelOrderDialog.OnReasonSubmitted onReasonSubmitted=this;
     private long orderId=-1;
+    private OrderProductsAdapter orderProductsAdapter;
 
     public CurrentOrderFragment() {
         // Required empty public constructor
@@ -953,7 +955,7 @@ public class CurrentOrderFragment extends Fragment
             item_no.setEnabled(false);
         }
 
-        OrderProductsAdapter orderProductsAdapter=new OrderProductsAdapter(getContext()
+        orderProductsAdapter=new OrderProductsAdapter(getContext()
                 ,orderResponse.getOrder().getProducts(),this);
         productsRecycler.setAdapter(orderProductsAdapter);
         productsRecycler.setLayoutManager(new GridLayoutManager(getContext(),3));
@@ -1430,9 +1432,16 @@ public class CurrentOrderFragment extends Fragment
 
     @Override
     public void OnProductItemClicked(OrderProduct product) {
-        ProductDetailDialog productDetailDialog=new ProductDetailDialog(product);
+        ProductDetailDialog productDetailDialog=new ProductDetailDialog(product,this);
         if (getFragmentManager() != null)
             productDetailDialog.show(getFragmentManager(),"");
 
+    }
+
+    @Override
+    public void onProductUpdated(OrderProduct product,String productId) {
+        Log.d("UPDATEE", "onProductUpdated: "+productId+"    "+orderProductsAdapter.getProducts().get(0).toString());
+
+        orderProductsAdapter.updateProduct(productId,product);
     }
 }
