@@ -1,10 +1,12 @@
 package com.greyeg.tajr.adapters;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -20,12 +22,16 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductsHolder> {
+public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
 
     private Context context;
     private ArrayList<ProductData> products;
     private OnProductClicked onProductClicked;
+    private boolean isLoadingViewShown =false;
+    public static final int PRODUCT_TYPE=1;
+    public static final int LOADING_VIEW_TYPE=2;
+    private int count=0;
 
     public ProductAdapter(Context context, ArrayList<ProductData> products) {
         this.context = context;
@@ -42,30 +48,72 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.Products
 
     @NonNull
     @Override
-    public ProductsHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v= LayoutInflater.from(context).inflate(R.layout.product_row_item,parent,false);
-        return new ProductsHolder(v);
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        //Log.d("pagiiii", "onCreateViewHolder: "+viewType);
+        if (viewType==PRODUCT_TYPE){
+            View v= LayoutInflater.from(context).inflate(R.layout.product_row_item,parent,false);
+            return new ProductsHolder(v);
+        }else {
+
+            View v= LayoutInflater.from(context).inflate(R.layout.loading_view,parent,false);
+            return new LoadingViewHolder(v);
+        }
+
+
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ProductsHolder holder, int position) {
-        ProductData product=products.get(position);
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        //Log.d("pagiiii", "onBindViewHolder: "+position+" -->>> "+getItemCount());
+        if (position>products.size()-1){
+            Log.d("pagiiii", position+": exceed limit: "+getItemCount());
+            return;
+        }
 
-        holder.product_name.setText(product.getProduct_name());
-        Picasso
-                .get()
-                .load(product.getProduct_image())
-                .into(holder.product_image);
+        if (getItemViewType(position)==PRODUCT_TYPE){
+            ProductsHolder productsHolder= (ProductsHolder) holder;
+            ProductData product=products.get(position);
+            productsHolder.product_name.setText(product.getProduct_name());
+            Picasso
+                    .get()
+                    .load(product.getProduct_image())
+                    .into(productsHolder.product_image);
+        }else {
+            Log.d("pagiiii","AD WAS SHOWN");
+                    LoadingViewHolder loadingViewHolder= (LoadingViewHolder) holder;
+            loadingViewHolder.loadMorePB.setVisibility(View.VISIBLE);
+        }
+
+
     }
 
     @Override
     public int getItemCount() {
-        return products==null?0:products.size();
+        return products==null?0:products.size()+count;
     }
 
-    public void addProducts(List<ProductData> products) {
+    public void addProducts(List<ProductData> products, String page) {
+        isLoadingViewShown=false;
+        count=0;
         this.products.addAll(products);
         notifyDataSetChanged();
+
+    }
+
+    public void setLoadingView(){
+        Log.d("pagiiii", "setLoadingView: ");
+        isLoadingViewShown=true;
+        count=1;
+        notifyDataSetChanged();
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        //Log.d("pagiiii", "getItemViewType: "+position+" -> "+(position==products.size()-1&&isLoadingViewShown));
+        //return position==products.size()-1?LOADING_VIEW_TYPE:PRODUCT_TYPE;
+        if (position==products.size()-1&&isLoadingViewShown)
+            return LOADING_VIEW_TYPE;
+        else return PRODUCT_TYPE;
 
     }
 
@@ -87,6 +135,17 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.Products
                     onProductClicked.onProductClicked(products.get(getAdapterPosition()));
                 }
             });
+        }
+    }
+
+    class LoadingViewHolder extends RecyclerView.ViewHolder{
+
+        @BindView(R.id.loadMorePB)
+        ProgressBar loadMorePB;
+        public LoadingViewHolder(@NonNull View itemView) {
+            super(itemView);
+            ButterKnife.bind(this,itemView);
+
         }
     }
 

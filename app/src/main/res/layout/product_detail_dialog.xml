@@ -24,7 +24,6 @@
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:layout_marginStart="5dp"
-        android:layout_marginTop="1dp"
         android:background="@color/primary"
         android:src="@drawable/fab_add"
         app:layout_constraintStart_toEndOf="@id/quantity"
@@ -56,7 +55,6 @@
         android:id="@+id/product_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
         android:textColor="@color/black_text_color"
         android:textSize="18sp"
         android:textStyle="bold"
@@ -116,21 +114,31 @@
         app:cardElevation="3dp"
         app:layout_constraintTop_toBottomOf="@id/products_label">
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/productsRecycler"
             android:layout_width="match_parent"
             android:layout_height="150sp"
             android:layout_marginTop="10dp"
-            android:padding="3dp" />
+            android:padding="3dp"
+            app:layout_constraintTop_toTopOf="parent"/>
 
         <ProgressBar
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/products_PB"
-            android:layout_gravity="center"
             android:visibility="gone"
             tools:visibility="visible"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.cardview.widget.CardView>
 

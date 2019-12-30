@@ -74,6 +74,7 @@ public class ProductDetailDialog extends DialogFragment implements ProductAdapte
     @BindView(R.id.products_PB)
     ProgressBar productsPB;
 
+
     private OrderProduct product;
     private ExtraDataAdapter2 extraDataAdapter;
     private ProductAdapter productAdapter;
@@ -216,12 +217,16 @@ public class ProductDetailDialog extends DialogFragment implements ProductAdapte
     }
 
     private void getProducts(String page){
-        productsPB.setVisibility(View.VISIBLE);
+        if (page==null||page.equals("1"))
+            productsPB.setVisibility(View.VISIBLE);
+        else
+            productAdapter.setLoadingView();
+
         Log.d("PAGINATIONN","getProducts "+page);
         String token= SharedHelper.getKey(getContext(), LoginActivity.TOKEN);
         ProductsRepo
                 .getInstance()
-                .getProducts(token,null,page,"4")
+                .getProducts(token,null,page,"10")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SingleObserver<Response<AllProducts>>() {
@@ -238,11 +243,11 @@ public class ProductDetailDialog extends DialogFragment implements ProductAdapte
                             Log.d("PAGINATIONN", products.getPages().getCurrent()
                                     +" of: "+products.getPages().getOf());
                             pages=products.getPages();
-                            productAdapter.addProducts(products.getProducts());
+                            //if (page==null||page.equals("1"))
+                            productAdapter.addProducts(products.getProducts(),page);
 
                         }else{
                             //todo handle case of no products
-                            productsPB.setVisibility(View.GONE);
                             Toast.makeText(getContext(), R.string.error_getting_products, Toast.LENGTH_SHORT).show();
                         }
 
@@ -250,6 +255,7 @@ public class ProductDetailDialog extends DialogFragment implements ProductAdapte
 
                     @Override
                     public void onError(Throwable e) {
+                        productsPB.setVisibility(View.GONE);
                         Toast.makeText(getContext(), R.string.error_getting_products, Toast.LENGTH_SHORT).show();
 
                     }
