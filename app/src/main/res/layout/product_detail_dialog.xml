@@ -24,11 +24,11 @@
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:layout_marginStart="5dp"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="1dp"
         android:background="@color/primary"
         android:src="@drawable/fab_add"
         app:layout_constraintStart_toEndOf="@id/quantity"
-        app:layout_constraintTop_toBottomOf="@id/product_name" />
+        app:layout_constraintTop_toBottomOf="@id/product_price" />
 
 
     <ImageView
@@ -64,6 +64,20 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/productImg"
         tools:text="@string/dummy_product"
+
+        />
+
+    <TextView
+        android:id="@+id/product_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/material_red_700"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/product_name"
+        tools:text="150 L.E"
 
         />
 
@@ -108,6 +122,15 @@
             android:layout_height="150sp"
             android:layout_marginTop="10dp"
             android:padding="3dp" />
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/products_PB"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            tools:visibility="visible"
+            />
 
     </androidx.cardview.widget.CardView>
 

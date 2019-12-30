@@ -11,6 +11,7 @@ public class ProductUtil {
         product.setName(productData.getProduct_name());
         product.setPrice(Integer.parseInt(productData.getProduct_real_price()));
         product.setImage(productData.getProduct_image());
+        product.setExtras(productData.getExtra_data());
         return product;
 
     }

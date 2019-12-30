@@ -93,7 +93,7 @@ public class OrderProductsAdapter extends RecyclerView.Adapter<OrderProductsAdap
                 Log.d("UPDATEE", "CartItemHolder: "+product.getImage());
                 onProductItemEvent.OnProductItemClicked(
                         new OrderProduct(product.getId(),product.getName(),product.getPrice()
-                        ,product.getImage(),product.getCost()));
+                        ,product.getItems_no(),product.getImage(),product.getCost(),product.getExtras()));
             });
 
             delete.setOnClickListener(view -> {

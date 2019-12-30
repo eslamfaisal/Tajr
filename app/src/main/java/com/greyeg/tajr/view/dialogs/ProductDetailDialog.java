@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,6 +36,7 @@ import com.greyeg.tajr.models.OrderProduct;
 import com.greyeg.tajr.models.Pages;
 import com.greyeg.tajr.models.ProductData;
 import com.greyeg.tajr.models.ProductExtra;
+import com.greyeg.tajr.order.models.Product;
 import com.greyeg.tajr.repository.ProductsRepo;
 import com.squareup.picasso.Picasso;
 
@@ -59,6 +61,8 @@ public class ProductDetailDialog extends DialogFragment implements ProductAdapte
     RecyclerView extraDataRecycler;
     @BindView(R.id.product_name)
     TextView productName;
+    @BindView(R.id.product_price)
+    TextView productPrice;
     @BindView(R.id.productImg)
     ImageView productImage;
     @BindView(R.id.quantity)
@@ -67,6 +71,8 @@ public class ProductDetailDialog extends DialogFragment implements ProductAdapte
     ImageView increment;
     @BindView(R.id.decrease)
     ImageView decrement;
+    @BindView(R.id.products_PB)
+    ProgressBar productsPB;
 
     private OrderProduct product;
     private ExtraDataAdapter2 extraDataAdapter;
@@ -94,12 +100,15 @@ public class ProductDetailDialog extends DialogFragment implements ProductAdapte
         View dialog=inflater.inflate(R.layout.product_detail_dialog,container,false);
         ButterKnife.bind(this,dialog);
 
-        populateProductDetail();
+        populateProductDetail(product);
+        getProducts(null);
+
         productAdapter=new ProductAdapter(getContext(),null,this);
         productsRecycler.setAdapter(productAdapter);
         LinearLayoutManager layoutManager=new LinearLayoutManager(getContext());
         productsRecycler.setLayoutManager(layoutManager);
         productsRecycler.addItemDecoration(new DividerItemDecoration(getContext(),DividerItemDecoration.VERTICAL));
+
         productsRecycler.addOnScrollListener(new EndlessRecyclerViewScrollListener(layoutManager,2) {
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
@@ -168,19 +177,24 @@ public class ProductDetailDialog extends DialogFragment implements ProductAdapte
         return values;
     }
 
-    private void populateProductDetail(){
+    private void populateProductDetail(OrderProduct product){
         productName.setText(product.getName());
         Picasso.get()
                 .load(product.getImage())
                 .into(productImage);
 
+        if (product.getItems_no()==0)
+        quantity.setText(String.valueOf(1));
+        else
         quantity.setText(String.valueOf(product.getItems_no()));
+        productPrice.setText(String.valueOf(product.getPrice()));
 
         increment.setOnClickListener(view -> {
             if (TextUtils.isEmpty(quantity.getText().toString()))return;
             int q= Integer.parseInt(quantity.getText().toString());
             q++;
             quantity.setText(String.valueOf(q));
+            product.setItems_no(q);
         });
         decrement.setOnClickListener(view -> {
             if (TextUtils.isEmpty(quantity.getText().toString()))return;
@@ -189,19 +203,20 @@ public class ProductDetailDialog extends DialogFragment implements ProductAdapte
             if (q==1)return;
             q--;
             quantity.setText(String.valueOf(q));
+            product.setItems_no(q);
 
 
         });
 
-        getProducts(null);
 
-
+        Log.d("EXTRAA", "populateProductDetail: "+product.getExtras().size());
         extraDataAdapter=new ExtraDataAdapter2(getContext(),product.getExtras());
         extraDataRecycler.setAdapter(extraDataAdapter);
         extraDataRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
     }
 
     private void getProducts(String page){
+        productsPB.setVisibility(View.VISIBLE);
         Log.d("PAGINATIONN","getProducts "+page);
         String token= SharedHelper.getKey(getContext(), LoginActivity.TOKEN);
         ProductsRepo
@@ -217,6 +232,7 @@ public class ProductDetailDialog extends DialogFragment implements ProductAdapte
 
                     @Override
                     public void onSuccess(Response<AllProducts> response) {
+                        productsPB.setVisibility(View.GONE);
                         AllProducts products=response.body();
                         if (response.isSuccessful()&&products!=null){
                             Log.d("PAGINATIONN", products.getPages().getCurrent()
@@ -226,6 +242,7 @@ public class ProductDetailDialog extends DialogFragment implements ProductAdapte
 
                         }else{
                             //todo handle case of no products
+                            productsPB.setVisibility(View.GONE);
                             Toast.makeText(getContext(), R.string.error_getting_products, Toast.LENGTH_SHORT).show();
                         }
 
@@ -253,13 +270,11 @@ public class ProductDetailDialog extends DialogFragment implements ProductAdapte
     @Override
     public void onProductClicked(ProductData product) {
         currentProduct=product;
-        Log.d("UPDATEE", "onProductClicked: ");
-        productName.setText(product.getProduct_name());
-
-        Picasso
-                .get()
-                .load(product.getProduct_image())
-                .into(productImage);
+        if (product.getProduct_id().equals(this.product.getId())){
+            Log.d("UPDATEEEE", "main Product: ");
+            populateProductDetail(this.product);
+        }else
+        populateProductDetail(ProductUtil.toOrderProduct(currentProduct,new OrderProduct()));
 
 
     }

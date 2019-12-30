@@ -21,12 +21,15 @@ public class OrderProduct {
     public OrderProduct() {
     }
 
-    public OrderProduct(String id, String name, int price, String image, String cost) {
+    public OrderProduct(String id, String name, int price, int items_no,
+                        String image, String cost, ArrayList<ProductExtra> extras) {
         this.id = id;
         this.name = name;
         this.price = price;
+        this.items_no = items_no;
         this.image = image;
         this.cost = cost;
+        this.extras = extras;
     }
 
     public OrderProduct(String id) {
