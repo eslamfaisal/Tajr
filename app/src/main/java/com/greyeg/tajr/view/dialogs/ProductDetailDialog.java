@@ -17,6 +17,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -38,6 +39,7 @@ import com.greyeg.tajr.models.ProductData;
 import com.greyeg.tajr.models.ProductExtra;
 import com.greyeg.tajr.order.models.Product;
 import com.greyeg.tajr.repository.ProductsRepo;
+import com.greyeg.tajr.viewmodels.ProductDetailDialogVM;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -82,10 +84,11 @@ public class ProductDetailDialog extends DialogFragment implements ProductAdapte
     private Pages pages;
     private String oldProductId;
     private ProductData currentProduct;
-
+    private ProductDetailDialogVM productDetailDialogVM;
 
 
     public ProductDetailDialog(OrderProduct product, OnProductUpdated onProductUpdated) {
+        Log.d("DIALOOGG", "ProductDetailDialog: ");
         this.product = product;
         oldProductId=product.getId();
         this.onProductUpdated = onProductUpdated;
@@ -98,9 +101,18 @@ public class ProductDetailDialog extends DialogFragment implements ProductAdapte
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container
             , @Nullable Bundle savedInstanceState) {
+        productDetailDialogVM= ViewModelProviders.of(this).get(ProductDetailDialogVM.class);
+
+        Log.d("DIALOOGG", "onCreateView: ");
+        if (product!=null) productDetailDialogVM.setProduct(product);
+         product=productDetailDialogVM.getProduct();
+        if (onProductUpdated!=null)productDetailDialogVM.setOnProductUpdated(onProductUpdated);
+        onProductUpdated=productDetailDialogVM.getOnProductUpdated();
+
         View dialog=inflater.inflate(R.layout.product_detail_dialog,container,false);
         ButterKnife.bind(this,dialog);
-
+        product=productDetailDialogVM.getProduct();
+        onProductUpdated=productDetailDialogVM.getOnProductUpdated();
         populateProductDetail(product);
         getProducts(null);
 
@@ -288,6 +300,8 @@ public class ProductDetailDialog extends DialogFragment implements ProductAdapte
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
+        Log.d("DIALOOGG", "onAttach: ");
+
     }
 
     public interface OnProductUpdated{

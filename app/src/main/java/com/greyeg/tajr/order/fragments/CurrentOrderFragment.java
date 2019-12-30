@@ -875,7 +875,7 @@ public class CurrentOrderFragment extends Fragment
     private void observeLoadingCurrentOrder(){
         currentOrderViewModel
                 .getIsCurrentOrderLoading()
-                .observe(getActivity(), new Observer<Boolean>() {
+                .observe(this, new Observer<Boolean>() {
                     @Override
                     public void onChanged(Boolean aBoolean) {
                         Log.d("DDIAALOOOOGGG", "onChanged: "+aBoolean);
