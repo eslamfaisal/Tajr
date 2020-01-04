@@ -64,11 +64,11 @@ public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        //Log.d("pagiiii", "onBindViewHolder: "+position+" -->>> "+getItemCount());
-        if (position>products.size()-1){
-            Log.d("pagiiii", position+": exceed limit: "+getItemCount());
-            return;
-        }
+        Log.d("pagiiii", "onBindViewHolder: "+position+" -->>> "+products.get(position).getProduct_name());
+//        if (position>products.size()-1){
+//            Log.d("pagiiii", position+": exceed limit: "+getItemCount());
+//            return;
+//        }
 
         if (getItemViewType(position)==PRODUCT_TYPE){
             ProductsHolder productsHolder= (ProductsHolder) holder;
@@ -89,31 +89,42 @@ public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public int getItemCount() {
-        return products==null?0:products.size()+count;
+        return products==null?0:products.size();
     }
 
     public void addProducts(List<ProductData> products, String page) {
         isLoadingViewShown=false;
-        count=0;
+
+        Log.d("pagiiii", "addProducts: "+products.size());
+        if (this.products!=null&&!this.products.isEmpty())
+        this.products.remove(this.products.size()-1);
+
         this.products.addAll(products);
         notifyDataSetChanged();
 
     }
 
-    public void setLoadingView(){
-        Log.d("pagiiii", "setLoadingView: ");
+    public void setLoadingView(String page){
+        Log.d("pagiiii", "setLoadingView: "+page);
         isLoadingViewShown=true;
-        count=1;
+        this.products.add(new ProductData());
         notifyDataSetChanged();
     }
 
     @Override
     public int getItemViewType(int position) {
+
+        if (isLoadingViewShown) {
+            return position == products.size() - 1 ? LOADING_VIEW_TYPE : PRODUCT_TYPE;
+        } else {
+            return PRODUCT_TYPE;
+        }
+
         //Log.d("pagiiii", "getItemViewType: "+position+" -> "+(position==products.size()-1&&isLoadingViewShown));
         //return position==products.size()-1?LOADING_VIEW_TYPE:PRODUCT_TYPE;
-        if (position==products.size()-1&&isLoadingViewShown)
-            return LOADING_VIEW_TYPE;
-        else return PRODUCT_TYPE;
+//        if (position==products.size()-1&&isLoadingViewShown)
+//            return LOADING_VIEW_TYPE;
+//        else return PRODUCT_TYPE;
 
     }
 

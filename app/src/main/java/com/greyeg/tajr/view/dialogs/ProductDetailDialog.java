@@ -2,6 +2,7 @@ package com.greyeg.tajr.view.dialogs;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -85,6 +86,7 @@ public class ProductDetailDialog extends DialogFragment implements ProductAdapte
     private String oldProductId;
     private ProductData currentProduct;
     private ProductDetailDialogVM productDetailDialogVM;
+    private boolean isLoading=false;
 
 
     public ProductDetailDialog(OrderProduct product, OnProductUpdated onProductUpdated) {
@@ -125,6 +127,8 @@ public class ProductDetailDialog extends DialogFragment implements ProductAdapte
         productsRecycler.addOnScrollListener(new EndlessRecyclerViewScrollListener(layoutManager,2) {
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                if (isLoading)return;
+                isLoading=true;
                 page++;
                 Log.d("PAGINATIONN", "onLoadMore: "+page);
                 if (!pages.exceedLimit(page))
@@ -232,9 +236,9 @@ public class ProductDetailDialog extends DialogFragment implements ProductAdapte
         if (page==null||page.equals("1"))
             productsPB.setVisibility(View.VISIBLE);
         else
-            productAdapter.setLoadingView();
+            productAdapter.setLoadingView(page);
 
-        Log.d("PAGINATIONN","getProducts "+page);
+        //Log.d("PAGINATIONN","getProducts "+page);
         String token= SharedHelper.getKey(getContext(), LoginActivity.TOKEN);
         ProductsRepo
                 .getInstance()
@@ -252,21 +256,24 @@ public class ProductDetailDialog extends DialogFragment implements ProductAdapte
                         productsPB.setVisibility(View.GONE);
                         AllProducts products=response.body();
                         if (response.isSuccessful()&&products!=null){
-                            Log.d("PAGINATIONN", products.getPages().getCurrent()
-                                    +" of: "+products.getPages().getOf());
+//                            Log.d("PAGINATIONN", products.getPages().getCurrent()
+//                                    +" of: "+products.getPages().getOf());
                             pages=products.getPages();
                             //if (page==null||page.equals("1"))
                             productAdapter.addProducts(products.getProducts(),page);
+
 
                         }else{
                             //todo handle case of no products
                             Toast.makeText(getContext(), R.string.error_getting_products, Toast.LENGTH_SHORT).show();
                         }
+                        isLoading=false;
 
                     }
 
                     @Override
                     public void onError(Throwable e) {
+                        isLoading=false;
                         productsPB.setVisibility(View.GONE);
                         Toast.makeText(getContext(), R.string.error_getting_products, Toast.LENGTH_SHORT).show();
 
