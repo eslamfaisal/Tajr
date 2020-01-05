@@ -312,7 +312,7 @@ public class CurrentOrderFragment extends Fragment
                 toggleFabMode(normalUpdateButton);
 
                 updateClientData();
-                normalUpdateOrder(OrderUpdateStatusEnums.order_data_confirmed.name());
+                //normalUpdateOrder(OrderUpdateStatusEnums.order_data_confirmed.name());
 
 //                Map<String,Object> values =getExtraDataValues();
 //                Log.d("VALUEESSS", "onClick: "+values.toString());
@@ -465,8 +465,9 @@ public class CurrentOrderFragment extends Fragment
             public void onResponse(Call<CurrentOrderResponse> call, Response<CurrentOrderResponse> response) {
                 progressDialog.dismiss();
                 Log.d("CONFIRMMMM", "updateSingleOrderData: ");
+                normalUpdateOrder(OrderUpdateStatusEnums.order_data_confirmed.name());
 
-                getCurrentOrder();
+                //getCurrentOrder();
                 Log.d(TAG, "onResponse: " + response.toString());
             }
 
@@ -497,7 +498,9 @@ public class CurrentOrderFragment extends Fragment
             @Override
             public void onResponse(Call<CurrentOrderResponse> call, Response<CurrentOrderResponse> response) {
                 progressDialog.dismiss();
-                getCurrentOrder();
+                normalUpdateOrder(OrderUpdateStatusEnums.order_data_confirmed.name());
+
+                //getCurrentOrder();
                 Log.d(TAG, "onResponse: " + response.toString());
             }
 
