@@ -113,7 +113,7 @@ public interface Api {
                                           @Part MultipartBody.Part audio);
 
     @Headers({"Content-Type: application/json"})
-    @GET("send_test/get_orders")
+    @GET("send/get_orders")
     Call<CurrentOrderResponse> getNewCurrentOrder(@Query("token") String token);
 
     @FormUrlEncoded
