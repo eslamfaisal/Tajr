@@ -529,7 +529,7 @@ public class CurrentOrderFragment extends Fragment
                             handleCallTime(updateOrderNewResponse.getOrder_id(),updateOrderNewResponse.getHistory_line());
                             getCurrentOrder();
                         }else {
-                            Log.d("CONFIRMMMM", "error: ");
+                            Log.d("CONFIRMMMM", "error: --------------");
 
                         }
                     }
@@ -898,7 +898,8 @@ public class CurrentOrderFragment extends Fragment
                 .observe(getActivity(), new Observer<String>() {
                     @Override
                     public void onChanged(String s) {
-                        Toast.makeText(getContext(), s, Toast.LENGTH_SHORT).show();
+                        Log.d("CONFIRMMMM", "error:** "+s);
+                        Toast.makeText(getContext(), R.string.server_error, Toast.LENGTH_SHORT).show();
                     }
                 });
     }

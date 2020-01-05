@@ -6,9 +6,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.greyeg.tajr.R;
@@ -26,6 +28,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartItemHolder
     private Context context;
     private ArrayList<CartItem> cartItems;
     private OnCartItemEvent onCartItemEvent;
+    private boolean isCartItem;
 
 
     public CartAdapter(Context context, OnCartItemEvent onCartItemEvent) {
@@ -33,10 +36,23 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartItemHolder
         this.onCartItemEvent = onCartItemEvent;
     }
 
+    public CartAdapter(Context context, OnCartItemEvent onCartItemEvent, boolean isCartItem) {
+        this.context = context;
+        this.onCartItemEvent = onCartItemEvent;
+        this.isCartItem = isCartItem;
+    }
+
     @NonNull
     @Override
     public CartItemHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v=LayoutInflater.from(context).inflate(R.layout.cart_item,parent,false);
+        if (isCartItem){
+
+
+            ConstraintLayout.LayoutParams layoutParams=new ConstraintLayout.LayoutParams(250,250);
+            //layoutParams.setMargins(5,0,5,0);
+            v.findViewById(R.id.item_img).setLayoutParams(layoutParams);
+        }
         return new CartItemHolder(v);
     }
 

@@ -142,7 +142,7 @@ public class BubbleService extends Service
         width= ScreenHelper.getScreenDimensions(getApplicationContext())[0];
         height= ScreenHelper.getScreenDimensions(getApplicationContext())[1];
         orderItems=new ArrayList<>();
-        cartAdapter=new CartAdapter(getApplicationContext(),this);
+        cartAdapter=new CartAdapter(getApplicationContext(),this,true);
 
         Log.d("SCREEEEEENw", "onCreate: "+width);
 
