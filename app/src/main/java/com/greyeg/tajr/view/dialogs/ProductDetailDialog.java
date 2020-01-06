@@ -145,12 +145,12 @@ public class ProductDetailDialog extends DialogFragment implements ProductAdapte
     public void updateProduct(){
         HashMap<String,Object> values =getExtraDataValues();
         if (values==null)return;
+        if (currentProduct!=null)
         product=ProductUtil.toOrderProduct(currentProduct, product);
         for (String value:values.keySet()) {
             int position=product.getExtras().indexOf(new ProductExtra(value));
             product.getExtras().get(position).setValue(value);
         }
-        Log.d("UPDATEE", " updateProduct: "+oldProductId+" --- "+product.getId()+" "+product.getName());
         onProductUpdated.onProductUpdated(product,oldProductId);
         dismiss();
     }

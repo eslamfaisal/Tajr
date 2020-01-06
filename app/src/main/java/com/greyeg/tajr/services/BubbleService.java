@@ -614,7 +614,7 @@ public class BubbleService extends Service
         ImageView close=addNewProductDialog.findViewById(R.id.close);
         TextView add_product=addNewProductDialog.findViewById(R.id.add_product);
         extraDataRecycler=addNewProductDialog.findViewById(R.id.extra_data_recycler);
-
+        itemsNumber.setText("");
         ArrayList<ProductForSpinner> spinnerProducts=new ArrayList<>();
         for (ProductData product : products) {
             spinnerProducts.add(new ProductForSpinner(product.getProduct_name(), product.getProduct_image(),

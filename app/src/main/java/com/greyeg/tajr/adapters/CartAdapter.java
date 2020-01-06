@@ -101,6 +101,8 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartItemHolder
         notifyDataSetChanged();
     }
 
+
+
      class CartItemHolder extends RecyclerView.ViewHolder{
         @BindView(R.id.item_img)
         ImageView thumbnail;

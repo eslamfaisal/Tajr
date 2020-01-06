@@ -116,8 +116,6 @@ public class CurrentOrderFragment extends Fragment
     EditText client_address;
     @BindView(R.id.client_area)
     EditText client_area;
-    @BindView(R.id.item_no)
-    EditText item_no;
     @BindView(R.id.client_order_phone1)
     EditText client_order_phone1;
     @BindView(R.id.status)
@@ -128,8 +126,6 @@ public class CurrentOrderFragment extends Fragment
     EditText shipping_cost;
     @BindView(R.id.sender_name)
     EditText sender_name;
-    @BindView(R.id.item_cost)
-    EditText item_cost;
     @BindView(R.id.ntes)
     EditText notes;
     @BindView(R.id.discount)
@@ -146,8 +142,6 @@ public class CurrentOrderFragment extends Fragment
     ImageView add_product;
     @BindView(R.id.order_type)
     EditText order_type;
-    @BindView(R.id.single_order_product_spinner)
-    Spinner single_order_product_spinner;
     @BindView(R.id.ProgressBar)
     ProgressBar mProgressBar4;
     @BindView(R.id.present)
@@ -156,9 +150,6 @@ public class CurrentOrderFragment extends Fragment
 
     @BindView(R.id.back_drop)
     View back_drop;
-    // multi orders
-    @BindView(R.id.products_recycler_view)
-    RecyclerView multiOrderroductsRecyclerView;
     // update normal order
     @BindView(R.id.normal_order_data_confirmed)
     CardView normal_order_data_confirmed;
@@ -198,8 +189,6 @@ public class CurrentOrderFragment extends Fragment
 
     // main view of the CurrentOrderFragment
     private View mainView;
-    private LinearLayoutManager multiOrderProductsLinearLayoutManager;
-    private MultiOrderProductsAdapter multiOrderProductsAdapter;
     private boolean firstOrder;
     private int firstRemaining;
     private Dialog errorGetCurrentOrderDialog;
@@ -456,9 +445,9 @@ public class CurrentOrderFragment extends Fragment
                 SharedHelper.getKey(getActivity(), LoginActivity.TOKEN),
                 CurrentOrderData.getInstance().getCurrentOrderResponse().getUserId(),
                 CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getId(),
-                single_order_product_spinner.getTag().toString(),
+                orderProductsAdapter.getProducts().get(0).getId(),
                 client_city.getTag().toString(),
-                item_no.getText().toString().trim(),
+                String.valueOf(orderProductsAdapter.getProducts().get(0).getItems_no()),
                 discount.getText().toString().trim()
         ).enqueue(new Callback<CurrentOrderResponse>() {
             @Override
@@ -675,7 +664,6 @@ public class CurrentOrderFragment extends Fragment
         EditText productNo = dialog.findViewById(R.id.product_no);
         TextView addProductBtn = dialog.findViewById(R.id.add_product);
         productNo.setInputType(InputType.TYPE_CLASS_NUMBER);
-        fillSpinnerWithProducts(productSpinner);
         WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
         lp.copyFrom(dialog.getWindow().getAttributes());
         lp.width = WindowManager.LayoutParams.MATCH_PARENT;
@@ -934,11 +922,6 @@ public class CurrentOrderFragment extends Fragment
         shipping_status.setText(order.getOrderShippingStatus());
         client_order_phone1.setText(order.getPhone1());
         order_id.setText(order.getId());
-        item_cost.setText(order.getItemCost());
-        if (!order.getItemsNo().equals("0"))
-            item_no.setText(order.getItemsNo());
-        else
-            item_no.setText("1");
         sender_name.setText(order.getSenderName());
         order_type.setText(order.getOrderType());
         client_feedback.setText(order.getClientFeedback());
@@ -951,39 +934,17 @@ public class CurrentOrderFragment extends Fragment
 
         initCities(orderResponse);
         getSingleOrderProducts();
-        if (order.getOrderType().equals(OrderProductsType.SingleOrder.getType())) {
-            single_order_product_spinner.setVisibility(View.VISIBLE);
-        } else {
-            getMultiOrdersProducts();
-            single_order_product_spinner.setVisibility(View.GONE);
-            item_no.setEnabled(false);
-        }
+
 
         orderProductsAdapter=new OrderProductsAdapter(getContext()
                 ,orderResponse.getOrder().getProducts(),this);
         productsRecycler.setAdapter(orderProductsAdapter);
         productsRecycler.setLayoutManager(new GridLayoutManager(getContext(),3));
 
-        calculateOrderTotal(order.getOrderType());
-        updateOrderTotal(order.getOrderType());
+        calculateOrderTotal();
+        updateOrderTotal();
     }
 
-    private void getMultiOrdersProducts() {
-        multiOrderProductsAdapter = new MultiOrderProductsAdapter(getActivity(),
-                CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getMultiOrders(),
-                new MultiOrderProductsAdapter.GetOrderInterface() {
-                    @Override
-                    public void getOrder() {
-                        Log.d("CONFIRMMMM", "getMultiOrdersProducts: ");
-                        getCurrentOrder();
-                    }
-                });
-        multiOrderProductsLinearLayoutManager = new LinearLayoutManager(getActivity());
-        multiOrderroductsRecyclerView.setLayoutManager(multiOrderProductsLinearLayoutManager);
-        multiOrderroductsRecyclerView.setAdapter(multiOrderProductsAdapter);
-
-
-    }
 
     private void getSingleOrderProducts() {
         BaseClient.getBaseClient().create(Api.class)
@@ -998,7 +959,6 @@ public class CurrentOrderFragment extends Fragment
                 if (singleOrderProductsResponse != null) {
 
                     CurrentOrderData.getInstance().setSingleOrderProductsResponse(singleOrderProductsResponse);
-                    fillSpinnerWithProducts(single_order_product_spinner);
                 } else {
                     //TODO make dialog
                 }
@@ -1011,50 +971,6 @@ public class CurrentOrderFragment extends Fragment
         });
     }
 
-    private void fillSpinnerWithProducts(Spinner spinner) {
-        if (CurrentOrderData.getInstance().getSingleOrderProductsResponse() == null) {
-            return;
-        }
-
-
-
-        ArrayAdapter adapter = new SignleOrderProductsAdapter(getActivity(),
-                CurrentOrderData.getInstance().getSingleOrderProductsResponse());
-
-        spinner.setAdapter(adapter);
-        int index = 0;
-        for (Product product : CurrentOrderData.getInstance().getSingleOrderProductsResponse().getProducts()) {
-            if (product.getProductId()
-                    .equals(CurrentOrderData.getInstance().getCurrentOrderResponse().getOrder().getProductId())) {
-                index = CurrentOrderData.getInstance().getSingleOrderProductsResponse().getProducts().indexOf(product);
-            }
-        }
-        spinner.setSelection(index);
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-                if (spinner.getTag().equals(OrderProductsType.MuhltiOrder.getType())) {
-                    Log.d(TAG, "onItemSelected: from multi " + spinner.getSelectedItemPosition());
-                } else {
-                    single_order_product_spinner.setTag(CurrentOrderData.getInstance().getSingleOrderProductsResponse().getProducts().get(position).getProductId());
-                    Log.d(TAG, "onItemSelected: from single " + spinner.getSelectedItemPosition());
-
-                    Log.d(TAG, "fillSpinnerWithProducts: "+CurrentOrderData.getInstance()
-                            .getSingleOrderProductsResponse().getProducts().get(position).getProductName());
-
-
-
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-
-    }
 
     private void initCities(CurrentOrderResponse order) {
 
@@ -1099,69 +1015,44 @@ public class CurrentOrderFragment extends Fragment
         });
     }
 
-    private void calculateOrderTotal(String orderType){
-        int discountValue=0;
+    private void calculateOrderTotal(){
+        int discountValue;
         try {
              discountValue=Integer.valueOf(discount.getText().toString());
         }catch (Exception e){
+            discountValue=0;
         }
 
-        int items=1;
-        try {
-             items=Integer.valueOf(item_no.getText().toString());
-        }catch (Exception e){
-        }
         int shipping=Integer.valueOf(shipping_cost.getText().toString());
+         int orderTotal=orderProductsAdapter.getOrderTotal();
+        Log.d("TOTALLLLLLL", "calculateOrderTotal: "+orderTotal);
 
-        if (orderType.equals(OrderProductsType.SingleOrder.getType())){
-
-            if (items==0){
-                Toast.makeText(getContext(), R.string.enter_valid_quantity, Toast.LENGTH_SHORT).show();
-                int total=Integer.valueOf(item_cost.getText().toString())+shipping;
-                order_total_cost.setText(String.valueOf(total));
+            if (orderTotal==0){
+                Toast.makeText(getContext(), R.string.no_products, Toast.LENGTH_SHORT).show();
+                order_total_cost.setText("0");
 
                 return;
             }
             
-            int total=items*Integer.valueOf(item_cost.getText().toString())+shipping;
+             orderTotal+=shipping;
             
-            if (discountValue > 0 && discountValue >= total) {
+            if (discountValue > 0 && discountValue >= orderTotal) {
                 Toast.makeText(getContext(), R.string.over_discount_warning, Toast.LENGTH_SHORT).show();
-                order_total_cost.setText(String.valueOf(total));
+                order_total_cost.setText(String.valueOf(orderTotal));
                 return;
             }
-            total=total-discountValue;
-            order_total_cost.setText(String.valueOf(total));
+            orderTotal-=discountValue;
+            order_total_cost.setText(String.valueOf(orderTotal));
 
 
 
-        }else{
-            List<MultiOrderProducts> products =multiOrderProductsAdapter.getProDucts();
-            int total=0;
-            for (MultiOrderProducts product:products) {
-                total+=(Integer.valueOf(product.getItems_no())*Integer.valueOf(product.getItem_cost()));
 
-            }
-            total+=Integer.valueOf(shipping_cost.getText().toString());
-            Log.d("DISCOUNRTR", discountValue+"  calculateOrderTotal: "+total);
-            if (discountValue > 0 && discountValue >= total) {
-                Toast.makeText(getContext(), R.string.over_discount_warning, Toast.LENGTH_SHORT).show();
-                order_total_cost.setText(String.valueOf(total));
-                return;
-            }
 
-            if (discount.getText().length()==0) {
-                order_total_cost.setText(String.valueOf(total));
-                return;
-            }
-            total = total-discountValue;
-            order_total_cost.setText(String.valueOf(total));
 
-        }
 
     }
 
-    private void updateOrderTotal(String orderType){
+    private void updateOrderTotal(){
         Log.d("MULTIIIORDERR", "updateOrderTotal");
 
         TextWatcher textWatcher=new TextWatcher() {
@@ -1174,22 +1065,16 @@ public class CurrentOrderFragment extends Fragment
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 Log.d(TAG, i+" "+i1+" "+i2+" onTextChanged: "+charSequence);
 
-                calculateOrderTotal(orderType);
+                calculateOrderTotal();
 
             }
-
-
-
-
 
             @Override
             public void afterTextChanged(Editable editable) {
 
             }
         };
-        if (orderType.equals(OrderProductsType.SingleOrder.getType())) {
-            item_no.addTextChangedListener(textWatcher);
-        }
+
         discount.addTextChangedListener(textWatcher);
 
     }
@@ -1357,41 +1242,7 @@ public class CurrentOrderFragment extends Fragment
 
     }
 
-//    private Map<String, Object> getExtraDataValues(){
-//        Map<String,Object> values=new HashMap<>();
-//        ArrayList<ExtraData> extraData=extraDataAdapter.getExtraData();
-//        for (int i = 0; i < extraDataAdapter.getItemCount(); i++) {
-//
-//
-//
-//            View view = extra_data_recycler.getChildAt(i);
-//            if (extraData.get(i).getType().equals("select")){
-//                Spinner spinner=view.findViewById(R.id.spinnerValue);
-//
-//                if (Boolean.valueOf(extraData.get(i).getRequired())&&spinner.getSelectedItemPosition()==0){
-//                    Toast.makeText(getContext(), R.string.complete_fields_error, Toast.LENGTH_SHORT).show();
-//                    break;
-//                }
-//
-//                if (spinner.getSelectedItemPosition()>0){
-//                String value=extraData.get(i).getDetails().split(",")[spinner.getSelectedItemPosition()-1];
-//                values.put(extraData.get(i).getRequest_name(),value);
-//                }
-//
-//            }else {
-//
-//                EditText editText=view.findViewById(R.id.value);
-//                String value=editText.getText().toString();
-//                if (Boolean.valueOf(extraData.get(i).getRequired())&& TextUtils.isEmpty(value)){
-//                    Toast.makeText(getContext(), R.string.complete_fields_error, Toast.LENGTH_SHORT).show();
-//                    break;
-//                }
-//                values.put(extraData.get(i).getRequest_name(),value);
-//            }
-//
-//        }
-//        return values;
-//    }
+
 
     @Override
     public void onReasonSubmitted(int reason) {
@@ -1420,18 +1271,8 @@ public class CurrentOrderFragment extends Fragment
     }
 
     @Override
-    public void onCartItemDeleted(int productId) {
-
-    }
-
-    @Override
-    public void onCartItemQuantityIncrease(int productId, int quantity) {
-
-    }
-
-    @Override
-    public void onCartItemQuantityDecrease(int productId, int quantity) {
-
+    public void onCartItemsChange() {
+        calculateOrderTotal();
     }
 
     @Override
@@ -1439,13 +1280,11 @@ public class CurrentOrderFragment extends Fragment
         ProductDetailDialog productDetailDialog=new ProductDetailDialog(product,this);
         if (getFragmentManager() != null)
             productDetailDialog.show(getFragmentManager(),"");
-
     }
 
     @Override
     public void onProductUpdated(OrderProduct product,String productId) {
-        Log.d("UPDATEE", "onProductUpdated: "+productId+"    "+orderProductsAdapter.getProducts().get(0).toString());
-
+        calculateOrderTotal();
         orderProductsAdapter.updateProduct(productId,product);
     }
 }

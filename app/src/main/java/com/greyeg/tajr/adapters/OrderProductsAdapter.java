@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.greyeg.tajr.R;
+import com.greyeg.tajr.models.CartItem;
 import com.greyeg.tajr.models.OrderProduct;
 import com.squareup.picasso.Picasso;
 
@@ -43,7 +44,6 @@ public class OrderProductsAdapter extends RecyclerView.Adapter<OrderProductsAdap
     @Override
     public void onBindViewHolder(@NonNull CartItemHolder holder, int position) {
         OrderProduct product=products.get(position);
-        Log.d("UPDATEE", "onBindViewHolder: "+product.getImage());
         holder.name.setText(product.getName());
         holder.quantity.setText(String.valueOf(product.getItems_no()));
 
@@ -68,6 +68,14 @@ public class OrderProductsAdapter extends RecyclerView.Adapter<OrderProductsAdap
 
     public ArrayList<OrderProduct> getProducts() {
         return products;
+    }
+
+    public int getOrderTotal(){
+        int total=0;
+        for (OrderProduct product:this.products) {
+            total+=product.getPrice()*product.getItems_no();
+        }
+        return  total;
     }
 
     class CartItemHolder extends RecyclerView.ViewHolder{
@@ -98,6 +106,7 @@ public class OrderProductsAdapter extends RecyclerView.Adapter<OrderProductsAdap
 
             delete.setOnClickListener(view -> {
                 products.remove(getAdapterPosition());
+                onProductItemEvent.onCartItemsChange();
                 notifyDataSetChanged();
             });
 
@@ -107,6 +116,7 @@ public class OrderProductsAdapter extends RecyclerView.Adapter<OrderProductsAdap
                 int quantity=product.getItems_no();
                 quantity++;
                 product.setItems_no(quantity);
+                onProductItemEvent.onCartItemsChange();
                 notifyDataSetChanged();
 
             });
@@ -117,15 +127,15 @@ public class OrderProductsAdapter extends RecyclerView.Adapter<OrderProductsAdap
                 if (quantity==1)return;
                 quantity--;
                 product.setItems_no(quantity);
+                onProductItemEvent.onCartItemsChange();
+
                 notifyDataSetChanged();
             });
         }
     }
 
     public interface OnProductItemEvent{
-        void onCartItemDeleted(int productId);
-        void onCartItemQuantityIncrease(int productId,int quantity);
-        void onCartItemQuantityDecrease(int productId,int quantity);
+        void onCartItemsChange();
         void OnProductItemClicked(OrderProduct product);
     }
 }

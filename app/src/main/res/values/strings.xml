@@ -267,7 +267,7 @@
     <string name="no_connection_message">there no  internet connection</string>
     <string name="adding_reason_to_order_error">Error adding reason to Order</string>
     <string name="adding_new_reason_to_order_error">Error adding new Reason</string>
-    <string name="error_has_occured">An Error has Occured , please try again</string>
+    <string name="error_has_occured">An Error has occurred , please try again</string>
     <string name="error_getting_products">Error getting products</string>
     <string name="empty_cart_message">your cart is empty , choose your products</string>
     <string name="error_placing_order">Error Placing Order</string>
@@ -275,6 +275,7 @@
     <string name="over_discount_warning">discount cannot be more than total price</string>
     <string name="server_error">A Server Error Has Occurred ,Please try again later</string>
     <string name="complete_fields_error">please complete all fields</string>
+    <string name="no_products">there is no products in your cart</string>
     <string name="show_bubble">show Bubble</string>
     <string name="update_product">update Product</string>
     <string name="products">Products</string>
