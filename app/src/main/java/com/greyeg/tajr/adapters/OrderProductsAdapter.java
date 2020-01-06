@@ -44,6 +44,7 @@ public class OrderProductsAdapter extends RecyclerView.Adapter<OrderProductsAdap
     @Override
     public void onBindViewHolder(@NonNull CartItemHolder holder, int position) {
         OrderProduct product=products.get(position);
+        Log.d("onProductAdded","id --->  "+product.getId());
         holder.name.setText(product.getName());
         holder.quantity.setText(String.valueOf(product.getItems_no()));
 
@@ -59,6 +60,17 @@ public class OrderProductsAdapter extends RecyclerView.Adapter<OrderProductsAdap
         if (index==-1)return;
         products.set(index,product);
         notifyDataSetChanged();
+    }
+    public boolean addProduct(OrderProduct product){
+        Log.d("onProductAdded", product.getId()+" onProductAdded: "+this.products.indexOf(new OrderProduct(product.getId())));
+
+        if (this.products.indexOf(new OrderProduct(product.getId()))==-1){
+            products.add(product);
+            notifyDataSetChanged();
+            return true;
+        }
+
+        return false;
     }
 
     @Override

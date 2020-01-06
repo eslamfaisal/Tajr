@@ -32,6 +32,10 @@ public class OrderProduct {
         this.extras = extras;
     }
 
+    public OrderProduct(int items_no) {
+        this.items_no = items_no;
+    }
+
     public OrderProduct(String id) {
         this.id = id;
     }

@@ -58,7 +58,7 @@ public class SharedHelper {
     public static void clearSharedPreferences(Context context)
     {
         sharedPreferences = context.getSharedPreferences("Cache", Context.MODE_PRIVATE);
-        sharedPreferences.edit().clear().commit();
+        sharedPreferences.edit().clear().apply();
 
     }
 

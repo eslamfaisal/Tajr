@@ -608,8 +608,7 @@ public class BubbleService extends Service
         final int[] pos = {0};
         if (products==null||products.isEmpty())return;
         OrderItem orderItem=new OrderItem();
-
-        Spinner productsSpinner=addNewProductDialog.findViewById(R.id.product_spinner);
+        Spinner productsSpinner=addNewProductDialog.findViewById(R.id.single_order_product_spinner);
         TextView itemsNumber=addNewProductDialog.findViewById(R.id.product_no);
         ImageView close=addNewProductDialog.findViewById(R.id.close);
         TextView add_product=addNewProductDialog.findViewById(R.id.add_product);

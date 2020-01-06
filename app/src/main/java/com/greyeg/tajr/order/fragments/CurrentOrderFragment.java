@@ -68,6 +68,7 @@ import com.greyeg.tajr.order.models.SingleOrderProductsResponse;
 import com.greyeg.tajr.server.Api;
 import com.greyeg.tajr.server.BaseClient;
 import com.greyeg.tajr.sheets.FragmentBottomSheetDialogFull;
+import com.greyeg.tajr.view.dialogs.AddProductDialog;
 import com.greyeg.tajr.view.dialogs.CancelOrderDialog;
 import com.greyeg.tajr.view.dialogs.Dialogs;
 import com.greyeg.tajr.view.dialogs.ProductDetailDialog;
@@ -107,7 +108,8 @@ import static com.greyeg.tajr.activities.LoginActivity.IS_LOGIN;
 public class CurrentOrderFragment extends Fragment
         implements CancelOrderDialog.OnReasonSubmitted
         ,OrderProductsAdapter.OnProductItemEvent
-        ,ProductDetailDialog.OnProductUpdated{
+        ,ProductDetailDialog.OnProductUpdated
+        ,AddProductDialog.OnProductAdded{
 
     private final String TAG = "CurrentOrderFragment";
     @BindView(R.id.client_name)
@@ -202,6 +204,8 @@ public class CurrentOrderFragment extends Fragment
     private CancelOrderDialog.OnReasonSubmitted onReasonSubmitted=this;
     private long orderId=-1;
     private OrderProductsAdapter orderProductsAdapter;
+    private AddProductDialog.OnProductAdded onProductAdded;
+    private AddProductDialog addProductDialog;
 
     public CurrentOrderFragment() {
         // Required empty public constructor
@@ -215,6 +219,7 @@ public class CurrentOrderFragment extends Fragment
         ButterKnife.bind(this, mainView);
 
 
+        onProductAdded= this;
         initLabels();
         setListeners();
         currentOrderViewModel= ViewModelProviders.of(getActivity()).get(CurrentOrderViewModel.class);
@@ -237,7 +242,11 @@ public class CurrentOrderFragment extends Fragment
         add_product.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addProductToMultiOrdersTv();
+                //addProductToMultiOrdersTv();
+                addProductDialog=new AddProductDialog(onProductAdded);
+                if (getFragmentManager() != null) {
+                    addProductDialog.show(getFragmentManager(),"");
+                }
             }
         });
         back_drop.setOnClickListener(new View.OnClickListener() {
@@ -659,8 +668,8 @@ public class CurrentOrderFragment extends Fragment
         Dialog dialog = new Dialog(getActivity());
         dialog.setContentView(R.layout.layout_add_poduct_dialog);
 
-        Spinner productSpinner = dialog.findViewById(R.id.product_spinner);
-        productSpinner.setTag(OrderProductsType.MuhltiOrder.getType());
+        //Spinner productSpinner = dialog.findViewById(R.id.product_spinner);
+        //productSpinner.setTag(OrderProductsType.MuhltiOrder.getType());
         EditText productNo = dialog.findViewById(R.id.product_no);
         TextView addProductBtn = dialog.findViewById(R.id.add_product);
         productNo.setInputType(InputType.TYPE_CLASS_NUMBER);
@@ -684,7 +693,7 @@ public class CurrentOrderFragment extends Fragment
                 }
 
                 dialog.dismiss();
-                addProductToMultiOrder(no, productSpinner.getSelectedItemPosition());
+                //addProductToMultiOrder(no, productSpinner.getSelectedItemPosition());
             }
         });
         dialog.show();
@@ -1273,6 +1282,7 @@ public class CurrentOrderFragment extends Fragment
     @Override
     public void onCartItemsChange() {
         calculateOrderTotal();
+        //todo handle case of no items
     }
 
     @Override
@@ -1286,5 +1296,17 @@ public class CurrentOrderFragment extends Fragment
     public void onProductUpdated(OrderProduct product,String productId) {
         calculateOrderTotal();
         orderProductsAdapter.updateProduct(productId,product);
+    }
+
+    @Override
+    public void onProductAdded(OrderProduct product) {
+        boolean wasAdded=orderProductsAdapter.addProduct(product);
+        if (wasAdded){
+            Toast.makeText(getContext(), R.string.product_added_to_cart, Toast.LENGTH_SHORT).show();
+            addProductDialog.dismiss();
+        }else {
+            Toast.makeText(getContext(), R.string.already_in_cart, Toast.LENGTH_SHORT).show();
+
+        }
     }
 }

@@ -503,12 +503,12 @@ public class SearchOrderFragment extends Fragment {
         Dialog dialog = new Dialog(getActivity());
         dialog.setContentView(R.layout.layout_add_poduct_dialog);
 
-        Spinner productSpinner = dialog.findViewById(R.id.product_spinner);
-        productSpinner.setTag(OrderProductsType.MuhltiOrder.getType());
+//        Spinner productSpinner = dialog.findViewById(R.id.product_spinner);
+  //      productSpinner.setTag(OrderProductsType.MuhltiOrder.getType());
         EditText productNo = dialog.findViewById(R.id.product_no);
         TextView addProductBtn = dialog.findViewById(R.id.add_product);
         productNo.setInputType(InputType.TYPE_CLASS_NUMBER);
-        fillSpinnerWithProduts(productSpinner);
+        //fillSpinnerWithProduts(productSpinner);
         WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
         lp.copyFrom(dialog.getWindow().getAttributes());
         lp.width = WindowManager.LayoutParams.MATCH_PARENT;
@@ -518,7 +518,7 @@ public class SearchOrderFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
-                addProductToMultiOrder(Integer.valueOf(productNo.getText().toString()), productSpinner.getSelectedItemPosition());
+                //addProductToMultiOrder(Integer.valueOf(productNo.getText().toString()), productSpinner.getSelectedItemPosition());
             }
         });
         dialog.show();
