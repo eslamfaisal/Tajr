@@ -163,7 +163,7 @@ public class AddProductDialog extends DialogFragment implements ProductAdapter.O
 //                                    +" of: "+products.getPages().getOf());
                             pages=products.getPages();
                             //if (page==null||page.equals("1"))
-                            productAdapter.addProducts(products.getProducts(),page);
+                            productAdapter.addProducts(products.getProducts());
 
 
                         }else{

@@ -92,7 +92,11 @@ public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         return products==null?0:products.size();
     }
 
-    public void addProducts(List<ProductData> products, String page) {
+    public ArrayList<ProductData> getProducts() {
+        return products;
+    }
+
+    public void addProducts(List<ProductData> products) {
         isLoadingViewShown=false;
 
         Log.d("pagiiii", "addProducts: "+products.size());

@@ -260,7 +260,7 @@ public class ProductDetailDialog extends DialogFragment implements ProductAdapte
 //                                    +" of: "+products.getPages().getOf());
                             pages=products.getPages();
                             //if (page==null||page.equals("1"))
-                            productAdapter.addProducts(products.getProducts(),page);
+                            productAdapter.addProducts(products.getProducts());
 
 
                         }else{
