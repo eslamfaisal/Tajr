@@ -221,7 +221,9 @@ public class MainActivity extends AppCompatActivity
                 .setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
+                        Intent intent=new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
                         alertDialog.dismiss();
 
 
