@@ -482,10 +482,10 @@ public class BubbleService extends Service
     }
 
     private void setupNewOrderDialog(){
-
+        int[] dimenssions=ScreenHelper.getScreenDimensions(getApplicationContext());
         newOrderDialog=LayoutInflater.from(getApplicationContext())
                 .inflate(R.layout.new_order_dialog,null);
-        newOrderDialogParams=getViewParams(100,100,600,600,newOrderDialogParams);
+        newOrderDialogParams=getViewParams(dimenssions[0]*1/5,0,dimenssions[0]*4/5,dimenssions[1]*2/3,newOrderDialogParams);
         mWindowManager.addView(newOrderDialog,newOrderDialogParams);
 
         emptyView =newOrderDialog.findViewById(R.id.emptyView);
